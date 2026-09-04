@@ -37,11 +37,11 @@
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(10vw, 15vh) rotate(45deg) scale(1.1); } }
 
         header { background: rgba(10, 15, 24, 0.95); backdrop-filter: blur(20px); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
-        
+
         .logo-group { display: flex; flex-direction: column; flex-shrink: 0; min-width: 250px; }
         .logo-group img { height: 80px; width: auto; object-fit: contain; margin-bottom: 5px; display: block; }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 5px; }
-        
+
         .header-controls { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
         .control-panel-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
         .control-panel-btn:hover { background: var(--ranepa-rich-blue); border-color: #38bdf8; transform: scale(1.15); box-shadow: 0 0 12px rgba(56, 189, 248, 0.5); }
@@ -115,7 +115,7 @@
         .modal-box { background: var(--ranepa-blue); padding: 40px; border-radius: 24px; max-width: 550px; width: 90%; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.8); max-height: 85vh; overflow-y: auto; }
         .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 15px; font-weight: 900; }
         .modal-box p { color: var(--text-muted); margin-bottom: 25px; font-size: 0.95rem; text-align: left; }
-        
+
         .modal-btn-trudvsem { display: block; background: #2962ff; color: #fff; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 12px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: 0.3s; }
         .modal-btn-trudvsem:hover { background: #1e4bd8; transform: translateY(-2px); }
         .modal-btn-yandex { display: block; background: #FFCC00; color: #000; padding: 15px; border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 12px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: 0.3s; }
@@ -128,7 +128,7 @@
         /* --- РЕАЛИСТИЧНАЯ СОВА --- */
         .owl-ecosystem { position: fixed; bottom: -200px; right: -250px; width: 350px; height: 250px; z-index: 9999; transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
         .owl-ecosystem.visible { bottom: 0; right: 0; pointer-events: auto; }
-        
+
         /* Ветка */
         .oak-branch { 
             position: absolute; bottom: 40px; right: -20px; width: 300px; height: 35px; 
@@ -138,7 +138,7 @@
             transform: rotate(-6deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
-        
+
         /* Листья */
         .leaf { 
             position: absolute; width: 40px; height: 20px; background: linear-gradient(135deg, #4CAF50, #2E7D32);
@@ -155,7 +155,7 @@
             position: absolute; bottom: 70px; left: 50px; width: 100px; height: 115px; cursor: pointer; pointer-events: auto;
             animation: patrolBranch 12s infinite alternate ease-in-out; z-index: 10000;
         }
-        
+
         @keyframes patrolBranch {
             0%, 10% { transform: translateX(0); }
             40%, 60% { transform: translateX(80px); }
@@ -211,7 +211,7 @@
         .owl-eye.right { right: 14px; }
         .pupil { width: 12px; height: 12px; background: radial-gradient(circle at 30% 30%, #444, #000); border-radius: 50%; position: relative; box-shadow: 0 0 5px #000; }
         .pupil::after { content: ''; position: absolute; top: 2px; left: 2px; width: 4px; height: 4px; background: #fff; border-radius: 50%; box-shadow: 0 0 2px #fff; }
-        
+
         .beak {
             position: absolute; width: 0; height: 0; top: 42px; left: 37px; z-index: 4;
             border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 14px solid #E65100;
@@ -235,7 +235,7 @@
         /* Сон (Zzz) */
         .sleeping { animation-play-state: paused; } 
         .sleeping .owl-eye { transform: scaleY(0.1); } 
-        
+
         .zzz-particles { position: absolute; top: -30px; left: 40px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,255,255,0.8); opacity: 0; pointer-events: none; z-index: 20; }
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
         @keyframes floatZzz {
@@ -248,7 +248,7 @@
         .owl-flying { animation: flyAway 1.5s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
         .owl-flying .owl-wing.left { animation: flapLeft 0.15s infinite alternate; }
         .owl-flying .owl-wing.right { animation: flapRight 0.15s infinite alternate; }
-        
+
         @keyframes flyAway { 0% { transform: translateY(0); } 100% { transform: translateY(-500px) scale(0.3); opacity: 0; } }
         @keyframes flapLeft { from { transform: rotate(15deg); } to { transform: rotate(100deg); } }
         @keyframes flapRight { from { transform: rotate(-15deg); } to { transform: rotate(-100deg); } }
@@ -298,10 +298,10 @@
 
     <header>
         <div class="logo-group" style="flex-shrink: 0; min-width: 150px;">
-            <img src="img/logo.png" alt="РАНХиГС Президентская Академия" style="height: 55px; width: auto; max-width: 250px; object-fit: contain; margin-bottom: 5px; display: block;">
+            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия" style="height: 80px; width: auto; max-width: 320px; object-fit: contain; margin-bottom: 5px; display: block;">
             <div class="logo-subtitle" data-i18n="logoSub">Западный филиал • Центр дополнительного образования</div>
         </div>
-        
+
         <div class="header-controls">
             <button class="control-panel-btn" onclick="changeFontSize('small')">A-</button>
             <button class="control-panel-btn" onclick="changeFontSize('normal')">A</button>
@@ -317,7 +317,7 @@
         </nav>
 
         <div class="header-kadry" style="flex-shrink: 0;">
-            <img src="img/logo-kadry.png" alt="Национальный проект Кадры" style="height: 50px; width: auto; object-fit: contain; display: block;">
+            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" style="height: 75px; width: auto; object-fit: contain; display: block;">
         </div>
     </header>
 
@@ -327,7 +327,7 @@
     </section>
 
     <div class="container" id="programsSection">
-        
+
         <div class="tabs-nav">
             <button class="tab-btn active" onclick="filterPrograms(event, 'tab-all')" data-i18n="tabAll">Все программы</button>
             <button class="tab-btn" onclick="filterPrograms(event, 'tab-gos')" data-i18n="tabGos">🏛️ Госслужба и закупки</button>
@@ -598,7 +598,7 @@
         <div class="contacts-container">
             <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
             <p style="color: #cbd5e1; margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
-            
+
             <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
@@ -655,7 +655,7 @@
                     <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></div>
                 </div>
             </div>
-            
+
             <div class="legal-footer">
                 <div data-i18n="footerRights">© 2027 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
                 <div class="legal-footer-links">
@@ -724,7 +724,7 @@
             <div class="leaf leaf-2"></div>
             <div class="leaf leaf-3"></div>
         </div>
-        
+
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
@@ -930,7 +930,7 @@
             currentLang = lang;
             document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
             document.getElementById('langEnBtn').classList.toggle('lang-active', lang === 'en');
-            
+
             const elements = document.querySelectorAll('[data-i18n]');
             elements.forEach(el => {
                 const key = el.getAttribute('data-i18n');
@@ -1056,7 +1056,7 @@
             let ecosystem = document.getElementById('owlContainer');
             let owlSprite = document.getElementById('owlSprite');
             let bubble = document.getElementById('owlBubble');
-            
+
             if (chat.classList.contains('active')) {
                 // Закрываем
                 chat.classList.remove('active');
@@ -1125,7 +1125,7 @@
             if(currentQ >= testQuestionsData[currentLang].length) { showTestResult(); return; }
             let q = testQuestionsData[currentLang][currentQ];
             addBotMsg(q.q);
-            
+
             let html = "";
             q.answers.forEach(a => {
                 html += `<button class="chat-opt-btn" onclick="answerTest('${a.t}', '${a.v}')">${a.t}</button>`;
@@ -1154,7 +1154,7 @@
             if(bestCategory === 'prof') resultText = botTexts[currentLang].resProf;
 
             addBotMsg((currentLang === 'ru' ? "Анализ завершен. " : "Analysis completed. ") + resultText);
-            
+
             setOptions(`
                 <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
                 <button class="chat-opt-btn" onclick="filterPrograms(event, 'tab-all'); toggleChat();">${botTexts[currentLang].resCat}</button>
