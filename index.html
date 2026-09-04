@@ -25,20 +25,9 @@
 
         #progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red)); width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 15px var(--ranepa-red); }
 
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 7vw; font-weight: 900; color: rgba(255,255,255,0.02); white-space: nowrap; user-select: none; pointer-events: auto; animation: heartbeat 3s infinite ease-in-out; }
-        .bg-tag:nth-child(1) { animation-delay: 0s; }
-        .bg-tag:nth-child(2) { animation-delay: 1s; }
-        .bg-tag:nth-child(3) { animation-delay: 2s; }
-
-        @keyframes heartbeat {
-            0% { transform: scale(1); opacity: 0.02; }
-            15% { transform: scale(1.08); opacity: 0.04; }
-            30% { transform: scale(1); opacity: 0.02; }
-            45% { transform: scale(1.12); opacity: 0.05; }
-            60% { transform: scale(1); opacity: 0.02; }
-            100% { transform: scale(1); opacity: 0.02; }
-        }
+        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; }
+        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 8vw; font-weight: 900; color: rgba(255,255,255,0.015); white-space: nowrap; transition: transform 0.5s ease-out, color 0.3s; user-select: none; pointer-events: auto; }
+        .bg-tag:hover { color: rgba(255,255,255,0.05); transform: scale(1.05); }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; background-color: var(--ranepa-deep); }
         .shape { position: absolute; filter: blur(90px); opacity: 0.3; animation: float 25s infinite alternate ease-in-out; transform-style: preserve-3d; }
@@ -332,15 +321,12 @@
         .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 14px; }
 
         @media (max-width: 768px) {
-            header { padding: 10px 15px; }
-            .logo-group img { height: 100px !important; }
-            .header-kadry img { height: 90px !important; }
-            .hero h1 { font-size: 2.1rem; }
-            .hero p { font-size: 0.95rem; }
-            .tab-content.active { grid-template-columns: 1fr; gap: 20px; }
-            .card { padding: 20px; }
-            .owl-ecosystem { transform: scale(0.65); right: -70px; bottom: -60px; }
-            .owl-chat-panel { width: 92%; right: 4%; bottom: 90px; height: 60vh; }
+            .hero h1 { font-size: 2.3rem; }
+            header { flex-direction: column; gap: 15px; text-align: center; }
+            .header-nav { justify-content: center; width: 100%; }
+            .header-kadry { margin-top: 10px; }
+            .owl-ecosystem { transform: scale(0.7); right: -60px; bottom: -50px;}
+            .owl-chat-panel { width: 90%; right: 5%; bottom: 100px; }
         }
     </style>
 </head>
@@ -1342,9 +1328,9 @@
             addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
             addBotMsg(botTexts[currentLang].catPrompt);
             setOptions(`
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-gos')">${botTexts[currentLang].optGos}</button>
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-gos')">${botTexts[currentLang].owlOpt1}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-biz')">${botTexts[currentLang].owlOpt2}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-horeca')">${botTexts[currentLang].owlOpt3}</button>
                 <button class="chat-opt-btn" onclick="flyOwlToTab('tab-prof')">${botTexts[currentLang].optProf}</button>
                 <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
             `);
