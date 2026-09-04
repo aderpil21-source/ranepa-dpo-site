@@ -39,7 +39,7 @@
         header { background: rgba(10, 15, 24, 0.95); backdrop-filter: blur(20px); padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; flex-shrink: 0; min-width: 250px; }
-        .logo-group img { height: 150px; width: auto; object-fit: contain; margin-bottom: 5px; display: block; }
+        .logo-group img { height: 160px; width: auto; object-fit: contain; margin-bottom: 5px; display: block; }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 5px; }
 
         .header-controls { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
@@ -351,7 +351,7 @@
 
     <header>
         <div class="logo-group" style="flex-shrink: 0; min-width: 150px;">
-            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия" style="height: 80px; width: auto; max-width: 320px; object-fit: contain; margin-bottom: 5px; display: block;">
+            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия" style="height: 160px; width: auto; max-width: 320px; object-fit: contain; margin-bottom: 5px; display: block;">
             <div class="logo-subtitle" data-i18n="logoSub">Западный филиал • Центр дополнительного образования</div>
         </div>
 
@@ -370,7 +370,7 @@
         </nav>
 
         <div class="header-kadry" style="flex-shrink: 0;">
-            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" style="height: 75px; width: auto; object-fit: contain; display: block;">
+            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" style="height: 150px; width: auto; object-fit: contain; display: block;">
         </div>
     </header>
 
@@ -1328,9 +1328,9 @@
             addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
             addBotMsg(botTexts[currentLang].catPrompt);
             setOptions(`
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-gos')">${botTexts[currentLang].optGos}</button>
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-gos')">${botTexts[currentLang].owlOpt1}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-biz')">${botTexts[currentLang].owlOpt2}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-horeca')">${botTexts[currentLang].owlOpt3}</button>
                 <button class="chat-opt-btn" onclick="flyOwlToTab('tab-prof')">${botTexts[currentLang].optProf}</button>
                 <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
             `);
