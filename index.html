@@ -179,6 +179,9 @@
             90%, 100% { transform: translateX(20px); }
         }
 
+        /* Остановка патрулирования для корректного расчета полета */
+        .stop-patrol { animation: none !important; }
+
         /* 3D Тело Совы */
         .owl-body {
             position: absolute; width: 84px; height: 105px; bottom: 0; left: 8px;
@@ -295,9 +298,9 @@
 
         @keyframes flutter {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(25px, -35px) rotate(15deg); }
-            50% { transform: translate(-15px, 20px) rotate(-10deg); }
-            75% { transform: translate(35px, 15px) rotate(12deg); }
+            25% { transform: translate(20px, -25px) rotate(10deg); }
+            50% { transform: translate(-10px, 15px) rotate(-5deg); }
+            75% { transform: translate(25px, 10px) rotate(8deg); }
         }
 
         /* Пузырь */
@@ -812,12 +815,10 @@
     </div>
 
     <script>
-        // Глобальное состояние
         let currentLang = 'ru';
         let isOwlFlying = false;
         let owlReturnTimer;
 
-        // Управление шрифтами
         function changeFontSize(size) {
             const root = document.documentElement;
             if(size === 'small') root.style.fontSize = '14px';
@@ -825,7 +826,6 @@
             if(size === 'large') root.style.fontSize = '18px';
         }
 
-        // Локализация Native English + Russian
         const botTexts = {
             ru: {
                 catPrompt: "Мы реализуем обучение по 4 профессиональным трекам. Какой сектор вас интересует?",
@@ -1080,9 +1080,8 @@
             if(chat.classList.contains('active')) {
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                // Запрещаем прерывать анимацию если она летит к карточке
                 if (!owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
-                    owlSprite.classList.remove('owl-flying');
+                    owlSprite.classList.remove('stop-patrol');
                     startSleepCycle();
                 }
             }
@@ -1103,7 +1102,7 @@
                     chat.classList.remove('active');
                     ecosystem.classList.remove('chat-opened');
                     if (!owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
-                        owlSprite.classList.remove('owl-flying');
+                        owlSprite.classList.remove('stop-patrol');
                         startSleepCycle();
                     }
                 }
@@ -1126,7 +1125,7 @@
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
                 if (!owlSprite.parentElement.classList.contains('card')) {
-                    owlSprite.classList.remove('owl-flying');
+                    owlSprite.classList.remove('stop-patrol');
                     startSleepCycle();
                 }
             } else {
@@ -1135,7 +1134,7 @@
                 chat.classList.add('active');
                 ecosystem.classList.add('chat-opened');
                 if (!owlSprite.parentElement.classList.contains('card')) {
-                    owlSprite.classList.add('owl-flying');
+                    owlSprite.classList.add('stop-patrol');
                 }
                 bubble.classList.remove('show');
                 resetInactivity();
@@ -1171,7 +1170,20 @@
             isOwlFlying = true;
             clearTimeout(owlReturnTimer);
 
-            // Переключаем вкладку и подсвечиваем кнопку
+            // Разблокировка звука (политика браузеров требует клика)
+            const audio = document.getElementById('hootSound');
+            if(audio) {
+                audio.volume = 0;
+                let playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => { 
+                        audio.pause(); 
+                        audio.currentTime = 0; 
+                        audio.volume = 0.5; 
+                    }).catch(()=>{});
+                }
+            }
+
             filterPrograms(new Event('click'), tabId);
             const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
             let buttons = document.getElementsByClassName("tab-btn");
@@ -1196,11 +1208,14 @@
             const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({top: y, behavior: 'smooth'});
 
+            // Останавливаем стандартную анимацию патрулирования ветки
+            owlContainer.classList.add('stop-patrol');
+
             setTimeout(() => {
                 const startRect = owlContainer.getBoundingClientRect();
                 const targetRect = targetCard.getBoundingClientRect();
 
-                // Отвязываем сову и переносим в body для свободного полета
+                // Перенос в body с фиксированными начальными координатами экрана
                 document.body.appendChild(owlContainer);
                 owlContainer.style.position = 'fixed';
                 owlContainer.style.left = startRect.left + 'px';
@@ -1213,38 +1228,37 @@
 
                 // Считаем траекторию: сажаем сову на правый верхний угол карточки
                 const deltaX = (targetRect.right - 80) - startRect.left;
-                const deltaY = (targetRect.top - 90) - startRect.top;
+                const deltaY = (targetRect.top - 85) - startRect.top;
 
-                owlContainer.style.transition = 'transform 1.2s cubic-bezier(0.42, 0, 0.05, 1)';
+                owlContainer.style.transition = 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)';
                 owlContainer.classList.add('owl-chaotic-flight');
-                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.9)`;
+                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.85)`;
 
                 setTimeout(() => {
                     owlContainer.classList.remove('owl-chaotic-flight');
+                    owlContainer.style.transition = 'none';
+                    owlContainer.style.transform = 'none';
 
                     targetCard.style.position = 'relative';
                     targetCard.appendChild(owlContainer);
 
-                    owlContainer.style.transition = 'none';
-                    owlContainer.style.transform = 'none';
                     owlContainer.style.position = 'absolute';
                     owlContainer.style.left = 'auto';
                     owlContainer.style.bottom = 'auto';
                     owlContainer.style.right = '20px';
-                    owlContainer.style.top = '-95px';
-
-                    setTimeout(() => { owlContainer.style.transition = 'all 0.3s'; }, 50);
+                    owlContainer.style.top = '-85px';
+                    owlContainer.style.transform = 'scale(0.85)';
 
                     isOwlFlying = false;
 
-                    // Возвращение через 5 секунд
+                    // Возвращение ровно через 5 секунд
                     owlReturnTimer = setTimeout(() => {
                         returnOwlToBranch();
                     }, 5000);
 
                 }, 1200);
 
-            }, 600);
+            }, 500);
         }
 
         function returnOwlToBranch() {
@@ -1257,11 +1271,11 @@
             // Воспроизводим звук совы
             const audio = document.getElementById('hootSound');
             if(audio) {
-                audio.volume = 0.4;
-                audio.play().catch(e => console.log(e));
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log('Autoplay blocked by browser:', e));
             }
 
-            // Получаем текущие координаты (с учетом возможного скролла)
+            // Получаем текущие координаты (независимо от скролла)
             const startRect = owlContainer.getBoundingClientRect();
             const branchRect = branch.getBoundingClientRect();
 
@@ -1274,24 +1288,25 @@
             owlContainer.style.top = startRect.top + 'px';
             owlContainer.style.bottom = 'auto';
             owlContainer.style.right = 'auto';
-            owlContainer.style.transform = 'none';
+            owlContainer.style.transform = 'scale(0.85) scaleX(-1)';
 
             void owlContainer.offsetWidth; // Принудительный рефлоу
 
             // Считаем траекторию к ветке
             const targetX = branchRect.left + 50; 
-            const targetY = branchRect.top - 80;
+            const targetY = branchRect.top - 100;
 
             const deltaX = targetX - startRect.left;
             const deltaY = targetY - startRect.top;
 
-            owlContainer.style.transition = 'transform 1.8s cubic-bezier(0.45, 0, 0.15, 1)';
+            owlContainer.style.transition = 'transform 1.5s cubic-bezier(0.25, 1, 0.5, 1)';
             owlContainer.classList.add('owl-chaotic-flight');
-            owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.9)`;
+            owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1) scaleX(-1)`;
 
             setTimeout(() => {
                 owlContainer.classList.remove('owl-chaotic-flight');
                 owlContainer.classList.remove('owl-flip');
+                owlContainer.classList.remove('stop-patrol');
                 
                 const eco = document.getElementById('owlContainer');
                 eco.appendChild(owlContainer);
@@ -1306,7 +1321,7 @@
                 owlContainer.style.right = 'auto';
 
                 isOwlFlying = false;
-            }, 1800);
+            }, 1500);
         }
 
         function showCatalog() {
