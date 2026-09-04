@@ -129,25 +129,42 @@
         .owl-ecosystem { position: fixed; bottom: -200px; right: -250px; width: 350px; height: 250px; z-index: 9999; transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
         .owl-ecosystem.visible { bottom: 0; right: 0; pointer-events: auto; }
 
-        /* Ветка */
+        /* Ветка 3D */
         .oak-branch { 
-            position: absolute; bottom: 40px; right: -20px; width: 300px; height: 35px; 
-            background: linear-gradient(75deg, #4E342E, #3E2723, #27140E); 
-            border-radius: 30px 5px 5px 30px; 
-            box-shadow: inset 0 -5px 15px rgba(0,0,0,0.9), 0 25px 40px rgba(0,0,0,0.7); 
+            position: absolute; bottom: 40px; right: -20px; width: 320px; height: 38px; 
+            background: 
+                linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, transparent 20%),
+                linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 40%, transparent 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.15) 5px, rgba(0,0,0,0.15) 10px),
+                linear-gradient(75deg, #5D4037, #3E2723, #1e0f0a);
+            border-radius: 40px 10px 10px 40px; 
+            box-shadow: 0 30px 40px rgba(0,0,0,0.8); 
             transform: rotate(-6deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
+        /* Мелкие веточки */
+        .twig {
+            position: absolute;
+            background: linear-gradient(to bottom, #4E342E, #27140E);
+            border-radius: 10px;
+            box-shadow: inset 0 -3px 5px rgba(0,0,0,0.8);
+        }
+        .twig-1 { width: 50px; height: 10px; top: -18px; left: 80px; transform: rotate(-35deg); }
+        .twig-2 { width: 40px; height: 8px; bottom: -12px; left: 160px; transform: rotate(40deg); z-index: -1; }
+        .twig-3 { width: 35px; height: 7px; top: -10px; left: 220px; transform: rotate(-25deg); z-index: -1; }
+
         /* Листья */
         .leaf { 
-            position: absolute; width: 40px; height: 20px; background: linear-gradient(135deg, #4CAF50, #2E7D32);
-            border-radius: 0 20px 0 20px; transform: scale(0); opacity: 0; transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: absolute; width: 40px; height: 20px; 
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-radius: 0 20px 0 20px; transform: scale(0); opacity: 0; 
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
         }
-        .leaf-1 { top: -10px; left: 40px; transform-origin: bottom right; }
-        .leaf-2 { bottom: -15px; left: 120px; transform-origin: top right; background: linear-gradient(135deg, #66BB6A, #1B5E20); }
-        .leaf-3 { top: -5px; left: 200px; transform-origin: bottom left; }
+        .leaf-1 { top: -5px; right: -25px; transform-origin: bottom left; }
+        .leaf-2 { top: 0px; right: -20px; transform-origin: top left; }
+        .leaf-3 { top: -10px; right: -30px; transform-origin: bottom left; }
         .chat-opened .leaf { transform: scale(1) rotate(15deg); opacity: 1; }
 
         /* Контейнер совы */
@@ -162,7 +179,7 @@
             90%, 100% { transform: translateX(20px); }
         }
 
-        /* 3D Тело Совы (Текстура перьев и тени) */
+        /* 3D Тело Совы */
         .owl-body {
             position: absolute; width: 84px; height: 105px; bottom: 0; left: 8px;
             background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent),
@@ -171,6 +188,21 @@
             box-shadow: inset -10px -10px 20px rgba(0,0,0,0.8), inset 5px 5px 10px rgba(255,255,255,0.1), 10px 15px 25px rgba(0,0,0,0.6);
             transition: all 0.3s;
         }
+        
+        /* Лапы / Когти */
+        .owl-leg {
+            position: absolute; width: 14px; height: 16px; background: #E65100;
+            bottom: -6px; border-radius: 8px; z-index: 6;
+            box-shadow: inset -2px -2px 4px rgba(0,0,0,0.5), 2px 2px 4px rgba(0,0,0,0.4);
+        }
+        .owl-leg::after {
+            content: ''; position: absolute; bottom: 0; left: -2px; width: 18px; height: 6px;
+            background: repeating-linear-gradient(90deg, #E65100 0, #E65100 4px, #27140E 4px, #27140E 5px);
+            border-radius: 4px;
+        }
+        .owl-leg.left { left: 22px; }
+        .owl-leg.right { right: 22px; }
+
         /* Ушки (Tufts) */
         .owl-ear {
             position: absolute; width: 0; height: 0; top: -12px;
@@ -201,7 +233,7 @@
             border-radius: 50% 50% 45% 45%; box-shadow: inset 0 -10px 15px rgba(0,0,0,0.7); z-index: 1;
         }
 
-        /* Реалистичные глаза с бликом */
+        /* Реалистичные глаза */
         .owl-eye {
             position: absolute; width: 22px; height: 22px; background: radial-gradient(circle at 30% 30%, #FFF59D, #FFB300, #E65100);
             border-radius: 50%; top: 26px; border: 2px solid #27140E; display: flex; justify-content: center; align-items: center; z-index: 3;
@@ -244,7 +276,7 @@
             100% { opacity: 0; transform: translate(30px, -40px) scale(1.5); }
         }
 
-        /* Анимация Взлета */
+        /* Анимация Взлета (покидание сайта) */
         .owl-flying { animation: flyAway 1.5s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
         .owl-flying .owl-wing.left { animation: flapLeft 0.15s infinite alternate; }
         .owl-flying .owl-wing.right { animation: flapRight 0.15s infinite alternate; }
@@ -253,8 +285,12 @@
         @keyframes flapLeft { from { transform: rotate(15deg); } to { transform: rotate(100deg); } }
         @keyframes flapRight { from { transform: rotate(-15deg); } to { transform: rotate(-100deg); } }
 
+        /* Анимация прицельного полета к карточке */
+        .owl-flying-target .owl-wing.left { animation: flapLeft 0.1s infinite alternate !important; }
+        .owl-flying-target .owl-wing.right { animation: flapRight 0.1s infinite alternate !important; }
+
         /* Пузырь */
-        .owl-bubble { position: absolute; bottom: 180px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; }
+        .owl-bubble { position: absolute; bottom: 180px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
         .owl-bubble.show { opacity: 1; transform: scale(1); }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
@@ -720,9 +756,9 @@
 
     <div class="owl-ecosystem" id="owlContainer">
         <div class="oak-branch">
-            <div class="leaf leaf-1"></div>
-            <div class="leaf leaf-2"></div>
-            <div class="leaf leaf-3"></div>
+            <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
+            <div class="twig twig-2"><div class="leaf leaf-2"></div></div>
+            <div class="twig twig-3"><div class="leaf leaf-3"></div></div>
         </div>
 
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
@@ -740,6 +776,10 @@
                 <div class="owl-eye left"><div class="pupil"></div></div>
                 <div class="owl-eye right"><div class="pupil"></div></div>
                 <div class="beak"></div>
+                
+                <!-- Лапы совы -->
+                <div class="owl-leg left"></div>
+                <div class="owl-leg right"></div>
             </div>
         </div>
 
@@ -791,7 +831,10 @@
                 resHoreca: "Вердикт системы: <b>«HoReCa и Туризм»</b>. Ваши сильные стороны — коммуникация и обеспечение премиального сервиса.",
                 resProf: "Вердикт системы: <b>«Быстрые профессии»</b>. Вы цените применимый на практике результат и стремитесь к быстрой монетизации навыков.",
                 resEnroll: "✍️ Зафиксировать заявку на это направление",
-                resCat: "🔄 Отклонить. Показать весь каталог"
+                resCat: "🔄 Отклонить. Показать весь каталог",
+                owlOpt1: "🎯 Пройти тест на профориентацию",
+                owlOpt2: "📚 Кратко обо всех программах",
+                owlOpt3: "📞 Открыть контакты руководства"
             },
             en: {
                 catPrompt: "We provide training across 4 professional tracks. Which sector are you interested in?",
@@ -812,7 +855,10 @@
                 resHoreca: "System Verdict: <b>«HoReCa & Tourism»</b>. Your core strengths lie in effective communication and delivering premium customer service.",
                 resProf: "System Verdict: <b>«Fast-Track Professions»</b>. You deeply value practical results and strive for the rapid monetization of your skills.",
                 resEnroll: "✍️ Lock in an application for this track",
-                resCat: "🔄 Reject. View the full catalog"
+                resCat: "🔄 Reject. View the full catalog",
+                owlOpt1: "🎯 Take a career test",
+                owlOpt2: "📚 Brief overview of all programs",
+                owlOpt3: "📞 Open management contacts"
             }
         };
 
@@ -884,7 +930,6 @@
                 polModTitle: "Политика обработки персональных данных", polModText: "Настоящая Политика конфиденциальности персональных данных действует в отношении всей информации, которую Западный филиал РАНХиГС может получить о Пользователе во время использования сайта.<br><br>1. Обработка персональных данных осуществляется в соответствии с Федеральным законом РФ № 152-ФЗ «О персональных данных».<br>2. Пользователь дает согласие на обработку своих персональных данных в целях регистрации заявки на обучение в рамках национального проекта «Кадры».<br>3. Оператор принимает необходимые организационные и технические меры для защиты персональной информации от неправомерного доступа.",
                 termModTitle: "Пользовательское соглашение и оферта", termModText: "Использование материалов и сервисов сайта регулируется нормами законодательства Российской Федерации.<br><br>1. Сайт носит информационный характер и не является публичной офертой.<br>2. Все права на текстовые материалы, графические изображения и структуру сайта принадлежат Западному филиалу РАНХиГС.<br>3. Подавая заявку через формы связи, пользователь подтверждает свое ознакомление с условиями федеральных образовательных программ.", modOk: "Понятно",
                 owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:", owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?",
-                owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства"
             },
             en: {
                 pageTitle: "Academy of Personnel | Western Branch of RANEPA",
@@ -922,7 +967,6 @@
                 polModTitle: "Personal Data Processing Policy", polModText: "This Privacy Policy applies to all information that the Western Branch of RANEPA can obtain about the User during the use of the site.<br><br>1. Processing of personal data is carried out in accordance with the Federal Law of the Russian Federation No. 152-FZ.<br>2. The user consents to the processing of their personal data (surname, name, patronymic, contact phone number, email) for the purpose of registering an application for training within the national project \"Personnel\".<br>3. The operator takes necessary organizational and technical measures to protect personal information from unauthorized access.",
                 termModTitle: "User Agreement and Offer", termModText: "The use of materials and services of the site is governed by the laws of the Russian Federation.<br><br>1. The site is for informational purposes and is not a public offer.<br>2. All rights to the text materials, graphic images, and site structure belong to the Western Branch of RANEPA.<br>3. By submitting an application through communication forms, the user confirms their familiarity with the terms of federal educational programs.", modOk: "Understood",
                 owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?",
-                owlOpt1: "🎯 Take a career test", owlOpt2: "📚 Brief overview of all programs", owlOpt3: "📞 Open management contacts"
             }
         };
 
@@ -963,7 +1007,7 @@
             let buttons = document.getElementsByClassName("tab-btn");
             for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
             document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
+            if(evt && evt.currentTarget) evt.currentTarget.classList.add("active");
         }
 
         function toggleCard(btn) {
@@ -1021,15 +1065,18 @@
             if(chat.classList.contains('active')) {
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                owlSprite.classList.remove('owl-flying');
-                startSleepCycle();
+                // Не трогаем анимацию взлета, если сова прикреплена к карточке
+                if (!owlSprite.parentElement.classList.contains('card')) {
+                    owlSprite.classList.remove('owl-flying');
+                    startSleepCycle();
+                }
             }
             bubble.classList.remove('show');
 
             isScrolling = setTimeout(function() {}, 200);
         }, false);
 
-        // Таймер бездействия (Автоскрытие чата через 40 сек)
+        // Таймер бездействия
         let inactivityTimer;
         function resetInactivity() {
             clearTimeout(inactivityTimer);
@@ -1040,8 +1087,10 @@
                 if(chat.classList.contains('active')) {
                     chat.classList.remove('active');
                     ecosystem.classList.remove('chat-opened');
-                    owlSprite.classList.remove('owl-flying');
-                    startSleepCycle();
+                    if (!owlSprite.parentElement.classList.contains('card')) {
+                        owlSprite.classList.remove('owl-flying');
+                        startSleepCycle();
+                    }
                 }
             }, 40000);
         }
@@ -1050,7 +1099,6 @@
         document.addEventListener('keypress', resetInactivity);
         resetInactivity();
 
-        // Функция открытия / закрытия (Крестик работает корректно)
         function toggleChat() {
             let chat = document.getElementById('owlChat');
             let ecosystem = document.getElementById('owlContainer');
@@ -1058,18 +1106,20 @@
             let bubble = document.getElementById('owlBubble');
 
             if (chat.classList.contains('active')) {
-                // Закрываем
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                owlSprite.classList.remove('owl-flying');
-                startSleepCycle();
+                if (!owlSprite.parentElement.classList.contains('card')) {
+                    owlSprite.classList.remove('owl-flying');
+                    startSleepCycle();
+                }
             } else {
-                // Открываем
                 clearInterval(sleepTimer);
                 owlSprite.classList.remove('sleeping');
                 chat.classList.add('active');
                 ecosystem.classList.add('chat-opened');
-                owlSprite.classList.add('owl-flying');
+                if (!owlSprite.parentElement.classList.contains('card')) {
+                    owlSprite.classList.add('owl-flying');
+                }
                 bubble.classList.remove('show');
                 resetInactivity();
             }
@@ -1092,20 +1142,80 @@
 
         function resetMenu() {
             setOptions(`
-                <button class="chat-opt-btn" onclick="startTest()">${botTexts[currentLang].opt1}</button>
-                <button class="chat-opt-btn" onclick="showCatalog()">${botTexts[currentLang].opt2}</button>
-                <button class="chat-opt-btn" onclick="openContactsModal(); toggleChat();">${botTexts[currentLang].opt3}</button>
+                <button class="chat-opt-btn" onclick="startTest()">${botTexts[currentLang].owlOpt1}</button>
+                <button class="chat-opt-btn" onclick="showCatalog()">${botTexts[currentLang].owlOpt2}</button>
+                <button class="chat-opt-btn" onclick="openContactsModal(); toggleChat();">${botTexts[currentLang].owlOpt3}</button>
             `);
+        }
+
+        // --- ЛОГИКА ПОЛЕТА СОВЫ К КАРТОЧКЕ ---
+        function flyOwlToTab(tabId) {
+            // Переключаем вкладку
+            filterPrograms(new Event('click'), tabId);
+            
+            // Находим кнопку этой вкладки, чтобы зажечь её визуально
+            const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
+            let buttons = document.getElementsByClassName("tab-btn");
+            if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
+
+            // Закрываем чат
+            toggleChat();
+
+            const owlContainer = document.getElementById('owlSprite');
+            const targetTab = document.getElementById(tabId);
+            const targetCard = targetTab.querySelector('.card'); // первая карточка во вкладке
+
+            // Скроллим так, чтобы карточки были по центру
+            const section = document.getElementById('programsSection');
+            const yOffset = -80; 
+            const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({top: y, behavior: 'smooth'});
+
+            // Ждем завершения скролла и запускаем полет
+            setTimeout(() => {
+                const owlRect = owlContainer.getBoundingClientRect();
+                const cardRect = targetCard.getBoundingClientRect();
+
+                // Считаем траекторию: сажаем сову на правый верхний угол карточки
+                const deltaX = cardRect.right - 60 - owlRect.left;
+                const deltaY = cardRect.top - 100 - owlRect.top;
+
+                // Запускаем махание крыльями и полет по вычисленной траектории
+                owlContainer.style.transition = 'transform 1.2s cubic-bezier(0.42, 0, 0.05, 1)';
+                owlContainer.classList.add('owl-flying-target');
+                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.9)`;
+
+                // Как только долетели — привязываем сову физически внутрь карточки
+                setTimeout(() => {
+                    owlContainer.classList.remove('owl-flying-target');
+
+                    targetCard.style.position = 'relative';
+                    targetCard.appendChild(owlContainer); // перемещаем элемент в DOM
+
+                    // Сбрасываем translate и фиксируем абсолютными координатами от края карточки
+                    owlContainer.style.transition = 'none';
+                    owlContainer.style.transform = 'none';
+                    owlContainer.style.position = 'absolute';
+                    owlContainer.style.left = 'auto';
+                    owlContainer.style.bottom = 'auto';
+                    owlContainer.style.right = '20px';
+                    owlContainer.style.top = '-95px';
+
+                    // Возвращаем плавность для морганий
+                    setTimeout(() => { owlContainer.style.transition = 'all 0.3s'; }, 50);
+                }, 1200);
+
+            }, 600);
         }
 
         function showCatalog() {
             addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
             addBotMsg(botTexts[currentLang].catPrompt);
             setOptions(`
-                <button class="chat-opt-btn" onclick="filterPrograms(event, 'tab-gos'); toggleChat();">${botTexts[currentLang].optGos}</button>
-                <button class="chat-opt-btn" onclick="filterPrograms(event, 'tab-biz'); toggleChat();">${botTexts[currentLang].optBiz}</button>
-                <button class="chat-opt-btn" onclick="filterPrograms(event, 'tab-horeca'); toggleChat();">${botTexts[currentLang].optHoreca}</button>
-                <button class="chat-opt-btn" onclick="filterPrograms(event, 'tab-prof'); toggleChat();">${botTexts[currentLang].optProf}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-gos')">${botTexts[currentLang].optGos}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
+                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-prof')">${botTexts[currentLang].optProf}</button>
                 <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
             `);
         }
