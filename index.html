@@ -189,6 +189,9 @@
             transition: all 0.3s;
         }
         
+        /* Разворот совы при полете обратно */
+        .owl-flip .owl-body { transform: scaleX(-1); }
+
         /* Лапы / Когти */
         .owl-leg {
             position: absolute; width: 14px; height: 16px; background: #E65100;
@@ -285,9 +288,17 @@
         @keyframes flapLeft { from { transform: rotate(15deg); } to { transform: rotate(100deg); } }
         @keyframes flapRight { from { transform: rotate(-15deg); } to { transform: rotate(-100deg); } }
 
-        /* Анимация прицельного полета к карточке */
-        .owl-flying-target .owl-wing.left { animation: flapLeft 0.1s infinite alternate !important; }
-        .owl-flying-target .owl-wing.right { animation: flapRight 0.1s infinite alternate !important; }
+        /* Хаотичный полет к карточкам и обратно */
+        .owl-chaotic-flight .owl-wing.left { animation: flapLeft 0.08s infinite alternate !important; }
+        .owl-chaotic-flight .owl-wing.right { animation: flapRight 0.08s infinite alternate !important; }
+        .owl-chaotic-flight .owl-body { animation: flutter 0.6s infinite ease-in-out; }
+
+        @keyframes flutter {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(25px, -35px) rotate(15deg); }
+            50% { transform: translate(-15px, 20px) rotate(-10deg); }
+            75% { transform: translate(35px, 15px) rotate(12deg); }
+        }
 
         /* Пузырь */
         .owl-bubble { position: absolute; bottom: 180px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
@@ -317,6 +328,9 @@
     </style>
 </head>
 <body>
+
+    <!-- Звук совы -->
+    <audio id="hootSound" src="https://actions.google.com/sounds/v1/animals/owl_hoot.ogg" preload="auto"></audio>
 
     <div id="progress-bar"></div>
 
@@ -777,7 +791,6 @@
                 <div class="owl-eye right"><div class="pupil"></div></div>
                 <div class="beak"></div>
                 
-                <!-- Лапы совы -->
                 <div class="owl-leg left"></div>
                 <div class="owl-leg right"></div>
             </div>
@@ -801,6 +814,8 @@
     <script>
         // Глобальное состояние
         let currentLang = 'ru';
+        let isOwlFlying = false;
+        let owlReturnTimer;
 
         // Управление шрифтами
         function changeFontSize(size) {
@@ -1034,7 +1049,7 @@
         setTimeout(() => {
             const chatPanel = document.getElementById('owlChat');
             const owlBubble = document.getElementById('owlBubble');
-            if(!chatPanel.classList.contains('active')) {
+            if(!chatPanel.classList.contains('active') && !isOwlFlying) {
                 owlBubble.classList.add('show');
                 setTimeout(() => owlBubble.classList.remove('show'), 7000);
             }
@@ -1065,8 +1080,8 @@
             if(chat.classList.contains('active')) {
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                // Не трогаем анимацию взлета, если сова прикреплена к карточке
-                if (!owlSprite.parentElement.classList.contains('card')) {
+                // Запрещаем прерывать анимацию если она летит к карточке
+                if (!owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
                     owlSprite.classList.remove('owl-flying');
                     startSleepCycle();
                 }
@@ -1087,7 +1102,7 @@
                 if(chat.classList.contains('active')) {
                     chat.classList.remove('active');
                     ecosystem.classList.remove('chat-opened');
-                    if (!owlSprite.parentElement.classList.contains('card')) {
+                    if (!owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
                         owlSprite.classList.remove('owl-flying');
                         startSleepCycle();
                     }
@@ -1100,6 +1115,8 @@
         resetInactivity();
 
         function toggleChat() {
+            if (isOwlFlying) return; // Блокируем клики во время полета
+
             let chat = document.getElementById('owlChat');
             let ecosystem = document.getElementById('owlContainer');
             let owlSprite = document.getElementById('owlSprite');
@@ -1148,22 +1165,30 @@
             `);
         }
 
-        // --- ЛОГИКА ПОЛЕТА СОВЫ К КАРТОЧКЕ ---
+        // --- ЛОГИКА ПОЛЕТА СОВЫ К КАРТОЧКЕ И ОБРАТНО ---
         function flyOwlToTab(tabId) {
-            // Переключаем вкладку
+            if (isOwlFlying) return;
+            isOwlFlying = true;
+            clearTimeout(owlReturnTimer);
+
+            // Переключаем вкладку и подсвечиваем кнопку
             filterPrograms(new Event('click'), tabId);
-            
-            // Находим кнопку этой вкладки, чтобы зажечь её визуально
             const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
             let buttons = document.getElementsByClassName("tab-btn");
             if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
 
-            // Закрываем чат
-            toggleChat();
+            // Закрываем чат без срабатывания toggleChat
+            let chat = document.getElementById('owlChat');
+            let ecosystem = document.getElementById('owlContainer');
+            let bubble = document.getElementById('owlBubble');
+            chat.classList.remove('active');
+            ecosystem.classList.remove('chat-opened');
+            bubble.classList.remove('show');
+            resetInactivity();
 
             const owlContainer = document.getElementById('owlSprite');
             const targetTab = document.getElementById(tabId);
-            const targetCard = targetTab.querySelector('.card'); // первая карточка во вкладке
+            const targetCard = targetTab.querySelector('.card');
 
             // Скроллим так, чтобы карточки были по центру
             const section = document.getElementById('programsSection');
@@ -1171,28 +1196,35 @@
             const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({top: y, behavior: 'smooth'});
 
-            // Ждем завершения скролла и запускаем полет
             setTimeout(() => {
-                const owlRect = owlContainer.getBoundingClientRect();
-                const cardRect = targetCard.getBoundingClientRect();
+                const startRect = owlContainer.getBoundingClientRect();
+                const targetRect = targetCard.getBoundingClientRect();
+
+                // Отвязываем сову и переносим в body для свободного полета
+                document.body.appendChild(owlContainer);
+                owlContainer.style.position = 'fixed';
+                owlContainer.style.left = startRect.left + 'px';
+                owlContainer.style.top = startRect.top + 'px';
+                owlContainer.style.bottom = 'auto';
+                owlContainer.style.right = 'auto';
+                owlContainer.style.transform = 'none';
+
+                void owlContainer.offsetWidth; // Принудительный рефлоу
 
                 // Считаем траекторию: сажаем сову на правый верхний угол карточки
-                const deltaX = cardRect.right - 60 - owlRect.left;
-                const deltaY = cardRect.top - 100 - owlRect.top;
+                const deltaX = (targetRect.right - 80) - startRect.left;
+                const deltaY = (targetRect.top - 90) - startRect.top;
 
-                // Запускаем махание крыльями и полет по вычисленной траектории
                 owlContainer.style.transition = 'transform 1.2s cubic-bezier(0.42, 0, 0.05, 1)';
-                owlContainer.classList.add('owl-flying-target');
+                owlContainer.classList.add('owl-chaotic-flight');
                 owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.9)`;
 
-                // Как только долетели — привязываем сову физически внутрь карточки
                 setTimeout(() => {
-                    owlContainer.classList.remove('owl-flying-target');
+                    owlContainer.classList.remove('owl-chaotic-flight');
 
                     targetCard.style.position = 'relative';
-                    targetCard.appendChild(owlContainer); // перемещаем элемент в DOM
+                    targetCard.appendChild(owlContainer);
 
-                    // Сбрасываем translate и фиксируем абсолютными координатами от края карточки
                     owlContainer.style.transition = 'none';
                     owlContainer.style.transform = 'none';
                     owlContainer.style.position = 'absolute';
@@ -1201,11 +1233,80 @@
                     owlContainer.style.right = '20px';
                     owlContainer.style.top = '-95px';
 
-                    // Возвращаем плавность для морганий
                     setTimeout(() => { owlContainer.style.transition = 'all 0.3s'; }, 50);
+
+                    isOwlFlying = false;
+
+                    // Возвращение через 5 секунд
+                    owlReturnTimer = setTimeout(() => {
+                        returnOwlToBranch();
+                    }, 5000);
+
                 }, 1200);
 
             }, 600);
+        }
+
+        function returnOwlToBranch() {
+            if (isOwlFlying) return;
+            isOwlFlying = true;
+
+            const owlContainer = document.getElementById('owlSprite');
+            const branch = document.querySelector('.oak-branch');
+
+            // Воспроизводим звук совы
+            const audio = document.getElementById('hootSound');
+            if(audio) {
+                audio.volume = 0.4;
+                audio.play().catch(e => console.log(e));
+            }
+
+            // Получаем текущие координаты (с учетом возможного скролла)
+            const startRect = owlContainer.getBoundingClientRect();
+            const branchRect = branch.getBoundingClientRect();
+
+            // Зеркалим сову для полета в обратную сторону
+            owlContainer.classList.add('owl-flip');
+
+            document.body.appendChild(owlContainer);
+            owlContainer.style.position = 'fixed';
+            owlContainer.style.left = startRect.left + 'px';
+            owlContainer.style.top = startRect.top + 'px';
+            owlContainer.style.bottom = 'auto';
+            owlContainer.style.right = 'auto';
+            owlContainer.style.transform = 'none';
+
+            void owlContainer.offsetWidth; // Принудительный рефлоу
+
+            // Считаем траекторию к ветке
+            const targetX = branchRect.left + 50; 
+            const targetY = branchRect.top - 80;
+
+            const deltaX = targetX - startRect.left;
+            const deltaY = targetY - startRect.top;
+
+            owlContainer.style.transition = 'transform 1.8s cubic-bezier(0.45, 0, 0.15, 1)';
+            owlContainer.classList.add('owl-chaotic-flight');
+            owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.9)`;
+
+            setTimeout(() => {
+                owlContainer.classList.remove('owl-chaotic-flight');
+                owlContainer.classList.remove('owl-flip');
+                
+                const eco = document.getElementById('owlContainer');
+                eco.appendChild(owlContainer);
+
+                // Возвращаем исходные стили
+                owlContainer.style.transition = 'all 0.3s';
+                owlContainer.style.transform = 'none';
+                owlContainer.style.position = 'absolute';
+                owlContainer.style.left = '50px';
+                owlContainer.style.bottom = '70px';
+                owlContainer.style.top = 'auto';
+                owlContainer.style.right = 'auto';
+
+                isOwlFlying = false;
+            }, 1800);
         }
 
         function showCatalog() {
