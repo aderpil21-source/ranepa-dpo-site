@@ -137,57 +137,41 @@
         .close-modal { margin-top: 20px; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-decoration: underline; }
         .close-modal:hover { color: var(--ranepa-red); }
 
-        /* --- ГРАФИКА И ЭКОСИСТЕМА СОВЫ --- */
+        /* --- ГРАФИКА И ЭКОСИСТЕМА СОВЫ (ДЕСКТОП) --- */
         .owl-ecosystem { position: fixed; bottom: -240px; right: -250px; width: 380px; height: 320px; z-index: 9999; transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
         .owl-ecosystem.visible { bottom: 0; right: 0; pointer-events: auto; }
 
-        /* 3D Ветка с естественной текстурой */
+        /* Реалистичная кривая ветка (SVG-контур через clip-path) */
         .oak-branch { 
-            position: absolute; bottom: 35px; right: -25px; width: 330px; height: 42px; 
+            position: absolute; bottom: 15px; right: -25px; width: 340px; height: 90px; 
             background: 
-                radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.2) 0%, transparent 60%),
-                linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 100%),
-                repeating-linear-gradient(55deg, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 12px),
-                linear-gradient(80deg, #422a1d 0%, #2b1810 50%, #170d08 100%);
-            border-radius: 40px 10px 10px 40px; 
-            box-shadow: 0 30px 45px rgba(0,0,0,0.9), inset 0 3px 5px rgba(255,255,255,0.15); 
-            transform: rotate(-5deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
+                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 40%),
+                linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%),
+                repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px),
+                linear-gradient(80deg, #4a3424 0%, #2b1810 50%, #1a0f0a 100%);
+            /* Изломанный органический контур ветви */
+            clip-path: polygon(100% 20%, 90% 18%, 75% 25%, 50% 20%, 25% 28%, 5% 25%, 0% 30%, 0% 50%, 15% 55%, 35% 48%, 60% 55%, 85% 48%, 100% 50%);
+            filter: drop-shadow(0 25px 25px rgba(0,0,0,0.8));
+            transform: rotate(-2deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        .twig { position: absolute; background: linear-gradient(to bottom, #3b2216, #1a0d07); border-radius: 8px; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.8); }
-        .twig-1 { width: 50px; height: 10px; top: -16px; left: 80px; transform: rotate(-35deg); }
-        .twig-2 { width: 40px; height: 8px; bottom: -12px; left: 170px; transform: rotate(40deg); z-index: -1; }
-        .twig-3 { width: 35px; height: 7px; top: -10px; left: 230px; transform: rotate(-25deg); z-index: -1; }
-
-        .leaf { 
-            position: absolute; width: 36px; height: 18px; 
-            background: linear-gradient(135deg, #4CAF50, #1B5E20);
-            border-radius: 0 18px 0 18px; transform: scale(0); opacity: 0; 
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-        }
-        .leaf-1 { top: -5px; right: -22px; transform-origin: bottom left; }
-        .leaf-2 { top: 2px; right: -18px; transform-origin: top left; }
-        .leaf-3 { top: -8px; right: -25px; transform-origin: bottom left; }
-        .chat-opened .leaf { transform: scale(1) rotate(15deg); opacity: 1; }
-
         /* Контейнер совы */
         .owl-container {
-            position: absolute; bottom: 62px; left: 45px; width: 140px; height: 190px; cursor: pointer; pointer-events: auto;
+            position: absolute; bottom: 50px; left: 45px; width: 140px; height: 190px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000;
         }
 
         @keyframes naturalPerch {
             0%, 20% { transform: translateX(0) translateY(0); }
-            40%, 45% { transform: translateX(50px) translateY(-3px); }
-            70%, 75% { transform: translateX(90px) translateY(2px); }
-            100% { transform: translateX(25px) translateY(-1px); }
+            40%, 45% { transform: translateX(30px) translateY(-3px); }
+            70%, 75% { transform: translateX(70px) translateY(2px); }
+            100% { transform: translateX(15px) translateY(-1px); }
         }
 
         .stop-patrol { animation: none !important; }
 
-        /* Обертка физического тела совы */
+        /* Обертка физического тела совы (Только реалистичное фото) */
         .owl-body {
             position: relative; width: 100%; height: 100%;
             transform-origin: center bottom;
@@ -198,33 +182,30 @@
 
         @keyframes owlBreath {
             0%, 100% { transform: scaleY(1) scaleX(1); }
-            50% { transform: scaleY(1.025) scaleX(0.985); }
+            50% { transform: scaleY(1.02) scaleX(0.98); }
         }
 
         .owl-flip .owl-body { transform: scaleX(-1); }
 
-        /* Графика арта совы */
+        /* Графика реалистичного арта совы */
         .owl-custom-img {
             width: 100%; height: 100%; object-fit: contain; display: block;
             pointer-events: none; user-select: none;
-            filter: contrast(1.08) brightness(1.02);
         }
 
-        #owlSvgVisual {
-            width: 100%; height: 100%;
-            pointer-events: none;
+        /* Заглушка, если картинки нет (тоже аккуратная, без мультяшности) */
+        .owl-fallback-icon {
+            display: none; width: 100%; height: 100%; 
+            background: radial-gradient(circle, #3E2723, #1e0f0a); 
+            border-radius: 50%; border: 4px solid #C89D66;
+            color: #C89D66; text-align: center; line-height: 180px; font-size: 3rem; font-weight: bold;
         }
 
-        /* Моргание глаз для SVG */
-        .owl-container:not(.sleeping) .owl-svg-eyelid { animation: svgBlink 4.5s infinite; }
-        @keyframes svgBlink {
-            0%, 95%, 100% { transform: scaleY(0); }
-            97%, 99% { transform: scaleY(1); }
-        }
+        /* Иконка чата для мобилки (скрыта на десктопе) */
+        .mobile-chat-icon { display: none; }
 
         /* Сон */
         .sleeping { animation-play-state: paused; }
-        .sleeping .owl-svg-eyelid { transform: scaleY(1) !important; }
         .zzz-particles { position: absolute; top: -20px; left: 60px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,255,255,0.8); opacity: 0; pointer-events: none; z-index: 20; }
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
         @keyframes floatZzz {
@@ -233,21 +214,20 @@
             100% { opacity: 0; transform: translate(30px, -40px) scale(1.5); }
         }
 
-        /* Анимация Взлета (покидание сайта) */
+        /* Естественный плавный полет совы */
         .owl-flying { animation: flyAway 1.5s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
         @keyframes flyAway { 0% { transform: translateY(0); } 100% { transform: translateY(-500px) scale(0.3); opacity: 0; } }
 
-        /* Хищный плавный полет на бреющем вираже */
-        .owl-chaotic-flight .owl-body { animation: owlBankSwoop 1.3s infinite ease-in-out !important; }
-        @keyframes owlBankSwoop {
-            0% { transform: rotate(0deg) scale(1); }
-            30% { transform: rotate(-8deg) translateY(-8px) scale(1.05); }
-            65% { transform: rotate(6deg) translateY(6px) scale(0.95); }
-            100% { transform: rotate(0deg) scale(1); }
+        .owl-chaotic-flight .owl-body { animation: owlGlide 1.4s forwards ease-in-out !important; }
+        @keyframes owlGlide {
+            0% { transform: rotate(0deg); }
+            20% { transform: rotate(15deg) translateY(10px); }
+            80% { transform: rotate(-10deg) translateY(-5px); }
+            100% { transform: rotate(0deg); }
         }
 
         /* Пузырь */
-        .owl-bubble { position: absolute; bottom: 230px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
+        .owl-bubble { position: absolute; bottom: 250px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
         .owl-bubble.show { opacity: 1; transform: scale(1); }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
@@ -263,7 +243,7 @@
         .chat-opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-align: left; transition: 0.2s; }
         .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 14px; }
 
-        /* --- MOBILE ADAPTATION --- */
+        /* --- MOBILE ADAPTATION (Chat Button Only) --- */
         @media (max-width: 768px) {
             header { padding: 15px max(15px, env(safe-area-inset-right)) 15px max(15px, env(safe-area-inset-left)); flex-direction: column; gap: 15px; text-align: center; }
             .logo-group { width: 100%; align-items: center; }
@@ -290,11 +270,25 @@
             .tabs-nav::-webkit-scrollbar { display: none; }
             .tab-btn { flex-shrink: 0; scroll-snap-align: start; background: rgba(23, 31, 41, 0.8); border: 1px solid rgba(255,255,255,0.05); }
 
-            .owl-ecosystem { transform: scale(0.55); right: -130px; bottom: -100px; }
-            .owl-bubble { bottom: 350px; right: 210px; transform-origin: bottom right; }
+            /* Убираем сову и ветку на мобилках полностью */
+            .oak-branch, .zzz-particles, .owl-bubble, .owl-body { display: none !important; }
+            .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
             
+            /* Превращаем контейнер в стандартную плавающую кнопку чата (FAB) */
+            .owl-container {
+                position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
+                left: auto; width: 60px; height: 60px; border-radius: 50%;
+                background: var(--ranepa-red);
+                box-shadow: 0 5px 20px rgba(202, 15, 62, 0.6);
+                display: flex; justify-content: center; align-items: center;
+                animation: none !important; pointer-events: auto; z-index: 10000;
+            }
+            
+            /* Иконка чата внутри кнопки */
+            .mobile-chat-icon { display: block; width: 28px; height: 28px; fill: #fff; }
+
             /* Chat protected from safe areas and keyboard */
-            .owl-chat-panel { width: calc(100% - 30px); left: 15px; right: 15px; bottom: max(15px, env(safe-area-inset-bottom)); height: min(60vh, 450px); }
+            .owl-chat-panel { width: calc(100% - 30px); left: 15px; right: 15px; bottom: max(95px, calc(env(safe-area-inset-bottom) + 95px)); height: min(60vh, 450px); }
         }
     </style>
 </head>
@@ -590,7 +584,7 @@
             <div class="card">
                 <div class="card-meta"><span class="price">13 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c8Title">1С:Предприятие & Бухучет</h3>
-                <p data-i18n="c8Desc">Полный цикл automated учета на малых предприятиях и для ИП.</p>
+                <p data-i18n="c8Desc">Полный цикл автоматизированного учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
                     <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
@@ -740,91 +734,23 @@
     </div>
 
     <div class="owl-ecosystem" id="owlContainer">
-        <div class="oak-branch">
-            <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
-            <div class="twig twig-2"><div class="leaf leaf-2"></div></div>
-            <div class="twig twig-3"><div class="leaf leaf-3"></div></div>
-        </div>
+        <div class="oak-branch"></div>
 
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <!-- Кастомная сова по арту (подхватит owl.png если загружен в /img) -->
-                <img src="./img/owl.png" alt="Сова" class="owl-custom-img" onerror="this.style.display='none'; document.getElementById('owlSvgVisual').style.display='block';">
-
-                <!-- Высокодетализированный векторный филин (в стиле арта с янтарными глазами) -->
-                <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" style="display:none;">
-                    <defs>
-                        <radialGradient id="eyeAmber" cx="45%" cy="45%" r="55%">
-                            <stop offset="0%" stop-color="#FFF275"/>
-                            <stop offset="40%" stop-color="#FF9100"/>
-                            <stop offset="85%" stop-color="#DD2C00"/>
-                            <stop offset="100%" stop-color="#4E1A00"/>
-                        </radialGradient>
-                        <linearGradient id="bodyPlumage" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#4a2c20"/>
-                            <stop offset="40%" stop-color="#2c1a13"/>
-                            <stop offset="80%" stop-color="#190e0a"/>
-                        </linearGradient>
-                        <linearGradient id="wingBurgundy" x1="0%" y1="0%" x2="80%" y2="100%">
-                            <stop offset="0%" stop-color="#6B1D28"/>
-                            <stop offset="50%" stop-color="#3A1016"/>
-                            <stop offset="100%" stop-color="#1D080B"/>
-                        </linearGradient>
-                        <radialGradient id="breastPattern" cx="50%" cy="30%" r="70%">
-                            <stop offset="0%" stop-color="#EAD7B8"/>
-                            <stop offset="45%" stop-color="#B8936D"/>
-                            <stop offset="85%" stop-color="#5C3826"/>
-                        </radialGradient>
-                    </defs>
-
-                    <polygon points="85,225 105,255 125,225" fill="#1b100a"/>
-                    <ellipse cx="108" cy="155" rx="55" ry="78" fill="url(#bodyPlumage)"/>
-                    <ellipse cx="104" cy="162" rx="42" ry="60" fill="url(#breastPattern)"/>
-                    <path d="M 85,135 Q 104,142 123,135 Q 104,148 85,135 Z" fill="#2b1810" opacity="0.75"/>
-                    <path d="M 82,152 Q 104,160 126,152 Q 104,166 82,152 Z" fill="#2b1810" opacity="0.75"/>
-                    <path d="M 86,170 Q 104,178 122,170 Q 104,184 86,170 Z" fill="#2b1810" opacity="0.75"/>
-                    <path d="M 90,188 Q 104,196 118,188 Q 104,202 90,188 Z" fill="#2b1810" opacity="0.75"/>
-
-                    <path d="M 58,110 C 45,140 48,200 88,235 C 75,190 70,140 85,115 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5"/>
-                    <path d="M 68,130 C 58,155 60,195 82,215" stroke="#C89D66" stroke-width="2.5" fill="none" opacity="0.6"/>
-                    <path d="M 76,140 C 68,165 70,195 86,210" stroke="#C89D66" stroke-width="2" fill="none" opacity="0.5"/>
-
-                    <polygon points="78,65 52,18 90,52" fill="#22120b" stroke="#120804" stroke-width="1.5"/>
-                    <polygon points="126,62 152,15 114,50" fill="#2c160e" stroke="#120804" stroke-width="1.5"/>
-
-                    <ellipse cx="102" cy="82" rx="42" ry="38" fill="#382117"/>
-                    <ellipse cx="88" cy="80" rx="20" ry="24" fill="#B08D6D" opacity="0.85"/>
-                    <ellipse cx="120" cy="80" rx="20" ry="24" fill="#B08D6D" opacity="0.85"/>
-                    <ellipse cx="88" cy="80" rx="16" ry="20" fill="#21120b"/>
-                    <ellipse cx="120" cy="80" rx="16" ry="20" fill="#21120b"/>
-
-                    <circle cx="89" cy="80" r="11.5" fill="url(#eyeAmber)"/>
-                    <circle cx="119" cy="80" r="11.5" fill="url(#eyeAmber)"/>
-                    <circle cx="89" cy="80" r="6.5" fill="#050505"/>
-                    <circle cx="119" cy="80" r="6.5" fill="#050505"/>
-                    <circle cx="86.5" cy="77" r="2.2" fill="#ffffff"/>
-                    <circle cx="116.5" cy="77" r="2.2" fill="#ffffff"/>
-
-                    <rect class="owl-svg-eyelid" x="76" y="67" width="26" height="26" fill="#361f15" style="transform-origin: 89px 68px; transform: scaleY(0);"/>
-                    <rect class="owl-svg-eyelid" x="106" y="67" width="26" height="26" fill="#361f15" style="transform-origin: 119px 68px; transform: scaleY(0);"/>
-
-                    <path d="M 89,68 Q 104,74 119,68" stroke="#f4ecd8" stroke-width="2.5" fill="none"/>
-                    <polygon points="101,80 107,80 104,103" fill="#151515"/>
-
-                    <g fill="#211713">
-                        <ellipse cx="88" cy="226" rx="12" ry="7" fill="#C29B6C"/>
-                        <path d="M 80,227 Q 78,236 82,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-                        <path d="M 87,228 Q 87,238 90,239" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-                        <path d="M 94,227 Q 96,236 98,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-
-                        <ellipse cx="120" cy="226" rx="12" ry="7" fill="#C29B6C"/>
-                        <path d="M 112,227 Q 110,236 114,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-                        <path d="M 119,228 Q 119,238 122,239" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-                        <path d="M 126,227 Q 128,236 130,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-                    </g>
-                </svg>
+                <!-- Реалистичный арт совы (Только это изображение, SVG удален) -->
+                <img src="./img/owl.png" alt="Сова" class="owl-custom-img" onerror="this.style.display='none'; document.getElementById('owlFallbackIcon').style.display='block';">
+                
+                <!-- Заглушка, если картинка owl.png еще не загружена -->
+                <div id="owlFallbackIcon" class="owl-fallback-icon">🦉</div>
             </div>
+
+            <!-- Иконка чата (отображается только на мобильных экранах) -->
+            <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
+            </svg>
         </div>
 
         <div class="owl-bubble" id="owlBubble" onclick="toggleChat()" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
@@ -995,12 +921,12 @@
         function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
         function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
 
-        // --- ЛОГИКА СОВЫ ---
+        // --- ЛОГИКА СОВЫ И КНОПКИ ЧАТА ---
         setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7000);
         setTimeout(() => {
             const chatPanel = document.getElementById('owlChat');
             const owlBubble = document.getElementById('owlBubble');
-            if(!chatPanel.classList.contains('active') && !isOwlFlying) {
+            if(!chatPanel.classList.contains('active') && !isOwlFlying && window.innerWidth > 768) {
                 owlBubble.classList.add('show');
                 setTimeout(() => owlBubble.classList.remove('show'), 7000);
             }
@@ -1008,9 +934,11 @@
 
         let sleepTimer;
         function startSleepCycle() {
+            if (window.innerWidth <= 768) return; // На мобильном сна нет
             clearInterval(sleepTimer);
             sleepTimer = setInterval(() => {
                 const owlSprite = document.getElementById('owlSprite');
+                if(!owlSprite) return;
                 owlSprite.classList.add('sleeping');
                 setTimeout(() => {
                     owlSprite.classList.remove('sleeping');
@@ -1031,12 +959,12 @@
             if(chat.classList.contains('active')) {
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                if (!owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
+                if (owlSprite && !owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
                     owlSprite.classList.remove('stop-patrol');
                     startSleepCycle();
                 }
             }
-            bubble.classList.remove('show');
+            if(bubble) bubble.classList.remove('show');
 
             isScrolling = setTimeout(function() {}, 200);
         }, false);
@@ -1052,7 +980,7 @@
                 if(chat.classList.contains('active')) {
                     chat.classList.remove('active');
                     ecosystem.classList.remove('chat-opened');
-                    if (!owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
+                    if (owlSprite && !owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
                         owlSprite.classList.remove('stop-patrol');
                         startSleepCycle();
                     }
@@ -1075,19 +1003,19 @@
             if (chat.classList.contains('active')) {
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                if (!owlSprite.parentElement.classList.contains('card')) {
+                if (owlSprite && !owlSprite.parentElement.classList.contains('card')) {
                     owlSprite.classList.remove('stop-patrol');
                     startSleepCycle();
                 }
             } else {
                 clearInterval(sleepTimer);
-                owlSprite.classList.remove('sleeping');
+                if(owlSprite) owlSprite.classList.remove('sleeping');
                 chat.classList.add('active');
                 ecosystem.classList.add('chat-opened');
-                if (!owlSprite.parentElement.classList.contains('card')) {
+                if (owlSprite && !owlSprite.parentElement.classList.contains('card')) {
                     owlSprite.classList.add('stop-patrol');
                 }
-                bubble.classList.remove('show');
+                if(bubble) bubble.classList.remove('show');
                 resetInactivity();
             }
         }
@@ -1115,13 +1043,38 @@
             `);
         }
 
-        // --- ХИЩНЫЙ ПЛАВНЫЙ ПОЛЕТ СОВЫ К КАРТОЧКЕ И ОБРАТНО ---
+        // --- УНИВЕРСАЛЬНАЯ ЛОГИКА НАВИГАЦИИ СОВЫ ---
         function flyOwlToTab(tabId) {
             if (isOwlFlying) return;
+
+            const isMobile = window.innerWidth <= 768;
+
+            // --- МОБИЛЬНЫЙ СЦЕНАРИЙ (Без полетов совы) ---
+            if (isMobile) {
+                // Просто открываем нужный таб и плавно скроллим к нему
+                filterPrograms(new Event('click'), tabId);
+                const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
+                let buttons = document.getElementsByClassName("tab-btn");
+                if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
+
+                // Закрываем окно чата
+                let chat = document.getElementById('owlChat');
+                let ecosystem = document.getElementById('owlContainer');
+                chat.classList.remove('active');
+                ecosystem.classList.remove('chat-opened');
+
+                const section = document.getElementById('programsSection');
+                const yOffset = -20;
+                const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({top: y, behavior: 'smooth'});
+                return;
+            }
+
+            // --- ДЕСКТОПНЫЙ СЦЕНАРИЙ (Плавный полет совы) ---
             isOwlFlying = true;
             clearTimeout(owlReturnTimer);
 
-            // Разблокировка звука
+            // Разблокировка звука (политика браузеров требует клика)
             const audio = document.getElementById('hootSound');
             if(audio) {
                 audio.volume = 0;
@@ -1153,7 +1106,7 @@
             const targetCard = targetTab.querySelector('.card');
 
             const section = document.getElementById('programsSection');
-            const yOffset = -20; // Оптимизировано для центровки на мобильных
+            const yOffset = -80; 
             const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({top: y, behavior: 'smooth'});
 
@@ -1162,7 +1115,6 @@
             setTimeout(() => {
                 const startRect = owlContainer.getBoundingClientRect();
                 const targetRect = targetCard.getBoundingClientRect();
-                const isMobile = window.innerWidth <= 768;
 
                 document.body.appendChild(owlContainer);
                 owlContainer.style.position = 'fixed';
@@ -1174,17 +1126,13 @@
 
                 void owlContainer.offsetWidth;
 
-                const offsetX = isMobile ? 40 : 90;
-                const offsetY = isMobile ? 80 : 120;
-                const scaleFactor = isMobile ? 0.6 : 0.85;
+                const deltaX = (targetRect.right - 90) - startRect.left;
+                const deltaY = (targetRect.top - 120) - startRect.top;
 
-                const deltaX = (targetRect.right - offsetX) - startRect.left;
-                const deltaY = (targetRect.top - offsetY) - startRect.top;
-
-                // Хищный дугообразный разгон
+                // Хищный дугообразный разгон (Свуп)
                 owlContainer.style.transition = 'transform 1.4s cubic-bezier(0.34, 1.25, 0.64, 1)';
                 owlContainer.classList.add('owl-chaotic-flight');
-                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
+                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.85)`;
 
                 setTimeout(() => {
                     owlContainer.classList.remove('owl-chaotic-flight');
@@ -1197,9 +1145,9 @@
                     owlContainer.style.position = 'absolute';
                     owlContainer.style.left = 'auto';
                     owlContainer.style.bottom = 'auto';
-                    owlContainer.style.right = isMobile ? '5px' : '15px';
-                    owlContainer.style.top = isMobile ? '-80px' : '-120px';
-                    owlContainer.style.transform = `scale(${scaleFactor})`;
+                    owlContainer.style.right = '15px';
+                    owlContainer.style.top = '-120px';
+                    owlContainer.style.transform = 'scale(0.85)';
 
                     isOwlFlying = false;
 
@@ -1214,7 +1162,7 @@
         }
 
         function returnOwlToBranch() {
-            if (isOwlFlying) return;
+            if (isOwlFlying || window.innerWidth <= 768) return;
             isOwlFlying = true;
 
             const owlContainer = document.getElementById('owlSprite');
@@ -1229,7 +1177,6 @@
 
             const startRect = owlContainer.getBoundingClientRect();
             const branchRect = branch.getBoundingClientRect();
-            const isMobile = window.innerWidth <= 768;
 
             owlContainer.classList.add('owl-flip');
 
@@ -1239,12 +1186,12 @@
             owlContainer.style.top = startRect.top + 'px';
             owlContainer.style.bottom = 'auto';
             owlContainer.style.right = 'auto';
-            owlContainer.style.transform = `scale(${isMobile ? 0.6 : 0.85}) scaleX(-1)`;
+            owlContainer.style.transform = 'scale(0.85) scaleX(-1)';
 
             void owlContainer.offsetWidth;
 
-            const targetX = branchRect.left + (isMobile ? 30 : 55); 
-            const targetY = branchRect.top - (isMobile ? 70 : 140);
+            const targetX = branchRect.left + 55; 
+            const targetY = branchRect.top - 140;
 
             const deltaX = targetX - startRect.left;
             const deltaY = targetY - startRect.top;
