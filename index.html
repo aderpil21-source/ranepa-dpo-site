@@ -25,20 +25,20 @@
 
         #progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red)); width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 15px var(--ranepa-red); }
 
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 8vw; font-weight: 900; color: rgba(255,255,255,0.015); white-space: nowrap; user-select: none; pointer-events: auto; animation: heartbeat 3s infinite ease-in-out; }
-        .bg-tag:nth-child(1) { animation-delay: 0s; }
-        .bg-tag:nth-child(2) { animation-delay: 1s; }
-        .bg-tag:nth-child(3) { animation-delay: 2s; }
-        .bg-tag:hover { color: rgba(255,255,255,0.05); }
+        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 8vw; font-weight: 900; color: rgba(255,255,255,0.02); white-space: nowrap; user-select: none; pointer-events: auto; animation: heartbeat 3s infinite ease-in-out; }
+        .bg-tag:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+        .bg-tag:nth-child(2) { top: 50%; left: 55%; animation-delay: 1s; }
+        .bg-tag:nth-child(3) { top: 75%; left: 15%; animation-delay: 2s; }
+        .bg-tag:hover { color: rgba(255,255,255,0.06); }
 
         @keyframes heartbeat {
-            0% { transform: scale(1); opacity: 0.015; }
-            15% { transform: scale(1.05); opacity: 0.03; }
-            30% { transform: scale(1); opacity: 0.015; }
-            45% { transform: scale(1.08); opacity: 0.04; }
-            60% { transform: scale(1); opacity: 0.015; }
-            100% { transform: scale(1); opacity: 0.015; }
+            0% { transform: scale(1); opacity: 0.02; }
+            15% { transform: scale(1.05); opacity: 0.04; }
+            30% { transform: scale(1); opacity: 0.02; }
+            45% { transform: scale(1.08); opacity: 0.05; }
+            60% { transform: scale(1); opacity: 0.02; }
+            100% { transform: scale(1); opacity: 0.02; }
         }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; background-color: var(--ranepa-deep); }
@@ -51,7 +51,8 @@
         header { background: rgba(10, 15, 24, 0.95); backdrop-filter: blur(20px); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; flex-shrink: 1; min-width: auto; max-width: 100%; }
-        .logo-group img { height: 160px; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 5px; display: block; }
+        /* Чистое отображение логотипа без фоновых рамок и искажений */
+        .logo-group img { height: 75px; width: auto; max-width: 100%; object-fit: contain; display: block; background: transparent !important; border: none !important; box-shadow: none !important; }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 5px; }
 
         .header-controls { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
@@ -66,7 +67,7 @@
         .header-nav-btn:hover { background: #FF5F61; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(202, 15, 62, 0.5); }
 
         .header-kadry { flex-shrink: 0; display: flex; align-items: center; }
-        .header-kadry img { height: 150px; width: auto; max-width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); }
+        .header-kadry img { height: 65px; width: auto; max-width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); background: transparent !important; }
 
         .hero { padding: 80px max(20px, env(safe-area-inset-right)) 40px max(20px, env(safe-area-inset-left)); text-align: center; position: relative; z-index: 2; }
         .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem, 6vw, 3.5rem); font-weight: 900; margin-bottom: 20px; line-height: 1.2; letter-spacing: -1px; }
@@ -137,34 +138,50 @@
         .close-modal { margin-top: 20px; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-decoration: underline; }
         .close-modal:hover { color: var(--ranepa-red); }
 
-        /* --- ГРАФИКА И ЭКОСИСТЕМА СОВЫ (ДЕСКТОП) --- */
+        /* --- ЭКОСИСТЕМА СОВЫ И ВЕТКА (ВЕКТОРНОЕ ИДЕАЛЬНОЕ КАЧЕСТВО ДЕСКТОП) --- */
         .owl-ecosystem { position: fixed; bottom: -240px; right: -250px; width: 380px; height: 320px; z-index: 9999; transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
         .owl-ecosystem.visible { bottom: 0; right: 0; pointer-events: auto; }
 
-        /* Реалистичная кривая ветка */
         .oak-branch { 
-            position: absolute; bottom: 15px; right: -25px; width: 340px; height: 90px; 
+            position: absolute; bottom: 35px; right: -25px; width: 330px; height: 42px; 
             background: 
-                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 40%),
-                linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%),
-                repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px),
-                linear-gradient(80deg, #4a3424 0%, #2b1810 50%, #1a0f0a 100%);
-            clip-path: polygon(100% 20%, 90% 18%, 75% 25%, 50% 20%, 25% 28%, 5% 25%, 0% 30%, 0% 50%, 15% 55%, 35% 48%, 60% 55%, 85% 48%, 100% 50%);
-            filter: drop-shadow(0 25px 25px rgba(0,0,0,0.8));
-            transform: rotate(-2deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
+                radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.2) 0%, transparent 60%),
+                linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 100%),
+                repeating-linear-gradient(55deg, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 12px),
+                linear-gradient(80deg, #422a1d 0%, #2b1810 50%, #170d08 100%);
+            border-radius: 40px 10px 10px 40px; 
+            box-shadow: 0 30px 45px rgba(0,0,0,0.9), inset 0 3px 5px rgba(255,255,255,0.15); 
+            transform: rotate(-5deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
+        .twig { position: absolute; background: linear-gradient(to bottom, #3b2216, #1a0d07); border-radius: 8px; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.8); }
+        .twig-1 { width: 50px; height: 10px; top: -16px; left: 80px; transform: rotate(-35deg); }
+        .twig-2 { width: 40px; height: 8px; bottom: -12px; left: 170px; transform: rotate(40deg); z-index: -1; }
+        .twig-3 { width: 35px; height: 7px; top: -10px; left: 230px; transform: rotate(-25deg); z-index: -1; }
+
+        .leaf { 
+            position: absolute; width: 36px; height: 18px; 
+            background: linear-gradient(135deg, #4CAF50, #1B5E20);
+            border-radius: 0 18px 0 18px; transform: scale(0); opacity: 0; 
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+        }
+        .leaf-1 { top: -5px; right: -22px; transform-origin: bottom left; }
+        .leaf-2 { top: 2px; right: -18px; transform-origin: top left; }
+        .leaf-3 { top: -8px; right: -25px; transform-origin: bottom left; }
+        .chat-opened .leaf { transform: scale(1) rotate(15deg); opacity: 1; }
+
         .owl-container {
-            position: absolute; bottom: 50px; left: 45px; width: 140px; height: 190px; cursor: pointer; pointer-events: auto;
+            position: absolute; bottom: 62px; left: 45px; width: 140px; height: 190px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000;
         }
 
         @keyframes naturalPerch {
             0%, 20% { transform: translateX(0) translateY(0); }
-            40%, 45% { transform: translateX(30px) translateY(-3px); }
-            70%, 75% { transform: translateX(70px) translateY(2px); }
-            100% { transform: translateX(15px) translateY(-1px); }
+            40%, 45% { transform: translateX(50px) translateY(-3px); }
+            70%, 75% { transform: translateX(90px) translateY(2px); }
+            100% { transform: translateX(25px) translateY(-1px); }
         }
 
         .stop-patrol { animation: none !important; }
@@ -179,35 +196,24 @@
 
         @keyframes owlBreath {
             0%, 100% { transform: scaleY(1) scaleX(1); }
-            50% { transform: scaleY(1.02) scaleX(0.98); }
+            50% { transform: scaleY(1.025) scaleX(0.985); }
         }
 
         .owl-flip .owl-body { transform: scaleX(-1); }
 
-        .owl-custom-img {
-            width: 100%; height: 100%; object-fit: contain; display: block;
-            pointer-events: none; user-select: none;
-            transition: transform 0.15s ease;
+        #owlSvgVisual {
+            width: 100%; height: 100%;
+            pointer-events: none;
         }
 
-        .owl-chaotic-flight .owl-custom-img {
-            animation: pseudoFlap 0.12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        .owl-container:not(.sleeping) .owl-svg-eyelid { animation: svgBlink 4.5s infinite; }
+        @keyframes svgBlink {
+            0%, 95%, 100% { transform: scaleY(0); }
+            97%, 99% { transform: scaleY(1); }
         }
-        @keyframes pseudoFlap {
-            0% { transform: scaleX(1) scaleY(1); }
-            100% { transform: scaleX(0.75) scaleY(1.05) translateY(-3px); }
-        }
-
-        .owl-fallback-icon {
-            display: none; width: 100%; height: 100%; 
-            background: radial-gradient(circle, #3E2723, #1e0f0a); 
-            border-radius: 50%; border: 4px solid #C89D66;
-            color: #C89D66; text-align: center; line-height: 180px; font-size: 3rem; font-weight: bold;
-        }
-
-        .mobile-chat-icon { display: none; }
 
         .sleeping { animation-play-state: paused; }
+        .sleeping .owl-svg-eyelid { transform: scaleY(1) !important; }
         .zzz-particles { position: absolute; top: -20px; left: 60px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,255,255,0.8); opacity: 0; pointer-events: none; z-index: 20; }
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
         @keyframes floatZzz {
@@ -216,15 +222,18 @@
             100% { opacity: 0; transform: translate(30px, -40px) scale(1.5); }
         }
 
-        .owl-chaotic-flight .owl-body { animation: owlGlide 1.4s forwards ease-in-out !important; }
-        @keyframes owlGlide {
-            0% { transform: rotate(0deg); }
-            20% { transform: rotate(15deg) translateY(10px); }
-            80% { transform: rotate(-10deg) translateY(-5px); }
-            100% { transform: rotate(0deg); }
+        .owl-flying { animation: flyAway 1.5s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
+        @keyframes flyAway { 0% { transform: translateY(0); } 100% { transform: translateY(-500px) scale(0.3); opacity: 0; } }
+
+        .owl-chaotic-flight .owl-body { animation: owlBankSwoop 1.3s infinite ease-in-out !important; }
+        @keyframes owlBankSwoop {
+            0% { transform: rotate(0deg) scale(1); }
+            30% { transform: rotate(-8deg) translateY(-8px) scale(1.05); }
+            65% { transform: rotate(6deg) translateY(6px) scale(0.95); }
+            100% { transform: rotate(0deg) scale(1); }
         }
 
-        .owl-bubble { position: absolute; bottom: 250px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
+        .owl-bubble { position: absolute; bottom: 230px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
         .owl-bubble.show { opacity: 1; transform: scale(1); }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
@@ -239,16 +248,18 @@
         .chat-opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-align: left; transition: 0.2s; }
         .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 14px; }
 
-        /* --- MOBILE ADAPTATION (Chat Button Only) --- */
+        .mobile-chat-icon { display: none; }
+
+        /* --- MOBILE ADAPTATION --- */
         @media (max-width: 768px) {
             header { padding: 15px max(15px, env(safe-area-inset-right)) 15px max(15px, env(safe-area-inset-left)); flex-direction: column; gap: 15px; text-align: center; }
             .logo-group { width: 100%; align-items: center; }
-            .logo-group img { height: auto !important; max-height: 80px; width: auto; max-width: 100%; }
+            .logo-group img { height: 60px !important; width: auto; }
             .logo-subtitle { font-size: 0.7rem; }
             .header-controls { justify-content: center; width: 100%; flex-wrap: wrap; }
             .header-nav { justify-content: center; width: 100%; gap: 10px; }
             .header-kadry { width: 100%; justify-content: center; margin-top: 5px; }
-            .header-kadry img { height: auto !important; max-height: 70px; width: auto; max-width: 100%; }
+            .header-kadry img { height: 50px !important; width: auto; }
 
             .tabs-nav {
                 flex-wrap: nowrap;
@@ -265,8 +276,8 @@
             .tabs-nav::-webkit-scrollbar { display: none; }
             .tab-btn { flex-shrink: 0; scroll-snap-align: start; background: rgba(23, 31, 41, 0.8); border: 1px solid rgba(255,255,255,0.05); }
 
-            .oak-branch, .zzz-particles, .owl-bubble, .owl-body { display: none !important; }
             .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
+            .oak-branch, .zzz-particles, .owl-bubble, .owl-body { display: none !important; }
             
             .owl-container {
                 position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
@@ -284,15 +295,14 @@
 </head>
 <body>
 
-    <!-- Звук совы -->
     <audio id="hootSound" src="https://actions.google.com/sounds/v1/animals/owl_hoot.ogg" preload="auto"></audio>
 
     <div id="progress-bar"></div>
 
     <div class="bg-tags-container" id="bgTags">
-        <div class="bg-tag" style="top: 15%; left: 10%;" data-speed="2">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
-        <div class="bg-tag" style="top: 50%; left: 60%;" data-speed="-1">#БЫСТРЫЙ_СТАРТ</div>
-        <div class="bg-tag" style="top: 80%; left: 5%;" data-speed="3">#СИСТЕМНЫЙ_БИЗНЕС</div>
+        <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
+        <div class="bg-tag">#БЫСТРЫЙ_СТАРТ</div>
+        <div class="bg-tag">#СИСТЕМНЫЙ_БИЗНЕС</div>
     </div>
 
     <div class="ambient-3d-bg">
@@ -343,7 +353,7 @@
 
         <div id="tab-all" class="tab-content active">
             <div class="card">
-                <div class="card-meta"><span class="price">56 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours1">506 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">56 000 ₽</span><span class="hours" data-i18n="cardHours1">506 ч.</span></div>
                 <h3 data-i18n="c1Title">Государственное управление</h3>
                 <p data-i18n="c1Desc">Фундаментальная база для уверенного старта и стремительного роста на государственной службе.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -358,7 +368,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours2">144 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
                 <h3 data-i18n="c2Title">Управление закупками</h3>
                 <p data-i18n="c2Desc">Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -373,7 +383,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">10 500 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours3">36 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">10 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c3Title">Профилактика терроризма</h3>
                 <p data-i18n="c3Desc">Обязательный минимум для руководителей и ответственных специалистов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -388,7 +398,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">38 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours4">98 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">38 000 ₽</span><span class="hours" data-i18n="cardHours4">98 ч.</span></div>
                 <h3 data-i18n="c4Title">Искусственный Интеллект</h3>
                 <p data-i18n="c4Desc">Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -403,7 +413,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">46 300 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours5">252 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">46 300 ₽</span><span class="hours" data-i18n="cardHours5">252 ч.</span></div>
                 <h3 data-i18n="c5Title">Управление бизнесом</h3>
                 <p data-i18n="c5Desc">Программа для предпринимателей. От запуска с нуля до систематизации процессов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -418,7 +428,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours2">144 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
                 <h3 data-i18n="c6Title">Менеджмент гостеприимства</h3>
                 <p data-i18n="c6Desc">Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -433,7 +443,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">60 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours6">150 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">60 000 ₽</span><span class="hours" data-i18n="cardHours6">150 ч.</span></div>
                 <h3 data-i18n="c7Title">Повар (3-4 разряд)</h3>
                 <p data-i18n="c7Desc">Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -448,9 +458,9 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">13 500 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours3">36 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">13 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c8Title">1С:Предприятие & Бухучет</h3>
-                <p data-i18n="c8Desc">Полный цикл automated учета на малых предприятиях и для ИП.</p>
+                <p data-i18n="c8Desc">Полный цикл автоматизированного учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
                     <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
@@ -724,19 +734,88 @@
     </div>
 
     <div class="owl-ecosystem" id="owlContainer">
-        <div class="oak-branch"></div>
+        <div class="oak-branch">
+            <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
+            <div class="twig twig-2"><div class="leaf leaf-2"></div></div>
+            <div class="twig twig-3"><div class="leaf leaf-3"></div></div>
+        </div>
 
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <!-- Canvas-скрипт автоматически удаляет черный фон у owl.jpg на лету -->
-                <canvas id="owlCanvas" style="width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; user-select: none;"></canvas>
-                <img id="sourceOwl" src="./img/owl.jpg" crossorigin="anonymous" style="display:none;" alt="Сова">
-                
-                <div id="owlFallbackIcon" class="owl-fallback-icon" style="display:none;">🦉</div>
+                <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="eyeAmber" cx="45%" cy="45%" r="55%">
+                            <stop offset="0%" stop-color="#FFF275"/>
+                            <stop offset="40%" stop-color="#FF9100"/>
+                            <stop offset="85%" stop-color="#DD2C00"/>
+                            <stop offset="100%" stop-color="#4E1A00"/>
+                        </radialGradient>
+                        <linearGradient id="bodyPlumage" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#4a2c20"/>
+                            <stop offset="40%" stop-color="#2c1a13"/>
+                            <stop offset="80%" stop-color="#190e0a"/>
+                        </linearGradient>
+                        <linearGradient id="wingBurgundy" x1="0%" y1="0%" x2="80%" y2="100%">
+                            <stop offset="0%" stop-color="#6B1D28"/>
+                            <stop offset="50%" stop-color="#3A1016"/>
+                            <stop offset="100%" stop-color="#1D080B"/>
+                        </linearGradient>
+                        <radialGradient id="breastPattern" cx="50%" cy="30%" r="70%">
+                            <stop offset="0%" stop-color="#EAD7B8"/>
+                            <stop offset="45%" stop-color="#B8936D"/>
+                            <stop offset="85%" stop-color="#5C3826"/>
+                        </radialGradient>
+                    </defs>
+
+                    <polygon points="85,225 105,255 125,225" fill="#1b100a"/>
+                    <ellipse cx="108" cy="155" rx="55" ry="78" fill="url(#bodyPlumage)"/>
+                    <ellipse cx="104" cy="162" rx="42" ry="60" fill="url(#breastPattern)"/>
+                    <path d="M 85,135 Q 104,142 123,135 Q 104,148 85,135 Z" fill="#2b1810" opacity="0.75"/>
+                    <path d="M 82,152 Q 104,160 126,152 Q 104,166 82,152 Z" fill="#2b1810" opacity="0.75"/>
+                    <path d="M 86,170 Q 104,178 122,170 Q 104,184 86,170 Z" fill="#2b1810" opacity="0.75"/>
+                    <path d="M 90,188 Q 104,196 118,188 Q 104,202 90,188 Z" fill="#2b1810" opacity="0.75"/>
+
+                    <path d="M 58,110 C 45,140 48,200 88,235 C 75,190 70,140 85,115 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5"/>
+                    <path d="M 68,130 C 58,155 60,195 82,215" stroke="#C89D66" stroke-width="2.5" fill="none" opacity="0.6"/>
+                    <path d="M 76,140 C 68,165 70,195 86,210" stroke="#C89D66" stroke-width="2" fill="none" opacity="0.5"/>
+
+                    <polygon points="78,65 52,18 90,52" fill="#22120b" stroke="#120804" stroke-width="1.5"/>
+                    <polygon points="126,62 152,15 114,50" fill="#2c160e" stroke="#120804" stroke-width="1.5"/>
+
+                    <ellipse cx="102" cy="82" rx="42" ry="38" fill="#382117"/>
+                    <ellipse cx="88" cy="80" rx="20" ry="24" fill="#B08D6D" opacity="0.85"/>
+                    <ellipse cx="120" cy="80" rx="20" ry="24" fill="#B08D6D" opacity="0.85"/>
+                    <ellipse cx="88" cy="80" rx="16" ry="20" fill="#21120b"/>
+                    <ellipse cx="120" cy="80" rx="16" ry="20" fill="#21120b"/>
+
+                    <circle cx="89" cy="80" r="11.5" fill="url(#eyeAmber)"/>
+                    <circle cx="119" cy="80" r="11.5" fill="url(#eyeAmber)"/>
+                    <circle cx="89" cy="80" r="6.5" fill="#050505"/>
+                    <circle cx="119" cy="80" r="6.5" fill="#050505"/>
+                    <circle cx="86.5" cy="77" r="2.2" fill="#ffffff"/>
+                    <circle cx="116.5" cy="77" r="2.2" fill="#ffffff"/>
+
+                    <rect class="owl-svg-eyelid" x="76" y="67" width="26" height="26" fill="#361f15" style="transform-origin: 89px 68px; transform: scaleY(0);"/>
+                    <rect class="owl-svg-eyelid" x="106" y="67" width="26" height="26" fill="#361f15" style="transform-origin: 119px 68px; transform: scaleY(0);"/>
+
+                    <path d="M 89,68 Q 104,74 119,68" stroke="#f4ecd8" stroke-width="2.5" fill="none"/>
+                    <polygon points="101,80 107,80 104,103" fill="#151515"/>
+
+                    <g fill="#211713">
+                        <ellipse cx="88" cy="226" rx="12" ry="7" fill="#C29B6C"/>
+                        <path d="M 80,227 Q 78,236 82,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                        <path d="M 87,228 Q 87,238 90,239" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                        <path d="M 94,227 Q 96,236 98,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+
+                        <ellipse cx="120" cy="226" rx="12" ry="7" fill="#C29B6C"/>
+                        <path d="M 112,227 Q 110,236 114,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                        <path d="M 119,228 Q 119,238 122,239" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                        <path d="M 126,227 Q 128,236 130,238" stroke="#111" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+                    </g>
+                </svg>
             </div>
 
-            <!-- Иконка чата (для мобильных) -->
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
                 <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
@@ -759,41 +838,6 @@
     </div>
 
     <script>
-        // Автоматический обработчик Canvas для удаления черного фона owl.jpg на лету
-        window.addEventListener('DOMContentLoaded', () => {
-            const img = document.getElementById('sourceOwl');
-            const canvas = document.getElementById('owlCanvas');
-            const ctx = canvas.getContext('2d');
-
-            img.onload = function() {
-                canvas.width = img.naturalWidth;
-                canvas.height = img.naturalHeight;
-                ctx.drawImage(img, 0, 0);
-                
-                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                let data = imgData.data;
-                
-                for (let i = 0; i < data.length; i += 4) {
-                    let r = data[i], g = data[i+1], b = data[i+2];
-                    // Если пиксель темно-черный, делаем его прозрачным
-                    if (r < 25 && g < 25 && b < 25) {
-                        data[i+3] = 0; // Alpha = 0
-                    }
-                }
-                ctx.putImageData(imgData, 0, 0);
-            };
-
-            img.onerror = function() {
-                canvas.style.display = 'none';
-                document.getElementById('owlFallbackIcon').style.display = 'block';
-            };
-            
-            // Если картинка уже в кеше браузера
-            if (img.complete) {
-                img.onload();
-            }
-        });
-
         let currentLang = 'ru';
         let isOwlFlying = false;
         let owlReturnTimer;
