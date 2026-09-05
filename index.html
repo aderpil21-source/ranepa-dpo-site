@@ -184,16 +184,12 @@
 
         .owl-flip .owl-body { transform: scaleX(-1); }
 
-        /* Использование микс-бленд режима для бесшовного удаления черного фона owl.jpg */
         .owl-custom-img {
             width: 100%; height: 100%; object-fit: contain; display: block;
             pointer-events: none; user-select: none;
-            mix-blend-mode: screen;
-            filter: contrast(1.25) brightness(1.05);
             transition: transform 0.15s ease;
         }
 
-        /* Иллюзия взмахов крыльями при полете */
         .owl-chaotic-flight .owl-custom-img {
             animation: pseudoFlap 0.12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
         }
@@ -733,14 +729,14 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <!-- Реалистичный арт совы с микс-блендом для бесшовного черного фона -->
-                <img src="./img/owl.jpg" alt="Сова" class="owl-custom-img" onerror="this.style.display='none'; document.getElementById('owlFallbackIcon').style.display='block';">
+                <!-- Canvas-скрипт автоматически удаляет черный фон у owl.jpg на лету -->
+                <canvas id="owlCanvas" style="width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; user-select: none;"></canvas>
+                <img id="sourceOwl" src="./img/owl.jpg" crossorigin="anonymous" style="display:none;" alt="Сова">
                 
-                <!-- Заглушка, если картинка owl.jpg еще не загружена -->
-                <div id="owlFallbackIcon" class="owl-fallback-icon">🦉</div>
+                <div id="owlFallbackIcon" class="owl-fallback-icon" style="display:none;">🦉</div>
             </div>
 
-            <!-- Иконка чата (отображается только на мобильных экранах) -->
+            <!-- Иконка чата (для мобильных) -->
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
                 <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
@@ -763,6 +759,41 @@
     </div>
 
     <script>
+        // Автоматический обработчик Canvas для удаления черного фона owl.jpg на лету
+        window.addEventListener('DOMContentLoaded', () => {
+            const img = document.getElementById('sourceOwl');
+            const canvas = document.getElementById('owlCanvas');
+            const ctx = canvas.getContext('2d');
+
+            img.onload = function() {
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                ctx.drawImage(img, 0, 0);
+                
+                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let data = imgData.data;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i], g = data[i+1], b = data[i+2];
+                    // Если пиксель темно-черный, делаем его прозрачным
+                    if (r < 25 && g < 25 && b < 25) {
+                        data[i+3] = 0; // Alpha = 0
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+            };
+
+            img.onerror = function() {
+                canvas.style.display = 'none';
+                document.getElementById('owlFallbackIcon').style.display = 'block';
+            };
+            
+            // Если картинка уже в кеше браузера
+            if (img.complete) {
+                img.onload();
+            }
+        });
+
         let currentLang = 'ru';
         let isOwlFlying = false;
         let owlReturnTimer;
@@ -1299,7 +1330,7 @@
             addUserMsg(currentLang === 'ru' ? "Инициировать профильное тестирование." : "Initiate career profiling test.");
             addBotMsg(botTexts[currentLang].testStart);
             currentQ = 0;
-            scores = { gos: 0, biz: 0, регулярные: 0, prof: 0 };
+            scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
             setTimeout(askQuestion, 800);
         }
 
@@ -1333,7 +1364,7 @@
             if(bestCategory === 'gos') resultText = botTexts[currentLang].resGos;
             if(bestCategory === 'biz') resultText = botTexts[currentLang].resBiz;
             if(bestCategory === 'horeca') resultText = botTexts[currentLang].resHoreca;
-            if(bestCategory === 'prof') resultText, bestCategory = botTexts[currentLang].resProf;
+            if(bestCategory === 'prof') resultText = botTexts[currentLang].resProf;
 
             addBotMsg((currentLang === 'ru' ? "Анализ завершен. " : "Analysis completed. ") + resultText);
 
