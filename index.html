@@ -184,13 +184,16 @@
 
         .owl-flip .owl-body { transform: scaleX(-1); }
 
+        /* Использование микс-бленд режима для бесшовного удаления черного фона owl.jpg */
         .owl-custom-img {
             width: 100%; height: 100%; object-fit: contain; display: block;
             pointer-events: none; user-select: none;
+            mix-blend-mode: screen;
+            filter: contrast(1.25) brightness(1.05);
             transition: transform 0.15s ease;
         }
 
-        /* Иллюзия взмахов крыльями для статического PNG (оптическое искажение) */
+        /* Иллюзия взмахов крыльями при полете */
         .owl-chaotic-flight .owl-custom-img {
             animation: pseudoFlap 0.12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
         }
@@ -575,7 +578,7 @@
             <div class="card">
                 <div class="card-meta"><span class="price">13 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c8Title">1С:Предприятие & Бухучет</h3>
-                <p data-i18n="c8Desc">Полный цикл automated учета на малых предприятиях и для ИП.</p>
+                <p data-i18n="c8Desc">Полный цикл автоматизированного учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
                     <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
@@ -730,10 +733,10 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <!-- Реалистичный арт совы -->
-                <img src="./img/owl.png" alt="Сова" class="owl-custom-img" onerror="this.style.display='none'; document.getElementById('owlFallbackIcon').style.display='block';">
+                <!-- Реалистичный арт совы с микс-блендом для бесшовного черного фона -->
+                <img src="./img/owl.jpg" alt="Сова" class="owl-custom-img" onerror="this.style.display='none'; document.getElementById('owlFallbackIcon').style.display='block';">
                 
-                <!-- Заглушка, если картинка owl.png еще не загружена -->
+                <!-- Заглушка, если картинка owl.jpg еще не загружена -->
                 <div id="owlFallbackIcon" class="owl-fallback-icon">🦉</div>
             </div>
 
@@ -853,6 +856,83 @@
             ]
         };
 
+        const translationsHTML = {
+            ru: {
+                pageTitle: "Академия Кадров | Западный филиал РАНХиГС",
+                logoSub: "Западный филиал • Центр дополнительного образования",
+                navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
+                nationalProject: "Национальный проект «Кадры»", badgeText: "Национальный проект «Кадры»",
+                heroTitle: "Академия управления<br>и профессионального роста",
+                heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
+                tabAll: "Все программы", tabGos: "🏛️ Госслужба и закупки", tabBiz: "🚀 Цифровой бизнес и ИИ", tabHoreca: "🏨 HoReCa и Туризм", tabProf: "⚡ Быстрые профессии",
+                c1Title: "Государственное управление", c1Desc: "Фундаментальная база для уверенного старта и стремительного роста на государственной службе.", c1p1: "✔️ Правовые основы ГМУ", c1p2: "✔️ Финансовое управление", c1p3: "✔️ Публичная политика",
+                c2Title: "Управление закупками", c2Desc: "Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.", c2p1: "✔️ Арбитражная практика", c2p2: "✔️ Антимонопольный контроль", c2p3: "✔️ Сквозное проектирование закупки",
+                c3Title: "Профилактика терроризма", c3Desc: "Обязательный минимум для руководителей и ответственных специалистов.", c3p1: "✔️ Антитеррористическая защищенность", c3p2: "✔️ Противодействие коррупции", c3p3: "✔️ Минимизация рисков проверок",
+                c4Title: "Искусственный Интеллект", c4Desc: "Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.", c4p1: "✔️ Инжиниринг промптов", c4p2: "✔️ Автоматизация процессов", c4p3: "✔️ Интеграция AI в бизнес",
+                c5Title: "Управление бизнесом", c5Desc: "Программа для предпринимателей. От запуска с нуля до систематизации процессов.", c5p1: "✔️ Экономика и право МСП", c5p2: "✔️ Управление персоналом", c5p3: "✔️ Выход из операционки",
+                c6Title: "Менеджмент гостеприимства", c6Desc: "Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.", c6p1: "✔️ Маркетинг впечатлений", c6p2: "✔️ Управление конфликтами", c6p3: "✔️ Оптимизация затрат HoReCa",
+                c7Title: "Повар (3-4 разряд)", c7Desc: "Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.", c7p1: "✔️ Технологические карты", c7p2: "✔️ Практика приготовления блюд", c7p3: "✔️ Присвоение гос. квалификации",
+                c8Title: "1С:Предприятие & Бухучет", c8Desc: "Полный цикл автоматизированного учета на малых предприятиях и для ИП.", c8p1: "✔️ Налоговая отчетность", c8p2: "✔️ Регламентные расчеты 1С", c8p3: "✔️ Упрощенные алгоритмы учета",
+                cardHours1: "506 ч.", cardHours2: "144 ч.", cardHours3: "36 ч.", cardHours4: "98 ч.", cardHours5: "252 ч.", cardHours6: "150 ч.",
+                studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
+                glossaryTitle: "Глоссарий Академии",
+                g1Title: "ЦДО", g1Desc: "Центр дополнительного образования — структурное подразделение Западного филиала РАНХиГС.",
+                g2Title: "ДПО", g2Desc: "Дополнительное профессиональное образование — система обучения на базе текущего образования.",
+                g3Title: "ПК", g3Desc: "Повышение квалификации — краткосрочные программы обновления знаний.",
+                g4Title: "ПП", g4Desc: "Профессиональная переподготовка — программы (от 250 ч.) для получения новой профессии.",
+                g5Title: "ФГОС", g5Desc: "Федеральный государственный образовательный стандарт — требования к качеству.",
+                g6Title: "ВЭД", g6Desc: "Внешнеэкономическая деятельность — международная торговля и логистика.",
+                contactsTitle: "Контактная информация", contactsSub: "Официальные данные сотрудников Центров и Отделов Западного филиала",
+                dept1: "Центр дополнительного образования", dirCenter: "Директор центра", depDir: "Заместитель директора центра", projDir: "Директор проекта", spec: "Специалист",
+                dept2: "Отдел ПК и переподготовки государственных служащих", headDep: "Начальник отдела", leadSpec: "Ведущий специалист", dept3: "Отдел дополнительного образования",
+                cabText: "Каб.", telText: "Тел:", extText: "доб.",
+                footerRights: "© 2027 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.",
+                polLink: "Политика конфиденциальности и обработки персональных данных (152-ФЗ)", termLink: "Пользовательское соглашение и оферта",
+                modTitle: "Оформление заявки", modDesc: "Выберите удобный способ регистрации на программу обучения:", modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму", modTg: "Записаться через Telegram (Сова)", modClose: "Закрыть окно",
+                contModTitle: "Контакты Центра", contModDesc: "Быстрый доступ к руководству и ключевым отделам Западного филиала РАНХиГС:",
+                polModTitle: "Политика обработки персональных данных", polModText: "Настоящая Политика конфиденциальности персональных данных действует в отношении всей информации, которую Западный филиал РАНХиГС может получить о Пользователе во время использования сайта.<br><br>1. Обработка персональных данных осуществляется в соответствии с Федеральным законом РФ № 152-ФЗ «О персональных данных».<br>2. Пользователь дает согласие на обработку своих персональных данных в целях регистрации заявки на обучение в рамках национального проекта «Кадры».<br>3. Оператор принимает необходимые организационные и технические меры для защиты персональной информации от неправомерного доступа.",
+                termModTitle: "Пользовательское соглашение и оферта", termModText: "Использование материалов и сервисов сайта регулируется нормами законодательства Российской Федерации.<br><br>1. Сайт носит информационный характер и не является публичной офертой.<br>2. Все права на текстовые материалы, графические изображения и структуру сайта принадлежат Западному филиалу РАНХиГС.<br>3. Подавая заявку через формы связи, пользователь подтверждает свое ознакомление с условиями федеральных образовательных программ.", modOk: "Понятно",
+                owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:", owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?",
+            },
+            en: {
+                pageTitle: "Academy of Personnel | Western Branch of RANEPA",
+                logoSub: "Western Branch • Center for Continuing Education",
+                navProg: "Programs", navCont: "Contacts", navBtn: "Enroll",
+                nationalProject: "National Project «Personnel»", badgeText: "National Project «Personnel»",
+                heroTitle: "Academy of Management<br>and Professional Growth",
+                heroDesc: "Continuing Professional Education programs with state support. Gain fundamental knowledge, in-demand skills, and a RANEPA diploma for a confident career breakthrough.",
+                tabAll: "All Programs", tabGos: "🏛️ Public Service & Procurement", tabBiz: "🚀 Digital Business & AI", tabHoreca: "🏨 HoReCa & Tourism", tabProf: "⚡ Fast Professions",
+                c1Title: "Public Administration", c1Desc: "A fundamental foundation for a confident start and rapid career growth in public service.", c1p1: "✔️ Legal basis of public administration", c1p2: "✔️ Financial management", c1p3: "✔️ Public policy",
+                c2Title: "Procurement Management", c2Desc: "Exceptional practice on Federal Laws 44-FZ and 223-FZ. Learn to conduct error-free procurements.", c2p1: "✔️ Arbitration practice", c2p2: "✔️ Antimonopoly control", c2p3: "✔️ End-to-end procurement design",
+                c3Title: "Terrorism Prevention", c3Desc: "Mandatory minimum for managers and responsible specialists.", c3p1: "✔️ Anti-terrorism security", c3p2: "✔️ Anti-corruption measures", c3p3: "✔️ Minimizing inspection risks",
+                c4Title: "Artificial Intelligence", c4Desc: "Delegate routine analytics and writing to neural networks. Free up your working time.", c4p1: "✔️ Prompt engineering", c4p2: "✔️ Process automation", c4p3: "✔️ AI integration in business",
+                c5Title: "Business Management", c5Desc: "A program for entrepreneurs. From starting from scratch to systematizing processes.", c5p1: "✔️ Economics and law of SMEs", c5p2: "✔️ HR management", c5p3: "✔️ Exiting routine operations",
+                c6Title: "Hospitality Management", c6Desc: "Hotel and restaurant management. Financial efficiency and premium service.", c6p1: "✔️ Experience marketing", c6p2: "✔️ Conflict management", c6p3: "✔️ HoReCa cost optimization",
+                c7Title: "Chef (3rd-4th grade)", c7Desc: "An applied skill with rapid monetization in the labor market. Commercial kitchen workflow.", c7p1: "✔️ Recipe blueprints", c7p2: "✔️ Practical culinary training", c7p3: "✔️ State qualification assignment",
+                c8Title: "1C:Enterprise & Accounting", c8Desc: "A full cycle of automated accounting for small enterprises and sole proprietors.", c8p1: "✔️ Tax reporting", c8p2: "✔️ 1C routine calculations", c8p3: "✔️ Simplified accounting algorithms",
+                cardHours1: "506 hrs.", cardHours2: "144 hrs.", cardHours3: "36 hrs.", cardHours4: "98 hrs.", cardHours5: "252 hrs.", cardHours6: "150 hrs.",
+                studyPlanBtn: "Explore Curriculum", enrollBtn: "Enroll",
+                glossaryTitle: "Academy Glossary",
+                g1Title: "CCE", g1Desc: "Center for Continuing Education — a structural subdivision of the RANEPA Western Branch.",
+                g2Title: "CPE", g2Desc: "Continuing Professional Education — a training system based on current education.",
+                g3Title: "AT", g3Desc: "Advanced Training — short-term programs for knowledge updates.",
+                g4Title: "PR", g4Desc: "Professional Retraining — programs (from 250 hrs.) to acquire a new profession.",
+                g5Title: "FSES", g5Desc: "Federal State Educational Standard — quality requirements.",
+                g6Title: "FEA", g6Desc: "Foreign Economic Activity — international trade and logistics.",
+                contactsTitle: "Contact Information", contactsSub: "Official data of the Western Branch Centers and Departments staff",
+                dept1: "Center for Continuing Education", dirCenter: "Center Director", depDir: "Deputy Director of the Center", projDir: "Project Director", spec: "Specialist",
+                dept2: "Department of State Employees Training", headDep: "Head of Department", leadSpec: "Leading Specialist", dept3: "Department of Continuing Education",
+                cabText: "Room", telText: "Tel:", extText: "ext.",
+                footerRights: "© 2027 Western Branch of RANEPA. Center for Continuing Education. All rights reserved. Educational activities are conducted under a perpetual license.",
+                polLink: "Privacy Policy and Personal Data Processing (152-FZ)", termLink: "User Agreement and Offer",
+                modTitle: "Application Processing", modDesc: "Choose a convenient registration method for the educational program:", modTrud: "Apply via «Work in Russia» (Kaliningrad)", modYan: "Apply via Yandex Form", modTg: "Apply via Telegram (Sova)", modClose: "Close window",
+                contModTitle: "Center Contacts", contModDesc: "Quick access to the management and key departments of the RANEPA Western Branch:",
+                polModTitle: "Personal Data Processing Policy", polModText: "This Privacy Policy applies to all information that the Western Branch of RANEPA can obtain about the User during the use of the site.<br><br>1. Processing of personal data is carried out in accordance with the Federal Law of the Russian Federation No. 152-FZ.<br>2. The user consents to the processing of their personal data (surname, name, patronymic, contact phone number, email) for the purpose of registering an application for training within the national project \"Personnel\".<br>3. The operator takes necessary organizational and technical measures to protect personal information from unauthorized access.",
+                termModTitle: "User Agreement and Offer", termModText: "The use of materials and services of the site is governed by the laws of the Russian Federation.<br><br>1. Site is for informational purposes and is not a public offer.<br>2. All rights to the text materials, graphic images, and site structure belong to the Western Branch of RANEPA.<br>3. By submitting an application through communication forms, the user confirms their familiarity with the terms of federal educational programs.", modOk: "Understood",
+                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?",
+            }
+        };
+
         function setLanguage(lang) {
             currentLang = lang;
             document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
@@ -925,7 +1005,7 @@
 
         let sleepTimer;
         function startSleepCycle() {
-            if (window.innerWidth <= 768) return; // На мобильном сна нет
+            if (window.innerWidth <= 768) return;
             clearInterval(sleepTimer);
             sleepTimer = setInterval(() => {
                 const owlSprite = document.getElementById('owlSprite');
@@ -938,7 +1018,6 @@
         }
         startSleepCycle();
 
-        // Схлопывание при скролле
         let isScrolling;
         window.addEventListener('scroll', function() {
             window.clearTimeout(isScrolling);
@@ -960,7 +1039,6 @@
             isScrolling = setTimeout(function() {}, 200);
         }, false);
 
-        // Таймер бездействия
         let inactivityTimer;
         function resetInactivity() {
             clearTimeout(inactivityTimer);
@@ -984,7 +1062,7 @@
         resetInactivity();
 
         function toggleChat() {
-            if (isOwlFlying) return; // Блокируем клики во время полета
+            if (isOwlFlying) return;
 
             let chat = document.getElementById('owlChat');
             let ecosystem = document.getElementById('owlContainer');
@@ -1034,7 +1112,6 @@
             `);
         }
 
-        // --- УНИВЕРСАЛЬНАЯ ЛОГИКА НАВИГАЦИИ СОВЫ ---
         function flyOwlToTab(tabId) {
             if (isOwlFlying) return;
 
@@ -1058,7 +1135,6 @@
                 return;
             }
 
-            // --- ДЕСКТОПНЫЙ СЦЕНАРИЙ (Плавный полет совы) ---
             isOwlFlying = true;
             clearTimeout(owlReturnTimer);
 
@@ -1223,7 +1299,7 @@
             addUserMsg(currentLang === 'ru' ? "Инициировать профильное тестирование." : "Initiate career profiling test.");
             addBotMsg(botTexts[currentLang].testStart);
             currentQ = 0;
-            scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
+            scores = { gos: 0, biz: 0, регулярные: 0, prof: 0 };
             setTimeout(askQuestion, 800);
         }
 
@@ -1257,7 +1333,7 @@
             if(bestCategory === 'gos') resultText = botTexts[currentLang].resGos;
             if(bestCategory === 'biz') resultText = botTexts[currentLang].resBiz;
             if(bestCategory === 'horeca') resultText = botTexts[currentLang].resHoreca;
-            if(bestCategory === 'prof') resultText = botTexts[currentLang].resProf;
+            if(bestCategory === 'prof') resultText, bestCategory = botTexts[currentLang].resProf;
 
             addBotMsg((currentLang === 'ru' ? "Анализ завершен. " : "Analysis completed. ") + resultText);
 
