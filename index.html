@@ -141,7 +141,7 @@
         .owl-ecosystem { position: fixed; bottom: -240px; right: -250px; width: 380px; height: 320px; z-index: 9999; transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
         .owl-ecosystem.visible { bottom: 0; right: 0; pointer-events: auto; }
 
-        /* Реалистичная кривая ветка (SVG-контур через clip-path) */
+        /* Реалистичная кривая ветка */
         .oak-branch { 
             position: absolute; bottom: 15px; right: -25px; width: 340px; height: 90px; 
             background: 
@@ -149,14 +149,12 @@
                 linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%),
                 repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.2) 5px, rgba(0,0,0,0.2) 10px),
                 linear-gradient(80deg, #4a3424 0%, #2b1810 50%, #1a0f0a 100%);
-            /* Изломанный органический контур ветви */
             clip-path: polygon(100% 20%, 90% 18%, 75% 25%, 50% 20%, 25% 28%, 5% 25%, 0% 30%, 0% 50%, 15% 55%, 35% 48%, 60% 55%, 85% 48%, 100% 50%);
             filter: drop-shadow(0 25px 25px rgba(0,0,0,0.8));
             transform: rotate(-2deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        /* Контейнер совы */
         .owl-container {
             position: absolute; bottom: 50px; left: 45px; width: 140px; height: 190px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000;
@@ -171,7 +169,6 @@
 
         .stop-patrol { animation: none !important; }
 
-        /* Обертка физического тела совы (Только реалистичное фото) */
         .owl-body {
             position: relative; width: 100%; height: 100%;
             transform-origin: center bottom;
@@ -187,13 +184,21 @@
 
         .owl-flip .owl-body { transform: scaleX(-1); }
 
-        /* Графика реалистичного арта совы */
         .owl-custom-img {
             width: 100%; height: 100%; object-fit: contain; display: block;
             pointer-events: none; user-select: none;
+            transition: transform 0.15s ease;
         }
 
-        /* Заглушка, если картинки нет (тоже аккуратная, без мультяшности) */
+        /* Иллюзия взмахов крыльями для статического PNG (оптическое искажение) */
+        .owl-chaotic-flight .owl-custom-img {
+            animation: pseudoFlap 0.12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+        @keyframes pseudoFlap {
+            0% { transform: scaleX(1) scaleY(1); }
+            100% { transform: scaleX(0.75) scaleY(1.05) translateY(-3px); }
+        }
+
         .owl-fallback-icon {
             display: none; width: 100%; height: 100%; 
             background: radial-gradient(circle, #3E2723, #1e0f0a); 
@@ -201,10 +206,8 @@
             color: #C89D66; text-align: center; line-height: 180px; font-size: 3rem; font-weight: bold;
         }
 
-        /* Иконка чата для мобилки (скрыта на десктопе) */
         .mobile-chat-icon { display: none; }
 
-        /* Сон */
         .sleeping { animation-play-state: paused; }
         .zzz-particles { position: absolute; top: -20px; left: 60px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,255,255,0.8); opacity: 0; pointer-events: none; z-index: 20; }
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
@@ -214,10 +217,6 @@
             100% { opacity: 0; transform: translate(30px, -40px) scale(1.5); }
         }
 
-        /* Естественный плавный полет совы */
-        .owl-flying { animation: flyAway 1.5s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
-        @keyframes flyAway { 0% { transform: translateY(0); } 100% { transform: translateY(-500px) scale(0.3); opacity: 0; } }
-
         .owl-chaotic-flight .owl-body { animation: owlGlide 1.4s forwards ease-in-out !important; }
         @keyframes owlGlide {
             0% { transform: rotate(0deg); }
@@ -226,12 +225,10 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* Пузырь */
         .owl-bubble { position: absolute; bottom: 250px; right: 90px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
         .owl-bubble.show { opacity: 1; transform: scale(1); }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
-        /* Окно чата */
         .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: var(--ranepa-blue); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; z-index: 10000; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; }
         .owl-chat-panel.active { display: flex; opacity: 1; transform: translateY(0); }
         .owl-chat-header { background: rgba(10,15,24,0.9); color: #fff; padding: 15px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ranepa-red); }
@@ -254,7 +251,6 @@
             .header-kadry { width: 100%; justify-content: center; margin-top: 5px; }
             .header-kadry img { height: auto !important; max-height: 70px; width: auto; max-width: 100%; }
 
-            /* Horizontal native scroll for tabs */
             .tabs-nav {
                 flex-wrap: nowrap;
                 justify-content: flex-start;
@@ -270,11 +266,9 @@
             .tabs-nav::-webkit-scrollbar { display: none; }
             .tab-btn { flex-shrink: 0; scroll-snap-align: start; background: rgba(23, 31, 41, 0.8); border: 1px solid rgba(255,255,255,0.05); }
 
-            /* Убираем сову и ветку на мобилках полностью */
             .oak-branch, .zzz-particles, .owl-bubble, .owl-body { display: none !important; }
             .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
             
-            /* Превращаем контейнер в стандартную плавающую кнопку чата (FAB) */
             .owl-container {
                 position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
                 left: auto; width: 60px; height: 60px; border-radius: 50%;
@@ -284,10 +278,7 @@
                 animation: none !important; pointer-events: auto; z-index: 10000;
             }
             
-            /* Иконка чата внутри кнопки */
             .mobile-chat-icon { display: block; width: 28px; height: 28px; fill: #fff; }
-
-            /* Chat protected from safe areas and keyboard */
             .owl-chat-panel { width: calc(100% - 30px); left: 15px; right: 15px; bottom: max(95px, calc(env(safe-area-inset-bottom) + 95px)); height: min(60vh, 450px); }
         }
     </style>
@@ -584,7 +575,7 @@
             <div class="card">
                 <div class="card-meta"><span class="price">13 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c8Title">1С:Предприятие & Бухучет</h3>
-                <p data-i18n="c8Desc">Полный цикл автоматизированного учета на малых предприятиях и для ИП.</p>
+                <p data-i18n="c8Desc">Полный цикл automated учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
                     <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
@@ -739,7 +730,7 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <!-- Реалистичный арт совы (Только это изображение, SVG удален) -->
+                <!-- Реалистичный арт совы -->
                 <img src="./img/owl.png" alt="Сова" class="owl-custom-img" onerror="this.style.display='none'; document.getElementById('owlFallbackIcon').style.display='block';">
                 
                 <!-- Заглушка, если картинка owl.png еще не загружена -->
@@ -1049,15 +1040,12 @@
 
             const isMobile = window.innerWidth <= 768;
 
-            // --- МОБИЛЬНЫЙ СЦЕНАРИЙ (Без полетов совы) ---
             if (isMobile) {
-                // Просто открываем нужный таб и плавно скроллим к нему
                 filterPrograms(new Event('click'), tabId);
                 const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
                 let buttons = document.getElementsByClassName("tab-btn");
                 if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
 
-                // Закрываем окно чата
                 let chat = document.getElementById('owlChat');
                 let ecosystem = document.getElementById('owlContainer');
                 chat.classList.remove('active');
@@ -1074,7 +1062,6 @@
             isOwlFlying = true;
             clearTimeout(owlReturnTimer);
 
-            // Разблокировка звука (политика браузеров требует клика)
             const audio = document.getElementById('hootSound');
             if(audio) {
                 audio.volume = 0;
@@ -1129,7 +1116,6 @@
                 const deltaX = (targetRect.right - 90) - startRect.left;
                 const deltaY = (targetRect.top - 120) - startRect.top;
 
-                // Хищный дугообразный разгон (Свуп)
                 owlContainer.style.transition = 'transform 1.4s cubic-bezier(0.34, 1.25, 0.64, 1)';
                 owlContainer.classList.add('owl-chaotic-flight');
                 owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.85)`;
@@ -1151,7 +1137,6 @@
 
                     isOwlFlying = false;
 
-                    // Возвращение ровно через 5 секунд
                     owlReturnTimer = setTimeout(() => {
                         returnOwlToBranch();
                     }, 5000);
@@ -1168,7 +1153,6 @@
             const owlContainer = document.getElementById('owlSprite');
             const branch = document.querySelector('.oak-branch');
 
-            // Воспроизводим звук совы
             const audio = document.getElementById('hootSound');
             if(audio) {
                 audio.currentTime = 0;
