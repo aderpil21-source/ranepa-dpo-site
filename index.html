@@ -30,26 +30,26 @@
 
         /* --- ФОНОВЫЕ ТЕГИ --- */
         .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 4.5vw; font-weight: 900; color: rgba(255,255,255,0.06); text-shadow: 0 0 30px rgba(255, 255, 255, 0.15); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; }
+        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 4.5vw; font-weight: 900; color: rgba(255,255,255,0.06); text-shadow: 0 0 30px rgba(255, 255, 255, 0.15); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; }
         .bg-tag:nth-child(1) { top: 18%; left: 5%; animation-delay: 0s; transform: translateZ(-20px); }
         .bg-tag:nth-child(2) { top: 48%; left: 65%; animation-delay: -1s; transform: translateZ(-40px); font-size: 5.5vw; }
         .bg-tag:nth-child(3) { top: 82%; left: 8%; animation-delay: -2s; transform: translateZ(-10px); font-size: 3.5vw; }
         .bg-tag:nth-child(4) { top: 35%; left: 35%; animation-delay: -3s; transform: translateZ(-30px); font-size: 4vw; }
 
         @keyframes heartbeat {
-            0% { transform: scale(1) translateY(0); opacity: 0.06; text-shadow: 0 0 20px rgba(255,255,255,0.05); }
-            100% { transform: scale(1.03) translateY(-8px); opacity: 0.12; text-shadow: 0 0 40px rgba(255,255,255,0.2); }
+            0% { transform: scale(1) translateY(0) translateZ(0); opacity: 0.06; text-shadow: 0 0 20px rgba(255,255,255,0.05); }
+            100% { transform: scale(1.03) translateY(-8px) translateZ(0); opacity: 0.12; text-shadow: 0 0 40px rgba(255,255,255,0.2); }
         }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; background-color: var(--ranepa-deep); }
-        .shape { position: absolute; filter: blur(120px); opacity: 0.4; animation: float 20s infinite alternate ease-in-out; transform-style: preserve-3d; }
+        .shape { position: absolute; filter: blur(120px); opacity: 0.4; animation: float 20s infinite alternate ease-in-out; transform-style: preserve-3d; will-change: transform; }
         .shape-1 { background: var(--ranepa-burgundy); width: 45vw; height: 45vw; border-radius: 50%; top: -10%; left: -10%; animation-duration: 25s; }
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         .shape-3 { background: #FF5F61; width: 25vw; height: 25vw; border-radius: 60% 40% 30% 70%; top: 35%; left: 50%; opacity: 0.2; animation-duration: 30s; }
-        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(8vw, 12vh) rotate(45deg) scale(1.15); } }
+        @keyframes float { 0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) rotate(45deg) scale(1.15); } }
 
-        /* --- ШАПКА И НОВАЯ ПАНЕЛЬ УПРАВЛЕНИЯ --- */
-        header { background: rgba(5, 8, 14, 0.65); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
+        /* --- ШАПКА И ПАНЕЛЬ УПРАВЛЕНИЯ --- */
+        header { background: rgba(5, 8, 14, 0.65); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; transform: translateZ(0); }
 
         .logo-group { display: flex; flex-direction: column; flex-shrink: 1; min-width: auto; max-width: 100%; z-index: 10051; align-items: flex-start; text-align: left; }
         .logo-group img { height: 150px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; background: transparent !important; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
@@ -57,14 +57,13 @@
 
         .header-right-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; margin-left: auto; margin-right: 20px; z-index: 10051; }
         
-        /* Модернизированные кнопки Accessibility & Lang */
         .header-controls { display: flex; gap: 15px; align-items: center; }
         .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
         .control-panel-btn { background: transparent; border: none; color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); touch-action: manipulation; }
         .control-panel-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
         .lang-active, .active-font { background: var(--ranepa-red) !important; color: #fff; box-shadow: 0 4px 12px rgba(202, 15, 62, 0.5); }
 
-        .header-nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+        .header-nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; z-index: 10051; position: relative; }
         .header-nav-link { color: var(--text-muted); text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; transition: all 0.3s ease; cursor: pointer; touch-action: manipulation; position: relative; }
         .header-nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background-color: #fff; transition: width 0.3s ease; }
         .header-nav-link:hover { color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.6); }
@@ -119,39 +118,47 @@
         .glossary-item:hover { transform: translateY(-5px); box-shadow: 0 25px 45px rgba(0,0,0,0.5); }
         .glossary-item strong { display: block; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 10px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        /* --- КОНТАКТЫ И ФУТЕР --- */
+        /* --- ЖЕЛЕЗОБЕТОННЫЙ БЛОК КОНТАКТОВ В ОДНУ СТРОКУ --- */
         .contacts-wrapper { background: rgba(5, 8, 14, 0.8); border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(30px); padding: 80px max(20px, env(safe-area-inset-right)) 80px max(20px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; display: block; clear: both; }
         .contacts-container { max-width: 1300px; margin: 0 auto; display: block; }
         
-        .main-contact-bar { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-left: 4px solid var(--ranepa-red); border-radius: 16px; padding: 20px 25px; margin-bottom: 20px; display: flex; gap: 25px; align-items: center; white-space: nowrap; overflow-x: auto; color: #cbd5e1; font-size: 1rem; box-shadow: 0 15px 30px rgba(0,0,0,0.3); -ms-overflow-style: none; scrollbar-width: none; }
+        /* Главные контакты ЦДО и Адрес (Строгий однострочный формат) */
+        .main-contact-bar {
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); border-left: 4px solid var(--ranepa-red); 
+            border-radius: 16px; padding: 20px 25px; margin-bottom: 20px; 
+            display: flex; gap: 15px; align-items: center; justify-content: flex-start;
+            white-space: nowrap; overflow-x: auto; color: #cbd5e1; font-size: clamp(0.75rem, 1.2vw, 1rem); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3); -ms-overflow-style: none; scrollbar-width: none;
+        }
         .main-contact-bar::-webkit-scrollbar { display: none; }
-        .main-contact-bar a { color: #38bdf8; text-decoration: none; font-weight: 800; transition: color 0.2s; }
-        .main-contact-bar a:hover { color: #FF5F61; }
+        .main-contact-bar span { flex-shrink: 0; }
+        .contact-link { color: #38bdf8; text-decoration: none; font-weight: 800; transition: color 0.2s; border-bottom: 1px dashed rgba(56, 189, 248, 0.4); }
+        .contact-link:hover { color: #FF5F61; border-color: #FF5F61; }
 
         .department-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #FF5F61; margin: 50px 0 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; font-weight: 800; }
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: clamp(20px, 4vw, 25px); }
         
-        .contact-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); white-space: nowrap; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+        .contact-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); white-space: nowrap; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; font-size: clamp(0.8rem, 1.2vw, 0.95rem); }
         .contact-card::-webkit-scrollbar { display: none; }
         .contact-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
         .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; margin-bottom: 8px; color: #fff; font-weight: 800; }
         .contact-card .position { font-size: 0.85rem; color: #38bdf8; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .contact-card .details { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; }
+        .contact-card .details { color: #cbd5e1; line-height: 1.6; }
         .contact-card .details a { color: #38bdf8; text-decoration: underline; font-weight: 700; transition: color 0.2s; }
         .contact-card .details a:hover { color: #FF5F61; }
 
-        .legal-footer { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; gap: 15px; width: 100%; text-align: center; }
+        .legal-footer { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; width: 100%; }
         .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .legal-footer-links span { color: #94A3B8; text-decoration: underline; cursor: pointer; transition: color 0.2s; touch-action: manipulation; }
         .legal-footer-links span:hover { color: #fff; }
 
-        /* --- ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (CUBIC-BEZIER) --- */
+        /* --- ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (CUBIC-BEZIER ПРУЖИНА) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.4s ease; box-sizing: border-box; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
-        /* Пружинная анимация появления */
-        .modal-box { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); padding: clamp(25px, 5vw, 45px); border-radius: 28px; max-width: 550px; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 85vh; overflow-y: auto; transform: scale(0.8) translateY(40px); opacity: 0; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; }
-        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
+        .modal-box { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); padding: clamp(25px, 5vw, 45px); border-radius: 28px; max-width: 550px; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 85vh; overflow-y: auto; transform: scale(0.9) translateY(30px) translateZ(0); opacity: 0; transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; will-change: transform, opacity; }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0) translateZ(0); opacity: 1; }
         
         .glass-modal-ranepa { background: linear-gradient(145deg, rgba(136, 19, 55, 0.2) 0%, rgba(10, 15, 24, 0.8) 100%) !important; border-top: 1px solid rgba(202, 15, 62, 0.4) !important; border-left: 1px solid rgba(202, 15, 62, 0.2) !important; box-shadow: 0 40px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 40px rgba(202, 15, 62, 0.15) !important; }
         
@@ -191,38 +198,31 @@
         .twig-2 { width: 50px; height: 10px; bottom: -15px; left: 210px; transform: rotate(40deg); z-index: -1; }
         .twig-3 { width: 45px; height: 9px; top: -12px; left: 290px; transform: rotate(-25deg); z-index: -1; }
 
-        .leaf { 
-            position: absolute; width: 44px; height: 22px; 
-            background: linear-gradient(135deg, #4CAF50, #1B5E20);
-            border-radius: 0 22px 0 22px; transform: scale(0); opacity: 0; 
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 3px 3px 12px rgba(0,0,0,0.7);
-        }
-        .leaf-1 { top: -6px; right: -28px; transform-origin: bottom left; }
-        .leaf-2 { top: 3px; right: -22px; transform-origin: top left; }
-        .leaf-3 { top: -10px; right: -32px; transform-origin: bottom left; }
-        .chat-opened .leaf { transform: scale(1) rotate(15deg); opacity: 1; }
-
         .owl-container {
             position: absolute; bottom: 55px; left: 35px; width: 220px; height: 280px; cursor: pointer; pointer-events: auto;
-            animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation;
+            animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation; will-change: transform;
         }
 
-        /* Жесткая математика передвижения по ветке: Y = X * tan(6) ≈ X * 0.105 */
+        /* Строгая математика: Тангенс -6 градусов ≈ -0.105. Шаг совы по X строго привязан к Y */
         @keyframes naturalPerch {
-            0%, 20% { transform: translate(0, 0); }
-            40%, 45% { transform: translate(40px, -4.2px); }
-            70%, 75% { transform: translate(80px, -8.4px); }
-            100% { transform: translate(20px, -2.1px); }
+            0%, 20% { transform: translate(0px, 0px); }
+            40%, 45% { transform: translate(30px, -3.15px); }
+            70%, 75% { transform: translate(60px, -6.3px); }
+            100% { transform: translate(15px, -1.57px); }
         }
 
         .stop-patrol { animation: none !important; }
 
+        /* Идеально плавное крыло: махи без тормозов */
+        .owl-fast-flap .wing-left { animation: flapLeft 0.12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+        .owl-fast-flap .wing-right { animation: flapRight 0.12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+        @keyframes flapLeft { 0% { transform: rotate(0deg); } 100% { transform: rotate(-30deg); } }
+        @keyframes flapRight { 0% { transform: rotate(0deg); } 100% { transform: rotate(30deg); } }
+
         .owl-body {
             position: relative; width: 100%; height: 100%;
             transform-origin: center bottom;
-            transition: transform 0.4s ease;
-            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.95));
+            filter: drop-shadow(0 20px 25px rgba(0,0,0,0.7)); /* GPU-friendly тень */
             animation: owlBreath 4s infinite ease-in-out;
         }
 
@@ -232,9 +232,7 @@
         }
 
         .owl-flip .owl-body { transform: scaleX(-1); }
-
         #owlSvgVisual { width: 100%; height: 100%; pointer-events: none; }
-
         .owl-container:not(.sleeping) .owl-svg-eyelid { animation: svgBlink 4.5s infinite; }
         @keyframes svgBlink {
             0%, 95%, 100% { transform: scaleY(0); }
@@ -251,22 +249,11 @@
             100% { opacity: 0; transform: translate(40px, -50px) scale(1.6); }
         }
 
-        .owl-flying { animation: flyAway 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
-        @keyframes flyAway { 0% { transform: translateY(0); } 100% { transform: translateY(-600px) scale(0.3); opacity: 0; } }
-
-        .owl-chaotic-flight .owl-body { animation: owlCinematicSwoop 0.8s infinite ease-in-out !important; }
-        @keyframes owlCinematicSwoop {
-            0% { transform: rotate(0deg) scale(1); }
-            35% { transform: rotate(-10deg) translateY(-12px) scale(1.08); }
-            70% { transform: rotate(8deg) translateY(8px) scale(0.95); }
-            100% { transform: rotate(0deg) scale(1); }
-        }
-
         .owl-bubble { position: absolute; bottom: 310px; right: 110px; background: rgba(5, 8, 14, 0.85); backdrop-filter: blur(15px); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
         .owl-bubble.show { opacity: 1; transform: scale(1); }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
-        .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(30px) saturate(150%); border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translateY(40px) scale(0.9); transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(30px) saturate(150%); border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translateY(30px) scale(0.95); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, opacity; }
         .owl-chat-panel.active { display: flex; opacity: 1; transform: translateY(0) scale(1); }
         .owl-chat-header { background: rgba(5, 8, 14, 0.6); color: #fff; padding: 18px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ranepa-red); border-radius: 24px 24px 0 0; }
         .owl-chat-body { padding: 20px; height: 350px; overflow-y: auto; background: transparent; font-size: 0.9rem; display: flex; flex-direction: column; gap: 15px; }
@@ -630,6 +617,7 @@
 
     </div>
 
+    <!-- КОНТАКТЫ И ПОЛИТИКА -->
     <div id="contactsSection" class="contacts-wrapper">
         <div class="contacts-container">
             <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
@@ -637,13 +625,13 @@
 
             <div class="main-contact-bar">
                 <span style="color: #fff; font-weight: 800;" data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</span>
-                <span><b style="color: #FF5F61;" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379">+7 (4012) 97-23-79</a>;</span>
-                <span><b style="color: #FF5F61;">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru">cdo-zf@ranepa.ru</a></span>
+                <span><b style="color: #FF5F61;" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a>;</span>
+                <span><b style="color: #FF5F61;">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></span>
             </div>
             
             <div class="main-contact-bar">
                 <span style="color: #fff; font-weight: 800;" data-i18n="addressLabel">Адрес:</span>
-                <span data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span>
+                <span><a href="https://yandex.ru/maps/-/CDu~y26O" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></span>
             </div>
 
             <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
@@ -704,7 +692,8 @@
             </div>
 
             <div class="legal-footer">
-                <div data-i18n="footerRights">Все права защищены. © 2026 Президентская академия</div>
+                <div data-i18n="footerRights" style="font-weight: 700;">© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
+                <div style="font-weight: 600;"><a href="https://yandex.ru/maps/-/CDu~y26O" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></div>
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (152-ФЗ)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
@@ -720,8 +709,8 @@
             
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
                 <p style="color: #fff; margin-bottom: 10px; font-size: 0.95rem;"><b data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</b></p>
-                <p style="color: #cbd5e1; margin-bottom: 5px; font-size: 0.9rem;"><span data-i18n="telLabel">Телефоны:</span> <a href="tel:+74012972379" style="color:#FF5F61;">+7 (4012) 97-23-79</a>; E-mail: <a href="mailto:cdo-zf@ranepa.ru" style="color:#FF5F61;">cdo-zf@ranepa.ru</a></p>
-                <p style="color: #cbd5e1; margin-bottom: 0; font-size: 0.9rem;"><span data-i18n="addressLabel">Адрес:</span> <span data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span></p>
+                <p style="color: #cbd5e1; margin-bottom: 5px; font-size: 0.9rem;"><span data-i18n="telLabel">Телефоны:</span> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a>; E-mail: <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
+                <p style="color: #cbd5e1; margin-bottom: 0; font-size: 0.9rem;"><span data-i18n="addressLabel">Адрес:</span> <a href="https://yandex.ru/maps/-/CDu~y26O" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
             </div>
 
             <p data-i18n="contModDesc" style="color: rgba(255,255,255,0.85); margin-bottom: 15px;">Руководство и ключевые отделы:</p>
@@ -807,36 +796,29 @@
                             <stop offset="45%" stop-color="#C8A27A"/>
                             <stop offset="85%" stop-color="#6E4430"/>
                         </radialGradient>
-                        <filter id="glassDrop" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="15" stdDeviation="15" flood-color="#000" flood-opacity="0.8"/>
-                        </filter>
-                        <filter id="innerGlow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
-                            <feOffset dy="3" dx="0"/>
-                            <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowDiff"/>
-                            <feFlood flood-color="white" flood-opacity="0.2"/>
-                            <feComposite in2="shadowDiff" operator="in"/>
-                            <feComposite in2="SourceGraphic" operator="over"/>
-                        </filter>
                     </defs>
 
                     <ellipse cx="100" cy="150" rx="64" ry="84" fill="#05080c" opacity="0.4" filter="blur(6px)"/>
                     <polygon points="75,225 100,260 125,225" fill="#1b100a"/>
-                    <ellipse cx="100" cy="150" rx="62" ry="80" fill="url(#bodyPlumage)" filter="url(#innerGlow)"/>
-                    <ellipse cx="100" cy="158" rx="50" ry="64" fill="url(#breastPattern)" filter="url(#innerGlow)"/>
+                    <ellipse cx="100" cy="150" rx="62" ry="80" fill="url(#bodyPlumage)"/>
+                    <ellipse cx="100" cy="158" rx="50" ry="64" fill="url(#breastPattern)"/>
                     
                     <path d="M 75,130 Q 100,138 125,130 Q 100,144 75,130 Z" fill="#2b1810" opacity="0.8"/>
                     <path d="M 70,150 Q 100,158 130,150 Q 100,164 70,150 Z" fill="#2b1810" opacity="0.8"/>
                     <path d="M 75,170 Q 100,178 125,170 Q 100,184 75,170 Z" fill="#2b1810" opacity="0.8"/>
                     <path d="M 80,190 Q 100,198 120,190 Q 100,204 80,190 Z" fill="#2b1810" opacity="0.8"/>
 
-                    <path d="M 50,105 C 32,135 36,200 78,238 C 65,190 60,135 75,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
-                    <path d="M 150,105 C 168,135 164,200 122,238 C 135,190 140,135 125,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
+                    <g class="wing-left" transform-origin="75 110">
+                        <path d="M 50,105 C 32,135 36,200 78,238 C 65,190 60,135 75,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5"/>
+                    </g>
+                    <g class="wing-right" transform-origin="125 110">
+                        <path d="M 150,105 C 168,135 164,200 122,238 C 135,190 140,135 125,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5"/>
+                    </g>
 
                     <polygon points="72,60 42,12 85,46" fill="#22120b" stroke="#120804" stroke-width="1.5"/>
                     <polygon points="128,60 158,12 115,46" fill="#2c160e" stroke="#120804" stroke-width="1.5"/>
 
-                    <ellipse cx="100" cy="78" rx="46" ry="40" fill="#382117" filter="url(#glassDrop)"/>
+                    <ellipse cx="100" cy="78" rx="46" ry="40" fill="#382117"/>
                     <ellipse cx="84" cy="76" rx="22" ry="26" fill="#B08D6D" opacity="0.9"/>
                     <ellipse cx="116" cy="76" rx="22" ry="26" fill="#B08D6D" opacity="0.9"/>
                     <ellipse cx="84" cy="76" rx="18" ry="22" fill="#21120b"/>
@@ -852,9 +834,9 @@
                     <rect class="owl-svg-eyelid" x="70" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 84px 64px; transform: scaleY(0);"/>
                     <rect class="owl-svg-eyelid" x="102" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 116px 64px; transform: scaleY(0);"/>
 
-                    <path d="M 84,64 Q 100,70 116,64" stroke="#e6c687" stroke-width="3" fill="none" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.8))"/>
+                    <path d="M 84,64 Q 100,70 116,64" stroke="#e6c687" stroke-width="3" fill="none"/>
                     
-                    <polygon points="94,76 106,76 100,105" fill="#dca742" stroke="#2b1810" stroke-width="1.5" filter="drop-shadow(0 4px 4px rgba(0,0,0,0.7))"/>
+                    <polygon points="94,76 106,76 100,105" fill="#dca742" stroke="#2b1810" stroke-width="1.5"/>
                     <line x1="100" y1="76" x2="100" y2="103" stroke="#8c611c" stroke-width="1.5"/>
 
                     <g fill="#211713">
@@ -870,7 +852,7 @@
                     </g>
                 </svg>
             </div>
-
+            
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
                 <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
@@ -987,87 +969,6 @@
                 { q: "11/12. Which discipline seems the highest priority to you?", answers: [{t: "Law enforcement practice on Federal Laws", v: "gos"}, {t: "Neural network prompting", v: "biz"}, {t: "Experience marketing", v: "horeca"}, {t: "Accounting", v: "prof"}] },
                 { q: "12/12. What is your current professional status?", answers: [{t: "Civil Servant / Procurement Specialist", v: "gos"}, {t: "Entrepreneur / Analyst", v: "biz"}, {t: "Working in the service sector", v: "horeca"}, {t: "Looking for a new stable profession", v: "prof"}] }
             ]
-        };
-
-        const translationsHTML = {
-            ru: {
-                pageTitle: "Академия Кадров | Западный филиал РАНХиГС",
-                logoSub: "Западный филиал • Центр дополнительного образования",
-                navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
-                nationalProject: "Национальный проект «Кадры»", badgeText: "Национальный проект «Кадры»",
-                heroTitle: "Академия управления<br>и профессионального роста",
-                heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
-                tabAll: "Все программы", tabGos: "🏛️ Госслужба и закупки", tabBiz: "🚀 Цифровой бизнес и ИИ", tabHoreca: "🏨 HoReCa и Туризм", tabProf: "⚡ Быстрые профессии",
-                c1Title: "Государственное управление", c1Desc: "Фундаментальная база для уверенного старта и стремительного роста на государственной службе.", c1p1: "✔️ Правовые основы ГМУ", c1p2: "✔️ Финансовое управление", c1p3: "✔️ Публичная политика",
-                c2Title: "Управление закупками", c2Desc: "Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.", c2p1: "✔️ Арбитражная практика", c2p2: "✔️ Антимонопольный контроль", c2p3: "✔️ Сквозное проектирование закупки",
-                c3Title: "Профилактика терроризма", c3Desc: "Обязательный минимум для руководителей и ответственных специалистов.", c3p1: "✔️ Антитеррористическая защищенность", c3p2: "✔️ Противодействие коррупции", c3p3: "✔️ Минимизация рисков проверок",
-                c4Title: "Искусственный Интеллект", c4Desc: "Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.", c4p1: "✔️ Инжиниринг промптов", c4p2: "✔️ Автоматизация процессов", c4p3: "✔️ Интеграция AI в бизнес",
-                c5Title: "Управление бизнесом", c5Desc: "Программа для предпринимателей. От запуска с нуля до систематизации процессов.", c5p1: "✔️ Экономика и право МСП", c5p2: "✔️ Управление персоналом", c5p3: "✔️ Выход из операционки",
-                c6Title: "Менеджмент гостеприимства", c6Desc: "Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.", c6p1: "✔️ Маркетинг впечатлений", c6p2: "✔️ Управление конфликтами", c6p3: "✔️ Оптимизация затрат HoReCa",
-                c7Title: "Повар (3-4 разряд)", c7Desc: "Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.", c7p1: "✔️ Технологические карты", c7p2: "✔️ Практика приготовления блюд", c7p3: "✔️ Присвоение гос. квалификации",
-                c8Title: "1С:Предприятие & Бухучет", c8Desc: "Полный цикл автоматизированного учета на малых предприятиях и для ИП.", c8p1: "✔️ Налоговая отчетность", c8p2: "✔️ Регламентные расчеты 1С", c8p3: "✔️ Упрощенные алгоритмы учета",
-                cardHours1: "506 ч.", cardHours2: "144 ч.", cardHours3: "36 ч.", cardHours4: "98 ч.", cardHours5: "252 ч.", cardHours6: "150 ч.",
-                studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
-                glossaryTitle: "Глоссарий Академии",
-                g1Title: "ЦДО", g1Desc: "Центр дополнительного образования — структурное подразделение Западного филиала РАНХиГС.",
-                g2Title: "ДПО", g2Desc: "Дополнительное профессиональное образование — система обучения на базе текущего образования.",
-                g3Title: "ПК", g3Desc: "Повышение квалификации — краткосрочные программы обновления знаний.",
-                g4Title: "ПП", g4Desc: "Профессиональная переподготовка — программы (от 250 ч.) для получения новой профессии.",
-                g5Title: "ФГОС", g5Desc: "Федеральный государственный образовательный стандарт — требования к качеству.",
-                g6Title: "ВЭД", g6Desc: "Внешнеэкономическая деятельность — международная торговля и логистика.",
-                contactsTitle: "Контактная информация", contactsSub: "Официальные данные сотрудников Центров и Отделов Западного филиала",
-                mainContactTitle: "Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:",
-                telLabel: "Телефоны:", addressLabel: "Адрес:", addressText: "236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62",
-                dept1: "Центр дополнительного образования", dirCenter: "Директор центра", depDir: "Заместитель директора центра", projDir: "Директор проекта", spec: "Специалист",
-                dept2: "Отдел ПК и переподготовки государственных служащих", headDep: "Начальник отдела", leadSpec: "Ведущий специалист", dept3: "Отдел дополнительного образования",
-                cabText: "Каб.", telText: "Тел:", extText: "доб.",
-                footerRights: "Все права защищены. © 2026 Президентская академия",
-                polLink: "Политика конфиденциальности и обработки персональных данных (152-ФЗ)", termLink: "Пользовательское соглашение и оферта",
-                modTitle: "Оформление заявки", modDesc: "Выберите удобный способ регистрации на программу обучения:", modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму", modTg: "Записаться через Telegram (Сова)", modClose: "Закрыть окно",
-                contModTitle: "Контакты Центра", contModDesc: "Руководство и ключевые отделы:",
-                polModTitle: "Политика обработки персональных данных", polModText: "Настоящая Политика конфиденциальности персональных данных действует в отношении всей информации, которую Западный филиал РАНХиГС может получить о Пользователе во время использования сайта.<br><br>1. Обработка персональных данных осуществляется в соответствии с Федеральным законом РФ № 152-ФЗ «О персональных данных».<br>2. Пользователь дает согласие на обработку своих персональных данных в целях регистрации заявки на обучение в рамках национального проекта «Кадры».<br>3. Оператор принимает необходимые организационные и технические меры для защиты персональной информации от неправомерного доступа.",
-                termModTitle: "Пользовательское соглашение и оферта", termModText: "Использование материалов и сервисов сайта регулируется нормами законодательства Российской Федерации.<br><br>1. Сайт носит информационный характер и не является публичной офертой.<br>2. Все права на текстовые материалы, графические изображения и структуру сайта принадлежат Западному филиалу РАНХиГС.<br>3. Подавая заявку через формы связи, пользователь подтверждает свое ознакомление с условиями федеральных образовательных программ.", modOk: "Понятно",
-                owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:", owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?",
-            },
-            en: {
-                pageTitle: "Academy of Personnel | Western Branch of RANEPA",
-                logoSub: "Western Branch • Center for Continuing Education",
-                navProg: "Programs", navCont: "Contacts", navBtn: "Enroll",
-                nationalProject: "National Project «Personnel»", badgeText: "National Project «Personnel»",
-                heroTitle: "Academy of Management<br>and Professional Growth",
-                heroDesc: "Continuing Professional Education programs with state support. Gain fundamental knowledge, in-demand skills, and a RANEPA diploma for a confident career breakthrough.",
-                tabAll: "All Programs", tabGos: "🏛️ Public Service & Procurement", tabBiz: "🚀 Digital Business & AI", tabHoreca: "🏨 HoReCa & Tourism", tabProf: "⚡ Fast Professions",
-                c1Title: "Public Administration", c1Desc: "A fundamental foundation for a confident start and rapid career growth in public service.", c1p1: "✔️ Legal basis of public administration", c1p2: "✔️ Financial management", c1p3: "✔️ Public policy",
-                c2Title: "Procurement Management", c2Desc: "Exceptional practice on Federal Laws 44-FZ and 223-FZ. Learn to conduct error-free procurements.", c2p1: "✔️ Arbitration practice", c2p2: "✔️ Antimonopoly control", c2p3: "✔️ End-to-end procurement design",
-                c3Title: "Terrorism Prevention", c3Desc: "Mandatory minimum for managers and responsible specialists.", c3p1: "✔️ Anti-terrorism security", c3p2: "✔️ Anti-corruption measures", c3p3: "✔️ Minimizing inspection risks",
-                c4Title: "Artificial Intelligence", c4Desc: "Delegate routine analytics and writing to neural networks. Free up your working time.", c4p1: "✔️ Prompt engineering", c4p2: "✔️ Process automation", c4p3: "✔️ AI integration in business",
-                c5Title: "Business Management", c5Desc: "A program for entrepreneurs. From starting from scratch to systematizing processes.", c5p1: "✔️ Economics and law of SMEs", c5p2: "✔️ HR management", c5p3: "✔️ Exiting routine operations",
-                c6Title: "Hospitality Management", c6Desc: "Hotel and restaurant management. Financial efficiency and premium service.", c6p1: "✔️ Experience marketing", c6p2: "✔️ Conflict management", c6p3: "✔️ HoReCa cost optimization",
-                c7Title: "Chef (3rd-4th grade)", c7Desc: "An applied skill with rapid monetization in the labor market. Commercial kitchen workflow.", c7p1: "✔️ Recipe blueprints", c7p2: "✔️ Practical culinary training", c7p3: "✔️ State qualification assignment",
-                c8Title: "1C:Enterprise & Accounting", c8Desc: "A full cycle of automated accounting for small enterprises and sole proprietors.", c8p1: "✔️ Tax reporting", c8p2: "✔️ 1C routine calculations", c8p3: "✔️ Simplified accounting algorithms",
-                cardHours1: "506 hrs.", cardHours2: "144 hrs.", cardHours3: "36 hrs.", cardHours4: "98 hrs.", cardHours5: "252 hrs.", cardHours6: "150 hrs.",
-                studyPlanBtn: "Explore Curriculum", enrollBtn: "Enroll",
-                glossaryTitle: "Academy Glossary",
-                g1Title: "CCE", g1Desc: "Center for Continuing Education — a structural subdivision of the RANEPA Western Branch.",
-                g2Title: "CPE", g2Desc: "Continuing Professional Education — a training system based on current education.",
-                g3Title: "AT", g3Desc: "Advanced Training — short-term programs for knowledge updates.",
-                g4Title: "PR", g4Desc: "Professional Retraining — programs (from 250 hrs.) to acquire a new profession.",
-                g5Title: "FSES", g5Desc: "Federal State Educational Standard — quality requirements.",
-                g6Title: "FEA", g6Desc: "Foreign Economic Activity — international trade and logistics.",
-                contactsTitle: "Contact Information", contactsSub: "Official data of the Western Branch Centers and Departments staff",
-                mainContactTitle: "Contacts of the Center for Continuing Education of the Western Branch of the Presidential Academy:",
-                telLabel: "Phones:", addressLabel: "Address:", addressText: "62 Artilleriyskaya st., Kaliningrad, Kaliningrad region, Russia, 236038",
-                dept1: "Center for Continuing Education", dirCenter: "Center Director", depDir: "Deputy Director of the Center", projDir: "Project Director", spec: "Specialist",
-                dept2: "Department of State Employees Training", headDep: "Head of Department", leadSpec: "Leading Specialist", dept3: "Department of Continuing Education",
-                cabText: "Room", telText: "Tel:", extText: "ext.",
-                footerRights: "All rights reserved. © 2026 Presidential Academy",
-                polLink: "Privacy Policy and Personal Data Processing (152-FZ)", termLink: "User Agreement and Offer",
-                modTitle: "Application Processing", modDesc: "Choose a convenient registration method for the educational program:", modTrud: "Apply via «Work in Russia» (Kaliningrad)", modYan: "Apply via Yandex Form", modTg: "Apply via Telegram (Sova)", modClose: "Close window",
-                contModTitle: "Center Contacts", contModDesc: "Management and key departments:",
-                polModTitle: "Personal Data Processing Policy", polModText: "This Privacy Policy applies to all information that the Western Branch of RANEPA can obtain about the User during the use of the site.<br><br>1. Processing of personal data is carried out in accordance with the Federal Law of the Russian Federation No. 152-FZ.<br>2. The user consents to the processing of their personal data (surname, name, patronymic, contact phone number, email) for the purpose of registering an application for training within the national project \"Personnel\".<br>3. The operator takes necessary organizational and technical measures to protect personal information from unauthorized access.",
-                termModTitle: "User Agreement and Offer", termModText: "The use of materials and services of the site is governed by the laws of the Russian Federation.<br><br>1. Site is for informational purposes and is not a public offer.<br>2. All rights to the text materials, graphic images, and site structure belong to the Western Branch of RANEPA.<br>3. By submitting an application through communication forms, the user confirms their familiarity with the terms of federal educational programs.", modOk: "Understood",
-                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?",
-            }
         };
 
         function setLanguage(lang) {
@@ -1327,20 +1228,38 @@
                 owlContainer.style.right = 'auto';
                 owlContainer.style.transform = 'none';
 
-                void owlContainer.offsetWidth;
+                const startScale = owlContainer.dataset.scaled === "true" ? 0.55 : 0.85;
+                const endScale = 0.55;
 
-                const deltaX = (targetRect.right - startRect.width * 0.55 - 20) - startRect.left;
-                const deltaY = (targetRect.top - startRect.height * 0.55 + 20) - startRect.top;
+                const deltaX = (targetRect.right - startRect.width * endScale - 20) - startRect.left;
+                const deltaY = (targetRect.top - startRect.height * endScale + 10) - startRect.top;
 
-                owlContainer.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.25, 0.64, 1)';
-                owlContainer.classList.add('owl-chaotic-flight');
-                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.55)`;
+                // Инъекция динамической анимации полета (настоящая парабола без лагов)
+                let styleSheet = document.getElementById('dynamic-flight-style');
+                if (!styleSheet) {
+                    styleSheet = document.createElement('style');
+                    styleSheet.id = 'dynamic-flight-style';
+                    document.head.appendChild(styleSheet);
+                }
+                
+                styleSheet.innerHTML = `
+                    @keyframes owlParabolicFlight {
+                        0% { transform: translate3d(0px, 0px, 0) scale(${startScale}) rotate(0deg); }
+                        30% { transform: translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(${(startScale+endScale)/2}) rotate(-12deg); }
+                        70% { transform: translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(${endScale + 0.05}) rotate(8deg); }
+                        100% { transform: translate3d(${deltaX}px, ${deltaY}px, 0) scale(${endScale}) rotate(0deg); }
+                    }
+                `;
+
+                void owlContainer.offsetWidth; // рефлоу
+
+                owlContainer.style.animation = 'owlParabolicFlight 1.2s cubic-bezier(0.25, 1, 0.4, 1) forwards';
+                owlContainer.classList.add('owl-fast-flap');
 
                 setTimeout(() => {
-                    owlContainer.classList.remove('owl-chaotic-flight');
-                    owlContainer.style.transition = 'none';
-                    owlContainer.style.transform = 'none';
-
+                    owlContainer.classList.remove('owl-fast-flap');
+                    owlContainer.style.animation = 'none';
+                    
                     targetCard.style.position = 'relative';
                     targetCard.appendChild(owlContainer);
 
@@ -1348,8 +1267,9 @@
                     owlContainer.style.left = 'auto';
                     owlContainer.style.bottom = 'auto';
                     owlContainer.style.right = '20px';
-                    owlContainer.style.top = '-135px';
-                    owlContainer.style.transform = 'scale(0.55)';
+                    owlContainer.style.top = '-145px';
+                    owlContainer.style.transform = `scale(${endScale})`;
+                    owlContainer.dataset.scaled = "true";
 
                     isOwlFlying = false;
 
@@ -1357,9 +1277,9 @@
                         returnOwlToBranch();
                     }, 5000);
 
-                }, 800);
+                }, 1200);
 
-            }, 200);
+            }, 300);
         }
 
         function returnOwlToBranch() {
@@ -1396,28 +1316,38 @@
             const deltaX = targetX - startRect.left;
             const deltaY = targetY - startRect.top;
 
-            owlContainer.style.transition = 'transform 1s cubic-bezier(0.25, 1, 0.5, 1)';
-            owlContainer.classList.add('owl-chaotic-flight');
-            owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1) scaleX(-1)`;
+            let styleSheet = document.getElementById('dynamic-flight-style');
+            styleSheet.innerHTML = `
+                @keyframes owlReturnFlight {
+                    0% { transform: translate3d(0px, 0px, 0) scale(0.55) scaleX(-1) rotate(0deg); }
+                    30% { transform: translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(0.7) scaleX(-1) rotate(-12deg); }
+                    70% { transform: translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(0.8) scaleX(-1) rotate(8deg); }
+                    100% { transform: translate3d(${deltaX}px, ${deltaY}px, 0) scale(0.85) scaleX(-1) rotate(0deg); }
+                }
+            `;
+
+            owlContainer.style.animation = 'owlReturnFlight 1.2s cubic-bezier(0.25, 1, 0.4, 1) forwards';
+            owlContainer.classList.add('owl-fast-flap');
 
             setTimeout(() => {
-                owlContainer.classList.remove('owl-chaotic-flight');
+                owlContainer.classList.remove('owl-fast-flap');
                 owlContainer.classList.remove('owl-flip');
                 owlContainer.classList.remove('stop-patrol');
                 
                 const eco = document.getElementById('owlContainer');
                 eco.appendChild(owlContainer);
 
-                owlContainer.style.transition = 'all 0.3s';
+                owlContainer.style.animation = 'none';
                 owlContainer.style.transform = 'none';
                 owlContainer.style.position = 'absolute';
                 owlContainer.style.left = '35px';
                 owlContainer.style.bottom = '55px';
                 owlContainer.style.top = 'auto';
                 owlContainer.style.right = 'auto';
+                owlContainer.dataset.scaled = "false";
 
                 isOwlFlying = false;
-            }, 1000);
+            }, 1200);
         }
 
         function showCatalog() {
