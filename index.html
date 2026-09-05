@@ -88,7 +88,7 @@
         .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: clamp(25px, 4vw, 35px); animation: fadeInScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
         @keyframes fadeInScale { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* --- КАРТОЧКИ: GLASSMORPHISM & APPLE STYLE --- */
+        /* --- КАРТОЧКИ --- */
         .card { background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid var(--glass-border); border-top: 1px solid rgba(255,255,255,0.15); padding: clamp(25px, 5vw, 40px); position: relative; transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.02); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; transform-style: preserve-3d; }
         .card:hover { transform: translateY(-12px) scale(1.02) rotateX(2deg); box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.15), inset 0 0 0 1px rgba(255,255,255,0.1); border-color: rgba(56, 189, 248, 0.4); z-index: 10; }
         
@@ -117,13 +117,25 @@
         /* --- ЖЕЛЕЗОБЕТОННЫЙ БЛОК КОНТАКТОВ И ФУТЕРА --- */
         .contacts-wrapper { background: rgba(5, 8, 14, 0.8); border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(30px); padding: 80px max(20px, env(safe-area-inset-right)) 80px max(20px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; display: block; clear: both; }
         .contacts-container { max-width: 1300px; margin: 0 auto; display: block; }
+        
+        /* Главные контакты ЦДО и Адрес (Одной строкой) */
+        .main-contact-bar {
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-left: 4px solid var(--ranepa-red); border-radius: 16px; padding: 20px 25px; margin-bottom: 20px; display: flex; gap: 25px; align-items: center; white-space: nowrap; overflow-x: auto; color: #cbd5e1; font-size: 1rem; box-shadow: 0 15px 30px rgba(0,0,0,0.3); -ms-overflow-style: none; scrollbar-width: none;
+        }
+        .main-contact-bar::-webkit-scrollbar { display: none; }
+        .main-contact-bar a { color: #38bdf8; text-decoration: none; font-weight: 800; transition: color 0.2s; }
+        .main-contact-bar a:hover { color: #FF5F61; }
+
         .department-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #FF5F61; margin: 50px 0 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; font-weight: 800; }
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: clamp(20px, 4vw, 25px); }
-        .contact-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        
+        /* Карточки контактов строго в одну строку без переносов */
+        .contact-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); white-space: nowrap; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+        .contact-card::-webkit-scrollbar { display: none; }
         .contact-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
         .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; margin-bottom: 8px; color: #fff; font-weight: 800; }
         .contact-card .position { font-size: 0.85rem; color: #38bdf8; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .contact-card .details { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; overflow-wrap: anywhere; word-break: break-word; }
+        .contact-card .details { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; }
         .contact-card .details a { color: #38bdf8; text-decoration: underline; font-weight: 700; transition: color 0.2s; }
         .contact-card .details a:hover { color: #FF5F61; }
 
@@ -132,7 +144,7 @@
         .legal-footer-links span { color: #94A3B8; text-decoration: underline; cursor: pointer; transition: color 0.2s; touch-action: manipulation; }
         .legal-footer-links span:hover { color: #fff; }
 
-        /* --- МОДАЛЬНЫЕ ОКНА: ЭФФЕКТ ЖИДКОГО СТЕКЛА КАК НА IPHONE --- */
+        /* --- МОДАЛЬНЫЕ ОКНА: ЭФФЕКТ ЖИДКОГО СТЕКЛА --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
@@ -237,7 +249,7 @@
             100% { opacity: 0; transform: translate(40px, -50px) scale(1.6); }
         }
 
-        .owl-flying { animation: flyAway 1.6s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
+        .owl-flying { animation: flyAway 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
         @keyframes flyAway { 0% { transform: translateY(0); } 100% { transform: translateY(-600px) scale(0.3); opacity: 0; } }
 
         .owl-chaotic-flight .owl-body { animation: owlCinematicSwoop 0.8s infinite ease-in-out !important; }
@@ -609,33 +621,43 @@
 
     </div>
 
-    <!-- КОНТАКТЫ И ПОЛИТИКА: ЖЕЛЕЗОБЕТОННЫЙ БЛОК -->
     <div id="contactsSection" class="contacts-wrapper">
         <div class="contacts-container">
             <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
             <p style="color: #cbd5e1; margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
+
+            <div class="main-contact-bar">
+                <span style="color: #fff; font-weight: 800;">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</span>
+                <span><b style="color: #FF5F61;">Телефоны:</b> <a href="tel:+74012972379">+7 (4012) 97-23-79</a>;</span>
+                <span><b style="color: #FF5F61;">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru">cdo-zf@ranepa.ru</a></span>
+            </div>
+            
+            <div class="main-contact-bar">
+                <span style="color: #fff; font-weight: 800;">Адрес:</span>
+                <span>236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span>
+            </div>
 
             <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
                     <h4>Канаш Ирина Степановна</h4>
                     <div class="position" data-i18n="dirCenter">Директор центра</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 304 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)<br><a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 304 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">+7 (4012) 97-23-76</a> (<span data-i18n="extText">доб.</span> 2002) | <a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a></div>
                 </div>
                 <div class="contact-card">
                     <h4>Крупин Артур Леонидович</h4>
                     <div class="position" data-i18n="depDir">Заместитель директора центра</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129) | <a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a></div>
                 </div>
                 <div class="contact-card">
                     <h4>Перетяка Нина Петровна</h4>
                     <div class="position" data-i18n="projDir">Директор проекта</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130) | <a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a></div>
                 </div>
                 <div class="contact-card">
                     <h4>Лощилова М.А.</h4>
                     <div class="position" data-i18n="spec">Специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130) | <a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a></div>
                 </div>
             </div>
 
@@ -644,12 +666,12 @@
                 <div class="contact-card">
                     <h4>Михина Елена Владимировна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129) | <a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a></div>
                 </div>
                 <div class="contact-card">
                     <h4>Беспалова Валерия Вадимовна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129) | <a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a></div>
                 </div>
             </div>
 
@@ -658,17 +680,17 @@
                 <div class="contact-card">
                     <h4>Дацун Татьяна Григорьевна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130) | <a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a></div>
                 </div>
                 <div class="contact-card">
                     <h4>Чижекова Наталья Владимировна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129) | <a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a></div>
                 </div>
                 <div class="contact-card">
                     <h4>Хамзина Ирина Александровна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129) | <a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></div>
                 </div>
             </div>
 
@@ -682,17 +704,23 @@
         </div>
     </div>
 
-    <!-- Модалка Контактов РАНХиГС: Эффект Жидкого Стекла (RANEPA Brand) -->
     <div class="modal-overlay" id="contactsModal">
-        <div class="modal-box glass-modal-ranepa" style="text-align: left; max-width: 650px;">
+        <div class="modal-box glass-modal-ranepa" style="text-align: left; max-width: 750px;">
             <h3 data-i18n="contModTitle">Контакты Центра</h3>
-            <p data-i18n="contModDesc" style="color: rgba(255,255,255,0.85);">Быстрый доступ к руководству и ключевым отделам Западного филиала РАНХиГС:</p>
-            <div style="font-size: 0.95rem; line-height: 1.8; color: #fff; max-height: 50vh; overflow-y: auto; padding-right: 10px; font-weight: 500;">
-                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dirCenter">Директор ЦДО:</b><br>Канаш Ирина Степановна — <span data-i18n="cabText">Каб.</span> 304, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-76</a> (<span data-i18n="extText">доб.</span> 2002), <a href="mailto:kanash-is@ranepa.ru" style="color:#fff; text-decoration: underline;">kanash-is@ranepa.ru</a><br><br>
-                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="depDir">Зам. директора:</b><br>Крупин Артур Леонидович — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:krupin-al@ranepa.ru" style="color:#fff; text-decoration: underline;">krupin-al@ranepa.ru</a><br><br>
-                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="projDir">Директор проекта:</b><br>Перетяка Нина Петровна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:peretyaka-np@ranepa.ru" style="color:#fff; text-decoration: underline;">peretyaka-np@ranepa.ru</a><br><br>
-                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dept2">Отдел госслужащих:</b><br>Михина Елена Владимировна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:mikhina-ev@ranepa.ru" style="color:#fff; text-decoration: underline;">mikhina-ev@ranepa.ru</a><br><br>
-                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dept3">Отдел ДПО:</b><br>Дацун Татьяна Григорьевна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:datsun-tg@ranepa.ru" style="color:#fff; text-decoration: underline;">datsun-tg@ranepa.ru</a>
+            
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                <p style="color: #fff; margin-bottom: 10px; font-size: 0.95rem;"><b>Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</b></p>
+                <p style="color: #cbd5e1; margin-bottom: 5px; font-size: 0.9rem;">Телефоны: <a href="tel:+74012972379" style="color:#FF5F61;">+7 (4012) 97-23-79</a>; E-mail: <a href="mailto:cdo-zf@ranepa.ru" style="color:#FF5F61;">cdo-zf@ranepa.ru</a></p>
+                <p style="color: #cbd5e1; margin-bottom: 0; font-size: 0.9rem;">Адрес: 236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</p>
+            </div>
+
+            <p data-i18n="contModDesc" style="color: rgba(255,255,255,0.85); margin-bottom: 15px;">Руководство и ключевые отделы:</p>
+            <div style="font-size: 0.95rem; line-height: 1.8; color: #fff; max-height: 40vh; overflow-y: auto; padding-right: 10px; font-weight: 500;">
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dirCenter">Директор ЦДО:</b><br>Канаш Ирина Степановна — <span data-i18n="cabText">Каб.</span> 304, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376" style="color:#FF5F61; text-decoration: none; font-weight: 800;">+7 (4012) 97-23-76</a> (<span data-i18n="extText">доб.</span> 2002), <a href="mailto:kanash-is@ranepa.ru" style="color:#fff; text-decoration: underline;">kanash-is@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="depDir">Зам. директора:</b><br>Крупин Артур Леонидович — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:krupin-al@ranepa.ru" style="color:#fff; text-decoration: underline;">krupin-al@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="projDir">Директор проекта:</b><br>Перетяка Нина Петровна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:peretyaka-np@ranepa.ru" style="color:#fff; text-decoration: underline;">peretyaka-np@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dept2">Отдел госслужащих:</b><br>Михина Елена Владимировна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:mikhina-ev@ranepa.ru" style="color:#fff; text-decoration: underline;">mikhina-ev@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dept3">Отдел ДПО:</b><br>Дацун Татьяна Григорьевна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:datsun-tg@ranepa.ru" style="color:#fff; text-decoration: underline;">datsun-tg@ranepa.ru</a>
             </div>
             <div class="close-modal" onclick="closeContactsModal()" style="text-align: center; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;" data-i18n="modClose">Закрыть окно</div>
         </div>
@@ -735,7 +763,6 @@
         </div>
     </div>
 
-    <!-- ЭКОСИСТЕМА СОВЫ И ВЕТКА С ОТСТУПАМИ -->
     <div class="owl-ecosystem" id="owlContainer">
         <div class="oak-branch">
             <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
@@ -746,7 +773,6 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <!-- Векторный 3D-филин с улучшенными градиентами -->
                 <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <radialGradient id="eyeAmber" cx="45%" cy="45%" r="55%">
@@ -783,7 +809,6 @@
                         </filter>
                     </defs>
 
-                    <!-- Оперение и тени -->
                     <ellipse cx="100" cy="150" rx="64" ry="84" fill="#05080c" opacity="0.4" filter="blur(6px)"/>
                     <polygon points="75,225 100,260 125,225" fill="#1b100a"/>
                     <ellipse cx="100" cy="150" rx="62" ry="80" fill="url(#bodyPlumage)" filter="url(#innerGlow)"/>
@@ -797,7 +822,6 @@
                     <path d="M 50,105 C 32,135 36,200 78,238 C 65,190 60,135 75,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
                     <path d="M 150,105 C 168,135 164,200 122,238 C 135,190 140,135 125,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
 
-                    <!-- Острые перьевые ушки -->
                     <polygon points="72,60 42,12 85,46" fill="#22120b" stroke="#120804" stroke-width="1.5"/>
                     <polygon points="128,60 158,12 115,46" fill="#2c160e" stroke="#120804" stroke-width="1.5"/>
 
@@ -817,10 +841,8 @@
                     <rect class="owl-svg-eyelid" x="70" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 84px 64px; transform: scaleY(0);"/>
                     <rect class="owl-svg-eyelid" x="102" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 116px 64px; transform: scaleY(0);"/>
 
-                    <!-- Очки и клюв -->
                     <path d="M 84,64 Q 100,70 116,64" stroke="#e6c687" stroke-width="3" fill="none" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.8))"/>
                     
-                    <!-- Новый, хищный янтарный клюв -->
                     <polygon points="94,76 106,76 100,105" fill="#dca742" stroke="#2b1810" stroke-width="1.5" filter="drop-shadow(0 4px 4px rgba(0,0,0,0.7))"/>
                     <line x1="100" y1="76" x2="100" y2="103" stroke="#8c611c" stroke-width="1.5"/>
 
