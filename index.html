@@ -48,18 +48,23 @@
         .shape-3 { background: #FF5F61; width: 25vw; height: 25vw; border-radius: 60% 40% 30% 70%; top: 35%; left: 50%; opacity: 0.2; animation-duration: 30s; }
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(8vw, 12vh) rotate(45deg) scale(1.15); } }
 
+        /* --- ШАПКА И НОВАЯ ПАНЕЛЬ УПРАВЛЕНИЯ --- */
         header { background: rgba(5, 8, 14, 0.65); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; flex-shrink: 1; min-width: auto; max-width: 100%; z-index: 10051; align-items: flex-start; text-align: left; }
         .logo-group img { height: 150px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; background: transparent !important; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 5px; text-align: left; }
 
-        .header-controls { display: flex; gap: 10px; align-items: center; flex-shrink: 0; z-index: 10051; position: relative; }
-        .control-panel-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); touch-action: manipulation; backdrop-filter: blur(10px); }
-        .control-panel-btn:hover { background: var(--ranepa-rich-blue); border-color: #38bdf8; transform: scale(1.1) translateY(-2px); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); }
-        .lang-active { background: var(--ranepa-rich-blue); border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+        .header-right-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; margin-left: auto; margin-right: 20px; z-index: 10051; }
+        
+        /* Модернизированные кнопки Accessibility & Lang */
+        .header-controls { display: flex; gap: 15px; align-items: center; }
+        .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .control-panel-btn { background: transparent; border: none; color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); touch-action: manipulation; }
+        .control-panel-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .lang-active, .active-font { background: var(--ranepa-red) !important; color: #fff; box-shadow: 0 4px 12px rgba(202, 15, 62, 0.5); }
 
-        .header-nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; z-index: 10051; position: relative; }
+        .header-nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
         .header-nav-link { color: var(--text-muted); text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; transition: all 0.3s ease; cursor: pointer; touch-action: manipulation; position: relative; }
         .header-nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background-color: #fff; transition: width 0.3s ease; }
         .header-nav-link:hover { color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.6); }
@@ -114,14 +119,11 @@
         .glossary-item:hover { transform: translateY(-5px); box-shadow: 0 25px 45px rgba(0,0,0,0.5); }
         .glossary-item strong { display: block; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 10px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        /* --- ЖЕЛЕЗОБЕТОННЫЙ БЛОК КОНТАКТОВ И ФУТЕРА --- */
+        /* --- КОНТАКТЫ И ФУТЕР --- */
         .contacts-wrapper { background: rgba(5, 8, 14, 0.8); border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(30px); padding: 80px max(20px, env(safe-area-inset-right)) 80px max(20px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; display: block; clear: both; }
         .contacts-container { max-width: 1300px; margin: 0 auto; display: block; }
         
-        /* Главные контакты ЦДО и Адрес (Одной строкой) */
-        .main-contact-bar {
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-left: 4px solid var(--ranepa-red); border-radius: 16px; padding: 20px 25px; margin-bottom: 20px; display: flex; gap: 25px; align-items: center; white-space: nowrap; overflow-x: auto; color: #cbd5e1; font-size: 1rem; box-shadow: 0 15px 30px rgba(0,0,0,0.3); -ms-overflow-style: none; scrollbar-width: none;
-        }
+        .main-contact-bar { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-left: 4px solid var(--ranepa-red); border-radius: 16px; padding: 20px 25px; margin-bottom: 20px; display: flex; gap: 25px; align-items: center; white-space: nowrap; overflow-x: auto; color: #cbd5e1; font-size: 1rem; box-shadow: 0 15px 30px rgba(0,0,0,0.3); -ms-overflow-style: none; scrollbar-width: none; }
         .main-contact-bar::-webkit-scrollbar { display: none; }
         .main-contact-bar a { color: #38bdf8; text-decoration: none; font-weight: 800; transition: color 0.2s; }
         .main-contact-bar a:hover { color: #FF5F61; }
@@ -129,7 +131,6 @@
         .department-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #FF5F61; margin: 50px 0 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; font-weight: 800; }
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: clamp(20px, 4vw, 25px); }
         
-        /* Карточки контактов строго в одну строку без переносов */
         .contact-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); white-space: nowrap; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
         .contact-card::-webkit-scrollbar { display: none; }
         .contact-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
@@ -139,30 +140,30 @@
         .contact-card .details a { color: #38bdf8; text-decoration: underline; font-weight: 700; transition: color 0.2s; }
         .contact-card .details a:hover { color: #FF5F61; }
 
-        .legal-footer { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; gap: 15px; width: 100%; }
-        .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+        .legal-footer { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; gap: 15px; width: 100%; text-align: center; }
+        .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .legal-footer-links span { color: #94A3B8; text-decoration: underline; cursor: pointer; transition: color 0.2s; touch-action: manipulation; }
         .legal-footer-links span:hover { color: #fff; }
 
-        /* --- МОДАЛЬНЫЕ ОКНА: ЭФФЕКТ ЖИДКОГО СТЕКЛА --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; padding: 15px; perspective: 1000px; }
+        /* --- ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (CUBIC-BEZIER) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.4s ease; box-sizing: border-box; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
-        .modal-box { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); padding: clamp(25px, 5vw, 45px); border-radius: 28px; max-width: 550px; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 85vh; overflow-y: auto; transform: scale(0.9) translateY(20px) rotateX(10deg); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .modal-overlay.active .modal-box { transform: scale(1) translateY(0) rotateX(0deg); }
+        /* Пружинная анимация появления */
+        .modal-box { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); padding: clamp(25px, 5vw, 45px); border-radius: 28px; max-width: 550px; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 85vh; overflow-y: auto; transform: scale(0.8) translateY(40px); opacity: 0; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease; }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
         
         .glass-modal-ranepa { background: linear-gradient(145deg, rgba(136, 19, 55, 0.2) 0%, rgba(10, 15, 24, 0.8) 100%) !important; border-top: 1px solid rgba(202, 15, 62, 0.4) !important; border-left: 1px solid rgba(202, 15, 62, 0.2) !important; box-shadow: 0 40px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 40px rgba(202, 15, 62, 0.15) !important; }
         
         .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.4rem, 5vw, 1.8rem); color: #fff; margin-bottom: 15px; font-weight: 900; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
         .modal-box p { color: var(--text-main); margin-bottom: 30px; font-size: 1.05rem; text-align: left; line-height: 1.6; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        .modal-btn-trudvsem { display: block; background: rgba(41, 98, 255, 0.8); backdrop-filter: blur(10px); color: #fff; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .modal-btn-trudvsem, .modal-btn-yandex, .modal-btn-tg { display: block; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .modal-btn-trudvsem { background: rgba(41, 98, 255, 0.8); backdrop-filter: blur(10px); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
         .modal-btn-trudvsem:hover { background: #2962ff; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(41, 98, 255, 0.5); }
-        
-        .modal-btn-yandex { display: block; background: rgba(255, 204, 0, 0.8); backdrop-filter: blur(10px); color: #000; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 900; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .modal-btn-yandex { background: rgba(255, 204, 0, 0.8); backdrop-filter: blur(10px); color: #000; border: 1px solid rgba(255,255,255,0.4); }
         .modal-btn-yandex:hover { background: #FFCC00; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 204, 0, 0.4); }
-        
-        .modal-btn-tg { display: block; background: rgba(42, 171, 238, 0.8); backdrop-filter: blur(10px); color: #fff; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .modal-btn-tg { background: rgba(42, 171, 238, 0.8); backdrop-filter: blur(10px); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
         .modal-btn-tg:hover { background: #2AABEE; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(42, 171, 238, 0.5); }
         
         .close-modal { margin-top: 25px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 800; text-decoration: underline; transition: color 0.3s; }
@@ -207,11 +208,12 @@
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation;
         }
 
+        /* Жесткая математика передвижения по ветке: Y = X * tan(6) ≈ X * 0.105 */
         @keyframes naturalPerch {
-            0%, 20% { transform: translateX(0) translateY(0); }
-            40%, 45% { transform: translateX(40px) translateY(-4px); }
-            70%, 75% { transform: translateX(80px) translateY(3px); }
-            100% { transform: translateX(20px) translateY(-2px); }
+            0%, 20% { transform: translate(0, 0); }
+            40%, 45% { transform: translate(40px, -4.2px); }
+            70%, 75% { transform: translate(80px, -8.4px); }
+            100% { transform: translate(20px, -2.1px); }
         }
 
         .stop-patrol { animation: none !important; }
@@ -264,7 +266,7 @@
         .owl-bubble.show { opacity: 1; transform: scale(1); }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
-        .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(30px) saturate(150%); border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translateY(30px) scale(0.95); transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(30px) saturate(150%); border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translateY(40px) scale(0.9); transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .owl-chat-panel.active { display: flex; opacity: 1; transform: translateY(0) scale(1); }
         .owl-chat-header { background: rgba(5, 8, 14, 0.6); color: #fff; padding: 18px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ranepa-red); border-radius: 24px 24px 0 0; }
         .owl-chat-body { padding: 20px; height: 350px; overflow-y: auto; background: transparent; font-size: 0.9rem; display: flex; flex-direction: column; gap: 15px; }
@@ -278,10 +280,11 @@
         .mobile-chat-icon { display: none; }
 
         @media (max-width: 768px) {
-            header { padding: 15px max(15px, env(safe-area-inset-right)) 15px max(15px, env(safe-area-inset-left)); flex-direction: column; gap: 15px; text-align: center; }
+            header { padding: 15px; flex-direction: column; gap: 15px; text-align: center; }
             .logo-group { width: 100%; align-items: center; text-align: center; }
             .logo-group img { height: 90px !important; width: auto; object-position: center; }
             .logo-subtitle { font-size: 0.7rem; text-align: center; }
+            .header-right-panel { width: 100%; align-items: center; margin: 0; gap: 15px; }
             .header-controls { justify-content: center; width: 100%; flex-wrap: wrap; }
             .header-nav { justify-content: center; width: 100%; gap: 10px; }
             .header-kadry { width: 100%; justify-content: center; margin-top: 5px; }
@@ -329,19 +332,25 @@
             <div class="logo-subtitle" data-i18n="logoSub">Западный филиал • Центр дополнительного образования</div>
         </div>
 
-        <div class="header-controls">
-            <button class="control-panel-btn" onclick="changeFontSize('small')">A-</button>
-            <button class="control-panel-btn" onclick="changeFontSize('normal')">A</button>
-            <button class="control-panel-btn" onclick="changeFontSize('large')">A+</button>
-            <button class="control-panel-btn lang-active" onclick="setLanguage('ru')" id="langRuBtn">RU</button>
-            <button class="control-panel-btn" onclick="setLanguage('en')" id="langEnBtn">EN</button>
-        </div>
+        <div class="header-right-panel">
+            <div class="header-controls">
+                <div class="control-group font-controls">
+                    <button class="control-panel-btn" onclick="changeFontSize('small', this)">A-</button>
+                    <button class="control-panel-btn active-font" onclick="changeFontSize('normal', this)">A</button>
+                    <button class="control-panel-btn" onclick="changeFontSize('large', this)">A+</button>
+                </div>
+                <div class="control-group">
+                    <button class="control-panel-btn lang-active" onclick="setLanguage('ru')" id="langRuBtn">RU</button>
+                    <button class="control-panel-btn" onclick="setLanguage('en')" id="langEnBtn">EN</button>
+                </div>
+            </div>
 
-        <nav class="header-nav">
-            <a href="#programsSection" class="header-nav-link" data-i18n="navProg">Программы</a>
-            <span class="header-nav-link" onclick="openContactsModal()" data-i18n="navCont">Контакты</span>
-            <button class="header-nav-btn" onclick="openModal()" data-i18n="navBtn">Записаться</button>
-        </nav>
+            <nav class="header-nav">
+                <a href="#programsSection" class="header-nav-link" data-i18n="navProg">Программы</a>
+                <span class="header-nav-link" onclick="openContactsModal()" data-i18n="navCont">Контакты</span>
+                <button class="header-nav-btn" onclick="openModal()" data-i18n="navBtn">Записаться</button>
+            </nav>
+        </div>
 
         <div class="header-kadry">
             <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
@@ -365,7 +374,7 @@
 
         <div id="tab-all" class="tab-content active">
             <div class="card">
-                <div class="card-meta"><span class="price">56 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours1">506 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">56 000 ₽</span><span class="hours" data-i18n="cardHours1">506 ч.</span></div>
                 <h3 data-i18n="c1Title">Государственное управление</h3>
                 <p data-i18n="c1Desc">Фундаментальная база для уверенного старта и стремительного роста на государственной службе.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -380,7 +389,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours2">144 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
                 <h3 data-i18n="c2Title">Управление закупками</h3>
                 <p data-i18n="c2Desc">Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -395,7 +404,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">10 500 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours3">36 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">10 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c3Title">Профилактика терроризма</h3>
                 <p data-i18n="c3Desc">Обязательный минимум для руководителей и ответственных специалистов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -410,7 +419,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">38 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours4">98 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">38 000 ₽</span><span class="hours" data-i18n="cardHours4">98 ч.</span></div>
                 <h3 data-i18n="c4Title">Искусственный Интеллект</h3>
                 <p data-i18n="c4Desc">Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -425,7 +434,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">46 300 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours5">252 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">46 300 ₽</span><span class="hours" data-i18n="cardHours5">252 ч.</span></div>
                 <h3 data-i18n="c5Title">Управление бизнесом</h3>
                 <p data-i18n="c5Desc">Программа для предпринимателей. От запуска с нуля до систематизации процессов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -440,7 +449,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours2">144 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
                 <h3 data-i18n="c6Title">Менеджмент гостеприимства</h3>
                 <p data-i18n="c6Desc">Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -455,7 +464,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">60 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours6">150 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">60 000 ₽</span><span class="hours" data-i18n="cardHours6">150 ч.</span></div>
                 <h3 data-i18n="c7Title">Повар (3-4 разряд)</h3>
                 <p data-i18n="c7Desc">Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -470,9 +479,9 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">13 500 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours3">36 ч.</span><span class="system-cite"></span></div>
+                <div class="card-meta"><span class="price">13 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c8Title">1С:Предприятие & Бухучет</h3>
-                <p data-i18n="c8Desc">Полный цикл automated учета на малых предприятиях и для ИП.</p>
+                <p data-i18n="c8Desc">Полный цикл автоматизированного учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
                     <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
@@ -627,14 +636,14 @@
             <p style="color: #cbd5e1; margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
 
             <div class="main-contact-bar">
-                <span style="color: #fff; font-weight: 800;">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</span>
-                <span><b style="color: #FF5F61;">Телефоны:</b> <a href="tel:+74012972379">+7 (4012) 97-23-79</a>;</span>
+                <span style="color: #fff; font-weight: 800;" data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</span>
+                <span><b style="color: #FF5F61;" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379">+7 (4012) 97-23-79</a>;</span>
                 <span><b style="color: #FF5F61;">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru">cdo-zf@ranepa.ru</a></span>
             </div>
             
             <div class="main-contact-bar">
-                <span style="color: #fff; font-weight: 800;">Адрес:</span>
-                <span>236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span>
+                <span style="color: #fff; font-weight: 800;" data-i18n="addressLabel">Адрес:</span>
+                <span data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span>
             </div>
 
             <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
@@ -695,7 +704,7 @@
             </div>
 
             <div class="legal-footer">
-                <div data-i18n="footerRights">© 2027 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
+                <div data-i18n="footerRights">Все права защищены. © 2026 Президентская академия</div>
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (152-ФЗ)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
@@ -704,14 +713,15 @@
         </div>
     </div>
 
+    <!-- Модалка Контактов РАНХиГС: Эффект Жидкого Стекла -->
     <div class="modal-overlay" id="contactsModal">
         <div class="modal-box glass-modal-ranepa" style="text-align: left; max-width: 750px;">
             <h3 data-i18n="contModTitle">Контакты Центра</h3>
             
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                <p style="color: #fff; margin-bottom: 10px; font-size: 0.95rem;"><b>Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</b></p>
-                <p style="color: #cbd5e1; margin-bottom: 5px; font-size: 0.9rem;">Телефоны: <a href="tel:+74012972379" style="color:#FF5F61;">+7 (4012) 97-23-79</a>; E-mail: <a href="mailto:cdo-zf@ranepa.ru" style="color:#FF5F61;">cdo-zf@ranepa.ru</a></p>
-                <p style="color: #cbd5e1; margin-bottom: 0; font-size: 0.9rem;">Адрес: 236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</p>
+                <p style="color: #fff; margin-bottom: 10px; font-size: 0.95rem;"><b data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</b></p>
+                <p style="color: #cbd5e1; margin-bottom: 5px; font-size: 0.9rem;"><span data-i18n="telLabel">Телефоны:</span> <a href="tel:+74012972379" style="color:#FF5F61;">+7 (4012) 97-23-79</a>; E-mail: <a href="mailto:cdo-zf@ranepa.ru" style="color:#FF5F61;">cdo-zf@ranepa.ru</a></p>
+                <p style="color: #cbd5e1; margin-bottom: 0; font-size: 0.9rem;"><span data-i18n="addressLabel">Адрес:</span> <span data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span></p>
             </div>
 
             <p data-i18n="contModDesc" style="color: rgba(255,255,255,0.85); margin-bottom: 15px;">Руководство и ключевые отделы:</p>
@@ -763,6 +773,7 @@
         </div>
     </div>
 
+    <!-- ЭКОСИСТЕМА СОВЫ И ВЕТКА -->
     <div class="owl-ecosystem" id="owlContainer">
         <div class="oak-branch">
             <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
@@ -886,11 +897,14 @@
         let isOwlFlying = false;
         let owlReturnTimer;
 
-        function changeFontSize(size) {
+        function changeFontSize(size, btnElement) {
             const root = document.documentElement;
             if(size === 'small') root.style.fontSize = '14px';
             if(size === 'normal') root.style.fontSize = '16px';
             if(size === 'large') root.style.fontSize = '18px';
+            
+            document.querySelectorAll('.font-controls .control-panel-btn').forEach(btn => btn.classList.remove('active-font'));
+            if(btnElement) btnElement.classList.add('active-font');
         }
 
         const botTexts = {
@@ -975,6 +989,87 @@
             ]
         };
 
+        const translationsHTML = {
+            ru: {
+                pageTitle: "Академия Кадров | Западный филиал РАНХиГС",
+                logoSub: "Западный филиал • Центр дополнительного образования",
+                navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
+                nationalProject: "Национальный проект «Кадры»", badgeText: "Национальный проект «Кадры»",
+                heroTitle: "Академия управления<br>и профессионального роста",
+                heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
+                tabAll: "Все программы", tabGos: "🏛️ Госслужба и закупки", tabBiz: "🚀 Цифровой бизнес и ИИ", tabHoreca: "🏨 HoReCa и Туризм", tabProf: "⚡ Быстрые профессии",
+                c1Title: "Государственное управление", c1Desc: "Фундаментальная база для уверенного старта и стремительного роста на государственной службе.", c1p1: "✔️ Правовые основы ГМУ", c1p2: "✔️ Финансовое управление", c1p3: "✔️ Публичная политика",
+                c2Title: "Управление закупками", c2Desc: "Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.", c2p1: "✔️ Арбитражная практика", c2p2: "✔️ Антимонопольный контроль", c2p3: "✔️ Сквозное проектирование закупки",
+                c3Title: "Профилактика терроризма", c3Desc: "Обязательный минимум для руководителей и ответственных специалистов.", c3p1: "✔️ Антитеррористическая защищенность", c3p2: "✔️ Противодействие коррупции", c3p3: "✔️ Минимизация рисков проверок",
+                c4Title: "Искусственный Интеллект", c4Desc: "Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.", c4p1: "✔️ Инжиниринг промптов", c4p2: "✔️ Автоматизация процессов", c4p3: "✔️ Интеграция AI в бизнес",
+                c5Title: "Управление бизнесом", c5Desc: "Программа для предпринимателей. От запуска с нуля до систематизации процессов.", c5p1: "✔️ Экономика и право МСП", c5p2: "✔️ Управление персоналом", c5p3: "✔️ Выход из операционки",
+                c6Title: "Менеджмент гостеприимства", c6Desc: "Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.", c6p1: "✔️ Маркетинг впечатлений", c6p2: "✔️ Управление конфликтами", c6p3: "✔️ Оптимизация затрат HoReCa",
+                c7Title: "Повар (3-4 разряд)", c7Desc: "Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.", c7p1: "✔️ Технологические карты", c7p2: "✔️ Практика приготовления блюд", c7p3: "✔️ Присвоение гос. квалификации",
+                c8Title: "1С:Предприятие & Бухучет", c8Desc: "Полный цикл автоматизированного учета на малых предприятиях и для ИП.", c8p1: "✔️ Налоговая отчетность", c8p2: "✔️ Регламентные расчеты 1С", c8p3: "✔️ Упрощенные алгоритмы учета",
+                cardHours1: "506 ч.", cardHours2: "144 ч.", cardHours3: "36 ч.", cardHours4: "98 ч.", cardHours5: "252 ч.", cardHours6: "150 ч.",
+                studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
+                glossaryTitle: "Глоссарий Академии",
+                g1Title: "ЦДО", g1Desc: "Центр дополнительного образования — структурное подразделение Западного филиала РАНХиГС.",
+                g2Title: "ДПО", g2Desc: "Дополнительное профессиональное образование — система обучения на базе текущего образования.",
+                g3Title: "ПК", g3Desc: "Повышение квалификации — краткосрочные программы обновления знаний.",
+                g4Title: "ПП", g4Desc: "Профессиональная переподготовка — программы (от 250 ч.) для получения новой профессии.",
+                g5Title: "ФГОС", g5Desc: "Федеральный государственный образовательный стандарт — требования к качеству.",
+                g6Title: "ВЭД", g6Desc: "Внешнеэкономическая деятельность — международная торговля и логистика.",
+                contactsTitle: "Контактная информация", contactsSub: "Официальные данные сотрудников Центров и Отделов Западного филиала",
+                mainContactTitle: "Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:",
+                telLabel: "Телефоны:", addressLabel: "Адрес:", addressText: "236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62",
+                dept1: "Центр дополнительного образования", dirCenter: "Директор центра", depDir: "Заместитель директора центра", projDir: "Директор проекта", spec: "Специалист",
+                dept2: "Отдел ПК и переподготовки государственных служащих", headDep: "Начальник отдела", leadSpec: "Ведущий специалист", dept3: "Отдел дополнительного образования",
+                cabText: "Каб.", telText: "Тел:", extText: "доб.",
+                footerRights: "Все права защищены. © 2026 Президентская академия",
+                polLink: "Политика конфиденциальности и обработки персональных данных (152-ФЗ)", termLink: "Пользовательское соглашение и оферта",
+                modTitle: "Оформление заявки", modDesc: "Выберите удобный способ регистрации на программу обучения:", modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму", modTg: "Записаться через Telegram (Сова)", modClose: "Закрыть окно",
+                contModTitle: "Контакты Центра", contModDesc: "Руководство и ключевые отделы:",
+                polModTitle: "Политика обработки персональных данных", polModText: "Настоящая Политика конфиденциальности персональных данных действует в отношении всей информации, которую Западный филиал РАНХиГС может получить о Пользователе во время использования сайта.<br><br>1. Обработка персональных данных осуществляется в соответствии с Федеральным законом РФ № 152-ФЗ «О персональных данных».<br>2. Пользователь дает согласие на обработку своих персональных данных в целях регистрации заявки на обучение в рамках национального проекта «Кадры».<br>3. Оператор принимает необходимые организационные и технические меры для защиты персональной информации от неправомерного доступа.",
+                termModTitle: "Пользовательское соглашение и оферта", termModText: "Использование материалов и сервисов сайта регулируется нормами законодательства Российской Федерации.<br><br>1. Сайт носит информационный характер и не является публичной офертой.<br>2. Все права на текстовые материалы, графические изображения и структуру сайта принадлежат Западному филиалу РАНХиГС.<br>3. Подавая заявку через формы связи, пользователь подтверждает свое ознакомление с условиями федеральных образовательных программ.", modOk: "Понятно",
+                owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:", owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?",
+            },
+            en: {
+                pageTitle: "Academy of Personnel | Western Branch of RANEPA",
+                logoSub: "Western Branch • Center for Continuing Education",
+                navProg: "Programs", navCont: "Contacts", navBtn: "Enroll",
+                nationalProject: "National Project «Personnel»", badgeText: "National Project «Personnel»",
+                heroTitle: "Academy of Management<br>and Professional Growth",
+                heroDesc: "Continuing Professional Education programs with state support. Gain fundamental knowledge, in-demand skills, and a RANEPA diploma for a confident career breakthrough.",
+                tabAll: "All Programs", tabGos: "🏛️ Public Service & Procurement", tabBiz: "🚀 Digital Business & AI", tabHoreca: "🏨 HoReCa & Tourism", tabProf: "⚡ Fast Professions",
+                c1Title: "Public Administration", c1Desc: "A fundamental foundation for a confident start and rapid career growth in public service.", c1p1: "✔️ Legal basis of public administration", c1p2: "✔️ Financial management", c1p3: "✔️ Public policy",
+                c2Title: "Procurement Management", c2Desc: "Exceptional practice on Federal Laws 44-FZ and 223-FZ. Learn to conduct error-free procurements.", c2p1: "✔️ Arbitration practice", c2p2: "✔️ Antimonopoly control", c2p3: "✔️ End-to-end procurement design",
+                c3Title: "Terrorism Prevention", c3Desc: "Mandatory minimum for managers and responsible specialists.", c3p1: "✔️ Anti-terrorism security", c3p2: "✔️ Anti-corruption measures", c3p3: "✔️ Minimizing inspection risks",
+                c4Title: "Artificial Intelligence", c4Desc: "Delegate routine analytics and writing to neural networks. Free up your working time.", c4p1: "✔️ Prompt engineering", c4p2: "✔️ Process automation", c4p3: "✔️ AI integration in business",
+                c5Title: "Business Management", c5Desc: "A program for entrepreneurs. From starting from scratch to systematizing processes.", c5p1: "✔️ Economics and law of SMEs", c5p2: "✔️ HR management", c5p3: "✔️ Exiting routine operations",
+                c6Title: "Hospitality Management", c6Desc: "Hotel and restaurant management. Financial efficiency and premium service.", c6p1: "✔️ Experience marketing", c6p2: "✔️ Conflict management", c6p3: "✔️ HoReCa cost optimization",
+                c7Title: "Chef (3rd-4th grade)", c7Desc: "An applied skill with rapid monetization in the labor market. Commercial kitchen workflow.", c7p1: "✔️ Recipe blueprints", c7p2: "✔️ Practical culinary training", c7p3: "✔️ State qualification assignment",
+                c8Title: "1C:Enterprise & Accounting", c8Desc: "A full cycle of automated accounting for small enterprises and sole proprietors.", c8p1: "✔️ Tax reporting", c8p2: "✔️ 1C routine calculations", c8p3: "✔️ Simplified accounting algorithms",
+                cardHours1: "506 hrs.", cardHours2: "144 hrs.", cardHours3: "36 hrs.", cardHours4: "98 hrs.", cardHours5: "252 hrs.", cardHours6: "150 hrs.",
+                studyPlanBtn: "Explore Curriculum", enrollBtn: "Enroll",
+                glossaryTitle: "Academy Glossary",
+                g1Title: "CCE", g1Desc: "Center for Continuing Education — a structural subdivision of the RANEPA Western Branch.",
+                g2Title: "CPE", g2Desc: "Continuing Professional Education — a training system based on current education.",
+                g3Title: "AT", g3Desc: "Advanced Training — short-term programs for knowledge updates.",
+                g4Title: "PR", g4Desc: "Professional Retraining — programs (from 250 hrs.) to acquire a new profession.",
+                g5Title: "FSES", g5Desc: "Federal State Educational Standard — quality requirements.",
+                g6Title: "FEA", g6Desc: "Foreign Economic Activity — international trade and logistics.",
+                contactsTitle: "Contact Information", contactsSub: "Official data of the Western Branch Centers and Departments staff",
+                mainContactTitle: "Contacts of the Center for Continuing Education of the Western Branch of the Presidential Academy:",
+                telLabel: "Phones:", addressLabel: "Address:", addressText: "62 Artilleriyskaya st., Kaliningrad, Kaliningrad region, Russia, 236038",
+                dept1: "Center for Continuing Education", dirCenter: "Center Director", depDir: "Deputy Director of the Center", projDir: "Project Director", spec: "Specialist",
+                dept2: "Department of State Employees Training", headDep: "Head of Department", leadSpec: "Leading Specialist", dept3: "Department of Continuing Education",
+                cabText: "Room", telText: "Tel:", extText: "ext.",
+                footerRights: "All rights reserved. © 2026 Presidential Academy",
+                polLink: "Privacy Policy and Personal Data Processing (152-FZ)", termLink: "User Agreement and Offer",
+                modTitle: "Application Processing", modDesc: "Choose a convenient registration method for the educational program:", modTrud: "Apply via «Work in Russia» (Kaliningrad)", modYan: "Apply via Yandex Form", modTg: "Apply via Telegram (Sova)", modClose: "Close window",
+                contModTitle: "Center Contacts", contModDesc: "Management and key departments:",
+                polModTitle: "Personal Data Processing Policy", polModText: "This Privacy Policy applies to all information that the Western Branch of RANEPA can obtain about the User during the use of the site.<br><br>1. Processing of personal data is carried out in accordance with the Federal Law of the Russian Federation No. 152-FZ.<br>2. The user consents to the processing of their personal data (surname, name, patronymic, contact phone number, email) for the purpose of registering an application for training within the national project \"Personnel\".<br>3. The operator takes necessary organizational and technical measures to protect personal information from unauthorized access.",
+                termModTitle: "User Agreement and Offer", termModText: "The use of materials and services of the site is governed by the laws of the Russian Federation.<br><br>1. Site is for informational purposes and is not a public offer.<br>2. All rights to the text materials, graphic images, and site structure belong to the Western Branch of RANEPA.<br>3. By submitting an application through communication forms, the user confirms their familiarity with the terms of federal educational programs.", modOk: "Understood",
+                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?",
+            }
+        };
+
         function setLanguage(lang) {
             currentLang = lang;
             document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
@@ -984,7 +1079,11 @@
             elements.forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if(translationsHTML[lang][key]) {
-                    el.innerHTML = translationsHTML[lang][key];
+                    if(el.tagName === 'TITLE') {
+                        document.title = translationsHTML[lang][key];
+                    } else {
+                        el.innerHTML = translationsHTML[lang][key];
+                    }
                 }
             });
 
@@ -1233,7 +1332,7 @@
                 const deltaX = (targetRect.right - startRect.width * 0.55 - 20) - startRect.left;
                 const deltaY = (targetRect.top - startRect.height * 0.55 + 20) - startRect.top;
 
-                owlContainer.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+                owlContainer.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.25, 0.64, 1)';
                 owlContainer.classList.add('owl-chaotic-flight');
                 owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.55)`;
 
