@@ -25,20 +25,23 @@
 
         #progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red)); width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 15px var(--ranepa-red); }
 
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; overflow: hidden; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 8vw; font-weight: 900; color: rgba(255,255,255,0.02); white-space: nowrap; user-select: none; pointer-events: auto; animation: heartbeat 3s infinite ease-in-out; }
-        .bg-tag:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
-        .bg-tag:nth-child(2) { top: 50%; left: 55%; animation-delay: 1s; }
-        .bg-tag:nth-child(3) { top: 75%; left: 15%; animation-delay: 2s; }
-        .bg-tag:hover { color: rgba(255,255,255,0.06); }
+        /* --- ФОНОВЫЕ ТЕГИ (ЖЕСТКОЕ ЗОНИРОВАНИЕ) --- */
+        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
+        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 5vw; font-weight: 900; color: rgba(255,255,255,0.035); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 4s infinite ease-in-out; }
+        .bg-tag:nth-child(1) { top: 18%; left: 8%; animation-delay: 0s; }
+        .bg-tag:nth-child(2) { top: 42%; left: 70%; animation-delay: 1.2s; }
+        .bg-tag:nth-child(3) { top: 68%; left: 12%; animation-delay: 2.4s; }
+        .bg-tag:nth-child(4) { top: 85%; left: 65%; animation-delay: 0.6s; }
+        .bg-tag:nth-child(5) { top: 30%; left: 40%; animation-delay: 1.8s; }
+        .bg-tag:nth-child(6) { top: 55%; left: 5%; animation-delay: 3s; }
 
         @keyframes heartbeat {
-            0% { transform: scale(1); opacity: 0.02; }
-            15% { transform: scale(1.05); opacity: 0.04; }
-            30% { transform: scale(1); opacity: 0.02; }
-            45% { transform: scale(1.08); opacity: 0.05; }
-            60% { transform: scale(1); opacity: 0.02; }
-            100% { transform: scale(1); opacity: 0.02; }
+            0% { transform: scale(1); opacity: 0.035; }
+            20% { transform: scale(1.04); opacity: 0.06; }
+            40% { transform: scale(1); opacity: 0.035; }
+            60% { transform: scale(1.06); opacity: 0.07; }
+            80% { transform: scale(1); opacity: 0.035; }
+            100% { transform: scale(1); opacity: 0.035; }
         }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; background-color: var(--ranepa-deep); }
@@ -50,8 +53,9 @@
 
         header { background: rgba(10, 15, 24, 0.95); backdrop-filter: blur(20px); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
-        .logo-group { display: flex; flex-direction: column; flex-shrink: 1; min-width: auto; max-width: 100%; }
-        .logo-group img { height: 75px; width: auto; max-width: 100%; object-fit: contain; display: block; background: transparent !important; border: none !important; box-shadow: none !important; }
+        .logo-group { display: flex; flex-direction: column; flex-shrink: 1; min-width: auto; max-width: 100%; z-index: 10051; }
+        /* Левый логотип увеличен в 2 раза (до 150px по высоте) */
+        .logo-group img { height: 150px; width: auto; max-width: 100%; object-fit: contain; display: block; background: transparent !important; border: none !important; box-shadow: none !important; }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 5px; }
 
         .header-controls { display: flex; gap: 10px; align-items: center; flex-shrink: 0; z-index: 10051; position: relative; }
@@ -65,8 +69,9 @@
         .header-nav-btn { background: var(--ranepa-red); color: #fff; padding: 10px 20px; border-radius: 8px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.3); cursor: pointer; touch-action: manipulation; }
         .header-nav-btn:hover { background: #FF5F61; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(202, 15, 62, 0.5); }
 
-        .header-kadry { flex-shrink: 0; display: flex; align-items: center; }
-        .header-kadry img { height: 65px; width: auto; max-width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); background: transparent !important; }
+        .header-kadry { flex-shrink: 0; display: flex; align-items: center; z-index: 10051; }
+        /* Правый логотип увеличен в 2 раза (до 140px по высоте) */
+        .header-kadry img { height: 140px; width: auto; max-width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); background: transparent !important; }
 
         .hero { padding: 80px max(20px, env(safe-area-inset-right)) 40px max(20px, env(safe-area-inset-left)); text-align: center; position: relative; z-index: 2; }
         .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem, 6vw, 3.5rem); font-weight: 900; margin-bottom: 20px; line-height: 1.2; letter-spacing: -1px; }
@@ -200,19 +205,31 @@
 
         .owl-flip .owl-body { transform: scaleX(-1); }
 
-        #owlSvgVisual {
-            width: 100%; height: 100%;
-            pointer-events: none;
+        /* Идеальное отображение реалистичной совы с автоматическим удалением черного фона через mix-blend-mode */
+        .owl-custom-img {
+            width: 100%; height: 100%; object-fit: contain; display: block;
+            pointer-events: none; user-select: none;
+            mix-blend-mode: screen;
+            filter: contrast(1.15) brightness(1.02);
+            transition: transform 0.15s ease;
         }
 
-        .owl-container:not(.sleeping) .owl-svg-eyelid { animation: svgBlink 4.5s infinite; }
-        @keyframes svgBlink {
-            0%, 95%, 100% { transform: scaleY(0); }
-            97%, 99% { transform: scaleY(1); }
+        .owl-chaotic-flight .owl-custom-img {
+            animation: pseudoFlap 0.12s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+        @keyframes pseudoFlap {
+            0% { transform: scaleX(1) scaleY(1); }
+            100% { transform: scaleX(0.8) scaleY(1.04) translateY(-2px); }
+        }
+
+        .owl-fallback-icon {
+            display: none; width: 100%; height: 100%; 
+            background: radial-gradient(circle, #3E2723, #1e0f0a); 
+            border-radius: 50%; border: 4px solid #C89D66;
+            color: #C89D66; text-align: center; line-height: 180px; font-size: 3rem; font-weight: bold;
         }
 
         .sleeping { animation-play-state: paused; }
-        .sleeping .owl-svg-eyelid { transform: scaleY(1) !important; }
         .zzz-particles { position: absolute; top: -20px; left: 60px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,255,255,0.8); opacity: 0; pointer-events: none; z-index: 20; }
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
         @keyframes floatZzz {
@@ -253,12 +270,12 @@
         @media (max-width: 768px) {
             header { padding: 15px max(15px, env(safe-area-inset-right)) 15px max(15px, env(safe-area-inset-left)); flex-direction: column; gap: 15px; text-align: center; }
             .logo-group { width: 100%; align-items: center; }
-            .logo-group img { height: 60px !important; width: auto; }
+            .logo-group img { height: 90px !important; width: auto; }
             .logo-subtitle { font-size: 0.7rem; }
             .header-controls { justify-content: center; width: 100%; flex-wrap: wrap; }
             .header-nav { justify-content: center; width: 100%; gap: 10px; }
             .header-kadry { width: 100%; justify-content: center; margin-top: 5px; }
-            .header-kadry img { height: 50px !important; width: auto; }
+            .header-kadry img { height: 80px !important; width: auto; }
 
             .tabs-nav {
                 flex-wrap: nowrap;
@@ -302,6 +319,9 @@
         <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
         <div class="bg-tag">#БЫСТРЫЙ_СТАРТ</div>
         <div class="bg-tag">#СИСТЕМНЫЙ_БИЗНЕС</div>
+        <div class="bg-tag">#ЦИФРОВАЯ_АКАДЕМИЯ</div>
+        <div class="bg-tag">#ПРОФЕССИОНАЛЬНЫЙ_РОСТ</div>
+        <div class="bg-tag">#ГОСУДАРСТВЕННОЕ_УПРАВЛЕНИЕ</div>
     </div>
 
     <div class="ambient-3d-bg">
@@ -352,7 +372,7 @@
 
         <div id="tab-all" class="tab-content active">
             <div class="card">
-                <div class="card-meta"><span class="price">56 000 ₽</span><span class="hours" data-i18n="cardHours1">506 ч.</span></div>
+                <div class="card-meta"><span class="price">56 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours1">506 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c1Title">Государственное управление</h3>
                 <p data-i18n="c1Desc">Фундаментальная база для уверенного старта и стремительного роста на государственной службе.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -367,7 +387,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
+                <div class="card-meta"><span class="price">43 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours2">144 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c2Title">Управление закупками</h3>
                 <p data-i18n="c2Desc">Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -382,7 +402,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">10 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
+                <div class="card-meta"><span class="price">10 500 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours3">36 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c3Title">Профилактика терроризма</h3>
                 <p data-i18n="c3Desc">Обязательный минимум для руководителей и ответственных специалистов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -397,7 +417,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">38 000 ₽</span><span class="hours" data-i18n="cardHours4">98 ч.</span></div>
+                <div class="card-meta"><span class="price">38 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours4">98 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c4Title">Искусственный Интеллект</h3>
                 <p data-i18n="c4Desc">Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -412,7 +432,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">46 300 ₽</span><span class="hours" data-i18n="cardHours5">252 ч.</span></div>
+                <div class="card-meta"><span class="price">46 300 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours5">252 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c5Title">Управление бизнесом</h3>
                 <p data-i18n="c5Desc">Программа для предпринимателей. От запуска с нуля до систематизации процессов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -427,7 +447,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
+                <div class="card-meta"><span class="price">43 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours2">144 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c6Title">Менеджмент гостеприимства</h3>
                 <p data-i18n="c6Desc">Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -442,7 +462,7 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">60 000 ₽</span><span class="hours" data-i18n="cardHours6">150 ч.</span></div>
+                <div class="card-meta"><span class="price">60 000 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours6">150 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c7Title">Повар (3-4 разряд)</h3>
                 <p data-i18n="c7Desc">Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -457,9 +477,9 @@
             </div>
 
             <div class="card">
-                <div class="card-meta"><span class="price">13 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
+                <div class="card-meta"><span class="price">13 500 ₽<span class="system-cite"></span></span><span class="hours" data-i18n="cardHours3">36 ч.</span><span class="system-cite"></span></div>
                 <h3 data-i18n="c8Title">1С:Предприятие & Бухучет</h3>
-                <p data-i18n="c8Desc">Полный цикл автоматизированного учета на малых предприятиях и для ИП.</p>
+                <p data-i18n="c8Desc">Полный цикл automated учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
                     <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
@@ -742,7 +762,10 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
+                <!-- Реалистичный PNG с идеальным screen-блендом и поддержкой резервного вектора -->
+                <img src="./img/owl.png" alt="Сова" class="owl-custom-img" onerror="this.style.display='none'; document.getElementById('owlSvgVisual').style.display='block';">
+
+                <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" style="display:none;">
                     <defs>
                         <radialGradient id="eyeAmber" cx="45%" cy="45%" r="55%">
                             <stop offset="0%" stop-color="#FFF275"/>
