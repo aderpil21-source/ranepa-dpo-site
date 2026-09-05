@@ -7,137 +7,159 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ranepa-deep: #0a0f18;
-            --ranepa-blue: #171F29;
-            --ranepa-rich-blue: #29345B;
+            --ranepa-deep: #05080e;
+            --ranepa-blue: #111827;
+            --ranepa-rich-blue: #1e293b;
             --ranepa-red: #CA0F3E;
-            --ranepa-burgundy: #A00F33;
-            --text-main: #FFFFFF;
+            --ranepa-burgundy: #881337;
+            --text-main: #F8FAFC;
             --text-muted: #94A3B8;
             --font-scale: 1rem;
+            --glass-bg: rgba(17, 24, 39, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
-        html { font-size: 16px; transition: font-size 0.3s ease; overflow-x: hidden; }
+        html { font-size: 16px; transition: font-size 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); overflow-x: hidden; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Manrope', sans-serif; cursor: auto; }
         body { background-color: var(--ranepa-deep); color: var(--text-main); overflow-x: hidden; scroll-behavior: smooth; position: relative; font-size: var(--font-scale); }
 
         .system-cite { display: none !important; }
 
-        #progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red)); width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 15px var(--ranepa-red); }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
+        @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* --- ФОНОВЫЕ ТЕГИ --- */
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 4vw; font-weight: 900; color: rgba(255,255,255,0.04); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 4s infinite ease-in-out; }
-        .bg-tag:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
-        .bg-tag:nth-child(2) { top: 55%; left: 55%; animation-delay: 1.5s; }
-        .bg-tag:nth-child(3) { top: 78%; left: 15%; animation-delay: 3s; }
+        /* --- ФОНОВЫЕ ТЕГИ С ГЛУБИНОЙ --- */
+        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 4vw; font-weight: 900; color: rgba(255,255,255,0.03); text-shadow: 0 0 30px rgba(255, 255, 255, 0.08); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 6s infinite alternate ease-in-out; }
+        .bg-tag:nth-child(1) { top: 15%; left: 5%; animation-delay: 0s; transform: translateZ(-50px); }
+        .bg-tag:nth-child(2) { top: 50%; left: 60%; animation-delay: -2s; transform: translateZ(-100px); font-size: 5vw; }
+        .bg-tag:nth-child(3) { top: 80%; left: 10%; animation-delay: -4s; transform: translateZ(-30px); font-size: 3.5vw; }
 
         @keyframes heartbeat {
-            0% { transform: scale(1); opacity: 0.04; }
-            50% { transform: scale(1.03); opacity: 0.08; }
-            100% { transform: scale(1); opacity: 0.04; }
+            0% { transform: scale(1) translateY(0); opacity: 0.03; text-shadow: 0 0 20px rgba(255,255,255,0.05); }
+            100% { transform: scale(1.05) translateY(-10px); opacity: 0.07; text-shadow: 0 0 40px rgba(255,255,255,0.15); }
         }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; background-color: var(--ranepa-deep); }
-        .shape { position: absolute; filter: blur(90px); opacity: 0.3; animation: float 25s infinite alternate ease-in-out; transform-style: preserve-3d; }
-        .shape-1 { background: var(--ranepa-academic-red); width: 50vw; height: 50vw; border-radius: 50%; top: -20%; left: -20%; animation-duration: 30s; }
-        .shape-2 { background: var(--ranepa-rich-blue); width: 60vw; height: 60vw; border-radius: 40% 60% 70% 30%; bottom: -30%; right: -20%; animation-duration: 40s; animation-direction: alternate-reverse; }
-        .shape-3 { background: #FF5F61; width: 30vw; height: 30vw; border-radius: 60% 40% 30% 70%; top: 40%; left: 60%; opacity: 0.15; animation-duration: 35s; }
-        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(10vw, 15vh) rotate(45deg) scale(1.1); } }
+        .shape { position: absolute; filter: blur(120px); opacity: 0.4; animation: float 20s infinite alternate ease-in-out; transform-style: preserve-3d; }
+        .shape-1 { background: var(--ranepa-burgundy); width: 45vw; height: 45vw; border-radius: 50%; top: -10%; left: -10%; animation-duration: 25s; }
+        .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
+        .shape-3 { background: #FF5F61; width: 25vw; height: 25vw; border-radius: 60% 40% 30% 70%; top: 35%; left: 50%; opacity: 0.2; animation-duration: 30s; }
+        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(8vw, 12vh) rotate(45deg) scale(1.15); } }
 
-        header { background: rgba(10, 15, 24, 0.95); backdrop-filter: blur(20px); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.05); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
+        /* --- ШАПКА ЖИДКОЕ СТЕКЛО --- */
+        header { background: rgba(5, 8, 14, 0.65); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
-        /* Идеальное позиционирование левого логотипа */
         .logo-group { display: flex; flex-direction: column; flex-shrink: 1; min-width: auto; max-width: 100%; z-index: 10051; align-items: flex-start; text-align: left; }
-        .logo-group img { height: 150px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; background: transparent !important; }
+        .logo-group img { height: 150px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; background: transparent !important; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 5px; text-align: left; }
 
         .header-controls { display: flex; gap: 10px; align-items: center; flex-shrink: 0; z-index: 10051; position: relative; }
-        .control-panel-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
-        .control-panel-btn:hover { background: var(--ranepa-rich-blue); border-color: #38bdf8; transform: scale(1.15); box-shadow: 0 0 12px rgba(56, 189, 248, 0.5); }
-        .lang-active { background: var(--ranepa-rich-blue); border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+        .control-panel-btn { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); touch-action: manipulation; backdrop-filter: blur(10px); }
+        .control-panel-btn:hover { background: var(--ranepa-rich-blue); border-color: #38bdf8; transform: scale(1.1) translateY(-2px); box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3); }
+        .lang-active { background: var(--ranepa-rich-blue); border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
 
-        .header-nav { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; z-index: 10051; position: relative; }
-        .header-nav-link { color: var(--text-muted); text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; transition: color 0.3s; cursor: pointer; touch-action: manipulation; }
-        .header-nav-link:hover { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        .header-nav-btn { background: var(--ranepa-red); color: #fff; padding: 10px 20px; border-radius: 8px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.3); cursor: pointer; touch-action: manipulation; }
-        .header-nav-btn:hover { background: #FF5F61; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(202, 15, 62, 0.5); }
+        .header-nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; z-index: 10051; position: relative; }
+        .header-nav-link { color: var(--text-muted); text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; transition: all 0.3s ease; cursor: pointer; touch-action: manipulation; position: relative; }
+        .header-nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background-color: #fff; transition: width 0.3s ease; }
+        .header-nav-link:hover { color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.6); }
+        .header-nav-link:hover::after { width: 100%; }
+        
+        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 10px 24px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4), inset 0 1px 0 rgba(255,255,255,0.3); cursor: pointer; touch-action: manipulation; }
+        .header-nav-btn:hover { background: linear-gradient(135deg, #f43f5e, var(--ranepa-red)); transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 30px rgba(202, 15, 62, 0.6), inset 0 1px 0 rgba(255,255,255,0.4); }
 
         .header-kadry { flex-shrink: 0; display: flex; align-items: center; z-index: 10051; }
         .header-kadry img { height: 140px; width: auto; max-width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); background: transparent !important; }
 
-        .hero { padding: 80px max(20px, env(safe-area-inset-right)) 40px max(20px, env(safe-area-inset-left)); text-align: center; position: relative; z-index: 2; }
-        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem, 6vw, 3.5rem); font-weight: 900; margin-bottom: 20px; line-height: 1.2; letter-spacing: -1px; }
-        .hero p { font-size: clamp(0.95rem, 3vw, 1.15rem); color: var(--text-muted); max-width: 800px; margin: 0 auto 30px; font-weight: 500; }
+        .hero { padding: 100px max(20px, env(safe-area-inset-right)) 60px max(20px, env(safe-area-inset-left)); text-align: center; position: relative; z-index: 2; perspective: 1000px; }
+        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 6vw, 4rem); font-weight: 900; margin-bottom: 25px; line-height: 1.15; letter-spacing: -1.5px; text-shadow: 0 15px 30px rgba(0,0,0,0.8); animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .hero p { font-size: clamp(1rem, 3vw, 1.25rem); color: var(--text-muted); max-width: 800px; margin: 0 auto 40px; font-weight: 500; line-height: 1.6; animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards; opacity: 0; }
+        
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        .container { max-width: 1300px; margin: 0 auto; padding: 40px max(20px, env(safe-area-inset-right)) 40px max(20px, env(safe-area-inset-left)); position: relative; z-index: 2; }
+        .container { max-width: 1350px; margin: 0 auto; padding: 40px max(20px, env(safe-area-inset-right)) 60px max(20px, env(safe-area-inset-left)); position: relative; z-index: 2; }
 
-        .tabs-nav { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 40px; background: rgba(23, 31, 41, 0.6); backdrop-filter: blur(10px); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        .tab-btn { background: transparent; border: none; padding: 12px 24px; border-radius: 10px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--text-muted); transition: all 0.3s ease; cursor: pointer; touch-action: manipulation; }
-        .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
-        .tab-btn.active { background: var(--ranepa-rich-blue); color: #fff; box-shadow: 0 10px 20px rgba(41, 52, 91, 0.4); }
+        .tabs-nav { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 50px; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 15px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards; opacity: 0; }
+        .tab-btn { background: transparent; border: 1px solid transparent; padding: 12px 28px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--text-muted); transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; touch-action: manipulation; }
+        .tab-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.05); border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .tab-btn.active { background: var(--ranepa-rich-blue); color: #fff; border-color: #38bdf8; box-shadow: 0 15px 30px rgba(41, 52, 91, 0.6), inset 0 1px 0 rgba(255,255,255,0.1); }
 
-        .tab-content { display: none; perspective: 1500px; }
-        .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: clamp(20px, 4vw, 30px); animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content { display: none; }
+        .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: clamp(25px, 4vw, 35px); animation: fadeInScale 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes fadeInScale { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        .card { background: rgba(23, 31, 41, 0.8); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: clamp(20px, 5vw, 35px); position: relative; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 15px 35px rgba(0,0,0,0.3); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px rgba(0,0,0,0.6); border-color: rgba(56, 189, 248, 0.3); }
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.5rem; color: #fff; }
-        .hours { font-size: 0.85rem; background: rgba(255, 255, 255, 0.1); color: #38bdf8; padding: 6px 14px; border-radius: 8px; font-weight: 800; }
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 15px; color: #fff; line-height: 1.3; }
-        .card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
+        /* --- КАРТОЧКИ: GLASSMORPHISM & APPLE STYLE --- */
+        .card { background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 24px; border: 1px solid var(--glass-border); border-top: 1px solid rgba(255,255,255,0.15); padding: clamp(25px, 5vw, 40px); position: relative; transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.02); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; transform-style: preserve-3d; }
+        .card:hover { transform: translateY(-12px) scale(1.02) rotateX(2deg); box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.15), inset 0 0 0 1px rgba(255,255,255,0.1); border-color: rgba(56, 189, 248, 0.4); z-index: 10; }
+        
+        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; transform: translateZ(20px); }
+        .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.8rem; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .hours { font-size: 0.85rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; padding: 8px 16px; border-radius: 10px; font-weight: 800; backdrop-filter: blur(5px); }
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 800; margin-bottom: 15px; color: #fff; line-height: 1.3; transform: translateZ(30px); }
+        .card p { color: var(--text-muted); font-size: 1rem; margin-bottom: 25px; line-height: 1.6; transform: translateZ(20px); }
 
-        .accordion-btn { background: rgba(202, 15, 62, 0.15); color: #FF5F61; border: 1px solid rgba(202, 15, 62, 0.4); width: 100%; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 0.95rem; margin-top: 10px; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; z-index: 30; cursor: pointer; touch-action: manipulation; }
-        .accordion-btn:hover { background: var(--ranepa-red); color: #fff; box-shadow: 0 0 20px rgba(202, 15, 62, 0.5); }
-        .accordion-content { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.4s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out; }
-        .card.active { box-shadow: 0 0 40px rgba(202, 15, 62, 0.2); border-color: var(--ranepa-red); }
-        .card.active .accordion-content { max-height: 800px; opacity: 1; margin-top: 20px; }
+        .accordion-btn { background: rgba(202, 15, 62, 0.1); border: 1px solid rgba(202, 15, 62, 0.3); color: #FF5F61; width: 100%; padding: 16px; border-radius: 14px; font-weight: 800; font-size: 0.95rem; margin-top: auto; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); text-transform: uppercase; letter-spacing: 1px; cursor: pointer; touch-action: manipulation; transform: translateZ(25px); backdrop-filter: blur(10px); }
+        .accordion-btn:hover { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5); transform: translateZ(35px) scale(1.02); }
+        
+        .accordion-content { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease-out, margin 0.4s ease-out; transform: translateZ(15px); }
+        .card.active { box-shadow: 0 0 50px rgba(202, 15, 62, 0.25), inset 0 0 0 1px var(--ranepa-red); border-color: var(--ranepa-red); }
+        .card.active .accordion-content { max-height: 800px; opacity: 1; margin-top: 25px; }
 
-        .buy-btn { display: block; width: 100%; background: #fff; color: var(--ranepa-deep); padding: clamp(12px, 3vw, 16px); text-align: center; border-radius: 10px; font-weight: 900; margin-top: 20px; text-decoration: none; text-transform: uppercase; transition: 0.3s; z-index: 30; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; touch-action: manipulation; }
-        .buy-btn:hover { background: #38bdf8; box-shadow: 0 0 20px #38bdf8; color: #fff; }
+        .buy-btn { display: block; width: 100%; background: linear-gradient(135deg, #fff, #f1f5f9); color: var(--ranepa-deep); padding: 18px; text-align: center; border-radius: 14px; font-weight: 900; margin-top: 25px; text-decoration: none; text-transform: uppercase; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; font-size: 1rem; box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
+        .buy-btn:hover { background: linear-gradient(135deg, #38bdf8, #0284c7); box-shadow: 0 15px 30px rgba(56, 189, 248, 0.5); color: #fff; transform: translateY(-3px) scale(1.02); }
 
-        .section-header { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem, 5vw, 2rem); font-weight: 900; color: #fff; margin: 60px 0 30px; text-align: center; z-index: 5; }
-        .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: clamp(15px, 4vw, 20px); margin-bottom: 60px; z-index: 5; }
-        .glossary-item { background: rgba(23, 31, 41, 0.6); padding: 25px; border-radius: 16px; border-left: 4px solid var(--ranepa-red); border-top: 1px solid rgba(255,255,255,0.05); }
-        .glossary-item strong { display: block; font-family: 'Montserrat', sans-serif; font-size: 1.1rem; color: #fff; margin-bottom: 8px; font-weight: 800; }
+        .section-header { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 900; color: #fff; margin: 80px 0 40px; text-align: center; z-index: 5; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: clamp(20px, 4vw, 25px); margin-bottom: 80px; z-index: 5; }
+        .glossary-item { background: var(--glass-bg); backdrop-filter: blur(20px); padding: 30px; border-radius: 20px; border-left: 5px solid var(--ranepa-red); border-top: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); transition: transform 0.4s ease; box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
+        .glossary-item:hover { transform: translateY(-5px); box-shadow: 0 25px 45px rgba(0,0,0,0.5); }
+        .glossary-item strong { display: block; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 10px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        .contacts-wrapper { background: rgba(10, 15, 24, 0.95); border-top: 4px solid var(--ranepa-academic-red); padding: 60px max(20px, env(safe-area-inset-right)) 60px max(20px, env(safe-area-inset-left)); z-index: 5; }
+        .contacts-wrapper { background: rgba(5, 8, 14, 0.8); border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(30px); padding: 80px max(20px, env(safe-area-inset-right)) 80px max(20px, env(safe-area-inset-left)); z-index: 5; position: relative; }
         .contacts-container { max-width: 1300px; margin: 0 auto; }
-        .department-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; color: #FF5F61; margin: 40px 0 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; font-weight: 800; }
-        .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: clamp(15px, 4vw, 20px); }
-        .contact-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; }
-        .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.05rem; margin-bottom: 5px; color: #fff; font-weight: 800; }
-        .contact-card .position { font-size: 0.8rem; color: #38bdf8; margin-bottom: 10px; font-weight: 700; }
-        .contact-card .details { font-size: 0.85rem; color: #94A3B8; line-height: 1.5; overflow-wrap: anywhere; word-break: break-word; }
-        .contact-card .details a { color: #38bdf8; text-decoration: underline; font-weight: 700; transition: color 0.2s; word-break: break-all; }
+        .department-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #FF5F61; margin: 50px 0 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; font-weight: 800; }
+        .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: clamp(20px, 4vw, 25px); }
+        .contact-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .contact-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; margin-bottom: 8px; color: #fff; font-weight: 800; }
+        .contact-card .position { font-size: 0.85rem; color: #38bdf8; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .contact-card .details { font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; overflow-wrap: anywhere; word-break: break-word; }
+        .contact-card .details a { color: #38bdf8; text-decoration: underline; font-weight: 700; transition: color 0.2s; }
         .contact-card .details a:hover { color: #FF5F61; }
 
-        .legal-footer { margin-top: 40px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.8rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; gap: 15px; }
+        .legal-footer { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; gap: 15px; }
         .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-        .legal-footer-links span { color: #94A3B8; text-decoration: underline; cursor: pointer; transition: color 0.2s; touch-action: manipulation; }
+        .legal-footer-links span { color: #94A3B8; text-decoration: underline; cursor: pointer; transition: color 0.2s; }
         .legal-footer-links span:hover { color: #fff; }
 
-        /* Модальные окна */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 15, 24, 0.9); backdrop-filter: blur(10px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.3s; box-sizing: border-box; padding: 15px; }
+        /* --- МОДАЛЬНЫЕ ОКНА: ЭФФЕКТ ЖИДКОГО СТЕКЛА КАК НА IPHONE --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-box { background: var(--ranepa-blue); padding: clamp(20px, 5vw, 40px); border-radius: 24px; max-width: 550px; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px rgba(0,0,0,0.8); max-height: 85vh; overflow-y: auto; }
-        .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.2rem, 5vw, 1.5rem); color: #fff; margin-bottom: 15px; font-weight: 900; }
-        .modal-box p { color: var(--text-muted); margin-bottom: 25px; font-size: 0.95rem; text-align: left; }
+        
+        .modal-box { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); padding: clamp(25px, 5vw, 45px); border-radius: 28px; max-width: 550px; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 85vh; overflow-y: auto; transform: scale(0.9) translateY(20px) rotateX(10deg); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .modal-overlay.active .modal-box { transform: scale(1) translateY(0) rotateX(0deg); }
+        
+        /* Специфичный стиль для модалки КОНТАКТОВ (Фирменный стиль РАНХиГС) */
+        .glass-modal-ranepa { background: linear-gradient(145deg, rgba(136, 19, 55, 0.2) 0%, rgba(10, 15, 24, 0.8) 100%) !important; border-top: 1px solid rgba(202, 15, 62, 0.4) !important; border-left: 1px solid rgba(202, 15, 62, 0.2) !important; box-shadow: 0 40px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 40px rgba(202, 15, 62, 0.15) !important; }
+        
+        .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.4rem, 5vw, 1.8rem); color: #fff; margin-bottom: 15px; font-weight: 900; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .modal-box p { color: var(--text-main); margin-bottom: 30px; font-size: 1.05rem; text-align: left; line-height: 1.6; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        .modal-btn-trudvsem { display: block; background: #2962ff; color: #fff; padding: clamp(12px, 3vw, 15px); border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 12px; font-family: 'Montserrat', sans-serif; font-size: clamp(0.85rem, 3vw, 1rem); transition: 0.3s; touch-action: manipulation; }
-        .modal-btn-trudvsem:hover { background: #1e4bd8; transform: translateY(-2px); }
-        .modal-btn-yandex { display: block; background: #FFCC00; color: #000; padding: clamp(12px, 3vw, 15px); border-radius: 10px; text-decoration: none; font-weight: 800; margin-bottom: 12px; font-family: 'Montserrat', sans-serif; font-size: clamp(0.85rem, 3vw, 1rem); transition: 0.3s; touch-action: manipulation; }
-        .modal-btn-yandex:hover { background: #e6b800; transform: translateY(-2px); }
-        .modal-btn-tg { display: block; background: #2AABEE; color: #fff; padding: clamp(12px, 3vw, 15px); border-radius: 10px; text-decoration: none; font-weight: 800; font-family: 'Montserrat', sans-serif; font-size: clamp(0.85rem, 3vw, 1rem); transition: 0.3s; touch-action: manipulation; }
-        .modal-btn-tg:hover { background: #2298d6; transform: translateY(-2px); }
-        .close-modal { margin-top: 20px; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 700; text-decoration: underline; touch-action: manipulation; }
-        .close-modal:hover { color: var(--ranepa-red); }
+        .modal-btn-trudvsem { display: block; background: rgba(41, 98, 255, 0.8); backdrop-filter: blur(10px); color: #fff; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .modal-btn-trudvsem:hover { background: #2962ff; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(41, 98, 255, 0.5); }
+        
+        .modal-btn-yandex { display: block; background: rgba(255, 204, 0, 0.8); backdrop-filter: blur(10px); color: #000; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 900; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .modal-btn-yandex:hover { background: #FFCC00; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 204, 0, 0.4); }
+        
+        .modal-btn-tg { display: block; background: rgba(42, 171, 238, 0.8); backdrop-filter: blur(10px); color: #fff; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .modal-btn-tg:hover { background: #2AABEE; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(42, 171, 238, 0.5); }
+        
+        .close-modal { margin-top: 25px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 800; text-decoration: underline; transition: color 0.3s; }
+        .close-modal:hover { color: #fff; }
 
-        /* --- ЭКОСИСТЕМА СОВЫ И КИНОТЕАТРАЛЬНАЯ ВЕТКА --- */
-        .owl-ecosystem { position: fixed; bottom: -280px; right: -300px; width: 480px; height: 400px; z-index: 9999; transition: all 1.4s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
-        .owl-ecosystem.visible { bottom: 0; right: 0; pointer-events: auto; }
+        /* --- ЭКОСИСТЕМА СОВЫ И КИНОТЕАТРАЛЬНАЯ ВЕТКА (СДВИНУТЫ ВПРАВО) --- */
+        /* Смещение вправо (right: -320px) и уменьшение (scale(0.85)), чтобы НЕ ПЕРЕКРЫВАТЬ интерфейс */
+        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 480px; height: 400px; z-index: 9999; transition: all 1.4s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; transform: scale(0.85); transform-origin: bottom right; }
+        .owl-ecosystem.visible { bottom: 0; right: -30px; pointer-events: auto; }
 
         .oak-branch { 
             position: absolute; bottom: 35px; right: -35px; width: 420px; height: 55px; 
@@ -169,6 +191,7 @@
         .leaf-3 { top: -10px; right: -32px; transform-origin: bottom left; }
         .chat-opened .leaf { transform: scale(1) rotate(15deg); opacity: 1; }
 
+        /* ОБЪЕМНЫЙ 3D-ФИЛИН (SVG) С ВНУТРЕННИМИ ТЕНЯМИ И БЛИКАМИ */
         .owl-container {
             position: absolute; bottom: 55px; left: 35px; width: 220px; height: 280px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation;
@@ -187,7 +210,7 @@
             position: relative; width: 100%; height: 100%;
             transform-origin: center bottom;
             transition: transform 0.4s ease;
-            filter: drop-shadow(0 25px 35px rgba(0,0,0,0.9));
+            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.95)); /* Глубокая тень */
             animation: owlBreath 4s infinite ease-in-out;
         }
 
@@ -230,20 +253,20 @@
             100% { transform: rotate(0deg) scale(1); }
         }
 
-        .owl-bubble { position: absolute; bottom: 310px; right: 110px; background: rgba(23, 31, 41, 0.95); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
+        .owl-bubble { position: absolute; bottom: 310px; right: 110px; background: rgba(5, 8, 14, 0.85); backdrop-filter: blur(15px); color: #fff; padding: 15px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2); opacity: 0; transform: scale(0.5); transform-origin: bottom right; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; border: 1px solid var(--ranepa-red); cursor: pointer; z-index: 9998; }
         .owl-bubble.show { opacity: 1; transform: scale(1); }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
-        .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: var(--ranepa-blue); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; }
-        .owl-chat-panel.active { display: flex; opacity: 1; transform: translateY(0); }
-        .owl-chat-header { background: rgba(10,15,24,0.9); color: #fff; padding: 15px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ranepa-red); }
-        .owl-chat-body { padding: 15px; height: 350px; overflow-y: auto; background: var(--ranepa-deep); font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; }
-        .msg-bot { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border-bottom-left-radius: 0; color: #fff; align-self: flex-start; max-width: 90%; border: 1px solid rgba(255,255,255,0.1); line-height: 1.4; }
-        .msg-bot b { color: #FF5F61; font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 4px; }
-        .msg-user { background: var(--ranepa-red); color: #fff; padding: 12px; border-radius: 10px; border-bottom-right-radius: 0; align-self: flex-end; max-width: 90%; font-weight: 600; }
-        .chat-options { padding: 12px; background: rgba(10,15,24,0.9); border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 6px; }
-        .chat-opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-align: left; transition: 0.2s; touch-action: manipulation; }
-        .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 14px; }
+        .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(30px) saturate(150%); border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translateY(30px) scale(0.95); transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .owl-chat-panel.active { display: flex; opacity: 1; transform: translateY(0) scale(1); }
+        .owl-chat-header { background: rgba(5, 8, 14, 0.6); color: #fff; padding: 18px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ranepa-red); border-radius: 24px 24px 0 0; }
+        .owl-chat-body { padding: 20px; height: 350px; overflow-y: auto; background: transparent; font-size: 0.9rem; display: flex; flex-direction: column; gap: 15px; }
+        .msg-bot { background: rgba(255,255,255,0.06); padding: 14px; border-radius: 14px; border-bottom-left-radius: 0; color: #fff; align-self: flex-start; max-width: 90%; border: 1px solid rgba(255,255,255,0.05); line-height: 1.5; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .msg-bot b { color: #FF5F61; font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 6px; }
+        .msg-user { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 14px; border-radius: 14px; border-bottom-right-radius: 0; align-self: flex-end; max-width: 90%; font-weight: 600; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.3); }
+        .chat-options { padding: 15px; background: rgba(5, 8, 14, 0.6); border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px; border-radius: 0 0 24px 24px; }
+        .chat-opt-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; text-align: left; transition: all 0.3s ease; touch-action: manipulation; }
+        .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 18px; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); }
 
         .mobile-chat-icon { display: none; }
 
@@ -258,35 +281,24 @@
             .header-kadry { width: 100%; justify-content: center; margin-top: 5px; }
             .header-kadry img { height: 80px !important; width: auto; }
 
-            .tabs-nav {
-                flex-wrap: nowrap;
-                justify-content: flex-start;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                scroll-snap-type: x mandatory;
-                padding: 5px 0 15px 0;
-                background: transparent;
-                border: none;
-                gap: 10px;
-            }
+            .tabs-nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x mandatory; padding: 10px; background: var(--glass-bg); border: 1px solid var(--glass-border); gap: 10px; }
             .tabs-nav::-webkit-scrollbar { display: none; }
-            .tab-btn { flex-shrink: 0; scroll-snap-align: start; background: rgba(23, 31, 41, 0.8); border: 1px solid rgba(255,255,255,0.05); }
+            .tab-btn { flex-shrink: 0; scroll-snap-align: start; background: rgba(255,255,255,0.05); }
 
             .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
             .oak-branch, .zzz-particles, .owl-bubble, .owl-body { display: none !important; }
             
             .owl-container {
                 position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
-                left: auto; width: 60px; height: 60px; border-radius: 50%;
-                background: var(--ranepa-red);
-                box-shadow: 0 5px 20px rgba(202, 15, 62, 0.6);
+                left: auto; width: 65px; height: 65px; border-radius: 50%;
+                background: linear-gradient(135deg, #f43f5e, var(--ranepa-red));
+                box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5), inset 0 2px 4px rgba(255,255,255,0.3);
                 display: flex; justify-content: center; align-items: center;
                 animation: none !important; pointer-events: auto; z-index: 10000;
             }
             
-            .mobile-chat-icon { display: block; width: 28px; height: 28px; fill: #fff; }
-            .owl-chat-panel { width: calc(100% - 30px); left: 15px; right: 15px; bottom: max(95px, calc(env(safe-area-inset-bottom) + 95px)); height: min(60vh, 450px); }
+            .mobile-chat-icon { display: block; width: 32px; height: 32px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+            .owl-chat-panel { width: calc(100% - 30px); left: 15px; right: 15px; bottom: max(95px, calc(env(safe-area-inset-bottom) + 95px)); height: min(65vh, 500px); }
         }
     </style>
 </head>
@@ -324,6 +336,7 @@
 
         <nav class="header-nav">
             <a href="#programsSection" class="header-nav-link" data-i18n="navProg">Программы</a>
+            <!-- Клик открывает премиальную модалку контактов -->
             <span class="header-nav-link" onclick="openContactsModal()" data-i18n="navCont">Контакты</span>
             <button class="header-nav-btn" onclick="openModal()" data-i18n="navBtn">Записаться</button>
         </nav>
@@ -355,7 +368,7 @@
                 <p data-i18n="c1Desc">Фундаментальная база для уверенного старта и стремительного роста на государственной службе.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c1p1">✔️ Правовые основы ГМУ</li>
                         <li data-i18n="c1p2">✔️ Финансовое управление</li>
                         <li data-i18n="c1p3">✔️ Публичная политика</li>
@@ -370,7 +383,7 @@
                 <p data-i18n="c2Desc">Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c2p1">✔️ Арбитражная практика</li>
                         <li data-i18n="c2p2">✔️ Антимонопольный контроль</li>
                         <li data-i18n="c2p3">✔️ Сквозное проектирование закупки</li>
@@ -385,7 +398,7 @@
                 <p data-i18n="c3Desc">Обязательный минимум для руководителей и ответственных специалистов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c3p1">✔️ Антитеррористическая защищенность</li>
                         <li data-i18n="c3p2">✔️ Противодействие коррупции</li>
                         <li data-i18n="c3p3">✔️ Минимизация рисков проверок</li>
@@ -400,7 +413,7 @@
                 <p data-i18n="c4Desc">Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c4p1">✔️ Инжиниринг промптов</li>
                         <li data-i18n="c4p2">✔️ Автоматизация процессов</li>
                         <li data-i18n="c4p3">✔️ Интеграция AI в бизнес</li>
@@ -415,7 +428,7 @@
                 <p data-i18n="c5Desc">Программа для предпринимателей. От запуска с нуля до систематизации процессов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c5p1">✔️ Экономика и право МСП</li>
                         <li data-i18n="c5p2">✔️ Управление персоналом</li>
                         <li data-i18n="c5p3">✔️ Выход из операционки</li>
@@ -430,7 +443,7 @@
                 <p data-i18n="c6Desc">Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c6p1">✔️ Маркетинг впечатлений</li>
                         <li data-i18n="c6p2">✔️ Управление конфликтами</li>
                         <li data-i18n="c6p3">✔️ Оптимизация затрат HoReCa</li>
@@ -445,7 +458,7 @@
                 <p data-i18n="c7Desc">Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c7p1">✔️ Технологические карты</li>
                         <li data-i18n="c7p2">✔️ Практика приготовления блюд</li>
                         <li data-i18n="c7p3">✔️ Присвоение гос. квалификации</li>
@@ -460,7 +473,7 @@
                 <p data-i18n="c8Desc">Полный цикл automated учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c8p1">✔️ Налоговая отчетность</li>
                         <li data-i18n="c8p2">✔️ Регламентные расчеты 1С</li>
                         <li data-i18n="c8p3">✔️ Упрощенные алгоритмы учета</li>
@@ -477,7 +490,7 @@
                 <p data-i18n="c1Desc">Фундаментальная база для уверенного старта и стремительного роста на государственной службе.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c1p1">✔️ Правовые основы ГМУ</li>
                         <li data-i18n="c1p2">✔️ Финансовое управление</li>
                         <li data-i18n="c1p3">✔️ Публичная политика</li>
@@ -491,7 +504,7 @@
                 <p data-i18n="c2Desc">Исключительная практика по 44-ФЗ и 223-ФЗ. Научим проводить закупки без ошибок.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c2p1">✔️ Арбитражная практика</li>
                         <li data-i18n="c2p2">✔️ Антимонопольный контроль</li>
                         <li data-i18n="c2p3">✔️ Сквозное проектирование закупки</li>
@@ -505,7 +518,7 @@
                 <p data-i18n="c3Desc">Обязательный минимум для руководителей и ответственных специалистов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c3p1">✔️ Антитеррористическая защищенность</li>
                         <li data-i18n="c3p2">✔️ Противодействие коррупции</li>
                         <li data-i18n="c3p3">✔️ Минимизация рисков проверок</li>
@@ -522,7 +535,7 @@
                 <p data-i18n="c4Desc">Делегируйте рутинную аналитику и тексты нейросетям. Высвободите рабочее время.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c4p1">✔️ Инжиниринг промптов</li>
                         <li data-i18n="c4p2">✔️ Автоматизация процессов</li>
                         <li data-i18n="c4p3">✔️ Интеграция AI в бизнес</li>
@@ -536,7 +549,7 @@
                 <p data-i18n="c5Desc">Программа для предпринимателей. От запуска с нуля до систематизации процессов.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c5p1">✔️ Экономика и право МСП</li>
                         <li data-i18n="c5p2">✔️ Управление персоналом</li>
                         <li data-i18n="c5p3">✔️ Выход из операционки</li>
@@ -553,7 +566,7 @@
                 <p data-i18n="c6Desc">Управление отелями и ресторанами. Финансовая эффективность и премиум-сервис.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c6p1">✔️ Маркетинг впечатлений</li>
                         <li data-i18n="c6p2">✔️ Управление конфликтами</li>
                         <li data-i18n="c6p3">✔️ Оптимизация затрат HoReCa</li>
@@ -570,7 +583,7 @@
                 <p data-i18n="c7Desc">Прикладной навык с быстрой монетизацией на рынке труда. Работа на кухнях.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c7p1">✔️ Технологические карты</li>
                         <li data-i18n="c7p2">✔️ Практика приготовления блюд</li>
                         <li data-i18n="c7p3">✔️ Присвоение гос. квалификации</li>
@@ -584,7 +597,7 @@
                 <p data-i18n="c8Desc">Полный цикл автоматизированного учета на малых предприятиях и для ИП.</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
                 <div class="accordion-content">
-                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.9rem; line-height: 1.8; margin-bottom: 15px;">
+                    <ul style="list-style: none; color: #cbd5e1; font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         <li data-i18n="c8p1">✔️ Налоговая отчетность</li>
                         <li data-i18n="c8p2">✔️ Регламентные расчеты 1С</li>
                         <li data-i18n="c8p3">✔️ Упрощенные алгоритмы учета</li>
@@ -606,75 +619,19 @@
 
     </div>
 
-    <div id="contactsSection" class="contacts-wrapper">
-        <div class="contacts-container">
-            <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
-            <p style="color: #cbd5e1; margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
-
-            <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
-            <div class="contacts-grid">
-                <div class="contact-card">
-                    <h4>Канаш Ирина Степановна</h4>
-                    <div class="position" data-i18n="dirCenter">Директор центра</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 304 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)<br><a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a></div>
-                </div>
-                <div class="contact-card">
-                    <h4>Крупин Артур Леонидович</h4>
-                    <div class="position" data-i18n="depDir">Заместитель директора центра</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a></div>
-                </div>
-                <div class="contact-card">
-                    <h4>Перетяка Нина Петровна</h4>
-                    <div class="position" data-i18n="projDir">Директор проекта</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a></div>
-                </div>
-                <div class="contact-card">
-                    <h4>Лощилова М.А.</h4>
-                    <div class="position" data-i18n="spec">Специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a></div>
-                </div>
+    <!-- Модалка Контактов РАНХиГС: Эффект Жидкого Стекла (RANEPA Brand) -->
+    <div class="modal-overlay" id="contactsModal">
+        <div class="modal-box glass-modal-ranepa" style="text-align: left; max-width: 650px;">
+            <h3 data-i18n="contModTitle">Контакты Центра</h3>
+            <p data-i18n="contModDesc" style="color: rgba(255,255,255,0.85);">Быстрый доступ к руководству и ключевым отделам Западного филиала РАНХиГС:</p>
+            <div style="font-size: 0.95rem; line-height: 1.8; color: #fff; max-height: 50vh; overflow-y: auto; padding-right: 10px; font-weight: 500;">
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dirCenter">Директор ЦДО:</b><br>Канаш Ирина Степановна — <span data-i18n="cabText">Каб.</span> 304, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-76</a> (<span data-i18n="extText">доб.</span> 2002), <a href="mailto:kanash-is@ranepa.ru" style="color:#fff; text-decoration: underline;">kanash-is@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="depDir">Зам. директора:</b><br>Крупин Артур Леонидович — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:krupin-al@ranepa.ru" style="color:#fff; text-decoration: underline;">krupin-al@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="projDir">Директор проекта:</b><br>Перетяка Нина Петровна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:peretyaka-np@ranepa.ru" style="color:#fff; text-decoration: underline;">peretyaka-np@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dept2">Отдел госслужащих:</b><br>Михина Елена Владимировна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:mikhina-ev@ranepa.ru" style="color:#fff; text-decoration: underline;">mikhina-ev@ranepa.ru</a><br><br>
+                <b style="color: #FF5F61; font-weight: 900; letter-spacing: 0.5px;" data-i18n="dept3">Отдел ДПО:</b><br>Дацун Татьяна Григорьевна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#FF5F61; text-decoration: none; font-weight: 800;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:datsun-tg@ranepa.ru" style="color:#fff; text-decoration: underline;">datsun-tg@ranepa.ru</a>
             </div>
-
-            <h3 class="department-title" data-i18n="dept2">Отдел ПК и переподготовки государственных служащих</h3>
-            <div class="contacts-grid">
-                <div class="contact-card">
-                    <h4>Михина Елена Владимировна</h4>
-                    <div class="position" data-i18n="headDep">Начальник отдела</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a></div>
-                </div>
-                <div class="contact-card">
-                    <h4>Беспалова Валерия Вадимовна</h4>
-                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a></div>
-                </div>
-            </div>
-
-            <h3 class="department-title" data-i18n="dept3">Отдел дополнительного образования</h3>
-            <div class="contacts-grid">
-                <div class="contact-card">
-                    <h4>Дацун Татьяна Григорьевна</h4>
-                    <div class="position" data-i18n="headDep">Начальник отдела</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a></div>
-                </div>
-                <div class="contact-card">
-                    <h4>Чижекова Наталья Владимировна</h4>
-                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a></div>
-                </div>
-                <div class="contact-card">
-                    <h4>Хамзина Ирина Александровна</h4>
-                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></div>
-                </div>
-            </div>
-
-            <div class="legal-footer">
-                <div data-i18n="footerRights">© 2027 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
-                <div class="legal-footer-links">
-                    <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (152-ФЗ)</span>
-                    <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
-                </div>
-            </div>
+            <div class="close-modal" onclick="closeContactsModal()" style="text-align: center; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;" data-i18n="modClose">Закрыть окно</div>
         </div>
     </div>
 
@@ -689,28 +646,13 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="contactsModal">
-        <div class="modal-box" style="text-align: left; max-width: 600px;">
-            <h3 data-i18n="contModTitle">Контакты Центра</h3>
-            <p data-i18n="contModDesc">Быстрый доступ к руководству и ключевым отделам Западного филиала РАНХиГС:</p>
-            <div style="font-size: 0.9rem; line-height: 1.7; color: #cbd5e1; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
-                <b style="color: #38bdf8;" data-i18n="dirCenter">Директор ЦДО:</b> Канаш Ирина Степановна — <span data-i18n="cabText">Каб.</span> 304, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376" style="color:#38bdf8;">97-23-76</a> (<span data-i18n="extText">доб.</span> 2002), <a href="mailto:kanash-is@ranepa.ru" style="color:#fff;">kanash-is@ranepa.ru</a><br>
-                <b style="color: #38bdf8;" data-i18n="depDir">Зам. директора:</b> Крупин Артур Леонидович — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#38bdf8;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:krupin-al@ranepa.ru" style="color:#fff;">krupin-al@ranepa.ru</a><br>
-                <b style="color: #38bdf8;" data-i18n="projDir">Директор проекта:</b> Перетяка Нина Петровна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#38bdf8;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:peretyaka-np@ranepa.ru" style="color:#fff;">peretyaka-np@ranepa.ru</a><br>
-                <b style="color: #38bdf8;" data-i18n="dept2">Отдел госслужащих:</b> Михина Елена Владимировна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#38bdf8;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129), <a href="mailto:mikhina-ev@ranepa.ru" style="color:#fff;">mikhina-ev@ranepa.ru</a><br>
-                <b style="color: #38bdf8;" data-i18n="dept3">Отдел ДПО:</b> Дацун Татьяна Григорьевна — <span data-i18n="cabText">Каб.</span> 312, <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379" style="color:#38bdf8;">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130), <a href="mailto:datsun-tg@ranepa.ru" style="color:#fff;">datsun-tg@ranepa.ru</a>
-            </div>
-            <div class="close-modal" onclick="closeContactsModal()" style="text-align: center; margin-top: 20px;" data-i18n="modClose">Закрыть окно</div>
-        </div>
-    </div>
-
     <div class="modal-overlay" id="policyModal">
         <div class="modal-box" style="text-align: left; max-width: 650px;">
             <h3 data-i18n="polModTitle">Политика обработки персональных данных</h3>
             <p style="font-size: 0.85rem; line-height: 1.6; max-height: 50vh; overflow-y: auto;" data-i18n="polModText">
                 Настоящая Политика конфиденциальности персональных данных действует в отношении всей информации, которую Западный филиал РАНХиГС может получить о Пользователе во время использования сайта.<br><br>
                 1. Обработка персональных данных осуществляется в соответствии с Федеральным законом РФ № 152-ФЗ «О персональных данных».<br>
-                2. Пользователь дает согласие на обработку своих персональных данных (фамилия, имя, отчество, контактный телефон, электронная почта) в целях регистрации заявки на обучение в рамках национального проекта «Кадры».<br>
+                2. Пользователь дает согласие на обработку своих персональных данных в целях регистрации заявки на обучение в рамках национального проекта «Кадры».<br>
                 3. Оператор принимает необходимые организационные и технические меры для защиты персональной информации от неправомерного доступа.
             </p>
             <div class="close-modal" onclick="closePolicyModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
@@ -730,6 +672,7 @@
         </div>
     </div>
 
+    <!-- ЭКОСИСТЕМА СОВЫ И ВЕТКА С ОТСТУПАМИ, ЧТОБЫ НЕ ПЕРЕКРЫВАТЬ КАРТОЧКИ -->
     <div class="owl-ecosystem" id="owlContainer">
         <div class="oak-branch">
             <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
@@ -740,6 +683,7 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
+                <!-- Векторный 3D-филин с улучшенными градиентами (Эффект Apple/Neumorphism) -->
                 <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <radialGradient id="eyeAmber" cx="45%" cy="45%" r="55%">
@@ -763,24 +707,38 @@
                             <stop offset="45%" stop-color="#C8A27A"/>
                             <stop offset="85%" stop-color="#6E4430"/>
                         </radialGradient>
+                        <filter id="glassDrop" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow dx="0" dy="15" stdDeviation="15" flood-color="#000" flood-opacity="0.8"/>
+                        </filter>
+                        <filter id="innerGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+                            <feOffset dy="3" dx="0"/>
+                            <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowDiff"/>
+                            <feFlood flood-color="white" flood-opacity="0.2"/>
+                            <feComposite in2="shadowDiff" operator="in"/>
+                            <feComposite in2="SourceGraphic" operator="over"/>
+                        </filter>
                     </defs>
 
+                    <!-- Оперение и тени -->
                     <ellipse cx="100" cy="150" rx="64" ry="84" fill="#05080c" opacity="0.4" filter="blur(6px)"/>
                     <polygon points="75,225 100,260 125,225" fill="#1b100a"/>
-                    <ellipse cx="100" cy="150" rx="62" ry="80" fill="url(#bodyPlumage)" stroke="#2b1810" stroke-width="2"/>
-                    <ellipse cx="100" cy="158" rx="50" ry="64" fill="url(#breastPattern)"/>
+                    <ellipse cx="100" cy="150" rx="62" ry="80" fill="url(#bodyPlumage)" filter="url(#innerGlow)"/>
+                    <ellipse cx="100" cy="158" rx="50" ry="64" fill="url(#breastPattern)" filter="url(#innerGlow)"/>
+                    
                     <path d="M 75,130 Q 100,138 125,130 Q 100,144 75,130 Z" fill="#2b1810" opacity="0.8"/>
                     <path d="M 70,150 Q 100,158 130,150 Q 100,164 70,150 Z" fill="#2b1810" opacity="0.8"/>
                     <path d="M 75,170 Q 100,178 125,170 Q 100,184 75,170 Z" fill="#2b1810" opacity="0.8"/>
                     <path d="M 80,190 Q 100,198 120,190 Q 100,204 80,190 Z" fill="#2b1810" opacity="0.8"/>
 
-                    <path d="M 50,105 C 32,135 36,200 78,238 C 65,190 60,135 75,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5"/>
-                    <path d="M 150,105 C 168,135 164,200 122,238 C 135,190 140,135 125,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5"/>
+                    <path d="M 50,105 C 32,135 36,200 78,238 C 65,190 60,135 75,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
+                    <path d="M 150,105 C 168,135 164,200 122,238 C 135,190 140,135 125,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
 
-                    <polygon points="70,55 35,5 85,40" fill="#1a0d07" stroke="#120804" stroke-width="1.5"/>
-                    <polygon points="130,55 165,5 115,40" fill="#1a0d07" stroke="#120804" stroke-width="1.5"/>
+                    <!-- Острые перьевые ушки -->
+                    <polygon points="72,60 42,12 85,46" fill="#22120b" stroke="#120804" stroke-width="1.5"/>
+                    <polygon points="128,60 158,12 115,46" fill="#2c160e" stroke="#120804" stroke-width="1.5"/>
 
-                    <ellipse cx="100" cy="78" rx="46" ry="40" fill="#382117"/>
+                    <ellipse cx="100" cy="78" rx="46" ry="40" fill="#382117" filter="url(#glassDrop)"/>
                     <ellipse cx="84" cy="76" rx="22" ry="26" fill="#B08D6D" opacity="0.9"/>
                     <ellipse cx="116" cy="76" rx="22" ry="26" fill="#B08D6D" opacity="0.9"/>
                     <ellipse cx="84" cy="76" rx="18" ry="22" fill="#21120b"/>
@@ -796,6 +754,7 @@
                     <rect class="owl-svg-eyelid" x="70" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 84px 64px; transform: scaleY(0);"/>
                     <rect class="owl-svg-eyelid" x="102" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 116px 64px; transform: scaleY(0);"/>
 
+                    <!-- Очки и клюв -->
                     <path d="M 84,64 Q 100,70 116,64" stroke="#e6c687" stroke-width="3" fill="none" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.8))"/>
                     
                     <polygon points="94,76 106,76 100,105" fill="#dca742" stroke="#2b1810" stroke-width="1.5" filter="drop-shadow(0 4px 4px rgba(0,0,0,0.7))"/>
