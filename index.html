@@ -28,16 +28,17 @@
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* --- ФОНОВЫЕ ТЕГИ С ГЛУБИНОЙ --- */
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; overflow: hidden; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 4vw; font-weight: 900; color: rgba(255,255,255,0.03); text-shadow: 0 0 30px rgba(255, 255, 255, 0.08); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 6s infinite alternate ease-in-out; }
-        .bg-tag:nth-child(1) { top: 15%; left: 5%; animation-delay: 0s; transform: translateZ(-50px); }
-        .bg-tag:nth-child(2) { top: 50%; left: 60%; animation-delay: -2s; transform: translateZ(-100px); font-size: 5vw; }
-        .bg-tag:nth-child(3) { top: 80%; left: 10%; animation-delay: -4s; transform: translateZ(-30px); font-size: 3.5vw; }
+        /* --- ФОНОВЫЕ ТЕГИ --- */
+        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
+        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-size: 4.5vw; font-weight: 900; color: rgba(255,255,255,0.06); text-shadow: 0 0 30px rgba(255, 255, 255, 0.15); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; }
+        .bg-tag:nth-child(1) { top: 18%; left: 5%; animation-delay: 0s; transform: translateZ(-20px); }
+        .bg-tag:nth-child(2) { top: 48%; left: 65%; animation-delay: -1s; transform: translateZ(-40px); font-size: 5.5vw; }
+        .bg-tag:nth-child(3) { top: 82%; left: 8%; animation-delay: -2s; transform: translateZ(-10px); font-size: 3.5vw; }
+        .bg-tag:nth-child(4) { top: 35%; left: 35%; animation-delay: -3s; transform: translateZ(-30px); font-size: 4vw; }
 
         @keyframes heartbeat {
-            0% { transform: scale(1) translateY(0); opacity: 0.03; text-shadow: 0 0 20px rgba(255,255,255,0.05); }
-            100% { transform: scale(1.05) translateY(-10px); opacity: 0.07; text-shadow: 0 0 40px rgba(255,255,255,0.15); }
+            0% { transform: scale(1) translateY(0); opacity: 0.06; text-shadow: 0 0 20px rgba(255,255,255,0.05); }
+            100% { transform: scale(1.03) translateY(-8px); opacity: 0.12; text-shadow: 0 0 40px rgba(255,255,255,0.2); }
         }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; background-color: var(--ranepa-deep); }
@@ -47,7 +48,6 @@
         .shape-3 { background: #FF5F61; width: 25vw; height: 25vw; border-radius: 60% 40% 30% 70%; top: 35%; left: 50%; opacity: 0.2; animation-duration: 30s; }
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(8vw, 12vh) rotate(45deg) scale(1.15); } }
 
-        /* --- ШАПКА ЖИДКОЕ СТЕКЛО --- */
         header { background: rgba(5, 8, 14, 0.65); backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; flex-shrink: 1; min-width: auto; max-width: 100%; z-index: 10051; align-items: flex-start; text-align: left; }
@@ -114,8 +114,9 @@
         .glossary-item:hover { transform: translateY(-5px); box-shadow: 0 25px 45px rgba(0,0,0,0.5); }
         .glossary-item strong { display: block; font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: #fff; margin-bottom: 10px; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        .contacts-wrapper { background: rgba(5, 8, 14, 0.8); border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(30px); padding: 80px max(20px, env(safe-area-inset-right)) 80px max(20px, env(safe-area-inset-left)); z-index: 5; position: relative; }
-        .contacts-container { max-width: 1300px; margin: 0 auto; }
+        /* --- ЖЕЛЕЗОБЕТОННЫЙ БЛОК КОНТАКТОВ И ФУТЕРА --- */
+        .contacts-wrapper { background: rgba(5, 8, 14, 0.8); border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(30px); padding: 80px max(20px, env(safe-area-inset-right)) 80px max(20px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; display: block; clear: both; }
+        .contacts-container { max-width: 1300px; margin: 0 auto; display: block; }
         .department-title { font-family: 'Montserrat', sans-serif; font-size: 1.5rem; color: #FF5F61; margin: 50px 0 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; font-weight: 800; }
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: clamp(20px, 4vw, 25px); }
         .contact-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); transition: transform 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
@@ -126,9 +127,9 @@
         .contact-card .details a { color: #38bdf8; text-decoration: underline; font-weight: 700; transition: color 0.2s; }
         .contact-card .details a:hover { color: #FF5F61; }
 
-        .legal-footer { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; gap: 15px; }
+        .legal-footer { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85rem; color: #64748B; line-height: 1.6; display: flex; flex-direction: column; gap: 15px; width: 100%; }
         .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-        .legal-footer-links span { color: #94A3B8; text-decoration: underline; cursor: pointer; transition: color 0.2s; }
+        .legal-footer-links span { color: #94A3B8; text-decoration: underline; cursor: pointer; transition: color 0.2s; touch-action: manipulation; }
         .legal-footer-links span:hover { color: #fff; }
 
         /* --- МОДАЛЬНЫЕ ОКНА: ЭФФЕКТ ЖИДКОГО СТЕКЛА КАК НА IPHONE --- */
@@ -138,7 +139,6 @@
         .modal-box { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); padding: clamp(25px, 5vw, 45px); border-radius: 28px; max-width: 550px; width: 100%; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 85vh; overflow-y: auto; transform: scale(0.9) translateY(20px) rotateX(10deg); transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0) rotateX(0deg); }
         
-        /* Специфичный стиль для модалки КОНТАКТОВ (Фирменный стиль РАНХиГС) */
         .glass-modal-ranepa { background: linear-gradient(145deg, rgba(136, 19, 55, 0.2) 0%, rgba(10, 15, 24, 0.8) 100%) !important; border-top: 1px solid rgba(202, 15, 62, 0.4) !important; border-left: 1px solid rgba(202, 15, 62, 0.2) !important; box-shadow: 0 40px 80px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 40px rgba(202, 15, 62, 0.15) !important; }
         
         .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.4rem, 5vw, 1.8rem); color: #fff; margin-bottom: 15px; font-weight: 900; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
@@ -156,8 +156,7 @@
         .close-modal { margin-top: 25px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 800; text-decoration: underline; transition: color 0.3s; }
         .close-modal:hover { color: #fff; }
 
-        /* --- ЭКОСИСТЕМА СОВЫ И КИНОТЕАТРАЛЬНАЯ ВЕТКА (СДВИНУТЫ ВПРАВО) --- */
-        /* Смещение вправо (right: -320px) и уменьшение (scale(0.85)), чтобы НЕ ПЕРЕКРЫВАТЬ интерфейс */
+        /* --- ЭКОСИСТЕМА СОВЫ --- */
         .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 480px; height: 400px; z-index: 9999; transition: all 1.4s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; transform: scale(0.85); transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -30px; pointer-events: auto; }
 
@@ -191,7 +190,6 @@
         .leaf-3 { top: -10px; right: -32px; transform-origin: bottom left; }
         .chat-opened .leaf { transform: scale(1) rotate(15deg); opacity: 1; }
 
-        /* ОБЪЕМНЫЙ 3D-ФИЛИН (SVG) С ВНУТРЕННИМИ ТЕНЯМИ И БЛИКАМИ */
         .owl-container {
             position: absolute; bottom: 55px; left: 35px; width: 220px; height: 280px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation;
@@ -210,7 +208,7 @@
             position: relative; width: 100%; height: 100%;
             transform-origin: center bottom;
             transition: transform 0.4s ease;
-            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.95)); /* Глубокая тень */
+            filter: drop-shadow(0 30px 40px rgba(0,0,0,0.95));
             animation: owlBreath 4s infinite ease-in-out;
         }
 
@@ -221,10 +219,7 @@
 
         .owl-flip .owl-body { transform: scaleX(-1); }
 
-        #owlSvgVisual {
-            width: 100%; height: 100%;
-            pointer-events: none;
-        }
+        #owlSvgVisual { width: 100%; height: 100%; pointer-events: none; }
 
         .owl-container:not(.sleeping) .owl-svg-eyelid { animation: svgBlink 4.5s infinite; }
         @keyframes svgBlink {
@@ -245,7 +240,7 @@
         .owl-flying { animation: flyAway 1.6s forwards cubic-bezier(0.25, 1, 0.5, 1) !important; }
         @keyframes flyAway { 0% { transform: translateY(0); } 100% { transform: translateY(-600px) scale(0.3); opacity: 0; } }
 
-        .owl-chaotic-flight .owl-body { animation: owlCinematicSwoop 1.4s infinite ease-in-out !important; }
+        .owl-chaotic-flight .owl-body { animation: owlCinematicSwoop 0.8s infinite ease-in-out !important; }
         @keyframes owlCinematicSwoop {
             0% { transform: rotate(0deg) scale(1); }
             35% { transform: rotate(-10deg) translateY(-12px) scale(1.08); }
@@ -270,7 +265,6 @@
 
         .mobile-chat-icon { display: none; }
 
-        /* --- MOBILE ADAPTATION --- */
         @media (max-width: 768px) {
             header { padding: 15px max(15px, env(safe-area-inset-right)) 15px max(15px, env(safe-area-inset-left)); flex-direction: column; gap: 15px; text-align: center; }
             .logo-group { width: 100%; align-items: center; text-align: center; }
@@ -280,14 +274,11 @@
             .header-nav { justify-content: center; width: 100%; gap: 10px; }
             .header-kadry { width: 100%; justify-content: center; margin-top: 5px; }
             .header-kadry img { height: 80px !important; width: auto; }
-
             .tabs-nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; scroll-snap-type: x mandatory; padding: 10px; background: var(--glass-bg); border: 1px solid var(--glass-border); gap: 10px; }
             .tabs-nav::-webkit-scrollbar { display: none; }
             .tab-btn { flex-shrink: 0; scroll-snap-align: start; background: rgba(255,255,255,0.05); }
-
             .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
             .oak-branch, .zzz-particles, .owl-bubble, .owl-body { display: none !important; }
-            
             .owl-container {
                 position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
                 left: auto; width: 65px; height: 65px; border-radius: 50%;
@@ -296,7 +287,6 @@
                 display: flex; justify-content: center; align-items: center;
                 animation: none !important; pointer-events: auto; z-index: 10000;
             }
-            
             .mobile-chat-icon { display: block; width: 32px; height: 32px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
             .owl-chat-panel { width: calc(100% - 30px); left: 15px; right: 15px; bottom: max(95px, calc(env(safe-area-inset-bottom) + 95px)); height: min(65vh, 500px); }
         }
@@ -312,6 +302,7 @@
         <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
         <div class="bg-tag">#БЫСТРЫЙ_СТАРТ</div>
         <div class="bg-tag">#СИСТЕМНЫЙ_БИЗНЕС</div>
+        <div class="bg-tag">#ПРОФЕССИОНАЛИЗМ</div>
     </div>
 
     <div class="ambient-3d-bg">
@@ -336,7 +327,6 @@
 
         <nav class="header-nav">
             <a href="#programsSection" class="header-nav-link" data-i18n="navProg">Программы</a>
-            <!-- Клик открывает премиальную модалку контактов -->
             <span class="header-nav-link" onclick="openContactsModal()" data-i18n="navCont">Контакты</span>
             <button class="header-nav-btn" onclick="openModal()" data-i18n="navBtn">Записаться</button>
         </nav>
@@ -619,6 +609,79 @@
 
     </div>
 
+    <!-- КОНТАКТЫ И ПОЛИТИКА: ЖЕЛЕЗОБЕТОННЫЙ БЛОК -->
+    <div id="contactsSection" class="contacts-wrapper">
+        <div class="contacts-container">
+            <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
+            <p style="color: #cbd5e1; margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
+
+            <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
+            <div class="contacts-grid">
+                <div class="contact-card">
+                    <h4>Канаш Ирина Степановна</h4>
+                    <div class="position" data-i18n="dirCenter">Директор центра</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 304 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)<br><a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a></div>
+                </div>
+                <div class="contact-card">
+                    <h4>Крупин Артур Леонидович</h4>
+                    <div class="position" data-i18n="depDir">Заместитель директора центра</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a></div>
+                </div>
+                <div class="contact-card">
+                    <h4>Перетяка Нина Петровна</h4>
+                    <div class="position" data-i18n="projDir">Директор проекта</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a></div>
+                </div>
+                <div class="contact-card">
+                    <h4>Лощилова М.А.</h4>
+                    <div class="position" data-i18n="spec">Специалист</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a></div>
+                </div>
+            </div>
+
+            <h3 class="department-title" data-i18n="dept2">Отдел ПК и переподготовки государственных служащих</h3>
+            <div class="contacts-grid">
+                <div class="contact-card">
+                    <h4>Михина Елена Владимировна</h4>
+                    <div class="position" data-i18n="headDep">Начальник отдела</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a></div>
+                </div>
+                <div class="contact-card">
+                    <h4>Беспалова Валерия Вадимовна</h4>
+                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a></div>
+                </div>
+            </div>
+
+            <h3 class="department-title" data-i18n="dept3">Отдел дополнительного образования</h3>
+            <div class="contacts-grid">
+                <div class="contact-card">
+                    <h4>Дацун Татьяна Григорьевна</h4>
+                    <div class="position" data-i18n="headDep">Начальник отдела</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br><a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a></div>
+                </div>
+                <div class="contact-card">
+                    <h4>Чижекова Наталья Владимировна</h4>
+                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a></div>
+                </div>
+                <div class="contact-card">
+                    <h4>Хамзина Ирина Александровна</h4>
+                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
+                    <div class="details"><span data-i18n="cabText">Каб.</span> 312 | <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br><a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></div>
+                </div>
+            </div>
+
+            <div class="legal-footer">
+                <div data-i18n="footerRights">© 2027 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
+                <div class="legal-footer-links">
+                    <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (152-ФЗ)</span>
+                    <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Модалка Контактов РАНХиГС: Эффект Жидкого Стекла (RANEPA Brand) -->
     <div class="modal-overlay" id="contactsModal">
         <div class="modal-box glass-modal-ranepa" style="text-align: left; max-width: 650px;">
@@ -672,7 +735,7 @@
         </div>
     </div>
 
-    <!-- ЭКОСИСТЕМА СОВЫ И ВЕТКА С ОТСТУПАМИ, ЧТОБЫ НЕ ПЕРЕКРЫВАТЬ КАРТОЧКИ -->
+    <!-- ЭКОСИСТЕМА СОВЫ И ВЕТКА С ОТСТУПАМИ -->
     <div class="owl-ecosystem" id="owlContainer">
         <div class="oak-branch">
             <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
@@ -683,7 +746,7 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
-                <!-- Векторный 3D-филин с улучшенными градиентами (Эффект Apple/Neumorphism) -->
+                <!-- Векторный 3D-филин с улучшенными градиентами -->
                 <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <radialGradient id="eyeAmber" cx="45%" cy="45%" r="55%">
@@ -757,6 +820,7 @@
                     <!-- Очки и клюв -->
                     <path d="M 84,64 Q 100,70 116,64" stroke="#e6c687" stroke-width="3" fill="none" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.8))"/>
                     
+                    <!-- Новый, хищный янтарный клюв -->
                     <polygon points="94,76 106,76 100,105" fill="#dca742" stroke="#2b1810" stroke-width="1.5" filter="drop-shadow(0 4px 4px rgba(0,0,0,0.7))"/>
                     <line x1="100" y1="76" x2="100" y2="103" stroke="#8c611c" stroke-width="1.5"/>
 
@@ -1144,12 +1208,12 @@
 
                 void owlContainer.offsetWidth;
 
-                const deltaX = (targetRect.right - 90) - startRect.left;
-                const deltaY = (targetRect.top - 120) - startRect.top;
+                const deltaX = (targetRect.right - startRect.width * 0.55 - 20) - startRect.left;
+                const deltaY = (targetRect.top - startRect.height * 0.55 + 20) - startRect.top;
 
-                owlContainer.style.transition = 'transform 1.4s cubic-bezier(0.34, 1.25, 0.64, 1)';
+                owlContainer.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
                 owlContainer.classList.add('owl-chaotic-flight');
-                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.85)`;
+                owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.55)`;
 
                 setTimeout(() => {
                     owlContainer.classList.remove('owl-chaotic-flight');
@@ -1162,9 +1226,9 @@
                     owlContainer.style.position = 'absolute';
                     owlContainer.style.left = 'auto';
                     owlContainer.style.bottom = 'auto';
-                    owlContainer.style.right = '15px';
-                    owlContainer.style.top = '-120px';
-                    owlContainer.style.transform = 'scale(0.85)';
+                    owlContainer.style.right = '20px';
+                    owlContainer.style.top = '-135px';
+                    owlContainer.style.transform = 'scale(0.55)';
 
                     isOwlFlying = false;
 
@@ -1172,9 +1236,9 @@
                         returnOwlToBranch();
                     }, 5000);
 
-                }, 1400);
+                }, 800);
 
-            }, 500);
+            }, 200);
         }
 
         function returnOwlToBranch() {
@@ -1201,7 +1265,7 @@
             owlContainer.style.top = startRect.top + 'px';
             owlContainer.style.bottom = 'auto';
             owlContainer.style.right = 'auto';
-            owlContainer.style.transform = 'scale(0.85) scaleX(-1)';
+            owlContainer.style.transform = 'scale(0.55) scaleX(-1)';
 
             void owlContainer.offsetWidth;
 
@@ -1211,7 +1275,7 @@
             const deltaX = targetX - startRect.left;
             const deltaY = targetY - startRect.top;
 
-            owlContainer.style.transition = 'transform 1.6s cubic-bezier(0.25, 1, 0.5, 1)';
+            owlContainer.style.transition = 'transform 1s cubic-bezier(0.25, 1, 0.5, 1)';
             owlContainer.classList.add('owl-chaotic-flight');
             owlContainer.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1) scaleX(-1)`;
 
@@ -1226,13 +1290,13 @@
                 owlContainer.style.transition = 'all 0.3s';
                 owlContainer.style.transform = 'none';
                 owlContainer.style.position = 'absolute';
-                owlContainer.style.left = '45px';
-                owlContainer.style.bottom = '62px';
+                owlContainer.style.left = '35px';
+                owlContainer.style.bottom = '55px';
                 owlContainer.style.top = 'auto';
                 owlContainer.style.right = 'auto';
 
                 isOwlFlying = false;
-            }, 1600);
+            }, 1000);
         }
 
         function showCatalog() {
