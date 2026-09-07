@@ -37,7 +37,7 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-glass: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(5, 8, 14, 0.85); /* Шапка зафиксирована в темном цвете */
+            --header-bg: rgba(5, 8, 14, 0.85);
             --btn-glass: rgba(0, 0, 0, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
             --tag-color: rgba(0, 0, 0, 0.08);
@@ -55,7 +55,7 @@
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* --- ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ ПРИ СКРОЛЛЕ --- */
+        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ */
         .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
         .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 30px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
         .bg-tag:nth-child(1) { top: 40%; left: 8%; font-size: 4vw; transform: translateZ(-20px); }
@@ -70,8 +70,7 @@
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         @keyframes float { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) scale(1.15); } }
 
-        /* --- ШАПКА ВСЕГДА ТЕМНАЯ --- */
-        header { background: rgba(5, 8, 14, 0.85) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
+        header { background: rgba(5, 8, 14, 0.85) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; }
         .logo-group img { height: 180px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); transition: transform 0.2s; }
@@ -81,9 +80,9 @@
         .header-right-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; margin-left: auto; z-index: 10051; }
         
         .header-controls { display: flex; gap: 10px; align-items: center; }
-        .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.05) !important; padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px); }
-        .control-panel-btn { background: transparent; border: none; color: #94A3B8 !important; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
-        .control-panel-btn:hover { color: #fff !important; background: rgba(255, 255, 255, 0.1) !important; }
+        .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .control-panel-btn { background: transparent; border: none; color: #94A3B8; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
+        .control-panel-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
         .lang-active, .active-font { background: var(--ranepa-red) !important; color: #fff !important; box-shadow: 0 4px 12px rgba(202, 15, 62, 0.5); }
         .theme-btn { font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; padding: 0; }
 
@@ -91,7 +90,7 @@
         .header-nav-link { color: #94A3B8 !important; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; transition: color 0.2s; cursor: pointer; touch-action: manipulation; position: relative; }
         .header-nav-link:hover { color: #fff !important; }
         
-        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff !important; padding: 10px 24px; border-radius: 10px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); cursor: pointer; touch-action: manipulation; }
+        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 10px 24px; border-radius: 10px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); cursor: pointer; touch-action: manipulation; }
         .header-nav-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6); }
 
         .header-kadry { flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; z-index: 10051; max-width: 250px; }
@@ -147,7 +146,7 @@
         .faq-answer { padding: 0 25px 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; animation: slideDown 0.3s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* КОНТАКТЫ ВНИЗУ (БЕЗ РАСТЯГИВАНИЯ, ПЕРЕНОСЫ ЧЕТКИЕ) */
+        /* КОНТАКТЫ ВНИЗУ */
         .contacts-wrapper { background: var(--bg-glass); border-top: 1px solid var(--border-glass); backdrop-filter: blur(30px); padding: 60px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; clear: both; box-shadow: 0 -10px 30px var(--shadow-color); }
         .contacts-container { max-width: 1300px; margin: 0 auto; display: block; }
         
@@ -174,7 +173,7 @@
         .vk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(39, 135, 245, 0.15); border: 1px solid rgba(39, 135, 245, 0.4); color: #38bdf8; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; transition: 0.3s; cursor: pointer; margin-top: 10px; }
         .vk-btn:hover { background: rgba(39, 135, 245, 0.3); transform: translateY(-2px); }
 
-        /* ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (LIQUID GLASS + ПРУЖИНА) */
+        /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.3s ease; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
@@ -195,34 +194,42 @@
 
         .compliance-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 20px; line-height: 1.4; text-align: justify; opacity: 0.8; }
 
-        /* ЭКОСИСТЕМА СОВЫ И РЕАЛЬНЫЕ КАРТИНКИ ИЗ ПАПКИ IMG */
-        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 480px; height: 400px; z-index: 9999; transition: all 1.4s var(--bezier-bounce); pointer-events: none; transform: scale(0.85); transform-origin: bottom right; }
-        .owl-ecosystem.visible { bottom: 0; right: -30px; pointer-events: auto; }
+        /* --- ЭКОСИСТЕМА СОВЫ И ОРИГИНАЛЬНЫЕ ФАЙЛЫ ИЗ IMG --- */
+        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 500px; height: 420px; z-index: 9999; transition: all 1.4s var(--bezier-bounce); pointer-events: none; transform: scale(0.9); transform-origin: bottom right; }
+        .owl-ecosystem.visible { bottom: 0; right: -20px; pointer-events: auto; }
 
         .oak-branch { 
-            position: absolute; bottom: 25px; right: -35px; width: 420px; height: auto; 
-            filter: drop-shadow(0 25px 45px rgba(0,0,0,0.8)); 
-            transform: rotate(-6deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
+            position: absolute; bottom: 15px; right: -20px; width: 440px; height: auto; 
+            filter: drop-shadow(0 25px 45px rgba(0,0,0,0.85)); 
+            transform: rotate(-5deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        /* ФИЛИН */
+        /* ФИЛИН (ОРИГИНАЛЬНЫЙ OWL.PNG С ГИТХАБА С ЖЕСТКИМ КОРРЕКТНЫМ РАЗМЕРОМ) */
         .owl-container {
-            position: absolute; bottom: 85px; left: 60px; width: 160px; height: 210px; cursor: pointer; pointer-events: auto;
+            position: absolute; bottom: 75px; left: 45px; width: 220px; height: 300px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation; will-change: transform;
         }
 
-        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8)); animation: owlBreath 4s infinite ease-in-out; will-change: transform; }
+        @keyframes naturalPerch {
+            0%, 20% { transform: translate3d(0px, 0px, 0); }
+            40%, 45% { transform: translate3d(25px, -2.6px, 0); }
+            70%, 75% { transform: translate3d(50px, -5.25px, 0); }
+            100% { transform: translate3d(12px, -1.26px, 0); }
+        }
+
+        .stop-patrol { animation: none !important; }
+
+        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); animation: owlBreath 4s infinite ease-in-out; will-change: transform; }
         @keyframes owlBreath { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(1.02) scaleX(0.98); } }
         
         .owl-flip .owl-body { transform: scaleX(-1); }
 
         .sleeping { animation-play-state: paused; }
-        .zzz-particles { position: absolute; top: -30px; left: 60px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.4rem; text-shadow: 0 0 12px rgba(255,255,255,0.9); opacity: 0; pointer-events: none; z-index: 20; }
+        .zzz-particles { position: absolute; top: -30px; left: 80px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.4rem; text-shadow: 0 0 12px rgba(255,255,255,0.9); opacity: 0; pointer-events: none; z-index: 20; }
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
         @keyframes floatZzz { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.5); } 50% { opacity: 1; transform: translate3d(15px, -20px, 0) scale(1.3); } 100% { opacity: 0; transform: translate3d(30px, -40px, 0) scale(1.6); } }
 
-        /* Пузырь перенесен внутрь owl-container */
         .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
@@ -243,14 +250,14 @@
         /* ЖЕСТКИЙ АЛГОРИТМ ОБХОДА ДЛЯ МОБИЛОК (СТРОГО СВЕРХУ ВНИЗ) */
         @media (max-width: 768px) {
             html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; }
-            header { padding: 15px; flex-direction: column; gap: 15px; align-items: stretch; background: var(--header-bg) !important; }
+            header { padding: 15px; flex-direction: column; gap: 15px; align-items: stretch; background: rgba(5, 8, 14, 0.95) !important; }
             .logo-group { align-items: center; width: 100%; text-align: center; }
             .logo-group img { height: auto !important; width: 100%; max-height: 120px; object-position: center; }
             .logo-subtitle { text-align: center; }
             .header-right-panel { width: 100%; align-items: center; margin: 0; }
             .header-controls { justify-content: center; flex-wrap: wrap; width: 100%; }
             .header-nav { justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap; }
-            .header-kadry { display: none !important; } /* Скрываем из шапки */
+            .header-kadry { display: none !important; } 
             
             .tabs-nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px; gap: 10px; width: 100%; }
             .tab-btn { flex-shrink: 0; }
@@ -292,7 +299,6 @@
     <div class="ambient-3d-bg">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
     </div>
 
     <header>
@@ -628,6 +634,18 @@
             <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
             <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
 
+            <div class="main-contact-box">
+                <h3 data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</h3>
+                <p><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
+                <p><b style="color: var(--ranepa-red);">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
+            </div>
+            
+            <div class="main-contact-box">
+                <h3 data-i18n="addressLabel">Адрес:</h3>
+                <p><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" style="text-decoration: underline;" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
+            </div>
+
+            <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
                     <h4>Канаш Ирина Степановна</h4>
@@ -726,7 +744,7 @@
                 <div style="margin-top: 5px;" data-i18n="footerText">Западный филиал РАНХиГС. Центр Дополнительного Образования.<br>Образовательная деятельность ведется на основании бессрочной лицензии.</div>
                 
                 <div class="legal-footer-links">
-                    <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (FL-152)</span>
+                    <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
                 </div>
 
@@ -772,7 +790,7 @@
             <p data-i18n="modDesc">Выберите удобный способ регистрации на программу обучения:</p>
             <a href="https://trudvsem.ru/?region=3900000000000" target="_blank" class="modal-btn modal-btn-trudvsem" data-i18n="modTrud">Записаться через «Работа России» (Калининград)</a>
             <a href="https://forms.yandex.ru" target="_blank" class="modal-btn modal-btn-yandex" data-i18n="modYan">Записаться через Яндекс.Форму</a>
-            <div class="compliance-text" data-i18n="complianceText">Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с FL-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.</div>
+            <div class="compliance-text" data-i18n="complianceText">Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.</div>
             <div class="close-modal" onclick="closeModal()" data-i18n="modClose">Закрыть окно</div>
         </div>
     </div>
@@ -803,7 +821,7 @@
         </div>
     </div>
 
-    <!-- ЭКОСИСТЕМА СОВЫ И РЕАЛЬНЫЕ КАРТИНКИ -->
+    <!-- ЭКОСИСТЕМА СОВЫ И ОРИГИНАЛЬНЫЕ ФАЙЛЫ ИЗ IMG -->
     <div class="owl-ecosystem" id="owlContainer">
         <img src="./img/branch.png" alt="Ветка" class="oak-branch">
 
@@ -853,96 +871,73 @@
             document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌓' : '☀️';
         });
 
-        function changeFontSize(size, btnElement) {
-            const root = document.documentElement;
-            if(size === 'small') root.style.fontSize = '14px';
-            if(size === 'normal') root.style.fontSize = '16px';
-            if(size === 'large') root.style.fontSize = '18px';
-            
-            document.querySelectorAll('.font-controls .control-panel-btn').forEach(btn => btn.classList.remove('active-font'));
-            if(btnElement) btnElement.classList.add('active-font');
-        }
-
-        const botTexts = {
+        const translationsHTML = {
             ru: {
-                catPrompt: "Мы реализуем обучение по 4 профессиональным трекам. Какой сектор вас интересует?",
-                optGos: "🏛️ Госслужба и закупки",
-                optBiz: "🚀 Цифровой бизнес и ИИ",
-                optHoreca: "🏨 HoReCa и Туризм",
-                optProf: "⚡ Быстрые профессии",
-                optBack: "⬅️ Назад в меню",
-                descGos: "<b>Кадры для госсектора:</b><br>• ГМУ: фундаментальный базис для роста в органах власти.<br>• Госзакупки: 44-ФЗ и 223-ФЗ, устранение юридических рисков.<br>• Безопасность: алгоритмы антитеррора и противодействия коррупции.",
-                descBiz: "<b>Инновации коммерческого сектора:</b><br>• Искусственный интеллект: автоматизация аналитики через нейросети.<br>• Управление бизнесом: систематизация и выход из операционки.<br>• Логистика: эффективное управление ВЭД.",
-                descHoreca: "<b>Элита индустрии гостеприимства:</b><br>• Менеджмент гостеприимства: повышение маржинальности объектов.<br>• Музейно-туристская деятельность: проектирование вовлекающих турпродуктов.",
-                descProf: "<b>Прикладные навыки:</b><br>• Повар: интенсивная практика и получение официального разряда.<br>• 1С: Предприятие: автоматизация бухгалтерского учета и отчетности.",
-                optEnroll: "✍️ Инициировать заявку",
-                optOther: "🔄 Анализировать другие направления",
-                testStart: "Анализ запущен. Ответьте на 12 вопросов, чтобы алгоритм вычислил оптимальный вектор вашего профессионального развития.",
-                resGos: "Вердикт системы: <b>«Госслужба и закупки»</b>. Ваш профиль демонстрирует системное мышление и предрасположенность к высокому уровню ответственности.",
-                resBiz: "Вердикт системы: <b>«Цифровой бизнес и ИИ»</b>. Вы ориентированы на стратегическое масштабирование и интеграцию инноваций.",
-                resHoreca: "Вердикт системы: <b>«HoReCa и Туризм»</b>. Ваши сильные стороны — коммуникация и обеспечение премиального сервиса.",
-                resProf: "Вердикт системы: <b>«Быстрые профессии»</b>. Вы цените применимый на практике результат и стремитесь к быстрой монетизации навыков.",
-                resEnroll: "✍️ Зафиксировать заявку на это направление",
-                resCat: "🔄 Отклонить. Показать весь каталог",
-                owlOpt1: "🎯 Пройти тест на профориентацию",
-                owlOpt2: "📚 Кратко обо всех программах",
-                owlOpt3: "📞 Открыть контакты руководства"
+                pageTitle: "Академия Кадров | Западный филиал РАНХиГС",
+                logoSub: "Западный филиал • Центр дополнительного образования",
+                navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
+                heroTitle: "Академия управления<br>и профессионального роста",
+                heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
+                tabAll: "Все программы", tabGos: "🏛️ Госслужба и закупки", tabBiz: "🚀 Цифровой бизнес и ИИ", tabHoreca: "🏨 HoReCa и Туризм", tabProf: "⚡ Быстрые профессии",
+                c1Title: "Государственное управление", c1Desc: "Программа разработана для действующих госслужащих, стремящихся к стремительному карьерному росту. Лекции читаются ведущими экспертами, практика закрепляется на семинарах, студенты решают кейсы, а итоговый экзамен подтверждает квалификацию. Вы станете настоящим профессионалом своего дела. Государственный аппарат требует максимальной ответственности. Наш обновленный курс поможет вам достичь поставленных целей.", c1p1: "✔️ Правовые основы ГМУ", c1p2: "✔️ Финансовое управление", c1p3: "✔️ Публичная политика",
+                c2Title: "Управление закупками", c2Desc: "Внимательно анализируя тендерную документацию, вы избежите фатальных юридических ошибок. Закон строг. Изучать контракты крайне важно. Мы разбираем актуальную арбитражную практику текущего года. Обучение построено исключительно на реальных примерах из практики ФАС. Учимся побеждать. Вы получите престижный диплом.", c2p1: "✔️ Арбитражная практика", c2p2: "✔️ Антимонопольный контроль", c2p3: "✔️ Сквозное проектирование закупки",
+                c3Title: "Профилактика терроризма", c3Desc: "Терроризм несет угрозу. Курс обязателен для современных руководителей. Защита предприятия. Мы научим минимизировать риски. Защита объектов всегда в приоритете. Проверки пройдут без проблем. Обучение занимает минимум времени.", c3p1: "✔️ Антитеррористическая защищенность", c3p2: "✔️ Противодействие коррупции", c3p3: "✔️ Минимизация рисков проверок",
+                c4Title: "Искусственный Интеллект", c4Desc: "Нейросети, внедренные в рабочие процессы, меняют мир бизнеса и экономят сотни часов. Вы научитесь писать идеальные промпты. Аналитика автоматизируется скриптами, тексты генерируются мгновенно, сотрудники освобождаются от рутины, и прибыль компании стабильно растет. Инновации доступны каждому. Начните применять их уже сегодня. Это навсегда изменит вашу карьеру.", c4p1: "✔️ Инжиниринг промптов", c4p2: "✔️ Автоматизация процессов", c4p3: "✔️ Интеграция AI в бизнес",
+                c5Title: "Управление бизнесом", c5Desc: "Курс для настоящих предпринимателей. Сложный путь. Мы учим выходить из рутинной операционки. Систематизация процессов значительно повышает маржинальность. Экономика и право малого бизнеса станут понятнее. Ваша команда начнет работать эффективнее. Действовать решительно. Вы станете абсолютным лидером рынка.", c5p1: "✔️ Экономика и право МСП", c5p2: "✔️ Управление персоналом", c5p3: "✔️ Выход из операционки",
+                c6Title: "Менеджмент гостеприимства", c6Desc: "Управление отелями требует огромной выдержки. Индустрия HoReCa постоянно развивается. Наш курс дает фундаментальные практические знания. Вы научитесь грамотному маркетингу впечатлений. Управление конфликтами станет вашей сильной стороной. Оптимизация затрат увеличит чистую прибыль ресторана. Премиум-сервис обязательно привлечет новых клиентов. Обучение ведут лучшие практики.", c6p1: "✔️ Маркетинг впечатлений", c6p2: "✔️ Управление конфликтами", c6p3: "✔️ Оптимизация затрат HoReCa",
+                c7Title: "Повар (3-4 разряд)", c7Desc: "Профессия повара всегда высоко востребована. Прикладные навыки гарантируют быструю монетизацию. Вы освоите современные технологические карты. Много часов отводится на интенсивную практику. Работа на современной кухне требует сноровки. После сложного экзамена присваивается государственная квалификация. Трудоустройство не заставит себя ждать. Мы готовим шефов.", c7p1: "✔️ Технологические карты", c7p2: "✔️ Практика приготовления блюд", c7p3: "✔️ Присвоение гос. квалификации",
+                c8Title: "1С:Предприятие & Бухучет", c8Desc: "Автоматизация учета необходима всем компаниям. Курс охватывает полный цикл современной бухгалтерии. Вы научитесь сдавать налоговую отчетность без ошибок. Программа идеально подходит для ИП и малых предприятий. Регламентные расчеты станут выполняться в один клик. Упрощенные алгоритмы сильно экономят время. Преподаватели объясняют материал на доступном языке. Получите надежный навык.", c8p1: "✔️ Налоговая отчетность", c8p2: "✔️ Регламентные расчеты 1С", c8p3: "✔️ Упрощенные алгоритмы учета",
+                cardHours1: "506 ч.", cardHours2: "144 ч.", cardHours3: "36 ч.", cardHours4: "98 ч.", cardHours5: "252 ч.", cardHours6: "150 ч.",
+                studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
+                glossaryTitle: "Глоссарий Академии", g1Title: "ЦДО", g1Desc: "Центр дополнительного образования — структурное подразделение Западного филиала РАНХиГС.", g2Title: "ДПО", g2Desc: "Дополнительное профессиональное образование — система обучения на базе текущего образования.", g3Title: "ПК", g3Desc: "Повышение квалификации — краткосрочные программы обновления знаний.", g4Title: "ПП", g4Desc: "Профессиональная переподготовка — программы (от 250 ч.) для получения новой профессии.", g5Title: "ФГОС", g5Desc: "Федеральный государственный образовательный стандарт — требования к качеству.", g6Title: "ВЭД", g6Desc: "Внешнеэкономическая деятельность — международная торговля и логистика.",
+                faqTitle: "Часто задаваемые вопросы", faqQ1: "Какие документы нужны для поступления?", faqA1: "Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).", faqQ2: "Как проходит обучение?", faqA2: "Обучение проходит в очно-заочном формате с применением дистанционных технологий. Практические занятия проводятся на базе Академии.", faqQ3: "Выдается ли диплом государственного образца?", faqA3: "Да, после успешной сдачи итоговой аттестации выдается диплом РАНХиГС о профессиональной переподготовке с правом ведения новой деятельности.", faqQ4: "Можно ли совмещать обучение с работой?", faqA4: "График занятий специально адаптирован для работающих специалистов. Лекции проходят в вечернее время или по выходным.", faqQ5: "Как осуществляется доступ к учебным материалам?", faqA5: "Все материалы доступны 24/7 на закрытой образовательной платформе РАНХиГС. Вы можете изучать их с любого устройства.",
+                contactsTitle: "Контактная информация", contactsSub: "Официальные данные сотрудников Центров и Отделов Западного филиала",
+                mainContactTitle: "Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:",
+                telLabel: "Телефоны:", addressLabel: "Адрес:", addressText: "236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62",
+                dept1: "Центр дополнительного образования", dirCenter: "Директор центра", depDir: "Заместитель директора центра", projDir: "Директор проекта", spec: "Специалист",
+                dept2: "Отдел ПК и переподготовки государственных служащих", headDep: "Начальник отдела", leadSpec: "Ведущий специалист", dept3: "Отдел дополнительного образования",
+                cabText: "Каб.", telText: "Тел:", extText: "доб.",
+                footerRights: "Все права защищены. © 2026 Президентская академия", footerText: "Западный филиал РАНХиГС. Центр Дополнительного Образования.<br>Образовательная деятельность ведется на основании бессрочной лицензии.",
+                polLink: "Политика конфиденциальности и обработки персональных данных (ФЗ-152)", termLink: "Пользовательское соглашение и оферта",
+                modTitle: "Оформление заявки", modDesc: "Выберите удобный способ регистрации на программу обучения:", modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму", modClose: "Закрыть окно", complianceText: "Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.",
+                contModTitle: "Контакты Центра", contModDesc: "Руководство и ключевые отделы:",
+                polModTitle: "Политика обработки персональных данных", polModText: "В соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных» в редакции 2026 года и актуальными нормативными актами Роскомнадзора, Западный филиал РАНХиГС осуществляет сбор, хранение и обработку информации о Пользователе исключительно в образовательных целях.<br><br>1. Пользователь выражает прямое информированное согласие на обработку ПДн, использование файлов cookie и метрических систем при использовании сайта.<br>2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.",
+                termModTitle: "Пользовательское соглашение и оферта", termModText: "Использование цифровых сервисов регулируется актуальным законодательством РФ.<br><br>1. Материалы сайта носят информационный характер и не являются публичной офертой, если иное не указано явно.<br>2. Все интеллектуальные права на дизайн, графические элементы и тексты принадлежат Западному филиалу РАНХиГС.<br>3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.", modOk: "Понятно",
+                owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:", owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?", owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", vkText: "ВКонтакте (Скоро)"
             },
             en: {
-                catPrompt: "We provide training across 4 professional tracks. Which sector are you interested in?",
-                optGos: "🏛️ Public Administration & Procurement",
-                optBiz: "🚀 Digital Business & AI",
-                optHoreca: "🏨 HoReCa & Tourism",
-                optProf: "⚡ Fast-Track Professions",
-                optBack: "⬅️ Back to main menu",
-                descGos: "<b>Public sector personnel:</b><br>• Public Admin: a fundamental basis for advancement in government bodies.<br>• Procurement: 44-FL and 223-FL, eliminating legal risks.<br>• Security: anti-terrorism and anti-corruption frameworks.",
-                descBiz: "<b>Commercial sector innovations:</b><br>• Artificial Intelligence: automating analytics via neural networks.<br>• Business Management: systematization and stepping out of daily operations.<br>• Logistics: efficient foreign economic activity management.",
-                descHoreca: "<b>Hospitality elite:</b><br>• Hospitality Management: maximizing profit margins for establishments.<br>• Museum & Tourism: designing highly engaging tourism products.",
-                descProf: "<b>Applied skills:</b><br>• Chef: intensive practical training and official grade certification.<br>• 1C: Enterprise: accounting and financial reporting automation.",
-                optEnroll: "✍️ Initiate application",
-                optOther: "🔄 Analyze other tracks",
-                testStart: "Analysis launched. Please answer 12 questions so the algorithm can determine your optimal professional development vector.",
-                resGos: "System Verdict: <b>«Public Administration & Procurement»</b>. Your profile demonstrates systematic thinking and a strong predisposition for high-level responsibility.",
-                resBiz: "System Verdict: <b>«Digital Business & AI»</b>. You are highly focused on strategic scaling and the integration of cutting-edge innovations.",
-                resHoreca: "System Verdict: <b>«HoReCa & Tourism»</b>. Your core strengths lie in effective communication and delivering premium customer service.",
-                resProf: "System Verdict: <b>«Fast-Track Professions»</b>. You deeply value practical results and strive for the rapid monetization of your skills.",
-                resEnroll: "✍️ Lock in an application for this track",
-                resCat: "🔄 Reject. View the full catalog",
-                owlOpt1: "🎯 Take a career test",
-                owlOpt2: "📚 Brief overview of all programs",
-                owlOpt3: "📞 Open management contacts"
+                pageTitle: "Academy of Personnel | Western Branch of RANEPA",
+                logoSub: "Western Branch • Center for Continuing Education",
+                navProg: "Programs", navCont: "Contacts", navBtn: "Enroll",
+                heroTitle: "Academy of Management<br>and Professional Growth",
+                heroDesc: "Continuing Professional Education programs with state support. Gain fundamental knowledge, in-demand skills, and a RANEPA diploma for a confident career breakthrough.",
+                tabAll: "All Programs", tabGos: "🏛️ Public Service & Procurement", tabBiz: "🚀 Digital Business & AI", tabHoreca: "🏨 HoReCa & Tourism", tabProf: "⚡ Fast Professions",
+                c1Title: "Public Administration", c1Desc: "The program is designed for specialists. It provides a powerful career start. Civil servants aiming for career growth will appreciate the depth of the material. Lectures are delivered by experts, practice is consolidated in seminars, students solve cases, and the exam confirms knowledge. You will become a true professional. Managing the state requires responsibility. Our course will help you achieve your goal.", c1p1: "✔️ Legal basis of public administration", c1p2: "✔️ Financial management", c1p3: "✔️ Public policy",
+                c2Title: "Procurement Management", c2Desc: "Studying contracts becomes easier. Carefully analyzing tenders, you will avoid legal mistakes. The law is strict. It is important to know every detail. An ideal course. We analyze arbitration practice. The training is built on real examples. Learning to win. You will receive a prestigious diploma.", c2p1: "✔️ Arbitration practice", c2p2: "✔️ Antimonopoly control", c2p3: "✔️ End-to-end procurement design",
+                c3Title: "Terrorism Prevention", c3Desc: "Terrorism poses a threat. The course is mandatory for managers. This is the basic minimum of security. We will teach how to minimize risks. Enterprise protection is always a priority. Inspections will pass without problems. Training takes minimum time.", c3p1: "✔️ Anti-terrorism security", c3p2: "✔️ Anti-corruption measures", c3p3: "✔️ Minimizing inspection risks",
+                c4Title: "Artificial Intelligence", c4Desc: "Neural networks are changing the business world. Algorithms implemented in workflows save hundreds of hours. You will learn to write prompts. Analytics is automated by neural networks, texts are generated instantly, employees are freed from routine, and the company's profit grows. Innovations are available to everyone. Start applying them today. This will change your career.", c4p1: "✔️ Prompt engineering", c4p2: "✔️ Process automation", c4p3: "✔️ AI integration in business",
+                c5Title: "Business Management", c5Desc: "A course for true entrepreneurs. A difficult path. We teach how to step out of operations. Systematizing processes increases margin. Economics and law of small business will become clearer. Your team will start working more efficiently. Act decisively. You will become a market leader.", c5p1: "✔️ Economics and law of SMEs", c5p2: "✔️ HR management", c5p3: "✔️ Exiting routine operations",
+                c6Title: "Hospitality Management", c6Desc: "Hotel management requires enormous endurance. The HoReCa industry is constantly evolving. Our course provides fundamental practical knowledge. You will learn competent experience marketing. Conflict management will become your strong suit. Cost optimization will increase the restaurant's net profit. Premium service is bound to attract new clients. Training is conducted by top practitioners.", c6p1: "✔️ Experience marketing", c6p2: "✔️ Conflict management", c6p3: "✔️ HoReCa cost optimization",
+                c7Title: "Chef (3rd-4th grade)", c7Desc: "The chef profession is always highly demanded. Applied skills guarantee rapid monetization. You will master modern recipe blueprints. Many hours are dedicated to intensive practice. Working in a modern kitchen requires dexterity. After a difficult exam, a state qualification is assigned. Employment will not keep you waiting. We train chefs.", c7p1: "✔️ Recipe blueprints", c7p2: "✔️ Practical culinary training", c7p3: "✔️ State qualification assignment",
+                c8Title: "1C:Enterprise & Accounting", c8Desc: "Accounting automation is necessary for all companies. The course covers the full cycle of modern bookkeeping. You will learn to submit tax reports without errors. The program is ideal for sole proprietors and small businesses. Routine calculations will be performed in one click. Simplified algorithms save a lot of time. Teachers explain the material in accessible language. Obtain a reliable skill.", c8p1: "✔️ Tax reporting", c8p2: "✔️ 1C routine calculations", c8p3: "✔️ Simplified accounting algorithms",
+                cardHours1: "506 hrs.", cardHours2: "144 hrs.", cardHours3: "36 hrs.", cardHours4: "98 hrs.", cardHours5: "252 hrs.", cardHours6: "150 hrs.",
+                studyPlanBtn: "Explore Curriculum", enrollBtn: "Enroll",
+                glossaryTitle: "Academy Glossary", g1Title: "CCE", g1Desc: "Center for Continuing Education — a structural subdivision of the RANEPA Western Branch.", g2Title: "CPE", g2Desc: "Continuing Professional Education — a training system based on current education.", g3Title: "AT", g3Desc: "Advanced Training — short-term programs for knowledge updates.", g4Title: "PR", g4Desc: "Professional Retraining — programs (from 250 hrs.) to acquire a new profession.", g5Title: "FSES", g5Desc: "Federal State Educational Standard — quality requirements.", g6Title: "FEA", g6Desc: "Foreign Economic Activity — international trade and logistics.",
+                faqTitle: "Frequently Asked Questions", faqQ1: "What documents are required for admission?", faqA1: "To sign the contract, you will need a passport copy, SNILS, and a document of your current education (vocational or higher education diploma).", faqQ2: "How is the training conducted?", faqA2: "The training is conducted in a part-time format using distance learning technologies. Practical classes are held at the Academy.", faqQ3: "Will I receive a state-recognized diploma?", faqA3: "Yes, upon successful completion of the final certification, a RANEPA diploma of professional retraining is issued, granting the right to conduct new professional activities.", faqQ4: "Can I combine my studies with work?", faqA4: "The schedule is specifically tailored for working professionals. Lectures are held in the evening or on weekends.", faqQ5: "How is access to educational materials provided?", faqA5: "All materials are available 24/7 on the closed educational platform of RANEPA. You can study them from any device.",
+                contactsTitle: "Contact Information", contactsSub: "Official data of the Western Branch Centers and Departments staff",
+                mainContactTitle: "Contacts of the Center for Continuing Education of the Western Branch of the Presidential Academy:",
+                telLabel: "Phones:", addressLabel: "Address:", addressText: "62 Artilleriyskaya st., Kaliningrad, Kaliningrad region, Russia, 236038",
+                dept1: "Center for Continuing Education", dirCenter: "Center Director", depDir: "Deputy Director of the Center", projDir: "Project Director", spec: "Specialist",
+                dept2: "Department of State Employees Training", headDep: "Head of Department", leadSpec: "Leading Specialist", dept3: "Department of Continuing Education",
+                cabText: "Room", telText: "Tel:", extText: "ext.",
+                footerRights: "All rights reserved. © 2026 Presidential Academy", footerText: "Western Branch of RANEPA. Center for Continuing Education.<br>Educational activities are conducted under a perpetual license.",
+                polLink: "Privacy Policy and Personal Data Processing (FL-152)", termLink: "User Agreement and Offer",
+                modTitle: "Application Processing", modDesc: "Choose a convenient registration method for the educational program:", modTrud: "Apply via «Work in Russia» (Kaliningrad)", modYan: "Apply via Yandex Form", modClose: "Close window", complianceText: "By clicking the button, you agree to the Privacy Policy and consent to the processing of personal data in accordance with FL-152 and Roskomnadzor requirements (2026 ed.).",
+                contModTitle: "Center Contacts", contModDesc: "Management and key departments:",
+                polModTitle: "Personal Data Processing Policy", polModText: "This Privacy Policy applies to all information that the Western Branch of RANEPA can obtain about the User during the use of the site.<br><br>1. Processing of personal data is carried out in accordance with the Federal Law of the Russian Federation No. 152-FL.<br>2. The user consents to the processing of their personal data (surname, name, patronymic, contact phone number, email) for the purpose of registering an application for training within the national project \"Personnel\".<br>3. The operator takes necessary organizational and technical measures to protect personal information from unauthorized access.",
+                termModTitle: "User Agreement and Offer", termModText: "The use of materials and services of the site is governed by the laws of the Russian Federation.<br><br>1. Site is for informational purposes and is not a public offer.<br>2. All rights to the text materials, graphic images, and site structure belong to the Western Branch of RANEPA.<br>3. By submitting an application through communication forms, the user confirms their familiarity with the terms of federal educational programs.", modOk: "Understood",
+                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?", owlOpt1: "🎯 Take a career test", owlOpt2: "📚 Brief overview of all programs", owlOpt3: "📞 Open management contacts", vkText: "VKontakte (Soon)"
             }
-        };
-
-        const testQuestionsData = {
-            ru: [
-                { q: "1/12. Какова главная цель инвестиций в ваше образование?", answers: [{t: "Карьера на государственной службе", v: "gos"}, {t: "Масштабирование бизнес-показателей", v: "biz"}, {t: "Управление сервисом (HoReCa)", v: "horeca"}, {t: "Освоение новой прикладной профессии", v: "prof"}] },
-                { q: "2/12. С каким типом задач вы предпочитаете работать?", answers: [{t: "Нормативно-правовая документация", v: "gos"}, {t: "Стратегии и ИТ-инструментарий", v: "biz"}, {t: "Команда и качество услуг", v: "horeca"}, {t: "Работа руками или точный учет в 1С", v: "prof"}] },
-                { q: "3/12. Ваше отношение к нейросетям?", answers: [{t: "Использую для оптимизации отчетов", v: "gos"}, {t: "Критически важно для автоматизации", v: "biz"}, {t: "Полезно для маркетинга и туризма", v: "horeca"}, {t: "Предпочитаю традиционные подходы", v: "prof"}] },
-                { q: "4/12. Каков приемлемый для вас объем образовательной программы?", answers: [{t: "Глубокая переподготовка (>500 часов)", v: "gos"}, {t: "Управленческий интенсив (<250 часов)", v: "biz"}, {t: "Сбалансированный курс (100-150 часов)", v: "horeca"}, {t: "Быстрый старт (<100 часов)", v: "prof"}] },
-                { q: "5/12. Какая зона ответственности для вас наиболее комфортна?", answers: [{t: "Ответственность за государственные контракты", v: "gos"}, {t: "Ответственность за финансовые потоки", v: "biz"}, {t: "Ответственность за репутацию заведения", v: "horeca"}, {t: "Точное выполнение прикладной задачи", v: "prof"}] },
-                { q: "6/12. Какую сферу вы считаете наиболее стабильной?", answers: [{t: "Органы исполнительной власти", v: "gos"}, {t: "Собственное дело / Корпоративный сектор", v: "biz"}, {t: "Внутренний туризм", v: "horeca"}, {t: "Профессии, требующие работы руками", v: "prof"}] },
-                { q: "7/12. Ваш подход к решению нестандартных ситуаций?", answers: [{t: "Опираюсь на действующие законы и регламенты", v: "gos"}, {t: "Ищу инновационные технологичные решения", v: "biz"}, {t: "Выстраиваю диалог и устраняю конфликт", v: "horeca"}, {t: "Действую по проверенным инструкциям", v: "prof"}] },
-                { q: "8/12. Ваш карьерный горизонт через 3 года?", answers: [{t: "Руководитель государственного ведомства", v: "gos"}, {t: "Топ-менеджер / Успешный предприниматель", v: "biz"}, {t: "Управляющий премиальным отелем", v: "horeca"}, {t: "Востребованный профильный специалист", v: "prof"}] },
-                { q: "9/12. Отношение к государственным стандартам (ФГОС, ГОСТ)?", answers: [{t: "Неукоснительное соблюдение", v: "gos"}, {t: "Адаптация под бизнес-реалии", v: "biz"}, {t: "Соблюдение ради безопасности клиента", v: "horeca"}, {t: "Работа строго по заданному стандарту", v: "prof"}] },
-                { q: "10/12. Главный KPI вашей успешной работы?", answers: [{t: "Отсутствие санкций от надзорных органов", v: "gos"}, {t: "Увеличение доли рынка и маржинальности", v: "biz"}, {t: "Высокий показатель возврата гостей", v: "horeca"}, {t: "Сдача задачи точно в срок", v: "prof"}] },
-                { q: "11/12. Какая дисциплина кажется вам наиболее приоритетной?", answers: [{t: "Правоприменительная практика по ФЗ", v: "gos"}, {t: "Промптинг нейросетей", v: "biz"}, {t: "Маркетинг впечатлений", v: "horeca"}, {t: "Бухгалтерский учет", v: "prof"}] },
-                { q: "12/12. Ваш текущий профессиональный статус?", answers: [{t: "Служащий / Специалист по закупкам", v: "gos"}, {t: "Предприниматель / Аналитик", v: "biz"}, {t: "Работаю в сфере услуг", v: "horeca"}, {t: "Нахожусь в поиске новой профессии", v: "prof"}] }
-            ],
-            en: [
-                { q: "1/12. What is the primary goal of investing in your education?", answers: [{t: "A career in public service", v: "gos"}, {t: "Scaling business metrics", v: "biz"}, {t: "Service management (HoReCa)", v: "horeca"}, {t: "Mastering a new applied profession", v: "prof"}] },
-                { q: "2/12. What kind of tasks do you prefer working with?", answers: [{t: "Regulatory and legal documentation", v: "gos"}, {t: "Strategies and IT tools", v: "biz"}, {t: "People and service quality", v: "horeca"}, {t: "Manual work or precise accounting in 1C", v: "prof"}] },
-                { q: "3/12. What is your attitude towards AI?", answers: [{t: "I use it to optimize reports", v: "gos"}, {t: "Critically important for automation", v: "biz"}, {t: "Useful for marketing and tourism", v: "horeca"}, {t: "I prefer traditional approaches", v: "prof"}] },
-                { q: "4/12. What is an acceptable program duration for you?", answers: [{t: "Deep retraining (>500 hours)", v: "gos"}, {t: "Management intensive (<250 hours)", v: "biz"}, {t: "Balanced course (100-150 hours)", v: "horeca"}, {t: "Fast start (<100 hours)", v: "prof"}] },
-                { q: "5/12. Which area of responsibility are you most comfortable with?", answers: [{t: "Responsibility for state contracts", v: "gos"}, {t: "Responsibility for financial flows", v: "biz"}, {t: "Responsibility for the establishment's reputation", v: "horeca"}, {t: "Precise execution of an applied task", v: "prof"}] },
-                { q: "6/12. Which sector do you consider the most stable?", answers: [{t: "Executive authorities", v: "gos"}, {t: "Own business / Corporate sector", v: "biz"}, {t: "Domestic tourism", v: "horeca"}, {t: "Professions requiring manual work", v: "prof"}] },
-                { q: "7/12. How do you approach solving non-standard situations?", answers: [{t: "I rely on applicable laws and regulations", v: "gos"}, {t: "I seek innovative tech solutions", v: "biz"}, {t: "I build dialogue and resolve conflicts", v: "horeca"}, {t: "I act according to proven instructions", v: "prof"}] },
-                { q: "8/12. What is your career horizon in 3 years?", answers: [{t: "Head of a state department", v: "gos"}, {t: "Top Executive / Successful entrepreneur", v: "biz"}, {t: "Manager of a premium hotel", v: "horeca"}, {t: "Highly-demanded specialized professional", v: "prof"}] },
-                { q: "9/12. What is your attitude towards state standards (FSES, GOST)?", answers: [{t: "Strict compliance", v: "gos"}, {t: "Adaptation to business realities", v: "biz"}, {t: "Compliance for client safety", v: "horeca"}, {t: "Working strictly by the set standard", v: "prof"}] },
-                { q: "10/12. What is the main KPI of your successful work?", answers: [{t: "Absence of sanctions from supervisory bodies", v: "gos"}, {t: "Increase in market share and margins", v: "biz"}, {t: "High rate of guest returns", v: "horeca"}, {t: "Task completion exactly on time", v: "prof"}] },
-                { q: "11/12. Which discipline seems the highest priority to you?", answers: [{t: "Law enforcement practice on Federal Laws", v: "gos"}, {t: "Neural network prompting", v: "biz"}, {t: "Experience marketing", v: "horeca"}, {t: "Accounting", v: "prof"}] },
-                { q: "12/12. What is your current professional status?", answers: [{t: "Civil Servant / Procurement Specialist", v: "gos"}, {t: "Entrepreneur / Analyst", v: "biz"}, {t: "Working in the service sector", v: "horeca"}, {t: "Looking for a new stable profession", v: "prof"}] }
-            ]
         };
 
         function setLanguage(lang) {
@@ -1029,12 +1024,31 @@
                 const owlSprite = document.getElementById('owlSprite');
                 if(!owlSprite) return;
                 owlSprite.classList.add('sleeping');
+                // Реалистичное мягкое уханье через Web Audio API
+                playHoot();
                 setTimeout(() => {
                     owlSprite.classList.remove('sleeping');
                 }, 4000);
             }, 30000);
         }
         startSleepCycle();
+
+        function playHoot() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // тихий, не пугающий звук
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch(e) {}
+        }
 
         let isScrolling;
         window.addEventListener('scroll', function() {
@@ -1130,6 +1144,7 @@
             `);
         }
 
+        // --- УЛУЧШЕННАЯ КИНЕМАТИКА СО ВСТРОЕННЫМ ВЕБ-АНИМЕЙШН API (БЕЗ ДЕРГАНИЙ) ---
         function flyOwlToTab(tabId) {
             if (isOwlFlying) return;
 
@@ -1191,7 +1206,7 @@
             const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({top: y, behavior: 'smooth'});
 
-            owlContainer.style.animation = 'none';
+            owlContainer.classList.add('stop-patrol');
 
             const startRect = owlContainer.getBoundingClientRect();
             const targetRect = targetCard.getBoundingClientRect();
@@ -1210,7 +1225,8 @@
             const deltaX = (targetRect.right - startRect.width * endScale - 20) - startRect.left;
             const deltaY = (targetRect.top - startRect.height * endScale + 10) - startRect.top;
 
-            // Нативная JS-анимация спуска по параболе
+            owlContainer.classList.add('owl-fast-flap');
+
             owlContainer.animate([
                 { transform: `translate3d(0px, 0px, 0) scale(${startScale}) rotate(0deg)` },
                 { transform: `translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(${(startScale+endScale)/2}) rotate(-12deg)` },
@@ -1221,6 +1237,8 @@
                 easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
                 fill: 'forwards'
             }).onfinish = () => {
+                owlContainer.classList.remove('owl-fast-flap');
+                
                 targetCard.style.position = 'relative';
                 targetCard.appendChild(owlContainer);
 
@@ -1234,9 +1252,10 @@
 
                 isOwlFlying = false;
 
+                // СТРОГО ЧЕРЕЗ 3 СЕКУНДЫ ВОЗВРАТ НА ВЕТКУ
                 owlReturnTimer = setTimeout(() => {
                     returnOwlToBranch();
-                }, 5000);
+                }, 3000);
             };
         }
 
@@ -1256,6 +1275,8 @@
             const startRect = owlContainer.getBoundingClientRect();
             const branchRect = branch.getBoundingClientRect();
 
+            owlContainer.classList.add('owl-flip');
+
             document.body.appendChild(owlContainer);
             owlContainer.style.position = 'fixed';
             owlContainer.style.left = startRect.left + 'px';
@@ -1269,7 +1290,8 @@
             const deltaX = targetX - startRect.left;
             const deltaY = targetY - startRect.top;
 
-            // Нативная JS-анимация возврата по параболе
+            owlContainer.classList.add('owl-fast-flap');
+
             owlContainer.animate([
                 { transform: `translate3d(0px, 0px, 0) scale(0.55) scaleX(-1) rotate(0deg)` },
                 { transform: `translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(0.7) scaleX(-1) rotate(-12deg)` },
@@ -1280,12 +1302,16 @@
                 easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
                 fill: 'forwards'
             }).onfinish = () => {
+                owlContainer.classList.remove('owl-fast-flap');
+                owlContainer.classList.remove('owl-flip');
+                owlContainer.classList.remove('stop-patrol');
+                
                 const eco = document.getElementById('owlContainer');
                 eco.appendChild(owlContainer);
 
                 owlContainer.style.position = 'absolute';
-                owlContainer.style.left = '60px';
-                owlContainer.style.bottom = '100px';
+                owlContainer.style.left = '45px';
+                owlContainer.style.bottom = '75px';
                 owlContainer.style.top = 'auto';
                 owlContainer.style.right = 'auto';
                 owlContainer.style.transform = 'none';
