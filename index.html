@@ -25,8 +25,8 @@
             --header-bg: rgba(5, 8, 14, 0.85);
             --btn-glass: rgba(255, 255, 255, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.6);
-            --tag-color: rgba(255, 255, 255, 0.15);
-            --tag-shadow: rgba(255, 255, 255, 0.3);
+            --tag-color: rgba(255, 255, 255, 0.05); 
+            --tag-shadow: rgba(255, 255, 255, 0.1);
             --card-hover-border: rgba(56, 189, 248, 0.4);
         }
 
@@ -37,32 +37,32 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-glass: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(5, 8, 14, 0.85);
+            --header-bg: rgba(5, 8, 14, 0.95);
             --btn-glass: rgba(0, 0, 0, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --tag-color: rgba(0, 0, 0, 0.08);
-            --tag-shadow: rgba(0, 0, 0, 0.1);
+            --tag-color: rgba(0, 0, 0, 0.04);
+            --tag-shadow: rgba(0, 0, 0, 0.05);
             --card-hover-border: var(--ranepa-red);
         }
 
         html, body { width: 100%; max-width: 100vw; font-size: 16px; overflow-x: hidden; scroll-behavior: smooth; }
         html { transition: font-size var(--transition-speed) var(--bezier-smooth); }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-deep); color: var(--text-main); position: relative; font-size: var(--font-scale); transition: background-color var(--transition-speed), color var(--transition-speed); }
+        body { background-color: var(--bg-deep); color: var(--text-main); position: relative; font-size: var(--font-scale); transition: background-color var(--transition-speed), color var(--transition-speed); z-index: 0; }
 
         .system-cite { display: none !important; }
 
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ */
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 30px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
-        .bg-tag:nth-child(1) { top: 40%; left: 8%; font-size: 4vw; transform: translateZ(-20px); }
-        .bg-tag:nth-child(2) { top: 60%; right: 8%; font-size: 4.5vw; transform: translateZ(-40px); animation-delay: -1s; }
-        .bg-tag:nth-child(3) { top: 75%; left: 8%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
-        .bg-tag:nth-child(4) { top: 90%; right: 15%; font-size: 4vw; transform: translateZ(-30px); animation-delay: -3s; }
-        @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.8; } 100% { transform: scale(1.03) translateY(-8px); opacity: 1; } }
+        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (-1 Z-INDEX) */
+        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
+        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 20px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
+        .bg-tag:nth-child(1) { top: 25%; left: 5%; font-size: 4vw; transform: translateZ(-20px); }
+        .bg-tag:nth-child(2) { top: 45%; right: 5%; font-size: 5vw; transform: translateZ(-40px); animation-delay: -1s; }
+        .bg-tag:nth-child(3) { top: 65%; left: 10%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
+        .bg-tag:nth-child(4) { top: 85%; right: 15%; font-size: 4vw; transform: translateZ(-30px); animation-delay: -3s; }
+        @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.7; } 100% { transform: scale(1.03) translateY(-10px); opacity: 1; } }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; }
         .shape { position: absolute; filter: blur(120px); opacity: 0.5; animation: float 20s infinite alternate ease-in-out; will-change: transform; }
@@ -70,6 +70,7 @@
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         @keyframes float { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) scale(1.15); } }
 
+        /* ШАПКА */
         header { background: rgba(5, 8, 14, 0.85) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; }
@@ -103,7 +104,7 @@
         .hero p { font-size: clamp(1rem, 2.5vw, 1.2rem); color: var(--text-muted); max-width: 800px; margin: 0 auto 40px; font-weight: 500; line-height: 1.6; animation: fadeUp 0.8s var(--bezier-smooth) 0.1s forwards; opacity: 0; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        .container { max-width: 1350px; margin: 0 auto; padding: 40px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); position: relative; z-index: 5; }
+        .container { max-width: 1350px; margin: 0 auto; padding: 40px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); position: relative; z-index: 5; perspective: 1500px; }
 
         .tabs-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 40px; background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 12px; border-radius: 16px; border: 1px solid var(--border-glass); box-shadow: 0 15px 30px var(--shadow-color); animation: fadeUp 0.8s var(--bezier-smooth) 0.2s forwards; opacity: 0; }
         .tab-btn { background: transparent; border: 1px solid transparent; padding: 10px 20px; border-radius: 10px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--text-muted); transition: all 0.3s var(--bezier-bounce); cursor: pointer; touch-action: manipulation; }
@@ -111,10 +112,21 @@
         .tab-btn.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); }
 
         .tab-content { display: none; }
-        .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: clamp(20px, 3vw, 30px); animation: fadeInScale 0.5s var(--bezier-smooth); }
-        @keyframes fadeInScale { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: clamp(20px, 3vw, 30px); }
+        
+        .puzzle-piece { animation: assemblePuzzle 0.8s var(--bezier-bounce) forwards; }
+        @keyframes assemblePuzzle {
+            0% { opacity: 0; transform: translate3d(var(--x-dist, 200px), var(--y-dist, 200px), -400px) rotateX(40deg) rotateY(-40deg) scale(0.6); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1); }
+        }
+        
+        .glow-effect { animation: neonPulse 2s infinite alternate; z-index: 15 !important; border-color: #38bdf8 !important; }
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), inset 0 0 10px rgba(56, 189, 248, 0.2); transform: translateY(-5px) scale(1.02); }
+            100% { box-shadow: 0 0 50px rgba(56, 189, 248, 0.8), inset 0 0 20px rgba(56, 189, 248, 0.4); transform: translateY(-10px) scale(1.04); }
+        }
 
-        .card { background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 20px; border: 1px solid var(--border-glass); padding: clamp(20px, 4vw, 35px); position: relative; transition: all 0.4s var(--bezier-smooth); box-shadow: 0 15px 30px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; }
+        .card { background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 20px; border: 1px solid var(--border-glass); padding: clamp(20px, 4vw, 35px); position: relative; transition: all 0.4s var(--bezier-smooth); box-shadow: 0 15px 30px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; }
         .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 30px 60px var(--shadow-color), 0 0 30px rgba(202, 15, 62, 0.1); border-color: var(--card-hover-border); z-index: 10; }
         
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -194,7 +206,7 @@
 
         .compliance-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 20px; line-height: 1.4; text-align: justify; opacity: 0.8; }
 
-        /* --- ЭКОСИСТЕМА СОВЫ И ОРИГИНАЛЬНЫЕ ФАЙЛЫ ИЗ IMG --- */
+        /* --- ЭКОСИСТЕМА СОВЫ С ВЕТКОЙ И ВИДЕО (OWL.WEBM / OWL.MOV) --- */
         .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 500px; height: 420px; z-index: 9999; transition: all 1.4s var(--bezier-bounce); pointer-events: none; transform: scale(0.9); transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -20px; pointer-events: auto; }
 
@@ -205,7 +217,6 @@
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        /* ФИЛИН (ОРИГИНАЛЬНЫЙ OWL.PNG С ГИТХАБА С ЖЕСТКИМ КОРРЕКТНЫМ РАЗМЕРОМ) */
         .owl-container {
             position: absolute; bottom: 75px; left: 45px; width: 220px; height: 300px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation; will-change: transform;
@@ -218,17 +229,7 @@
             100% { transform: translate3d(12px, -1.26px, 0); }
         }
 
-        .stop-patrol { animation: none !important; }
-
-        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8)); animation: owlBreath 4s infinite ease-in-out; will-change: transform; }
-        @keyframes owlBreath { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(1.02) scaleX(0.98); } }
-        
-        .owl-flip .owl-body { transform: scaleX(-1); }
-
-        .sleeping { animation-play-state: paused; }
-        .zzz-particles { position: absolute; top: -30px; left: 80px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.4rem; text-shadow: 0 0 12px rgba(255,255,255,0.9); opacity: 0; pointer-events: none; z-index: 20; }
-        .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
-        @keyframes floatZzz { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.5); } 50% { opacity: 1; transform: translate3d(15px, -20px, 0) scale(1.3); } 100% { opacity: 0; transform: translate3d(30px, -40px, 0) scale(1.6); } }
+        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8)); transition: transform 0.3s ease; }
 
         .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -247,7 +248,6 @@
 
         .mobile-chat-icon { display: none; }
 
-        /* ЖЕСТКИЙ АЛГОРИТМ ОБХОДА ДЛЯ МОБИЛОК (СТРОГО СВЕРХУ ВНИЗ) */
         @media (max-width: 768px) {
             html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; }
             header { padding: 15px; flex-direction: column; gap: 15px; align-items: stretch; background: rgba(5, 8, 14, 0.95) !important; }
@@ -269,7 +269,7 @@
             .footer-kadry-mobile img { height: 100px; max-width: 100%; object-fit: contain; }
 
             .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
-            .oak-branch, .zzz-particles, .owl-body { display: none !important; }
+            .oak-branch, .owl-body { display: none !important; }
             .owl-container {
                 position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
                 left: auto; width: 65px; height: 65px; border-radius: 50%;
@@ -343,11 +343,11 @@
     <div class="container" id="programsSection">
 
         <div class="tabs-nav">
-            <button class="tab-btn active" onclick="filterPrograms(event, 'tab-all')" data-i18n="tabAll">Все программы</button>
-            <button class="tab-btn" onclick="filterPrograms(event, 'tab-gos')" data-i18n="tabGos">🏛️ Госслужба и закупки</button>
-            <button class="tab-btn" onclick="filterPrograms(event, 'tab-biz')" data-i18n="tabBiz">🚀 Цифровой бизнес и ИИ</button>
-            <button class="tab-btn" onclick="filterPrograms(event, 'tab-horeca')" data-i18n="tabHoreca">🏨 HoReCa и Туризм</button>
-            <button class="tab-btn" onclick="filterPrograms(event, 'tab-prof')" data-i18n="tabProf">⚡ Быстрые профессии</button>
+            <button class="tab-btn active" onclick="focusTab('tab-all')" data-i18n="tabAll">Все программы</button>
+            <button class="tab-btn" onclick="focusTab('tab-gos')" data-i18n="tabGos">🏛️ Госслужба и закупки</button>
+            <button class="tab-btn" onclick="focusTab('tab-biz')" data-i18n="tabBiz">🚀 Цифровой бизнес и ИИ</button>
+            <button class="tab-btn" onclick="focusTab('tab-horeca')" data-i18n="tabHoreca">🏨 HoReCa и Туризм</button>
+            <button class="tab-btn" onclick="focusTab('tab-prof')" data-i18n="tabProf">⚡ Быстрые профессии</button>
         </div>
 
         <div id="tab-all" class="tab-content active">
@@ -740,8 +740,7 @@
 
             <div class="legal-footer">
                 <div style="font-weight: 600; margin-bottom: 25px;"><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></div>
-                <div data-i18n="footerRights" style="font-weight: 700; font-size: 0.95rem;">Все права защищены. © 2026 Президентская академия</div>
-                <div style="margin-top: 5px;" data-i18n="footerText">Западный филиал РАНХиГС. Центр Дополнительного Образования.<br>Образовательная деятельность ведется на основании бессрочной лицензии.</div>
+                <div data-i18n="footerRights" style="font-weight: 700; font-size: 0.95rem;">© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
                 
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
@@ -749,7 +748,7 @@
                 </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center;">
-                    <a href="#" class="vk-btn" onclick="alert(currentLang === 'ru' ? 'Официальное сообщество VK находится на стадии оформления и интеграции. Скоро здесь появится ссылка!' : 'The official VK community is under development. A link will appear here soon!'); return false;">
+                    <a href="#" class="vk-btn" onclick="showVkAlert(); return false;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15.071 2H8.929C4.55 2 2 4.55 2 8.929v6.142C2 19.45 4.55 22 8.929 22h6.142C19.45 22 22 19.45 22 15.071V8.929C22 4.55 19.45 2 15.071 2zm1.666 14.838h-1.428c-.687 0-.895-.55-.2.55-1.92 0-3.664-1.378-5.06-3.834-1.573-2.735-2.023-4.996-2.023-5.263 0-.158.067-.323.23-.323h1.427c.18 0 .285.062.355.226.756 1.83 1.776 3.493 2.502 3.493.262 0 .378-.113.378-.718V8.125c0-.44-.134-.637-.464-.637-.184 0-.16-.277.013-.385.27-.168.805-.226 1.34-.226.7 0 .914.07 1.01.21.137.2.106.945.106 1.84v2.54c0 .367.16.505.284.505.262 0 .584-.256 1.306-1.026.786-.84 1.34-2.1 1.34-2.1.066-.135.205-.226.39-.226h1.428c.328 0 .422.164.354.384-.22.684-1.488 2.45-1.94 2.977-.285.334-.356.452 0 .915.65.856 1.545 1.947 1.745 2.55.127.38-.113.568-.48.568z"/></svg>
                         <span data-i18n="vkText">ВКонтакте (Скоро)</span>
                     </a>
@@ -821,16 +820,18 @@
         </div>
     </div>
 
-    <!-- ЭКОСИСТЕМА СОВЫ И ОРИГИНАЛЬНЫЕ ФАЙЛЫ ИЗ IMG -->
+    <!-- ЭКОСИСТЕМА СО ВСТРОЕННЫМ ВИДЕО ОРИГИНАЛОМ -->
     <div class="owl-ecosystem" id="owlContainer">
         <img src="./img/branch.png" alt="Ветка" class="oak-branch">
 
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
-            
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             
-            <img src="./img/owl.png" alt="Сова" class="owl-body" id="owlImg">
+            <video autoplay loop muted playsinline class="owl-body" style="width: 100%; height: 100%; object-fit: contain;">
+                <source src="./img/owl.webm" type="video/webm">
+                <source src="./img/owl.mov" type="video/quicktime">
+            </video>
             
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
@@ -853,8 +854,6 @@
 
     <script>
         let currentLang = 'ru';
-        let isOwlFlying = false;
-        let owlReturnTimer;
 
         function toggleTheme() {
             const root = document.documentElement;
@@ -870,6 +869,16 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌓' : '☀️';
         });
+
+        function changeFontSize(size, btnElement) {
+            const root = document.documentElement;
+            if(size === 'small') root.style.fontSize = '14px';
+            if(size === 'normal') root.style.fontSize = '16px';
+            if(size === 'large') root.style.fontSize = '18px';
+            
+            document.querySelectorAll('.font-controls .control-panel-btn').forEach(btn => btn.classList.remove('active-font'));
+            if(btnElement) btnElement.classList.add('active-font');
+        }
 
         const translationsHTML = {
             ru: {
@@ -897,7 +906,7 @@
                 dept1: "Центр дополнительного образования", dirCenter: "Директор центра", depDir: "Заместитель директора центра", projDir: "Директор проекта", spec: "Специалист",
                 dept2: "Отдел ПК и переподготовки государственных служащих", headDep: "Начальник отдела", leadSpec: "Ведущий специалист", dept3: "Отдел дополнительного образования",
                 cabText: "Каб.", telText: "Тел:", extText: "доб.",
-                footerRights: "Все права защищены. © 2026 Президентская академия", footerText: "Западный филиал РАНХиГС. Центр Дополнительного Образования.<br>Образовательная деятельность ведется на основании бессрочной лицензии.",
+                footerRights: "© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.",
                 polLink: "Политика конфиденциальности и обработки персональных данных (ФЗ-152)", termLink: "Пользовательское соглашение и оферта",
                 modTitle: "Оформление заявки", modDesc: "Выберите удобный способ регистрации на программу обучения:", modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму", modClose: "Закрыть окно", complianceText: "Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.",
                 contModTitle: "Контакты Центра", contModDesc: "Руководство и ключевые отделы:",
@@ -930,7 +939,7 @@
                 dept1: "Center for Continuing Education", dirCenter: "Center Director", depDir: "Deputy Director of the Center", projDir: "Project Director", spec: "Specialist",
                 dept2: "Department of State Employees Training", headDep: "Head of Department", leadSpec: "Leading Specialist", dept3: "Department of Continuing Education",
                 cabText: "Room", telText: "Tel:", extText: "ext.",
-                footerRights: "All rights reserved. © 2026 Presidential Academy", footerText: "Western Branch of RANEPA. Center for Continuing Education.<br>Educational activities are conducted under a perpetual license.",
+                footerRights: "© 2026 Western Branch of RANEPA. Center for Continuing Education. All rights reserved. Educational activities are conducted under a perpetual license.",
                 polLink: "Privacy Policy and Personal Data Processing (FL-152)", termLink: "User Agreement and Offer",
                 modTitle: "Application Processing", modDesc: "Choose a convenient registration method for the educational program:", modTrud: "Apply via «Work in Russia» (Kaliningrad)", modYan: "Apply via Yandex Form", modClose: "Close window", complianceText: "By clicking the button, you agree to the Privacy Policy and consent to the processing of personal data in accordance with FL-152 and Roskomnadzor requirements (2026 ed.).",
                 contModTitle: "Center Contacts", contModDesc: "Management and key departments:",
@@ -1009,7 +1018,7 @@
         
         setInterval(() => {
             const bubble = document.getElementById('owlBubble');
-            if (!isOwlFlying && !document.getElementById('owlChat').classList.contains('active')) {
+            if (!document.getElementById('owlChat').classList.contains('active')) {
                 bubble.classList.toggle('show');
             } else {
                 bubble.classList.remove('show');
@@ -1021,14 +1030,7 @@
             if (window.innerWidth <= 768) return;
             clearInterval(sleepTimer);
             sleepTimer = setInterval(() => {
-                const owlSprite = document.getElementById('owlSprite');
-                if(!owlSprite) return;
-                owlSprite.classList.add('sleeping');
-                // Реалистичное мягкое уханье через Web Audio API
                 playHoot();
-                setTimeout(() => {
-                    owlSprite.classList.remove('sleeping');
-                }, 4000);
             }, 30000);
         }
         startSleepCycle();
@@ -1041,7 +1043,7 @@
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(150, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.5);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // тихий, не пугающий звук
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
@@ -1055,69 +1057,28 @@
             window.clearTimeout(isScrolling);
             let chat = document.getElementById('owlChat');
             let ecosystem = document.getElementById('owlContainer');
-            let owlSprite = document.getElementById('owlSprite');
             let bubble = document.getElementById('owlBubble');
 
             if(chat.classList.contains('active')) {
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                if (owlSprite && !owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
-                    owlSprite.classList.remove('stop-patrol');
-                    startSleepCycle();
-                }
             }
             if(bubble) bubble.classList.remove('show');
 
             isScrolling = setTimeout(function() {}, 200);
         }, false);
 
-        let inactivityTimer;
-        function resetInactivity() {
-            clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => {
-                let chat = document.getElementById('owlChat');
-                let ecosystem = document.getElementById('owlContainer');
-                let owlSprite = document.getElementById('owlSprite');
-                if(chat.classList.contains('active')) {
-                    chat.classList.remove('active');
-                    ecosystem.classList.remove('chat-opened');
-                    if (owlSprite && !owlSprite.parentElement.classList.contains('card') && !isOwlFlying) {
-                        owlSprite.classList.remove('stop-patrol');
-                        startSleepCycle();
-                    }
-                }
-            }, 40000);
-        }
-        document.addEventListener('mousemove', resetInactivity);
-        document.addEventListener('click', resetInactivity);
-        document.addEventListener('keypress', resetInactivity);
-        resetInactivity();
-
         function toggleChat() {
-            if (isOwlFlying) return;
-
+            playHoot();
             let chat = document.getElementById('owlChat');
             let ecosystem = document.getElementById('owlContainer');
-            let owlSprite = document.getElementById('owlSprite');
-            let bubble = document.getElementById('owlBubble');
-
+            
             if (chat.classList.contains('active')) {
                 chat.classList.remove('active');
                 ecosystem.classList.remove('chat-opened');
-                if (owlSprite && !owlSprite.parentElement.classList.contains('card')) {
-                    owlSprite.classList.remove('stop-patrol');
-                    startSleepCycle();
-                }
             } else {
-                clearInterval(sleepTimer);
-                if(owlSprite) owlSprite.classList.remove('sleeping');
                 chat.classList.add('active');
                 ecosystem.classList.add('chat-opened');
-                if (owlSprite && !owlSprite.parentElement.classList.contains('card')) {
-                    owlSprite.classList.add('stop-patrol');
-                }
-                if(bubble) bubble.classList.remove('show');
-                resetInactivity();
             }
         }
 
@@ -1136,202 +1097,52 @@
         function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
         function setOptions(buttonsHTML) { chatOptions.innerHTML = buttonsHTML; }
 
-        function resetMenu() {
+        function showCatalog() {
+            addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
+            addBotMsg(botTexts[currentLang].catPrompt);
             setOptions(`
-                <button class="chat-opt-btn" onclick="startTest()">${botTexts[currentLang].owlOpt1}</button>
-                <button class="chat-opt-btn" onclick="showCatalog()">${botTexts[currentLang].owlOpt2}</button>
-                <button class="chat-opt-btn" onclick="openContactsModal(); toggleChat();">${botTexts[currentLang].owlOpt3}</button>
+                <button class="chat-opt-btn" onclick="focusTab('tab-gos')">${botTexts[currentLang].optGos}</button>
+                <button class="chat-opt-btn" onclick="focusTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
+                <button class="chat-opt-btn" onclick="focusTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
+                <button class="chat-opt-btn" onclick="focusTab('tab-prof')">${botTexts[currentLang].optProf}</button>
+                <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
             `);
         }
 
-        // --- УЛУЧШЕННАЯ КИНЕМАТИКА СО ВСТРОЕННЫМ ВЕБ-АНИМЕЙШН API (БЕЗ ДЕРГАНИЙ) ---
-        function flyOwlToTab(tabId) {
-            if (isOwlFlying) return;
-
-            const isMobile = window.innerWidth <= 768;
-
-            if (isMobile) {
-                filterPrograms(new Event('click'), tabId);
-                const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
-                let buttons = document.getElementsByClassName("tab-btn");
-                if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
-
-                let chat = document.getElementById('owlChat');
-                let ecosystem = document.getElementById('owlContainer');
-                chat.classList.remove('active');
-                ecosystem.classList.remove('chat-opened');
-
-                const section = document.getElementById('programsSection');
-                const yOffset = -20;
-                const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                window.scrollTo({top: y, behavior: 'smooth'});
-                return;
-            }
-
-            isOwlFlying = true;
-            clearTimeout(owlReturnTimer);
-
-            const audio = document.getElementById('hootSound');
-            if(audio) {
-                audio.volume = 0;
-                let playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => { 
-                        audio.pause(); 
-                        audio.currentTime = 0; 
-                        audio.volume = 0.5; 
-                    }).catch(()=>{});
-                }
-            }
+        function focusTab(tabId) {
+            const section = document.getElementById('programsSection');
+            const y = section.getBoundingClientRect().top + window.pageYOffset - 80;
+            window.scrollTo({top: y, behavior: 'smooth'});
 
             filterPrograms(new Event('click'), tabId);
             const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
             let buttons = document.getElementsByClassName("tab-btn");
             if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
 
-            let chat = document.getElementById('owlChat');
-            let ecosystem = document.getElementById('owlContainer');
-            let bubble = document.getElementById('owlBubble');
-            chat.classList.remove('active');
-            ecosystem.classList.remove('chat-opened');
-            bubble.classList.remove('show');
-            resetInactivity();
+            const activeContent = document.getElementById(tabId);
+            const cards = activeContent.querySelectorAll('.card');
 
-            const owlContainer = document.getElementById('owlSprite');
-            const targetTab = document.getElementById(tabId);
-            const targetCard = targetTab.querySelector('.card');
-
-            const section = document.getElementById('programsSection');
-            const yOffset = -80; 
-            const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({top: y, behavior: 'smooth'});
-
-            owlContainer.classList.add('stop-patrol');
-
-            const startRect = owlContainer.getBoundingClientRect();
-            const targetRect = targetCard.getBoundingClientRect();
-
-            document.body.appendChild(owlContainer);
-            owlContainer.style.position = 'fixed';
-            owlContainer.style.left = startRect.left + 'px';
-            owlContainer.style.top = startRect.top + 'px';
-            owlContainer.style.bottom = 'auto';
-            owlContainer.style.right = 'auto';
-            owlContainer.style.transform = 'none';
-
-            const startScale = owlContainer.dataset.scaled === "true" ? 0.55 : 1;
-            const endScale = 0.55;
-
-            const deltaX = (targetRect.right - startRect.width * endScale - 20) - startRect.left;
-            const deltaY = (targetRect.top - startRect.height * endScale + 10) - startRect.top;
-
-            owlContainer.classList.add('owl-fast-flap');
-
-            owlContainer.animate([
-                { transform: `translate3d(0px, 0px, 0) scale(${startScale}) rotate(0deg)` },
-                { transform: `translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(${(startScale+endScale)/2}) rotate(-12deg)` },
-                { transform: `translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(${endScale + 0.05}) rotate(8deg)` },
-                { transform: `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${endScale}) rotate(0deg)` }
-            ], {
-                duration: 800,
-                easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
-                fill: 'forwards'
-            }).onfinish = () => {
-                owlContainer.classList.remove('owl-fast-flap');
+            cards.forEach((card, index) => {
+                const signX = Math.random() > 0.5 ? 1 : -1;
+                const signY = Math.random() > 0.5 ? 1 : -1;
+                card.style.setProperty('--x-dist', (Math.random() * 500 * signX) + 'px');
+                card.style.setProperty('--y-dist', (Math.random() * 500 * signY) + 'px');
                 
-                targetCard.style.position = 'relative';
-                targetCard.appendChild(owlContainer);
-
-                owlContainer.style.position = 'absolute';
-                owlContainer.style.left = 'auto';
-                owlContainer.style.bottom = 'auto';
-                owlContainer.style.right = '20px';
-                owlContainer.style.top = '-100px';
-                owlContainer.style.transform = `scale(${endScale})`;
-                owlContainer.dataset.scaled = "true";
-
-                isOwlFlying = false;
-
-                // СТРОГО ЧЕРЕЗ 3 СЕКУНДЫ ВОЗВРАТ НА ВЕТКУ
-                owlReturnTimer = setTimeout(() => {
-                    returnOwlToBranch();
-                }, 3000);
-            };
-        }
-
-        function returnOwlToBranch() {
-            if (isOwlFlying || window.innerWidth <= 768) return;
-            isOwlFlying = true;
-
-            const owlContainer = document.getElementById('owlSprite');
-            const branch = document.querySelector('.oak-branch');
-
-            const audio = document.getElementById('hootSound');
-            if(audio) {
-                audio.currentTime = 0;
-                audio.play().catch(e => console.log('Autoplay blocked by browser:', e));
-            }
-
-            const startRect = owlContainer.getBoundingClientRect();
-            const branchRect = branch.getBoundingClientRect();
-
-            owlContainer.classList.add('owl-flip');
-
-            document.body.appendChild(owlContainer);
-            owlContainer.style.position = 'fixed';
-            owlContainer.style.left = startRect.left + 'px';
-            owlContainer.style.top = startRect.top + 'px';
-            owlContainer.style.bottom = 'auto';
-            owlContainer.style.right = 'auto';
-
-            const targetX = branchRect.left + 60; 
-            const targetY = branchRect.top - 180;
-
-            const deltaX = targetX - startRect.left;
-            const deltaY = targetY - startRect.top;
-
-            owlContainer.classList.add('owl-fast-flap');
-
-            owlContainer.animate([
-                { transform: `translate3d(0px, 0px, 0) scale(0.55) scaleX(-1) rotate(0deg)` },
-                { transform: `translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(0.7) scaleX(-1) rotate(-12deg)` },
-                { transform: `translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(0.9) scaleX(-1) rotate(8deg)` },
-                { transform: `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1) scaleX(-1) rotate(0deg)` }
-            ], {
-                duration: 800,
-                easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
-                fill: 'forwards'
-            }).onfinish = () => {
-                owlContainer.classList.remove('owl-fast-flap');
-                owlContainer.classList.remove('owl-flip');
-                owlContainer.classList.remove('stop-patrol');
+                card.classList.remove('puzzle-piece', 'glow-effect');
+                void card.offsetWidth;
                 
-                const eco = document.getElementById('owlContainer');
-                eco.appendChild(owlContainer);
+                card.style.animationDelay = (index * 0.15) + 's';
+                card.classList.add('puzzle-piece');
+                
+                setTimeout(() => {
+                    card.classList.add('glow-effect');
+                    setTimeout(() => card.classList.remove('glow-effect'), 2000);
+                }, 1000 + (index * 150));
+            });
 
-                owlContainer.style.position = 'absolute';
-                owlContainer.style.left = '45px';
-                owlContainer.style.bottom = '75px';
-                owlContainer.style.top = 'auto';
-                owlContainer.style.right = 'auto';
-                owlContainer.style.transform = 'none';
-                owlContainer.dataset.scaled = "false";
-                owlContainer.style.animation = 'naturalPerch 14s infinite alternate ease-in-out';
-
-                isOwlFlying = false;
-            };
-        }
-
-        function showCatalog() {
-            addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
-            addBotMsg(botTexts[currentLang].catPrompt);
-            setOptions(`
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-gos')">${botTexts[currentLang].optGos}</button>
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
-                <button class="chat-opt-btn" onclick="flyOwlToTab('tab-prof')">${botTexts[currentLang].optProf}</button>
-                <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-            `);
+            document.getElementById('owlChat').classList.remove('active');
+            document.getElementById('owlContainer').classList.remove('chat-opened');
+            playHoot();
         }
 
         let currentQ = 0;
@@ -1381,7 +1192,7 @@
 
             setOptions(`
                 <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
-                <button class="chat-opt-btn" onclick="filterPrograms(event, 'tab-all'); toggleChat();">${botTexts[currentLang].resCat}</button>
+                <button class="chat-opt-btn" onclick="focusTab('tab-all'); toggleChat();">${botTexts[currentLang].resCat}</button>
                 <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
             `);
         }
