@@ -37,7 +37,7 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-glass: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(248, 250, 252, 0.95);
+            --header-bg: rgba(5, 8, 14, 0.85); /* Шапка зафиксирована в темном цвете */
             --btn-glass: rgba(0, 0, 0, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
             --tag-color: rgba(0, 0, 0, 0.08);
@@ -55,12 +55,12 @@
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (НЕ ПЕРЕКРЫВАЕТ ЗАГОЛОВОК) */
-        .bg-tags-container { position: absolute; top: 50vh; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
+        /* --- ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ ПРИ СКРОЛЛЕ --- */
+        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
         .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 30px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
-        .bg-tag:nth-child(1) { top: 10%; left: 8%; font-size: 4vw; transform: translateZ(-20px); }
-        .bg-tag:nth-child(2) { top: 40%; right: 8%; font-size: 4.5vw; transform: translateZ(-40px); animation-delay: -1s; }
-        .bg-tag:nth-child(3) { top: 70%; left: 8%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
+        .bg-tag:nth-child(1) { top: 40%; left: 8%; font-size: 4vw; transform: translateZ(-20px); }
+        .bg-tag:nth-child(2) { top: 60%; right: 8%; font-size: 4.5vw; transform: translateZ(-40px); animation-delay: -1s; }
+        .bg-tag:nth-child(3) { top: 75%; left: 8%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
         .bg-tag:nth-child(4) { top: 90%; right: 15%; font-size: 4vw; transform: translateZ(-30px); animation-delay: -3s; }
         @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.8; } 100% { transform: scale(1.03) translateY(-8px); opacity: 1; } }
 
@@ -70,8 +70,8 @@
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         @keyframes float { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) scale(1.15); } }
 
-        /* ШАПКА */
-        header { background: var(--header-bg) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
+        /* --- ШАПКА ВСЕГДА ТЕМНАЯ --- */
+        header { background: rgba(5, 8, 14, 0.85) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; }
         .logo-group img { height: 180px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); transition: transform 0.2s; }
@@ -81,9 +81,9 @@
         .header-right-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; margin-left: auto; z-index: 10051; }
         
         .header-controls { display: flex; gap: 10px; align-items: center; }
-        .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.05); padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
-        .control-panel-btn { background: transparent; border: none; color: #94A3B8; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
-        .control-panel-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+        .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.05) !important; padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(10px); }
+        .control-panel-btn { background: transparent; border: none; color: #94A3B8 !important; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
+        .control-panel-btn:hover { color: #fff !important; background: rgba(255, 255, 255, 0.1) !important; }
         .lang-active, .active-font { background: var(--ranepa-red) !important; color: #fff !important; box-shadow: 0 4px 12px rgba(202, 15, 62, 0.5); }
         .theme-btn { font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; padding: 0; }
 
@@ -91,7 +91,7 @@
         .header-nav-link { color: #94A3B8 !important; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; transition: color 0.2s; cursor: pointer; touch-action: manipulation; position: relative; }
         .header-nav-link:hover { color: #fff !important; }
         
-        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 10px 24px; border-radius: 10px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); cursor: pointer; touch-action: manipulation; }
+        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff !important; padding: 10px 24px; border-radius: 10px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); cursor: pointer; touch-action: manipulation; }
         .header-nav-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6); }
 
         .header-kadry { flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; z-index: 10051; max-width: 250px; }
@@ -147,7 +147,7 @@
         .faq-answer { padding: 0 25px 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; animation: slideDown 0.3s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* КОНТАКТЫ ВНИЗУ (ИСПРАВЛЕНА СЕТКА) */
+        /* КОНТАКТЫ ВНИЗУ (БЕЗ РАСТЯГИВАНИЯ, ПЕРЕНОСЫ ЧЕТКИЕ) */
         .contacts-wrapper { background: var(--bg-glass); border-top: 1px solid var(--border-glass); backdrop-filter: blur(30px); padding: 60px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; clear: both; box-shadow: 0 -10px 30px var(--shadow-color); }
         .contacts-container { max-width: 1300px; margin: 0 auto; display: block; }
         
@@ -158,11 +158,11 @@
         .contact-link:hover { color: #f43f5e; text-decoration: underline; }
 
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 20px; }
-        .contact-card { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 25px; border-radius: 16px; transition: transform 0.3s ease; box-shadow: 0 8px 16px var(--shadow-color); display: block; white-space: normal; word-break: normal; }
+        .contact-card { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 25px; border-radius: 16px; transition: transform 0.3s ease; box-shadow: 0 8px 16px var(--shadow-color); display: flex; flex-direction: column; }
         .contact-card:hover { transform: translateY(-4px); border-color: var(--ranepa-red); }
         .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; margin-bottom: 5px; color: var(--text-main); font-weight: 800; }
         .contact-card .position { font-size: 0.85rem; color: var(--ranepa-red); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
-        .contact-card .details { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; }
+        .contact-card .details { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; display: flex; flex-direction: column; gap: 4px; }
         .contact-card .details a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.2s; }
         .contact-card .details a:hover { color: var(--ranepa-red); }
 
@@ -174,17 +174,17 @@
         .vk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(39, 135, 245, 0.15); border: 1px solid rgba(39, 135, 245, 0.4); color: #38bdf8; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; transition: 0.3s; cursor: pointer; margin-top: 10px; }
         .vk-btn:hover { background: rgba(39, 135, 245, 0.3); transform: translateY(-2px); }
 
-        /* ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (LIQUID GLASS + БЫСТРЫЙ CUBIC-BEZIER) */
+        /* ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (LIQUID GLASS + ПРУЖИНА) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.3s ease; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
-        .modal-box { background: var(--bg-glass); backdrop-filter: blur(35px) saturate(200%); border-radius: 24px; max-width: 550px; width: 100%; text-align: center; border: 1px solid var(--border-glass); box-shadow: 0 30px 60px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto; overscroll-behavior: contain; transform: scale(0.8) translateY(30px); opacity: 0; transition: transform 0.4s var(--bezier-bounce), opacity 0.3s ease; will-change: transform, opacity; padding: clamp(20px, 5vw, 40px); }
+        .modal-box { background: var(--bg-glass); backdrop-filter: blur(35px) saturate(200%); -webkit-backdrop-filter: blur(35px) saturate(200%); padding: clamp(25px, 5vw, 45px); border-radius: 28px; max-width: 550px; width: 100%; text-align: center; border: 1px solid var(--border-glass); box-shadow: 0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 90vh; overflow-y: auto; overscroll-behavior: contain; transform: scale(0.8) translateY(30px); opacity: 0; transition: transform 0.4s var(--bezier-bounce), opacity 0.3s ease; will-change: transform, opacity; }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
         
-        .glass-modal-ranepa { background: linear-gradient(145deg, rgba(136, 19, 55, 0.1) 0%, var(--bg-glass) 100%) !important; border-top: 1px solid rgba(202, 15, 62, 0.4) !important; box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 40px rgba(202, 15, 62, 0.1) !important; }
+        .glass-modal-ranepa { background: linear-gradient(145deg, rgba(136, 19, 55, 0.1) 0%, var(--bg-glass) 100%) !important; border-top: 1px solid rgba(202, 15, 62, 0.4) !important; box-shadow: 0 40px 80px rgba(0,0,0,0.9), 0 0 40px rgba(202, 15, 62, 0.1) !important; }
         
         .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.4rem, 5vw, 1.8rem); color: var(--text-main); margin-bottom: 15px; font-weight: 900; }
-        .modal-box p { color: var(--text-muted); margin-bottom: 25px; font-size: 1rem; text-align: left; line-height: 1.6; }
+        .modal-box p { color: var(--text-muted); margin-bottom: 30px; font-size: 1.05rem; text-align: left; line-height: 1.6; }
 
         .modal-btn { display: block; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; margin-bottom: 12px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; touch-action: manipulation; box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
         .modal-btn-trudvsem { background: #2962ff; } .modal-btn-trudvsem:hover { background: #1e4bd8; transform: translateY(-2px); box-shadow: 0 12px 20px rgba(41, 98, 255, 0.4); }
@@ -195,55 +195,34 @@
 
         .compliance-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 20px; line-height: 1.4; text-align: justify; opacity: 0.8; }
 
-        /* ЭКОСИСТЕМА СОВЫ И ВЕТКА */
-        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 480px; height: 400px; z-index: 9999; transition: all 1.4s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; transform: scale(0.85); transform-origin: bottom right; }
+        /* ЭКОСИСТЕМА СОВЫ И РЕАЛЬНЫЕ КАРТИНКИ ИЗ ПАПКИ IMG */
+        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 480px; height: 400px; z-index: 9999; transition: all 1.4s var(--bezier-bounce); pointer-events: none; transform: scale(0.85); transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -30px; pointer-events: auto; }
 
         .oak-branch { 
-            position: absolute; bottom: 35px; right: -35px; width: 420px; height: 55px; 
-            background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.15) 0%, transparent 60%), linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 40%, transparent 100%), repeating-linear-gradient(55deg, transparent, transparent 8px, rgba(0,0,0,0.2) 8px, rgba(0,0,0,0.2) 16px), linear-gradient(80deg, #422a1d 0%, #2b1810 50%, #170d08 100%);
-            border-radius: 50px 15px 15px 50px; box-shadow: 0 25px 45px rgba(0,0,0,0.8), inset 0 4px 8px rgba(255,255,255,0.1); 
+            position: absolute; bottom: 25px; right: -35px; width: 420px; height: auto; 
+            filter: drop-shadow(0 25px 45px rgba(0,0,0,0.8)); 
             transform: rotate(-6deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
         }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        /* 3D-ФИЛИН ГИПЕРРЕАЛИЗМ */
+        /* ФИЛИН */
         .owl-container {
-            position: absolute; bottom: 55px; left: 35px; width: 220px; height: 280px; cursor: pointer; pointer-events: auto;
+            position: absolute; bottom: 85px; left: 60px; width: 160px; height: 210px; cursor: pointer; pointer-events: auto;
             animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation; will-change: transform;
         }
 
-        /* Строгая кинематика ветки: Y = X * tan(-6) ≈ X * -0.105 */
-        @keyframes naturalPerch {
-            0%, 20% { transform: translate3d(0px, 0px, 0); }
-            40%, 45% { transform: translate3d(30px, -3.15px, 0); }
-            70%, 75% { transform: translate3d(60px, -6.3px, 0); }
-            100% { transform: translate3d(15px, -1.57px, 0); }
-        }
-
-        .stop-patrol { animation: none !important; }
-
-        /* Изолированные махи крыльями для оптимизации FPS */
-        .owl-fast-flap .wing-left { animation: flapLeft 0.15s infinite alternate cubic-bezier(0.4, 0, 0.6, 1); }
-        .owl-fast-flap .wing-right { animation: flapRight 0.15s infinite alternate cubic-bezier(0.4, 0, 0.6, 1); }
-        @keyframes flapLeft { 0% { transform: rotate(0deg); } 100% { transform: rotate(-35deg); } }
-        @keyframes flapRight { 0% { transform: rotate(0deg); } 100% { transform: rotate(35deg); } }
-
-        .owl-body { position: relative; width: 100%; height: 100%; transform-origin: center bottom; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8)); animation: owlBreath 4s infinite ease-in-out; will-change: transform; }
+        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8)); animation: owlBreath 4s infinite ease-in-out; will-change: transform; }
         @keyframes owlBreath { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(1.02) scaleX(0.98); } }
+        
         .owl-flip .owl-body { transform: scaleX(-1); }
 
-        #owlSvgVisual { width: 100%; height: 100%; pointer-events: none; }
-        .owl-container:not(.sleeping) .owl-svg-eyelid { animation: svgBlink 4.5s infinite; }
-        @keyframes svgBlink { 0%, 95%, 100% { transform: scaleY(0); } 97%, 99% { transform: scaleY(1); } }
-
         .sleeping { animation-play-state: paused; }
-        .sleeping .owl-svg-eyelid { transform: scaleY(1) !important; }
-        .zzz-particles { position: absolute; top: -30px; left: 90px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.4rem; text-shadow: 0 0 12px rgba(255,255,255,0.9); opacity: 0; pointer-events: none; z-index: 20; }
+        .zzz-particles { position: absolute; top: -30px; left: 60px; font-family: 'Montserrat', sans-serif; font-weight: 900; color: #fff; font-size: 1.4rem; text-shadow: 0 0 12px rgba(255,255,255,0.9); opacity: 0; pointer-events: none; z-index: 20; }
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
-        @keyframes floatZzz { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.5); } 50% { opacity: 1; transform: translate3d(20px, -25px, 0) scale(1.3); } 100% { opacity: 0; transform: translate3d(40px, -50px, 0) scale(1.6); } }
+        @keyframes floatZzz { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.5); } 50% { opacity: 1; transform: translate3d(15px, -20px, 0) scale(1.3); } 100% { opacity: 0; transform: translate3d(30px, -40px, 0) scale(1.6); } }
 
-        /* Пузырь перенесен внутрь owl-container, чтобы двигаться вместе с совой */
+        /* Пузырь перенесен внутрь owl-container */
         .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
@@ -649,18 +628,6 @@
             <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
             <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
 
-            <div class="main-contact-box">
-                <h3 data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</h3>
-                <p><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
-                <p><b style="color: var(--ranepa-red);">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
-            </div>
-            
-            <div class="main-contact-box">
-                <h3 data-i18n="addressLabel">Адрес:</h3>
-                <p><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" style="text-decoration: underline;" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
-            </div>
-
-            <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
                     <h4>Канаш Ирина Степановна</h4>
@@ -754,9 +721,10 @@
             </div>
 
             <div class="legal-footer">
+                <div style="font-weight: 600; margin-bottom: 25px;"><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></div>
                 <div data-i18n="footerRights" style="font-weight: 700; font-size: 0.95rem;">Все права защищены. © 2026 Президентская академия</div>
                 <div style="margin-top: 5px;" data-i18n="footerText">Западный филиал РАНХиГС. Центр Дополнительного Образования.<br>Образовательная деятельность ведется на основании бессрочной лицензии.</div>
-                <div style="font-weight: 600; margin-top: 10px;"><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></div>
+                
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (FL-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
@@ -835,110 +803,16 @@
         </div>
     </div>
 
-    <!-- ЭКОСИСТЕМА СОВЫ И ВЕТКА -->
+    <!-- ЭКОСИСТЕМА СОВЫ И РЕАЛЬНЫЕ КАРТИНКИ -->
     <div class="owl-ecosystem" id="owlContainer">
-        <div class="oak-branch">
-            <div class="twig twig-1"><div class="leaf leaf-1"></div></div>
-            <div class="twig twig-2"><div class="leaf leaf-2"></div></div>
-            <div class="twig twig-3"><div class="leaf leaf-3"></div></div>
-        </div>
+        <img src="./img/branch.png" alt="Ветка" class="oak-branch">
 
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
-
             <div class="zzz-particles" id="zzzText">Zzz...</div>
-            <div class="owl-body">
-                <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <radialGradient id="eyeAmber" cx="45%" cy="45%" r="55%">
-                            <stop offset="0%" stop-color="#FFF275"/>
-                            <stop offset="40%" stop-color="#FF9100"/>
-                            <stop offset="85%" stop-color="#DD2C00"/>
-                            <stop offset="100%" stop-color="#4E1A00"/>
-                        </radialGradient>
-                        <linearGradient id="bodyPlumage" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#5a3528"/>
-                            <stop offset="40%" stop-color="#351f17"/>
-                            <stop offset="80%" stop-color="#1f110c"/>
-                        </linearGradient>
-                        <linearGradient id="wingBurgundy" x1="0%" y1="0%" x2="80%" y2="100%">
-                            <stop offset="0%" stop-color="#7D222F"/>
-                            <stop offset="50%" stop-color="#4A141C"/>
-                            <stop offset="100%" stop-color="#240A0E"/>
-                        </linearGradient>
-                        <radialGradient id="breastPattern" cx="50%" cy="30%" r="70%">
-                            <stop offset="0%" stop-color="#F5E4C3"/>
-                            <stop offset="45%" stop-color="#C8A27A"/>
-                            <stop offset="85%" stop-color="#6E4430"/>
-                        </radialGradient>
-                        <filter id="glassDrop" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="15" stdDeviation="15" flood-color="#000" flood-opacity="0.8"/>
-                        </filter>
-                        <filter id="innerGlow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
-                            <feOffset dy="3" dx="0"/>
-                            <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowDiff"/>
-                            <feFlood flood-color="white" flood-opacity="0.2"/>
-                            <feComposite in2="shadowDiff" operator="in"/>
-                            <feComposite in2="SourceGraphic" operator="over"/>
-                        </filter>
-                    </defs>
-
-                    <ellipse cx="100" cy="150" rx="64" ry="84" fill="#05080c" opacity="0.4" filter="blur(6px)"/>
-                    <polygon points="75,225 100,260 125,225" fill="#1b100a"/>
-                    <ellipse cx="100" cy="150" rx="62" ry="80" fill="url(#bodyPlumage)" filter="url(#innerGlow)"/>
-                    <ellipse cx="100" cy="158" rx="50" ry="64" fill="url(#breastPattern)" filter="url(#innerGlow)"/>
-                    
-                    <path d="M 75,130 Q 100,138 125,130 Q 100,144 75,130 Z" fill="#2b1810" opacity="0.8"/>
-                    <path d="M 70,150 Q 100,158 130,150 Q 100,164 70,150 Z" fill="#2b1810" opacity="0.8"/>
-                    <path d="M 75,170 Q 100,178 125,170 Q 100,184 75,170 Z" fill="#2b1810" opacity="0.8"/>
-                    <path d="M 80,190 Q 100,198 120,190 Q 100,204 80,190 Z" fill="#2b1810" opacity="0.8"/>
-
-                    <g class="wing-left" transform-origin="75 110">
-                        <path d="M 50,105 C 32,135 36,200 78,238 C 65,190 60,135 75,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
-                    </g>
-                    <g class="wing-right" transform-origin="125 110">
-                        <path d="M 150,105 C 168,135 164,200 122,238 C 135,190 140,135 125,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
-                    </g>
-
-                    <polygon points="72,60 42,12 85,46" fill="#22120b" stroke="#120804" stroke-width="1.5"/>
-                    <polygon points="128,60 158,12 115,46" fill="#2c160e" stroke="#120804" stroke-width="1.5"/>
-
-                    <ellipse cx="100" cy="78" rx="46" ry="40" fill="#382117" filter="url(#glassDrop)"/>
-                    <ellipse cx="84" cy="76" rx="22" ry="26" fill="#B08D6D" opacity="0.9"/>
-                    <ellipse cx="116" cy="76" rx="22" ry="26" fill="#B08D6D" opacity="0.9"/>
-                    <ellipse cx="84" cy="76" rx="18" ry="22" fill="#21120b"/>
-                    <ellipse cx="116" cy="76" rx="18" ry="22" fill="#21120b"/>
-
-                    <circle cx="84" cy="76" r="13" fill="url(#eyeAmber)"/>
-                    <circle cx="116" cy="76" r="13" fill="url(#eyeAmber)"/>
-                    <circle cx="84" cy="76" r="7" fill="#050505"/>
-                    <circle cx="116" cy="76" r="7" fill="#050505"/>
-                    <circle cx="81" cy="73" r="2.5" fill="#ffffff"/>
-                    <circle cx="113" cy="73" r="2.5" fill="#ffffff"/>
-
-                    <rect class="owl-svg-eyelid" x="70" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 84px 64px; transform: scaleY(0);"/>
-                    <rect class="owl-svg-eyelid" x="102" y="61" width="28" height="28" fill="#361f15" style="transform-origin: 116px 64px; transform: scaleY(0);"/>
-
-                    <path d="M 84,64 Q 100,70 116,64" stroke="#e6c687" stroke-width="3" fill="none" filter="drop-shadow(0 2px 3px rgba(0,0,0,0.8))"/>
-                    
-                    <polygon points="94,76 106,76 100,105" fill="#dca742" stroke="#2b1810" stroke-width="1.5" filter="drop-shadow(0 4px 4px rgba(0,0,0,0.7))"/>
-                    <line x1="100" y1="76" x2="100" y2="103" stroke="#8c611c" stroke-width="1.5"/>
-
-                    <g fill="#211713">
-                        <ellipse cx="85" cy="230" rx="14" ry="8" fill="#C29B6C"/>
-                        <path d="M 76,231 Q 73,242 78,245" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                        <path d="M 84,232 Q 84,244 88,245" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                        <path d="M 92,231 Q 95,242 98,245" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-
-                        <ellipse cx="115" cy="230" rx="14" ry="8" fill="#C29B6C"/>
-                        <path d="M 106,231 Q 103,242 108,245" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                        <path d="M 114,232 Q 114,244 118,245" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                        <path d="M 122,231 Q 125,242 128,245" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                    </g>
-                </svg>
-            </div>
+            
+            <img src="./img/owl.png" alt="Сова" class="owl-body" id="owlImg">
             
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
@@ -964,7 +838,6 @@
         let isOwlFlying = false;
         let owlReturnTimer;
 
-        // --- УМНОЕ ПЕРЕКЛЮЧЕНИЕ ТЕМЫ (СОХРАНЯЕТСЯ В LOCALSTORAGE) ---
         function toggleTheme() {
             const root = document.documentElement;
             const currentTheme = root.getAttribute('data-theme');
@@ -1139,7 +1012,6 @@
 
         setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7000);
         
-        // Интеллект пузыря совы (5 сек показ, 5 сек скрытие)
         setInterval(() => {
             const bubble = document.getElementById('owlBubble');
             if (!isOwlFlying && !document.getElementById('owlChat').classList.contains('active')) {
@@ -1319,71 +1191,53 @@
             const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
             window.scrollTo({top: y, behavior: 'smooth'});
 
-            owlContainer.classList.add('stop-patrol');
+            owlContainer.style.animation = 'none';
 
-            setTimeout(() => {
-                const startRect = owlContainer.getBoundingClientRect();
-                const targetRect = targetCard.getBoundingClientRect();
+            const startRect = owlContainer.getBoundingClientRect();
+            const targetRect = targetCard.getBoundingClientRect();
 
-                document.body.appendChild(owlContainer);
-                owlContainer.style.position = 'fixed';
-                owlContainer.style.left = startRect.left + 'px';
-                owlContainer.style.top = startRect.top + 'px';
+            document.body.appendChild(owlContainer);
+            owlContainer.style.position = 'fixed';
+            owlContainer.style.left = startRect.left + 'px';
+            owlContainer.style.top = startRect.top + 'px';
+            owlContainer.style.bottom = 'auto';
+            owlContainer.style.right = 'auto';
+            owlContainer.style.transform = 'none';
+
+            const startScale = owlContainer.dataset.scaled === "true" ? 0.55 : 1;
+            const endScale = 0.55;
+
+            const deltaX = (targetRect.right - startRect.width * endScale - 20) - startRect.left;
+            const deltaY = (targetRect.top - startRect.height * endScale + 10) - startRect.top;
+
+            // Нативная JS-анимация спуска по параболе
+            owlContainer.animate([
+                { transform: `translate3d(0px, 0px, 0) scale(${startScale}) rotate(0deg)` },
+                { transform: `translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(${(startScale+endScale)/2}) rotate(-12deg)` },
+                { transform: `translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(${endScale + 0.05}) rotate(8deg)` },
+                { transform: `translate3d(${deltaX}px, ${deltaY}px, 0) scale(${endScale}) rotate(0deg)` }
+            ], {
+                duration: 800,
+                easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
+                fill: 'forwards'
+            }).onfinish = () => {
+                targetCard.style.position = 'relative';
+                targetCard.appendChild(owlContainer);
+
+                owlContainer.style.position = 'absolute';
+                owlContainer.style.left = 'auto';
                 owlContainer.style.bottom = 'auto';
-                owlContainer.style.right = 'auto';
-                owlContainer.style.transform = 'none';
+                owlContainer.style.right = '20px';
+                owlContainer.style.top = '-100px';
+                owlContainer.style.transform = `scale(${endScale})`;
+                owlContainer.dataset.scaled = "true";
 
-                const startScale = owlContainer.dataset.scaled === "true" ? 0.55 : 0.85;
-                const endScale = 0.55;
+                isOwlFlying = false;
 
-                const deltaX = (targetRect.right - startRect.width * endScale - 20) - startRect.left;
-                const deltaY = (targetRect.top - startRect.height * endScale + 10) - startRect.top;
-
-                let styleSheet = document.getElementById('dynamic-flight-style');
-                if (!styleSheet) {
-                    styleSheet = document.createElement('style');
-                    styleSheet.id = 'dynamic-flight-style';
-                    document.head.appendChild(styleSheet);
-                }
-                
-                styleSheet.innerHTML = `
-                    @keyframes owlParabolicFlight {
-                        0% { transform: translate3d(0px, 0px, 0) scale(${startScale}) rotate(0deg); }
-                        30% { transform: translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(${(startScale+endScale)/2}) rotate(-12deg); }
-                        70% { transform: translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(${endScale + 0.05}) rotate(8deg); }
-                        100% { transform: translate3d(${deltaX}px, ${deltaY}px, 0) scale(${endScale}) rotate(0deg); }
-                    }
-                `;
-
-                void owlContainer.offsetWidth; 
-
-                owlContainer.style.animation = 'owlParabolicFlight 0.6s cubic-bezier(0.25, 1, 0.4, 1) forwards';
-                owlContainer.classList.add('owl-fast-flap');
-
-                setTimeout(() => {
-                    owlContainer.classList.remove('owl-fast-flap');
-                    owlContainer.style.animation = 'none';
-                    
-                    targetCard.style.position = 'relative';
-                    targetCard.appendChild(owlContainer);
-
-                    owlContainer.style.position = 'absolute';
-                    owlContainer.style.left = 'auto';
-                    owlContainer.style.bottom = 'auto';
-                    owlContainer.style.right = '20px';
-                    owlContainer.style.top = '-135px';
-                    owlContainer.style.transform = `translate3d(0,0,0) scale(${endScale})`;
-                    owlContainer.dataset.scaled = "true";
-
-                    isOwlFlying = false;
-
-                    owlReturnTimer = setTimeout(() => {
-                        returnOwlToBranch();
-                    }, 5000);
-
-                }, 600);
-
-            }, 300);
+                owlReturnTimer = setTimeout(() => {
+                    returnOwlToBranch();
+                }, 5000);
+            };
         }
 
         function returnOwlToBranch() {
@@ -1402,56 +1256,44 @@
             const startRect = owlContainer.getBoundingClientRect();
             const branchRect = branch.getBoundingClientRect();
 
-            owlContainer.classList.add('owl-flip');
-
             document.body.appendChild(owlContainer);
             owlContainer.style.position = 'fixed';
             owlContainer.style.left = startRect.left + 'px';
             owlContainer.style.top = startRect.top + 'px';
             owlContainer.style.bottom = 'auto';
             owlContainer.style.right = 'auto';
-            owlContainer.style.transform = 'translate3d(0,0,0) scale(0.55) scaleX(-1)';
 
-            void owlContainer.offsetWidth;
-
-            const targetX = branchRect.left + 55; 
-            const targetY = branchRect.top - 140;
+            const targetX = branchRect.left + 60; 
+            const targetY = branchRect.top - 180;
 
             const deltaX = targetX - startRect.left;
             const deltaY = targetY - startRect.top;
 
-            let styleSheet = document.getElementById('dynamic-flight-style');
-            styleSheet.innerHTML = `
-                @keyframes owlReturnFlight {
-                    0% { transform: translate3d(0px, 0px, 0) scale(0.55) scaleX(-1) rotate(0deg); }
-                    30% { transform: translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(0.7) scaleX(-1) rotate(-12deg); }
-                    70% { transform: translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(0.8) scaleX(-1) rotate(8deg); }
-                    100% { transform: translate3d(${deltaX}px, ${deltaY}px, 0) scale(0.85) scaleX(-1) rotate(0deg); }
-                }
-            `;
-
-            owlContainer.style.animation = 'owlReturnFlight 0.7s cubic-bezier(0.25, 1, 0.4, 1) forwards';
-            owlContainer.classList.add('owl-fast-flap');
-
-            setTimeout(() => {
-                owlContainer.classList.remove('owl-fast-flap');
-                owlContainer.classList.remove('owl-flip');
-                owlContainer.classList.remove('stop-patrol');
-                
+            // Нативная JS-анимация возврата по параболе
+            owlContainer.animate([
+                { transform: `translate3d(0px, 0px, 0) scale(0.55) scaleX(-1) rotate(0deg)` },
+                { transform: `translate3d(${deltaX * 0.4}px, ${deltaY * 0.3 - 120}px, 0) scale(0.7) scaleX(-1) rotate(-12deg)` },
+                { transform: `translate3d(${deltaX * 0.75}px, ${deltaY * 0.8 - 40}px, 0) scale(0.9) scaleX(-1) rotate(8deg)` },
+                { transform: `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1) scaleX(-1) rotate(0deg)` }
+            ], {
+                duration: 800,
+                easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
+                fill: 'forwards'
+            }).onfinish = () => {
                 const eco = document.getElementById('owlContainer');
                 eco.appendChild(owlContainer);
 
-                owlContainer.style.animation = 'none';
-                owlContainer.style.transform = 'none';
                 owlContainer.style.position = 'absolute';
-                owlContainer.style.left = '35px';
-                owlContainer.style.bottom = '55px';
+                owlContainer.style.left = '60px';
+                owlContainer.style.bottom = '100px';
                 owlContainer.style.top = 'auto';
                 owlContainer.style.right = 'auto';
+                owlContainer.style.transform = 'none';
                 owlContainer.dataset.scaled = "false";
+                owlContainer.style.animation = 'naturalPerch 14s infinite alternate ease-in-out';
 
                 isOwlFlying = false;
-            }, 700);
+            };
         }
 
         function showCatalog() {
