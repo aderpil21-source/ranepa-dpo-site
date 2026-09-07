@@ -55,7 +55,7 @@
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (-1 Z-INDEX) */
+        /* ОБЛАКО ТЕГОВ (-1 Z-INDEX) */
         .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
         .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 20px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
         .bg-tag:nth-child(1) { top: 25%; left: 5%; font-size: 4vw; transform: translateZ(-20px); }
@@ -206,29 +206,20 @@
 
         .compliance-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 20px; line-height: 1.4; text-align: justify; opacity: 0.8; }
 
-        /* --- ЭКОСИСТЕМА СОВЫ С ВЕТКОЙ И ВИДЕО (OWL.WEBM / OWL.MOV) --- */
-        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 500px; height: 420px; z-index: 9999; transition: all 1.4s var(--bezier-bounce); pointer-events: none; transform: scale(0.9); transform-origin: bottom right; }
-        .owl-ecosystem.visible { bottom: 0; right: -20px; pointer-events: auto; }
+        /* --- ЭКОСИСТЕМА СО ВСТРОЕННЫМ ВИДЕО ОРИГИНАЛОМ (ЖЕСТКО СНИЗУ СПРАВА) --- */
+        .owl-ecosystem { position: fixed; bottom: 0px; right: 0px; width: 450px; height: 380px; z-index: 9999; pointer-events: auto; }
 
         .oak-branch { 
-            position: absolute; bottom: 15px; right: -20px; width: 440px; height: auto; 
-            filter: drop-shadow(0 25px 45px rgba(0,0,0,0.85)); 
-            transform: rotate(-5deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; 
+            position: absolute; bottom: 0; right: 0; width: 420px; height: auto; 
+            filter: drop-shadow(0 25px 45px rgba(0,0,0,0.85)); pointer-events: none; 
         }
-        .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
         .owl-container {
-            position: absolute; bottom: 75px; left: 45px; width: 220px; height: 300px; cursor: pointer; pointer-events: auto;
-            animation: naturalPerch 14s infinite alternate ease-in-out; z-index: 10000; touch-action: manipulation; will-change: transform;
+            position: absolute; bottom: 50px; left: 45px; width: 220px; height: 300px; cursor: pointer; pointer-events: auto;
+            z-index: 10000; touch-action: manipulation;
         }
 
-        @keyframes naturalPerch {
-            0%, 20% { transform: translate3d(0px, 0px, 0); }
-            40%, 45% { transform: translate3d(25px, -2.6px, 0); }
-            70%, 75% { transform: translate3d(50px, -5.25px, 0); }
-            100% { transform: translate3d(12px, -1.26px, 0); }
-        }
-
+        /* ВИДЕО СОБАКИ/СОВЫ С АЛЬФА-КАНАЛОМ */
         .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8)); transition: transform 0.3s ease; }
 
         .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
@@ -351,7 +342,6 @@
         </div>
 
         <div id="tab-all" class="tab-content active">
-            <!-- 1. 4 грамматические основы, причастный оборот -->
             <div class="card">
                 <div class="card-meta"><span class="price">56 000 ₽</span><span class="hours" data-i18n="cardHours1">506 ч.</span></div>
                 <h3 data-i18n="c1Title">Государственное управление</h3>
@@ -367,7 +357,6 @@
                 </div>
             </div>
 
-            <!-- 2. Деепричастный оборот, 2 односоставных -->
             <div class="card">
                 <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
                 <h3 data-i18n="c2Title">Управление закупками</h3>
@@ -383,7 +372,6 @@
                 </div>
             </div>
 
-            <!-- 3. 1 грамматическая основа в предложении -->
             <div class="card">
                 <div class="card-meta"><span class="price">10 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
                 <h3 data-i18n="c3Title">Профилактика терроризма</h3>
@@ -399,7 +387,6 @@
                 </div>
             </div>
 
-            <!-- 4. 4 грамматические основы, причастный оборот -->
             <div class="card">
                 <div class="card-meta"><span class="price">38 000 ₽</span><span class="hours" data-i18n="cardHours4">98 ч.</span></div>
                 <h3 data-i18n="c4Title">Искусственный Интеллект</h3>
@@ -415,7 +402,6 @@
                 </div>
             </div>
 
-            <!-- 5. 2 односоставных предложения -->
             <div class="card">
                 <div class="card-meta"><span class="price">46 300 ₽</span><span class="hours" data-i18n="cardHours5">252 ч.</span></div>
                 <h3 data-i18n="c5Title">Управление бизнесом</h3>
@@ -601,7 +587,6 @@
             </div>
         </div>
 
-        <!-- FAQ РАЗДЕЛ -->
         <h2 class="section-header" data-i18n="faqTitle">Часто задаваемые вопросы</h2>
         <div class="faq-container">
             <details class="faq-item">
@@ -628,7 +613,6 @@
 
     </div>
 
-    <!-- КОНТАКТЫ И ФУТЕР -->
     <div id="contactsSection" class="contacts-wrapper">
         <div class="contacts-container">
             <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
@@ -760,7 +744,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНЫЕ ОКНА -->
     <div class="modal-overlay" id="contactsModal">
         <div class="modal-box glass-modal-ranepa" style="text-align: left; max-width: 750px;">
             <h3 data-i18n="contModTitle">Контакты Центра</h3>
@@ -820,17 +803,14 @@
         </div>
     </div>
 
-    <!-- ЭКОСИСТЕМА СО ВСТРОЕННЫМ ВИДЕО ОРИГИНАЛОМ -->
     <div class="owl-ecosystem" id="owlContainer">
-        <img src="./img/branch.png" alt="Ветка" class="oak-branch">
-
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             
-            <video autoplay loop muted playsinline class="owl-body" style="width: 100%; height: 100%; object-fit: contain;">
-                <source src="./img/owl.webm" type="video/webm">
+            <video autoplay loop muted playsinline class="owl-body">
                 <source src="./img/owl.mov" type="video/quicktime">
+                <source src="./img/owl.webm" type="video/webm">
             </video>
             
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -945,7 +925,7 @@
                 contModTitle: "Center Contacts", contModDesc: "Management and key departments:",
                 polModTitle: "Personal Data Processing Policy", polModText: "This Privacy Policy applies to all information that the Western Branch of RANEPA can obtain about the User during the use of the site.<br><br>1. Processing of personal data is carried out in accordance with the Federal Law of the Russian Federation No. 152-FL.<br>2. The user consents to the processing of their personal data (surname, name, patronymic, contact phone number, email) for the purpose of registering an application for training within the national project \"Personnel\".<br>3. The operator takes necessary organizational and technical measures to protect personal information from unauthorized access.",
                 termModTitle: "User Agreement and Offer", termModText: "The use of materials and services of the site is governed by the laws of the Russian Federation.<br><br>1. Site is for informational purposes and is not a public offer.<br>2. All rights to the text materials, graphic images, and site structure belong to the Western Branch of RANEPA.<br>3. By submitting an application through communication forms, the user confirms their familiarity with the terms of federal educational programs.", modOk: "Understood",
-                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?", owlOpt1: "🎯 Take a career test", owlOpt2: "📚 Brief overview of all programs", owlOpt3: "📞 Open management contacts", vkText: "VKontakte (Soon)"
+                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?", owlOpt1: "🎯 Take a career test", owlOpt2: "📚 Brief overview of all programs", owlOpt3: "📞 Open management contacts"
             }
         };
 
@@ -1024,16 +1004,6 @@
                 bubble.classList.remove('show');
             }
         }, 5000);
-
-        let sleepTimer;
-        function startSleepCycle() {
-            if (window.innerWidth <= 768) return;
-            clearInterval(sleepTimer);
-            sleepTimer = setInterval(() => {
-                playHoot();
-            }, 30000);
-        }
-        startSleepCycle();
 
         function playHoot() {
             try {
