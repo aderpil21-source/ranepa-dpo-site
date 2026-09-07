@@ -55,7 +55,7 @@
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* ОБЛАКО ТЕГОВ (-1 Z-INDEX) */
+        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (-1 Z-INDEX) */
         .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
         .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 20px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
         .bg-tag:nth-child(1) { top: 25%; left: 5%; font-size: 4vw; transform: translateZ(-20px); }
@@ -206,21 +206,16 @@
 
         .compliance-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 20px; line-height: 1.4; text-align: justify; opacity: 0.8; }
 
-        /* --- ЭКОСИСТЕМА СО ВСТРОЕННЫМ ВИДЕО ОРИГИНАЛОМ (ЖЕСТКО СНИЗУ СПРАВА) --- */
-        .owl-ecosystem { position: fixed; bottom: 0px; right: 0px; width: 450px; height: 380px; z-index: 9999; pointer-events: auto; }
-
-        .oak-branch { 
-            position: absolute; bottom: 0; right: 0; width: 420px; height: auto; 
-            filter: drop-shadow(0 25px 45px rgba(0,0,0,0.85)); pointer-events: none; 
-        }
-
+        /* --- ЭКОСИСТЕМА СОВЫ С ВИДЕО OWL.MOV (ПРОЗРАЧНЫЙ ФОН БЕЗ РАМОК) --- */
+        .owl-ecosystem { position: fixed; bottom: 0; right: 0; width: 450px; height: 380px; z-index: 9999; pointer-events: none; }
+        
         .owl-container {
-            position: absolute; bottom: 50px; left: 45px; width: 220px; height: 300px; cursor: pointer; pointer-events: auto;
+            position: absolute; bottom: 10px; right: 10px; width: 340px; height: 280px; cursor: pointer; pointer-events: auto;
             z-index: 10000; touch-action: manipulation;
         }
 
-        /* ВИДЕО СОБАКИ/СОВЫ С АЛЬФА-КАНАЛОМ */
-        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8)); transition: transform 0.3s ease; }
+        /* Видеоплеер с нативной поддержкой прозрачности альфа-канала (.mov / .webm) */
+        .owl-body { width: 100%; height: 100%; object-fit: contain; background: transparent !important; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.7)); }
 
         .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -260,7 +255,6 @@
             .footer-kadry-mobile img { height: 100px; max-width: 100%; object-fit: contain; }
 
             .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
-            .oak-branch, .owl-body { display: none !important; }
             .owl-container {
                 position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
                 left: auto; width: 65px; height: 65px; border-radius: 50%;
@@ -994,178 +988,4 @@
         function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
         function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
 
-        setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7000);
-        
-        setInterval(() => {
-            const bubble = document.getElementById('owlBubble');
-            if (!document.getElementById('owlChat').classList.contains('active')) {
-                bubble.classList.toggle('show');
-            } else {
-                bubble.classList.remove('show');
-            }
-        }, 5000);
-
-        function playHoot() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.5);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.6);
-            } catch(e) {}
-        }
-
-        let isScrolling;
-        window.addEventListener('scroll', function() {
-            window.clearTimeout(isScrolling);
-            let chat = document.getElementById('owlChat');
-            let ecosystem = document.getElementById('owlContainer');
-            let bubble = document.getElementById('owlBubble');
-
-            if(chat.classList.contains('active')) {
-                chat.classList.remove('active');
-                ecosystem.classList.remove('chat-opened');
-            }
-            if(bubble) bubble.classList.remove('show');
-
-            isScrolling = setTimeout(function() {}, 200);
-        }, false);
-
-        function toggleChat() {
-            playHoot();
-            let chat = document.getElementById('owlChat');
-            let ecosystem = document.getElementById('owlContainer');
-            
-            if (chat.classList.contains('active')) {
-                chat.classList.remove('active');
-                ecosystem.classList.remove('chat-opened');
-            } else {
-                chat.classList.add('active');
-                ecosystem.classList.add('chat-opened');
-            }
-        }
-
-        const chatBody = document.getElementById('chatBody');
-        const chatOptions = document.getElementById('chatOptions');
-
-        function addUserMsg(text) { 
-            chatBody.innerHTML += `<div class="msg-user">${text}</div>`; 
-            scrollToBottom(); 
-        }
-        function addBotMsg(text) { 
-            const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
-            chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`; 
-            scrollToBottom(); 
-        }
-        function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
-        function setOptions(buttonsHTML) { chatOptions.innerHTML = buttonsHTML; }
-
-        function showCatalog() {
-            addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
-            addBotMsg(botTexts[currentLang].catPrompt);
-            setOptions(`
-                <button class="chat-opt-btn" onclick="focusTab('tab-gos')">${botTexts[currentLang].optGos}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-prof')">${botTexts[currentLang].optProf}</button>
-                <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-            `);
-        }
-
-        function focusTab(tabId) {
-            const section = document.getElementById('programsSection');
-            const y = section.getBoundingClientRect().top + window.pageYOffset - 80;
-            window.scrollTo({top: y, behavior: 'smooth'});
-
-            filterPrograms(new Event('click'), tabId);
-            const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
-            let buttons = document.getElementsByClassName("tab-btn");
-            if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
-
-            const activeContent = document.getElementById(tabId);
-            const cards = activeContent.querySelectorAll('.card');
-
-            cards.forEach((card, index) => {
-                const signX = Math.random() > 0.5 ? 1 : -1;
-                const signY = Math.random() > 0.5 ? 1 : -1;
-                card.style.setProperty('--x-dist', (Math.random() * 500 * signX) + 'px');
-                card.style.setProperty('--y-dist', (Math.random() * 500 * signY) + 'px');
-                
-                card.classList.remove('puzzle-piece', 'glow-effect');
-                void card.offsetWidth;
-                
-                card.style.animationDelay = (index * 0.15) + 's';
-                card.classList.add('puzzle-piece');
-                
-                setTimeout(() => {
-                    card.classList.add('glow-effect');
-                    setTimeout(() => card.classList.remove('glow-effect'), 2000);
-                }, 1000 + (index * 150));
-            });
-
-            document.getElementById('owlChat').classList.remove('active');
-            document.getElementById('owlContainer').classList.remove('chat-opened');
-            playHoot();
-        }
-
-        let currentQ = 0;
-        let scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
-
-        function startTest() {
-            addUserMsg(currentLang === 'ru' ? "Инициировать профильное тестирование." : "Initiate career profiling test.");
-            addBotMsg(botTexts[currentLang].testStart);
-            currentQ = 0;
-            scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
-            setTimeout(askQuestion, 800);
-        }
-
-        function askQuestion() {
-            if(currentQ >= testQuestionsData[currentLang].length) { showTestResult(); return; }
-            let q = testQuestionsData[currentLang][currentQ];
-            addBotMsg(q.q);
-
-            let html = "";
-            q.answers.forEach(a => {
-                html += `<button class="chat-opt-btn" onclick="answerTest('${a.t}', '${a.v}')">${a.t}</button>`;
-            });
-            setOptions(html);
-        }
-
-        function answerTest(text, value) {
-            addUserMsg(text);
-            scores[value]++;
-            currentQ++;
-            setTimeout(askQuestion, 400);
-        }
-
-        function showTestResult() {
-            let maxScore = 0;
-            let bestCategory = "";
-            for (let key in scores) {
-                if(scores[key] > maxScore) { maxScore = scores[key]; bestCategory = key; }
-            }
-
-            let resultText = "";
-            if(bestCategory === 'gos') resultText = botTexts[currentLang].resGos;
-            if(bestCategory === 'biz') resultText = botTexts[currentLang].resBiz;
-            if(bestCategory === 'horeca') resultText = botTexts[currentLang].resHoreca;
-            if(bestCategory === 'prof') resultText = botTexts[currentLang].resProf;
-
-            addBotMsg((currentLang === 'ru' ? "Анализ завершен. " : "Analysis completed. ") + resultText);
-
-            setOptions(`
-                <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-all'); toggleChat();">${botTexts[currentLang].resCat}</button>
-                <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-            `);
-        }
-    </script>
-</body>
-</html>
+        setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7
