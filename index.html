@@ -55,13 +55,13 @@
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (-1 Z-INDEX) */
+        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (СМЕЩЕНО НИЖЕ ЗАГОЛОВКА) */
         .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
         .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 20px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
-        .bg-tag:nth-child(1) { top: 25%; left: 5%; font-size: 4vw; transform: translateZ(-20px); }
-        .bg-tag:nth-child(2) { top: 45%; right: 5%; font-size: 5vw; transform: translateZ(-40px); animation-delay: -1s; }
-        .bg-tag:nth-child(3) { top: 65%; left: 10%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
-        .bg-tag:nth-child(4) { top: 85%; right: 15%; font-size: 4vw; transform: translateZ(-30px); animation-delay: -3s; }
+        .bg-tag:nth-child(1) { top: 40%; left: 5%; font-size: 4vw; transform: translateZ(-20px); }
+        .bg-tag:nth-child(2) { top: 55%; right: 5%; font-size: 5vw; transform: translateZ(-40px); animation-delay: -1s; }
+        .bg-tag:nth-child(3) { top: 75%; left: 10%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
+        .bg-tag:nth-child(4) { top: 90%; right: 15%; font-size: 4vw; transform: translateZ(-30px); animation-delay: -3s; }
         @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.7; } 100% { transform: scale(1.03) translateY(-10px); opacity: 1; } }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; }
@@ -70,8 +70,8 @@
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         @keyframes float { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) scale(1.15); } }
 
-        /* ШАПКА */
-        header { background: rgba(5, 8, 14, 0.85) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
+        /* ШАПКА ВСЕГДА ТЕМНАЯ */
+        header { background: rgba(5, 8, 14, 0.95) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; }
         .logo-group img { height: 180px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); transition: transform 0.2s; }
@@ -206,16 +206,16 @@
 
         .compliance-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 20px; line-height: 1.4; text-align: justify; opacity: 0.8; }
 
-        /* --- ЭКОСИСТЕМА СОВЫ С ВИДЕО OWL.MOV (ПРОЗРАЧНЫЙ ФОН БЕЗ РАМОК) --- */
-        .owl-ecosystem { position: fixed; bottom: 0; right: 0; width: 450px; height: 380px; z-index: 9999; pointer-events: none; }
-        
+        /* --- ЭКОСИСТЕМА СО ВСТРОЕННЫМ ВИДЕО (OWL.MOV / OWL.WEBM) --- */
+        .owl-ecosystem { position: fixed; bottom: 0px; right: 0px; width: 480px; height: 380px; z-index: 9999; pointer-events: auto; }
+
         .owl-container {
-            position: absolute; bottom: 10px; right: 10px; width: 340px; height: 280px; cursor: pointer; pointer-events: auto;
+            position: absolute; bottom: 10px; right: 10px; width: 380px; height: 320px; cursor: pointer; pointer-events: auto;
             z-index: 10000; touch-action: manipulation;
         }
 
-        /* Видеоплеер с нативной поддержкой прозрачности альфа-канала (.mov / .webm) */
-        .owl-body { width: 100%; height: 100%; object-fit: contain; background: transparent !important; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.7)); }
+        /* ИДЕАЛЬНОЕ ОТОБРАЖЕНИЕ ВИДЕО БЕЗ ОТДЕЛЬНОЙ ВЕТКИ (ОНА УЖЕ В ВИДЕО) */
+        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 25px 35px rgba(0,0,0,0.85)); }
 
         .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -988,4 +988,80 @@
         function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
         function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
 
-        setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7
+        setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7000);
+        
+        setInterval(() => {
+            const bubble = document.getElementById('owlBubble');
+            if (!document.getElementById('owlChat').classList.contains('active')) {
+                bubble.classList.toggle('show');
+            } else {
+                bubble.classList.remove('show');
+            }
+        }, 5000);
+
+        function playHoot() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.5);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            } catch(e) {}
+        }
+
+        let isScrolling;
+        window.addEventListener('scroll', function() {
+            window.clearTimeout(isScrolling);
+            let chat = document.getElementById('owlChat');
+            let ecosystem = document.getElementById('owlContainer');
+            let bubble = document.getElementById('owlBubble');
+
+            if(chat.classList.contains('active')) {
+                chat.classList.remove('active');
+                ecosystem.classList.remove('chat-opened');
+            }
+            if(bubble) bubble.classList.remove('show');
+
+            isScrolling = setTimeout(function() {}, 200);
+        }, false);
+
+        function toggleChat() {
+            playHoot();
+            let chat = document.getElementById('owlChat');
+            let ecosystem = document.getElementById('owlContainer');
+            
+            if (chat.classList.contains('active')) {
+                chat.classList.remove('active');
+                ecosystem.classList.remove('chat-opened');
+            } else {
+                chat.classList.add('active');
+                ecosystem.classList.add('chat-opened');
+            }
+        }
+
+        const chatBody = document.getElementById('chatBody');
+        const chatOptions = document.getElementById('chatOptions');
+
+        function addUserMsg(text) { 
+            chatBody.innerHTML += `<div class="msg-user">${text}</div>`; 
+            scrollToBottom(); 
+        }
+        function addBotMsg(text) { 
+            const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
+            chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b>${text}</div>`; 
+            scrollToBottom(); 
+        }
+        function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
+        function setOptions(buttonsHTML) { chatOptions.innerHTML = buttonsHTML; }
+
+        function showCatalog() {
+            addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
+            addBotMsg(botTexts[currentLang].catPrompt);
+            setOptions(`
