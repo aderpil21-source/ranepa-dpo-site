@@ -22,7 +22,7 @@
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
             --border-glass: rgba(255, 255, 255, 0.08);
-            --header-bg: rgba(5, 8, 14, 0.85); /* Зафиксировано для темной темы */
+            --header-bg: rgba(5, 8, 14, 0.85);
             --btn-glass: rgba(255, 255, 255, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.6);
             --tag-color: rgba(255, 255, 255, 0.15);
@@ -37,7 +37,7 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-glass: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(5, 8, 14, 0.95); /* Зафиксировано: шапка всегда темная */
+            --header-bg: rgba(248, 250, 252, 0.95);
             --btn-glass: rgba(0, 0, 0, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
             --tag-color: rgba(0, 0, 0, 0.08);
@@ -55,14 +55,14 @@
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* --- АТМОСФЕРНЫЕ ТЕГИ СМЕЩЕНЫ ВНИЗ --- */
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
+        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (НЕ ПЕРЕКРЫВАЕТ ЗАГОЛОВОК) */
+        .bg-tags-container { position: absolute; top: 50vh; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
         .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 30px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 5s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
-        .bg-tag:nth-child(1) { top: 35%; left: 8%; font-size: 4vw; transform: translateZ(-20px); }
-        .bg-tag:nth-child(2) { top: 55%; right: 8%; font-size: 4.5vw; transform: translateZ(-40px); animation-delay: -1s; }
-        .bg-tag:nth-child(3) { top: 75%; left: 8%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
+        .bg-tag:nth-child(1) { top: 10%; left: 8%; font-size: 4vw; transform: translateZ(-20px); }
+        .bg-tag:nth-child(2) { top: 40%; right: 8%; font-size: 4.5vw; transform: translateZ(-40px); animation-delay: -1s; }
+        .bg-tag:nth-child(3) { top: 70%; left: 8%; font-size: 3.5vw; transform: translateZ(-10px); animation-delay: -2s; }
         .bg-tag:nth-child(4) { top: 90%; right: 15%; font-size: 4vw; transform: translateZ(-30px); animation-delay: -3s; }
-        @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.6; } 100% { transform: scale(1.03) translateY(-8px); opacity: 1; } }
+        @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.8; } 100% { transform: scale(1.03) translateY(-8px); opacity: 1; } }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; }
         .shape { position: absolute; filter: blur(120px); opacity: 0.5; animation: float 20s infinite alternate ease-in-out; will-change: transform; }
@@ -70,12 +70,11 @@
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         @keyframes float { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) scale(1.15); } }
 
-        /* --- ШАПКА ВСЕГДА ТЕМНАЯ --- */
+        /* ШАПКА */
         header { background: var(--header-bg) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 15px max(40px, env(safe-area-inset-right)) 15px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; }
-        /* УВЕЛИЧЕНО В 2 РАЗА */
-        .logo-group img { height: 120px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); transition: transform 0.2s; }
+        .logo-group img { height: 180px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); transition: transform 0.2s; }
         .logo-group:hover img { transform: scale(1.02); }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8 !important; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 5px; text-align: left; }
 
@@ -96,7 +95,7 @@
         .header-nav-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6); }
 
         .header-kadry { flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; z-index: 10051; max-width: 250px; }
-        .header-kadry img { height: 110px; width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); background: transparent !important; }
+        .header-kadry img { height: 130px; width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); background: transparent !important; }
 
         .footer-kadry-mobile { display: none; }
 
@@ -123,7 +122,7 @@
         .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.6rem; color: var(--text-main); text-shadow: 0 2px 4px var(--shadow-color); }
         .hours { font-size: 0.8rem; background: rgba(202, 15, 62, 0.15); border: 1px solid rgba(202, 15, 62, 0.3); color: var(--ranepa-red); padding: 6px 12px; border-radius: 8px; font-weight: 800; }
         .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main); line-height: 1.3; }
-        .card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6; }
+        .card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6; text-align: justify; }
 
         .accordion-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; margin-top: auto; transition: all 0.3s var(--bezier-bounce); text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; touch-action: manipulation; }
         .accordion-btn:hover { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); transform: translateY(-2px); }
@@ -131,8 +130,6 @@
         .accordion-content { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s var(--bezier-smooth), opacity 0.3s ease; }
         .card.active { border-color: var(--ranepa-red); box-shadow: 0 0 40px rgba(202, 15, 62, 0.2); }
         .card.active .accordion-content { max-height: 1000px; opacity: 1; margin-top: 20px; }
-
-        .desc-text { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 15px; text-align: justify; }
 
         .buy-btn { display: inline-block; width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 16px; text-align: center; border-radius: 12px; font-weight: 900; text-decoration: none; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; box-shadow: 0 8px 20px rgba(202, 15, 62, 0.3); }
         .buy-btn:hover { background: linear-gradient(135deg, #f43f5e, var(--ranepa-red)); box-shadow: 0 12px 25px rgba(202, 15, 62, 0.5); transform: translateY(-3px) scale(1.02); }
@@ -150,9 +147,9 @@
         .faq-answer { padding: 0 25px 20px; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; animation: slideDown 0.3s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* КОНТАКТЫ ВНИЗУ (БЕЗ РАСТЯГИВАНИЯ, ПЕРЕНОСЫ ЧЕТКИЕ) */
+        /* КОНТАКТЫ ВНИЗУ (ИСПРАВЛЕНА СЕТКА) */
         .contacts-wrapper { background: var(--bg-glass); border-top: 1px solid var(--border-glass); backdrop-filter: blur(30px); padding: 60px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; clear: both; box-shadow: 0 -10px 30px var(--shadow-color); }
-        .contacts-container { max-width: 1300px; margin: 0 auto; }
+        .contacts-container { max-width: 1300px; margin: 0 auto; display: block; }
         
         .main-contact-box { background: var(--btn-glass); border: 1px solid var(--border-glass); border-left: 4px solid var(--ranepa-red); border-radius: 16px; padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 20px var(--shadow-color); }
         .main-contact-box h3 { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; color: var(--text-main); margin-bottom: 15px; font-weight: 800; }
@@ -161,11 +158,11 @@
         .contact-link:hover { color: #f43f5e; text-decoration: underline; }
 
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 20px; }
-        .contact-card { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 25px; border-radius: 16px; transition: transform 0.3s ease; box-shadow: 0 8px 16px var(--shadow-color); display: flex; flex-direction: column; }
+        .contact-card { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 25px; border-radius: 16px; transition: transform 0.3s ease; box-shadow: 0 8px 16px var(--shadow-color); display: block; white-space: normal; word-break: normal; }
         .contact-card:hover { transform: translateY(-4px); border-color: var(--ranepa-red); }
         .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; margin-bottom: 5px; color: var(--text-main); font-weight: 800; }
         .contact-card .position { font-size: 0.85rem; color: var(--ranepa-red); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
-        .contact-card .details { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; display: flex; flex-direction: column; gap: 4px; }
+        .contact-card .details { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; }
         .contact-card .details a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.2s; }
         .contact-card .details a:hover { color: var(--ranepa-red); }
 
@@ -173,10 +170,11 @@
         .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 15px; margin-bottom: 20px; }
         .legal-footer-links span { text-decoration: underline; cursor: pointer; transition: color 0.2s; touch-action: manipulation; }
         .legal-footer-links span:hover { color: var(--ranepa-red); }
-        .vk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(39, 135, 245, 0.15); border: 1px solid rgba(39, 135, 245, 0.4); color: #38bdf8; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; transition: 0.3s; cursor: pointer; }
+        
+        .vk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(39, 135, 245, 0.15); border: 1px solid rgba(39, 135, 245, 0.4); color: #38bdf8; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; transition: 0.3s; cursor: pointer; margin-top: 10px; }
         .vk-btn:hover { background: rgba(39, 135, 245, 0.3); transform: translateY(-2px); }
 
-        /* ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (LIQUID GLASS + ПРУЖИНА) */
+        /* ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (LIQUID GLASS + БЫСТРЫЙ CUBIC-BEZIER) */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.3s ease; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
@@ -226,8 +224,8 @@
         .stop-patrol { animation: none !important; }
 
         /* Изолированные махи крыльями для оптимизации FPS */
-        .owl-fast-flap .wing-left { animation: flapLeft 0.15s infinite alternate cubic-bezier(0.4, 0, 0.6, 1); transform-origin: 75px 110px; }
-        .owl-fast-flap .wing-right { animation: flapRight 0.15s infinite alternate cubic-bezier(0.4, 0, 0.6, 1); transform-origin: 125px 110px; }
+        .owl-fast-flap .wing-left { animation: flapLeft 0.15s infinite alternate cubic-bezier(0.4, 0, 0.6, 1); }
+        .owl-fast-flap .wing-right { animation: flapRight 0.15s infinite alternate cubic-bezier(0.4, 0, 0.6, 1); }
         @keyframes flapLeft { 0% { transform: rotate(0deg); } 100% { transform: rotate(-35deg); } }
         @keyframes flapRight { 0% { transform: rotate(0deg); } 100% { transform: rotate(35deg); } }
 
@@ -245,7 +243,11 @@
         .sleeping .zzz-particles { animation: floatZzz 2.5s infinite linear; }
         @keyframes floatZzz { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.5); } 50% { opacity: 1; transform: translate3d(20px, -25px, 0) scale(1.3); } 100% { opacity: 0; transform: translate3d(40px, -50px, 0) scale(1.6); } }
 
+        /* Пузырь перенесен внутрь owl-container, чтобы двигаться вместе с совой */
+        .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
+        .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
+
         .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 380px; background: var(--bg-glass); backdrop-filter: blur(30px); border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); border: 1px solid var(--border-glass); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translate3d(0, 40px, 0) scale(0.9); transition: all 0.4s var(--bezier-bounce); will-change: transform, opacity; }
         .owl-chat-panel.active { display: flex; opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
         .owl-chat-header { background: rgba(5, 8, 14, 0.8); color: #fff; padding: 18px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-radius: 24px 24px 0 0; }
@@ -259,11 +261,12 @@
 
         .mobile-chat-icon { display: none; }
 
-        /* ЖЕСТКИЙ АЛГОРИТМ ОБХОДА ДЛЯ МОБИЛОК */
+        /* ЖЕСТКИЙ АЛГОРИТМ ОБХОДА ДЛЯ МОБИЛОК (СТРОГО СВЕРХУ ВНИЗ) */
         @media (max-width: 768px) {
-            header { padding: 15px; flex-direction: column; gap: 15px; align-items: stretch; background: var(--bg-deep) !important; }
+            html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; }
+            header { padding: 15px; flex-direction: column; gap: 15px; align-items: stretch; background: var(--header-bg) !important; }
             .logo-group { align-items: center; width: 100%; text-align: center; }
-            .logo-group img { height: 120px !important; object-position: center; max-height: 120px; }
+            .logo-group img { height: auto !important; width: 100%; max-height: 120px; object-position: center; }
             .logo-subtitle { text-align: center; }
             .header-right-panel { width: 100%; align-items: center; margin: 0; }
             .header-controls { justify-content: center; flex-wrap: wrap; width: 100%; }
@@ -274,9 +277,9 @@
             .tab-btn { flex-shrink: 0; }
             
             .contacts-wrapper { padding: 40px 15px; }
-            .contact-card { display: flex; flex-direction: column; white-space: normal; word-wrap: break-word; }
+            .contact-card { display: block; white-space: normal; word-wrap: normal; }
             
-            .footer-kadry-mobile { display: block !important; margin: 30px auto 0; text-align: center; }
+            .footer-kadry-mobile { display: block !important; margin: 40px auto 0; text-align: center; }
             .footer-kadry-mobile img { height: 100px; max-width: 100%; object-fit: contain; }
 
             .owl-ecosystem { transform: none; right: 0; bottom: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -285,11 +288,11 @@
                 position: fixed; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right));
                 left: auto; width: 65px; height: 65px; border-radius: 50%;
                 background: linear-gradient(135deg, #f43f5e, var(--ranepa-red));
-                box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5);
+                box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5), inset 0 2px 4px rgba(255,255,255,0.3);
                 display: flex; justify-content: center; align-items: center;
                 animation: none !important; pointer-events: auto; z-index: 10000;
             }
-            .mobile-chat-icon { display: block; width: 32px; height: 32px; fill: #fff; }
+            .mobile-chat-icon { display: block; width: 32px; height: 32px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
             .owl-chat-panel { width: calc(100vw - 30px); left: 15px; right: 15px; bottom: max(95px, calc(env(safe-area-inset-bottom) + 95px)); height: min(65vh, 500px); max-width: 100vw; }
         }
     </style>
@@ -646,6 +649,18 @@
             <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
             <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
 
+            <div class="main-contact-box">
+                <h3 data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</h3>
+                <p><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
+                <p><b style="color: var(--ranepa-red);">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
+            </div>
+            
+            <div class="main-contact-box">
+                <h3 data-i18n="addressLabel">Адрес:</h3>
+                <p><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" style="text-decoration: underline;" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
+            </div>
+
+            <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
                     <h4>Канаш Ирина Степановна</h4>
@@ -739,19 +754,18 @@
             </div>
 
             <div class="legal-footer">
-                <div style="font-weight: 600; margin-bottom: 25px;"><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></div>
                 <div data-i18n="footerRights" style="font-weight: 700; font-size: 0.95rem;">Все права защищены. © 2026 Президентская академия</div>
                 <div style="margin-top: 5px;" data-i18n="footerText">Западный филиал РАНХиГС. Центр Дополнительного Образования.<br>Образовательная деятельность ведется на основании бессрочной лицензии.</div>
-                
+                <div style="font-weight: 600; margin-top: 10px;"><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></div>
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (FL-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
                 </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center;">
-                    <a href="#" class="vk-btn" onclick="alert('Официальное сообщество VK находится на стадии оформления и интеграции. Скоро здесь появится ссылка!'); return false;">
+                    <a href="#" class="vk-btn" onclick="alert(currentLang === 'ru' ? 'Официальное сообщество VK находится на стадии оформления и интеграции. Скоро здесь появится ссылка!' : 'The official VK community is under development. A link will appear here soon!'); return false;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15.071 2H8.929C4.55 2 2 4.55 2 8.929v6.142C2 19.45 4.55 22 8.929 22h6.142C19.45 22 22 19.45 22 15.071V8.929C22 4.55 19.45 2 15.071 2zm1.666 14.838h-1.428c-.687 0-.895-.55-.2.55-1.92 0-3.664-1.378-5.06-3.834-1.573-2.735-2.023-4.996-2.023-5.263 0-.158.067-.323.23-.323h1.427c.18 0 .285.062.355.226.756 1.83 1.776 3.493 2.502 3.493.262 0 .378-.113.378-.718V8.125c0-.44-.134-.637-.464-.637-.184 0-.16-.277.013-.385.27-.168.805-.226 1.34-.226.7 0 .914.07 1.01.21.137.2.106.945.106 1.84v2.54c0 .367.16.505.284.505.262 0 .584-.256 1.306-1.026.786-.84 1.34-2.1 1.34-2.1.066-.135.205-.226.39-.226h1.428c.328 0 .422.164.354.384-.22.684-1.488 2.45-1.94 2.977-.285.334-.356.452 0 .915.65.856 1.545 1.947 1.745 2.55.127.38-.113.568-.48.568z"/></svg>
-                        ВКонтакте (Скоро)
+                        <span data-i18n="vkText">ВКонтакте (Скоро)</span>
                     </a>
                 </div>
             </div>
@@ -790,7 +804,7 @@
             <p data-i18n="modDesc">Выберите удобный способ регистрации на программу обучения:</p>
             <a href="https://trudvsem.ru/?region=3900000000000" target="_blank" class="modal-btn modal-btn-trudvsem" data-i18n="modTrud">Записаться через «Работа России» (Калининград)</a>
             <a href="https://forms.yandex.ru" target="_blank" class="modal-btn modal-btn-yandex" data-i18n="modYan">Записаться через Яндекс.Форму</a>
-            <div class="compliance-text" data-i18n="complianceText">Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.</div>
+            <div class="compliance-text" data-i18n="complianceText">Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с FL-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.</div>
             <div class="close-modal" onclick="closeModal()" data-i18n="modClose">Закрыть окно</div>
         </div>
     </div>
@@ -830,6 +844,9 @@
         </div>
 
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
+            
+            <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
+
             <div class="zzz-particles" id="zzzText">Zzz...</div>
             <div class="owl-body">
                 <svg id="owlSvgVisual" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
@@ -878,10 +895,10 @@
                     <path d="M 75,170 Q 100,178 125,170 Q 100,184 75,170 Z" fill="#2b1810" opacity="0.8"/>
                     <path d="M 80,190 Q 100,198 120,190 Q 100,204 80,190 Z" fill="#2b1810" opacity="0.8"/>
 
-                    <g class="wing-left">
+                    <g class="wing-left" transform-origin="75 110">
                         <path d="M 50,105 C 32,135 36,200 78,238 C 65,190 60,135 75,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
                     </g>
-                    <g class="wing-right">
+                    <g class="wing-right" transform-origin="125 110">
                         <path d="M 150,105 C 168,135 164,200 122,238 C 135,190 140,135 125,110 Z" fill="url(#wingBurgundy)" stroke="#1a0b0f" stroke-width="1.5" filter="url(#innerGlow)"/>
                     </g>
 
@@ -928,8 +945,6 @@
                 <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
             </svg>
         </div>
-
-        <div class="owl-bubble" id="owlBubble" onclick="toggleChat()" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
     </div>
 
     <div class="owl-chat-panel" id="owlChat">
@@ -949,6 +964,7 @@
         let isOwlFlying = false;
         let owlReturnTimer;
 
+        // --- УМНОЕ ПЕРЕКЛЮЧЕНИЕ ТЕМЫ (СОХРАНЯЕТСЯ В LOCALSTORAGE) ---
         function toggleTheme() {
             const root = document.documentElement;
             const currentTheme = root.getAttribute('data-theme');
@@ -963,6 +979,16 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌓' : '☀️';
         });
+
+        function changeFontSize(size, btnElement) {
+            const root = document.documentElement;
+            if(size === 'small') root.style.fontSize = '14px';
+            if(size === 'normal') root.style.fontSize = '16px';
+            if(size === 'large') root.style.fontSize = '18px';
+            
+            document.querySelectorAll('.font-controls .control-panel-btn').forEach(btn => btn.classList.remove('active-font'));
+            if(btnElement) btnElement.classList.add('active-font');
+        }
 
         const botTexts = {
             ru: {
@@ -996,7 +1022,7 @@
                 optHoreca: "🏨 HoReCa & Tourism",
                 optProf: "⚡ Fast-Track Professions",
                 optBack: "⬅️ Back to main menu",
-                descGos: "<b>Public sector personnel:</b><br>• Public Admin: a fundamental basis for advancement in government bodies.<br>• Procurement: 44-FZ and 223-FZ, eliminating legal risks.<br>• Security: anti-terrorism and anti-corruption frameworks.",
+                descGos: "<b>Public sector personnel:</b><br>• Public Admin: a fundamental basis for advancement in government bodies.<br>• Procurement: 44-FL and 223-FL, eliminating legal risks.<br>• Security: anti-terrorism and anti-corruption frameworks.",
                 descBiz: "<b>Commercial sector innovations:</b><br>• Artificial Intelligence: automating analytics via neural networks.<br>• Business Management: systematization and stepping out of daily operations.<br>• Logistics: efficient foreign economic activity management.",
                 descHoreca: "<b>Hospitality elite:</b><br>• Hospitality Management: maximizing profit margins for establishments.<br>• Museum & Tourism: designing highly engaging tourism products.",
                 descProf: "<b>Applied skills:</b><br>• Chef: intensive practical training and official grade certification.<br>• 1C: Enterprise: accounting and financial reporting automation.",
@@ -1046,14 +1072,35 @@
             ]
         };
 
-        function changeFontSize(size, btnElement) {
-            const root = document.documentElement;
-            if(size === 'small') root.style.fontSize = '14px';
-            if(size === 'normal') root.style.fontSize = '16px';
-            if(size === 'large') root.style.fontSize = '18px';
-            
-            document.querySelectorAll('.font-controls .control-panel-btn').forEach(btn => btn.classList.remove('active-font'));
-            if(btnElement) btnElement.classList.add('active-font');
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
+            document.getElementById('langEnBtn').classList.toggle('lang-active', lang === 'en');
+
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translationsHTML[lang][key]) {
+                    if(el.tagName === 'TITLE') {
+                        document.title = translationsHTML[lang][key];
+                    } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translationsHTML[lang][key];
+                    } else {
+                        el.innerHTML = translationsHTML[lang][key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('.accordion-btn').forEach(btn => {
+                const card = btn.closest('.card');
+                if (card.classList.contains('active')) {
+                    btn.textContent = lang === 'ru' ? 'Свернуть учебный план' : 'Collapse Curriculum';
+                } else {
+                    btn.textContent = lang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum';
+                }
+            });
+
+            if(!document.getElementById('chatOptions').innerHTML.includes('catPrompt')) { resetMenu(); }
         }
 
         window.addEventListener('scroll', () => {
@@ -1091,14 +1138,16 @@
         function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
 
         setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7000);
-        setTimeout(() => {
-            const chatPanel = document.getElementById('owlChat');
-            const owlBubble = document.getElementById('owlBubble');
-            if(!chatPanel.classList.contains('active') && !isOwlFlying && window.innerWidth > 768) {
-                owlBubble.classList.add('show');
-                setTimeout(() => owlBubble.classList.remove('show'), 7000);
+        
+        // Интеллект пузыря совы (5 сек показ, 5 сек скрытие)
+        setInterval(() => {
+            const bubble = document.getElementById('owlBubble');
+            if (!isOwlFlying && !document.getElementById('owlChat').classList.contains('active')) {
+                bubble.classList.toggle('show');
+            } else {
+                bubble.classList.remove('show');
             }
-        }, 25000);
+        }, 5000);
 
         let sleepTimer;
         function startSleepCycle() {
