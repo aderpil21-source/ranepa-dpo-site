@@ -312,7 +312,6 @@
         .msg-bot b { color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 6px; }
         .msg-user { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 14px; border-radius: 14px; border-bottom-right-radius: 0; align-self: flex-end; max-width: 92%; font-weight: 600; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.3); }
         
-        /* Стили строки ввода и кнопки отправки в чате Совы */
         .chat-input-box { display: flex; padding: 10px 14px; background: rgba(5, 8, 14, 0.9); border-top: 1px solid var(--border-glass); gap: 8px; align-items: center; }
         .chat-text-input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
         .chat-text-input:focus { border-color: var(--ranepa-red); }
@@ -788,7 +787,6 @@
             <div class="msg-bot"><b data-i18n="owlName">Сова:</b> <span data-i18n="owlWelcome">Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.</span></div>
         </div>
         
-        <!-- Добавлено поле ввода текста для общения с Совой и проверки кодов -->
         <div class="chat-input-box">
             <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции или вопрос..." onkeydown="if(event.key === 'Enter') handleUserMessage()">
             <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
@@ -805,13 +803,9 @@
     /* ================= ВАША ССЫЛКА НА БАЗУ ДАННЫХ ================= */
     const API_URL = 'https://script.google.com/macros/s/AKfycbxrRIk-tDyNmHos4vYLRUtwv9S8iDK0ssIiYnWpvSk8sb0FIU6pexSQ3dY0SUBNs-g/exec';
 
-    /* ================= GLOBAL STATE FOR OWL FILES ================= */
     let globalOwlFiles = [];
-
-    /* ================= STATE ================= */
     let currentLang = 'ru';
 
-    /* ================= НАЗВАНИЯ ДЛЯ СЕКТОРОВ ================= */
     const SECTOR_NAMES = {
         'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
         'biz': { ru: '🚀 Цифровой бизнес, ИИ и управление', en: '🚀 Digital Business, AI & Management' },
@@ -819,7 +813,6 @@
         'prof': { ru: '⚡ Прикладные профессии и навыки', en: '⚡ Applied Professions & Skills' }
     };
 
-    /* ================= THEME & FONT SIZE ================= */
     function toggleTheme() {
         const root = document.documentElement;
         const newTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -843,7 +836,6 @@
             : 'The official VK community is under development. A link will appear here soon!');
     }
 
-    /* ================= TRANSLATIONS ================= */
     const translationsHTML = {
         ru: {
             pageTitle: "Академия Кадров | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
@@ -947,7 +939,6 @@
             const response = await fetch(API_URL);
             const data = await response.json();
             
-            // Сохраняем файлы Совы в глобальную переменную
             if (data.owlFiles) {
                 globalOwlFiles = data.owlFiles;
             }
@@ -1179,7 +1170,7 @@
         }
     }
 
-    /* ================= ИНТЕРАКТИВНЫЙ ЧАТ И ПРОВЕРКА КОДОВ ЛЕКЦИЙ ================= */
+    /* ================= ИНТЕРАКТИВНЫЙ ЧАТ И ПРОВЕРКА КОДОВ С ГАЛОЧКОЙ И ДАТОЙ ================= */
     function handleUserMessage() {
         const input = document.getElementById('chatUserInput');
         const text = input.value.trim();
@@ -1188,13 +1179,16 @@
         addUserMsg(text);
         input.value = '';
 
-        // Проверяем, есть ли введенный текст в списке кодов файлов Совы
         const cleanCode = text.toUpperCase();
         const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
 
         if (foundFile) {
             setTimeout(() => {
-                addBotMsg(`📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`);
+                if (foundFile.isPublished) {
+                    addBotMsg(`📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a><br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Загружено / обновлено: ${foundFile.date}</span>`);
+                } else {
+                    addBotMsg(`⚠️ Материал по коду <b>«${foundFile.title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Статус изменен: ${foundFile.date}</span>`);
+                }
             }, 500);
         } else {
             setTimeout(() => {
