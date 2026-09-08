@@ -158,6 +158,11 @@
 
         .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
         .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
+        @media (max-width: 768px) {
+            /* mobile: no 3D tilt, just a simple, plain smooth fade/slide */
+            .reveal-3d { transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+            .reveal-3d.in-view { transform: translateY(0); }
+        }
 
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; flex-wrap: wrap; }
         .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.7rem; color: var(--text-main); text-shadow: 0 2px 4px var(--shadow-color); }
@@ -261,9 +266,10 @@
         .compliance-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: left; opacity: 0.85; }
 
         /* ===== OWL ASSISTANT & CHAT INPUT ===== */
-        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.45s var(--bezier-smooth); pointer-events: none; transform-origin: bottom right; }
+        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.4s var(--bezier-smooth); pointer-events: none; transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
-        .owl-ecosystem.scroll-mini { transform: scale(0.52); }
+        /* while the page is being scrolled the owl stays fixed in place and only shrinks by 35% — it never disappears */
+        .owl-ecosystem.scroll-mini { transform: scale(0.65); }
 
         .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
@@ -298,7 +304,6 @@
             94% { transform: scaleY(1); opacity: 1; }
             97% { transform: scaleY(0.02); opacity: 0; }
         }
-        .owl-ecosystem.scroll-hidden { display: none; }
 
         .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -323,6 +328,19 @@
         .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 16px; }
 
         .mobile-chat-icon { display: none; }
+
+        /* ===== SCROLL-TO-TOP / SCROLL-TO-BOTTOM NATIVE ARROWS ===== */
+        .scroll-nav { position: fixed; left: 22px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
+        .scroll-nav-btn {
+            width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-glass);
+            background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            color: var(--text-main); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 10px 25px var(--shadow-color); transition: all 0.3s var(--bezier-bounce);
+            opacity: 0; pointer-events: none; transform: translateY(10px);
+        }
+        .scroll-nav-btn.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .scroll-nav-btn:hover { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); transform: translateY(-3px); }
+        .scroll-nav-btn svg { width: 20px; height: 20px; fill: currentColor; }
 
         @media (max-width: 768px) {
             :root { --header-h: 200px; }
@@ -367,6 +385,9 @@
             .owl-chat-body { height: auto; flex: 1 1 auto; }
 
             .modal-box { padding: 26px 22px; border-radius: 24px; }
+
+            .scroll-nav { left: 14px; bottom: 14px; }
+            .scroll-nav-btn { width: 40px; height: 40px; }
         }
     </style>
 </head>
@@ -799,7 +820,21 @@
         </div>
     </div>
 
+    <div class="scroll-nav" id="scrollNav">
+        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
+            <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
+        </button>
+        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
+            <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
+        </button>
+    </div>
+
     <script>
+    /* Prevent the browser from restoring a previous scroll position and force the page to always open at the very top */
+    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+    if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
+    window.scrollTo(0, 0);
+
     /* ================= ВАША ССЫЛКА НА БАЗУ ДАННЫХ ================= */
     const API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 
@@ -979,8 +1014,11 @@
                 extraInfoHTML += `</div>`;
             }
 
+            /* No inline puzzle-piece / reveal-3d / in-view classes here on purpose:
+               the reveal-on-scroll observer (armRevealTargets) is the single source
+               of the entry animation, so cards never animate twice on first render. */
             let cardHTML = `
-            <div class="card puzzle-piece reveal-3d in-view">
+            <div class="card">
                 <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
@@ -1014,7 +1052,7 @@
             let tabHTML = '';
             sectorOrder.forEach(sector => {
                 if (htmlMap[tabId][sector] && htmlMap[tabId][sector].length > 0) {
-                    tabHTML += `<h3 class="sector-header reveal-3d in-view" data-i18n="sec_${sector}">${SECTOR_NAMES[sector].ru}</h3>`;
+                    tabHTML += `<h3 class="sector-header" data-i18n="sec_${sector}">${SECTOR_NAMES[sector].ru}</h3>`;
                     tabHTML += htmlMap[tabId][sector].join('');
                 }
             });
@@ -1025,8 +1063,8 @@
         });
 
         setLanguage(currentLang);
+        /* single reveal pass — no animateAssembly() call here, so the intro never plays twice */
         armRevealTargets();
-        animateAssembly('tab-all');
     }
 
     function filterPrograms(evt, tabName) {
@@ -1034,10 +1072,15 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+        armRevealTargets();
         animateAssembly(tabName);
     }
 
     function animateAssembly(tabId) {
+        /* Desktop-only 3D puzzle assembly. On mobile we deliberately skip this and rely on
+           plain smooth scrolling + the simple fade defined for .reveal-3d in the mobile media query. */
+        if (window.innerWidth <= 768) return;
+
         const cards = document.querySelectorAll('#' + tabId + ' .card');
         cards.forEach((card, index) => {
             const signX = Math.random() > 0.5 ? 1 : -1;
@@ -1070,6 +1113,7 @@
         const buttons = document.querySelectorAll('.tab-btn');
         if (buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add('active');
 
+        armRevealTargets();
         animateAssembly(tabId);
         playHoot();
     }
@@ -1101,7 +1145,7 @@
     setInterval(() => {
         const container = document.getElementById('owlContainer');
         const bubble = document.getElementById('owlBubble');
-        if (!container.classList.contains('visible') || container.classList.contains('scroll-hidden')) return;
+        if (!container.classList.contains('visible')) return;
         if (!document.getElementById('owlChat').classList.contains('active')) {
             bubble.classList.toggle('show');
         } else {
@@ -1130,31 +1174,29 @@
 
     setInterval(() => {
         const container = document.getElementById('owlContainer');
-        if (owlIntroduced && container.classList.contains('visible') && !container.classList.contains('scroll-hidden')) {
+        if (owlIntroduced && container.classList.contains('visible')) {
             playHoot();
         }
     }, 20000);
 
-    let scrollHideTimeout, scrollShowTimeout;
+    /* Scrolling never hides the owl anymore — it stays fixed in its corner and just
+       shrinks by 35% (via .scroll-mini) for the duration of the scroll, then returns
+       to full size shortly after scrolling stops. */
+    let scrollMiniTimeout;
     window.addEventListener('scroll', () => {
         const container = document.getElementById('owlContainer');
-        const chat = document.getElementById('owlChat');
         const bubble = document.getElementById('owlBubble');
 
-        clearTimeout(scrollShowTimeout);
-        if (!container.classList.contains('scroll-hidden')) {
-            clearTimeout(scrollHideTimeout);
-            scrollHideTimeout = setTimeout(() => {
-                container.classList.add('scroll-hidden');
-                if (chat.classList.contains('active')) { chat.classList.remove('active'); container.classList.remove('chat-opened'); }
-                bubble.classList.remove('show');
-            }, 150);
+        if (!container.classList.contains('scroll-mini')) {
+            container.classList.add('scroll-mini');
+            bubble.classList.remove('show');
         }
+        clearTimeout(scrollMiniTimeout);
+        scrollMiniTimeout = setTimeout(() => {
+            container.classList.remove('scroll-mini');
+        }, 450);
 
-        scrollShowTimeout = setTimeout(() => {
-            container.classList.remove('scroll-hidden');
-            setTimeout(() => bubble.classList.add('show'), 300);
-        }, 5000);
+        updateScrollNav();
     }, { passive: true });
 
     function toggleChat() {
@@ -1169,6 +1211,19 @@
             ecosystem.classList.add('chat-opened');
         }
     }
+
+    /* ================= NATIVE SCROLL-TO-TOP / SCROLL-TO-BOTTOM ARROWS ================= */
+    function updateScrollNav() {
+        const scrollY = window.scrollY || document.documentElement.scrollTop;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const topBtn = document.getElementById('scrollTopBtn');
+        const bottomBtn = document.getElementById('scrollBottomBtn');
+        if (!topBtn || !bottomBtn) return;
+
+        topBtn.classList.toggle('show', scrollY > 300);
+        bottomBtn.classList.toggle('show', maxScroll - scrollY > 300);
+    }
+    window.addEventListener('resize', updateScrollNav, { passive: true });
 
     /* ================= ИНТЕРАКТИВНЫЙ ЧАТ И ПРОВЕРКА КОДОВ С ГАЛОЧКОЙ И ДАТОЙ ================= */
     function handleUserMessage() {
@@ -1352,8 +1407,12 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
+        /* make absolutely sure the page opens at the very top, not scrolled to Contacts */
+        window.scrollTo(0, 0);
+
         fetchPrograms();
         armRevealTargets();
+        updateScrollNav();
     });
     </script>
 </body>
