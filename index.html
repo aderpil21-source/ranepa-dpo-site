@@ -40,7 +40,7 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-glass: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(5, 8, 14, 0.95); /* header стабильно тёмный в любой теме */
+            --header-bg: rgba(5, 8, 14, 0.95);
             --btn-glass: rgba(0, 0, 0, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
             --tag-color: rgba(0, 0, 0, 0.04);
@@ -57,7 +57,6 @@
             transition: background-color var(--transition-speed), color var(--transition-speed);
             z-index: 0;
         }
-        /* header remains dark regardless of theme, forced by --header-bg fixed value, but text inside it stays light always */
         header, header * { color: #F8FAFC; }
 
         .system-cite { display: none !important; }
@@ -79,7 +78,6 @@
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         @media (max-width: 768px) { .shape { filter: blur(70px); opacity: 0.3; } }
 
-        /* ===== HEADER ===== */
         header {
             background: var(--header-bg) !important;
             backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -133,19 +131,16 @@
         .tab-content { display: none; perspective: 1500px; }
         .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: clamp(25px, 3vw, 35px); align-items: start; }
 
-        /* Лоадер для загрузки программ */
         .loader-box { grid-column: 1 / -1; width: 100%; text-align: center; padding: 50px; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
         .loader-spinner { width: 40px; height: 40px; border: 4px solid rgba(202, 15, 62, 0.2); border-top-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Заголовок сектора внутри вкладок */
         .sector-header {
             grid-column: 1 / -1; font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 800;
             color: var(--text-main); margin: 30px 0 10px; border-bottom: 2px solid var(--border-glass);
             padding-bottom: 12px;
         }
 
-        /* 3D puzzle assembly — 4s duration as required */
         .puzzle-piece { animation: assemblePuzzle 1s var(--bezier-bounce) forwards; }
         @keyframes assemblePuzzle {
             0% { opacity: 0; transform: translate3d(var(--x-dist, 200px), var(--y-dist, 200px), -400px) rotateX(40deg) rotateY(-40deg) scale(0.6); }
@@ -161,13 +156,13 @@
         .card { background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative; transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth); box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style; }
         .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
 
-        /* seamless volumetric reveal-on-scroll */
         .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
         .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
 
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; gap: 10px; flex-wrap: wrap; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; flex-wrap: wrap; }
         .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.7rem; color: var(--text-main); text-shadow: 0 2px 4px var(--shadow-color); }
         .hours { font-size: 0.85rem; background: rgba(202, 15, 62, 0.15); border: 1px solid rgba(202, 15, 62, 0.3); color: var(--ranepa-red); padding: 7px 14px; border-radius: 9px; font-weight: 800; white-space: nowrap; }
+        
         .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.35rem; font-weight: 800; margin-bottom: 14px; color: var(--text-main); line-height: 1.3; }
         .card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 22px; line-height: 1.6; text-align: left; }
 
@@ -322,7 +317,6 @@
 
         .mobile-chat-icon { display: none; }
 
-        /* ===== MOBILE ===== */
         @media (max-width: 768px) {
             :root { --header-h: 200px; }
             html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; }
@@ -426,7 +420,6 @@
 
     <div class="container" id="programsSection">
 
-        <!-- ОБНОВЛЕННЫЕ ВЕРХНИЕ КНОПКИ-ВКЛАДКИ -->
         <div class="tabs-nav">
             <button class="tab-btn active" onclick="filterPrograms(event,'tab-all')" data-i18n="tabAll">Все программы</button>
             <button class="tab-btn" onclick="filterPrograms(event,'tab-kadry')" data-i18n="tabKadry">🎓 Нацпроект «Кадры»</button>
@@ -436,7 +429,6 @@
             <button class="tab-btn" onclick="filterPrograms(event,'tab-sem')" data-i18n="tabSem">🗣️ Семинары</button>
         </div>
 
-        <!-- ОБНОВЛЕННЫЕ ПУСТЫЕ КОНТЕЙНЕРЫ (ОНИ БУДУТ ЗАПОЛНЯТЬСЯ ИЗ GOOGLE ТАБЛИЦ) -->
         <div id="tab-all" class="tab-content active">
             <div class="loader-box">
                 <div class="loader-spinner"></div>
@@ -926,14 +918,12 @@
         resetMenu();
     }
 
-    /* ================= PROGRESS BAR ================= */
     window.addEventListener('scroll', () => {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         document.getElementById('progress-bar').style.width = (height > 0 ? (winScroll / height) * 100 : 0) + "%";
     }, { passive: true });
 
-    /* ================= АВТОМАТИЧЕСКОЕ ПОЛУЧЕНИЕ ДАННЫХ ИЗ GOOGLE ТАБЛИЦЫ ================= */
     async function fetchPrograms() {
         try {
             const response = await fetch(API_URL);
@@ -948,10 +938,9 @@
     function buildPrograms(programs) {
         const tabs = ['tab-all', 'tab-kadry', 'tab-pk', 'tab-pp', 'tab-po', 'tab-sem'];
         const htmlMap = {};
-        tabs.forEach(t => htmlMap[t] = {}); // htmlMap[tabId][sectorId]
+        tabs.forEach(t => htmlMap[t] = {});
 
         programs.forEach(prog => {
-            // Добавляем новые переводы в словарь
             translationsHTML.ru[`${prog.id}_title`] = prog.title_ru;
             translationsHTML.ru[`${prog.id}_desc`] = prog.desc_ru;
             translationsHTML.en[`${prog.id}_title`] = prog.title_en;
@@ -966,10 +955,20 @@
                 bulletsHTML += `<li data-i18n="${bulletKey}">✔️ ${b_ru.trim()}</li>`;
             });
 
-            // Формируем HTML самой карточки
+            // Формируем красивый блок с типом, формой и датами
+            let extraInfoHTML = '';
+            if (prog.type || prog.format || prog.dates) {
+                extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
+                if (prog.type) extraInfoHTML += `<div><b>Тип:</b> ${prog.type}</div>`;
+                if (prog.format) extraInfoHTML += `<div><b>Форма:</b> ${prog.format}</div>`;
+                if (prog.dates) extraInfoHTML += `<div><b>Сроки:</b> ${prog.dates}</div>`;
+                extraInfoHTML += `</div>`;
+            }
+
             let cardHTML = `
             <div class="card puzzle-piece reveal-3d in-view">
                 <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
+                ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
                 <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
                 <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
@@ -981,21 +980,17 @@
                 </div>
             </div>`;
 
-            // Раскидываем карточки по секторам во вкладку "Все программы"
             if (!htmlMap['tab-all'][prog.sector]) htmlMap['tab-all'][prog.sector] = [];
             htmlMap['tab-all'][prog.sector].push(cardHTML);
 
-            // И в их родную вкладку
             if (tabs.includes(prog.tab)) {
                 if (!htmlMap[prog.tab][prog.sector]) htmlMap[prog.tab][prog.sector] = [];
                 htmlMap[prog.tab][prog.sector].push(cardHTML);
             }
         });
 
-        // Строим HTML для каждой вкладки
-        const sectorOrder = ['gos', 'biz', 'horeca', 'prof']; // Задаем порядок блоков на сайте
+        const sectorOrder = ['gos', 'biz', 'horeca', 'prof'];
         
-        // Вшиваем заголовки секторов в переводы
         Object.keys(SECTOR_NAMES).forEach(sec => {
             translationsHTML.ru[`sec_${sec}`] = SECTOR_NAMES[sec].ru;
             translationsHTML.en[`sec_${sec}`] = SECTOR_NAMES[sec].en;
@@ -1016,11 +1011,10 @@
         });
 
         setLanguage(currentLang);
-        armRevealTargets(); // Применяем 3D-анимации прокрутки к новым карточкам
-        animateAssembly('tab-all'); // Запускаем сборку мозаики
+        armRevealTargets();
+        animateAssembly('tab-all');
     }
 
-    /* ================= УПРАВЛЕНИЕ ВКЛАДКАМИ ================= */
     function filterPrograms(evt, tabName) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1074,7 +1068,6 @@
             : (currentLang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum');
     }
 
-    /* ================= MODALS ================= */
     function openQuickContacts() { document.getElementById('quickContactsModal').classList.add('active'); }
     function closeQuickContacts() { document.getElementById('quickContactsModal').classList.remove('active'); }
     function openModal() { document.getElementById('enrollModal').classList.add('active'); }
@@ -1084,7 +1077,6 @@
     function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
     function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
 
-    /* ================= OWL APPEARANCE ================= */
     const OWL_DELAY_MS = 5 * 1000;
     let owlIntroduced = false;
     setTimeout(() => {
@@ -1164,7 +1156,6 @@
         }
     }
 
-    /* ================= OWL DIALOG LOGIC ================= */
     const botTexts = {
         ru: {
             catPrompt: "Мы реализуем обучение по 4 профессиональным трекам. Какой сектор вас интересует?",
@@ -1295,7 +1286,6 @@
         `);
     }
 
-    /* ================= VOLUMETRIC SCROLL REVEAL ================= */
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -1314,13 +1304,12 @@
         });
     }
 
-    /* ================= INIT ================= */
     window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
-        fetchPrograms(); // ЗАГРУЗКА ИЗ БАЗЫ ДАННЫХ ПРИ СТАРТЕ
+        fetchPrograms();
         armRevealTargets();
     });
     </script>
