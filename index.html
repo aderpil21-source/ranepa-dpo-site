@@ -672,7 +672,13 @@
             <div class="close-modal" onclick="closeTermsModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
         </div>
     </div>
-
+<div class="modal-overlay" id="urgentAlertModal" style="z-index: 25000;">
+        <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
+            <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
+            <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
+            <div class="buy-btn" onclick="acknowledgeAlert()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);">Принято</div>
+        </div>
+    </div>
     <div class="owl-ecosystem" id="owlContainer">
         <svg class="oak-branch" viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
@@ -840,7 +846,8 @@
 
     let globalOwlFiles = [];
     let currentLang = 'ru';
-
+let globalAlert = null;
+    let alertAcknowledged = false;
     const SECTOR_NAMES = {
         'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
         'biz': { ru: '🚀 Цифровой бизнес, ИИ и управление', en: '🚀 Digital Business, AI & Management' },
@@ -969,16 +976,21 @@
         document.getElementById('progress-bar').style.width = (height > 0 ? (winScroll / height) * 100 : 0) + "%";
     }, { passive: true });
 
-    async function fetchPrograms() {
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            
-            if (data.owlFiles) {
-                globalOwlFiles = data.owlFiles;
-            }
+if (data.owlFiles) {
+          globalOwlFiles = data.owlFiles;
+      }
+      
+      // ЛОВИМ ТРЕВОГУ С СЕРВЕРА
+      if (data.currentAlert) {
+          globalAlert = data.currentAlert;
+          if (!alertAcknowledged) {
+              document.getElementById('owlBubble').innerHTML = "⚠️ ВНИМАНИЕ, ИЗМЕНЕНИЯ!";
+              document.getElementById('owlBubble').style.borderColor = "#CA0F3E";
+              document.getElementById('owlBubble').style.boxShadow = "0 0 20px rgba(202, 15, 62, 0.6)";
+          }
+      }
 
-            buildPrograms(data.programs || data);
+      buildPrograms(data.programs || data);
         } catch (error) {
             console.error("Ошибка API:", error);
             document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Не удалось загрузить программы. Пожалуйста, обновите страницу.</div>`;
@@ -1336,13 +1348,40 @@
     function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
     function setOptions(html) { chatOptions.innerHTML = html; }
 
-    function resetMenu() {
-        chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
-        setOptions(`
-            <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
-            <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
-        `);
+   function resetMenu() {
+        // Если есть тревога и она не прочитана - показываем экстренное меню
+        if (globalAlert && !alertAcknowledged) {
+            chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>Поступило срочное уведомление от преподавателя!</span></div>`;
+            setOptions(`
+                <button class="chat-opt-btn" style="background: var(--ranepa-red); border-color: var(--ranepa-red); text-align: center; font-size: 1rem; padding: 15px; text-transform: uppercase;" onclick="showUrgentAlert()">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</button>
+            `);
+        } else {
+            // Штатный режим
+            chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
+            setOptions(`
+                <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
+                <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
+                <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+            `);
+        }
+    }
+
+    // Управление окном тревоги
+    function showUrgentAlert() {
+        document.getElementById('urgentAlertText').innerHTML = globalAlert.text.replace(/\n/g, '<br>');
+        document.getElementById('urgentAlertModal').classList.add('active');
+    }
+
+    function acknowledgeAlert() {
+        document.getElementById('urgentAlertModal').classList.remove('active');
+        alertAcknowledged = true;
+        
+        // Возвращаем спокойный вид баблу
+        document.getElementById('owlBubble').innerHTML = translationsHTML[currentLang].owlHelp;
+        document.getElementById('owlBubble').style.borderColor = "";
+        document.getElementById('owlBubble').style.boxShadow = "";
+        
+        resetMenu(); // Запускаем штатное меню
     }
 
     function showCatalog() {
