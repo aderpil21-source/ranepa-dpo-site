@@ -61,6 +61,26 @@
 
         .system-cite { display: none !important; }
 
+        /* ===== ПОСТОЯННАЯ БЕГУЩАЯ СТРОКА-УВЕДОМЛЕНИЕ ===== */
+        .global-alert-ticker {
+            position: sticky; top: var(--header-h); z-index: 10045;
+            background: linear-gradient(90deg, #881337, var(--ranepa-red), #881337);
+            color: #fff; padding: 12px 20px; font-weight: 800; font-family: 'Montserrat', sans-serif;
+            display: none; overflow: hidden; white-space: nowrap; cursor: pointer;
+            box-shadow: 0 5px 20px rgba(202, 15, 62, 0.5); border-bottom: 1px solid rgba(255,255,255,0.2);
+            transition: background 0.3s;
+        }
+        .global-alert-ticker:hover { background: linear-gradient(90deg, var(--ranepa-red), #e11d48, var(--ranepa-red)); }
+        .ticker-inner {
+            display: inline-block; padding-left: 100%;
+            animation: marquee 25s linear infinite;
+        }
+        .global-alert-ticker:hover .ticker-inner { animation-play-state: paused; }
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s linear; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; pointer-events: none; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
@@ -392,6 +412,11 @@
 
     <div id="progress-bar"></div>
 
+    <!-- ПОСТОЯННАЯ ПЛАШКА-БЕГУЩАЯ СТРОКА ПОД ШАПКОЙ -->
+    <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()">
+        <div class="ticker-inner" id="tickerText">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
+    </div>
+
     <div class="bg-tags-container" id="bgTags">
         <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
         <div class="bg-tag">#БЫСТРЫЙ_СТАРТ</div>
@@ -675,7 +700,7 @@
         <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
             <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
             <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
-            <div class="buy-btn" onclick="acknowledgeAlert()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);">Принято</div>
+            <div class="buy-btn" onclick="closeUrgentAlertModal()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);">Закрыть</div>
         </div>
     </div>
 
@@ -845,7 +870,6 @@
     let globalOwlFiles = [];
     let currentLang = 'ru';
     let globalAlert = null;
-    let alertAcknowledged = false;
 
     const SECTOR_NAMES = {
         'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
@@ -984,13 +1008,17 @@
                 globalOwlFiles = data.owlFiles;
             }
 
-            if (data.currentAlert) {
+            // ПЛАШКА-УВЕДОМЛЕНИЕ ПОД ШАПКОЙ
+            const tickerEl = document.getElementById('globalAlertTicker');
+            const tickerTextEl = document.getElementById('tickerText');
+
+            if (data.currentAlert && data.currentAlert.text) {
                 globalAlert = data.currentAlert;
-                if (!alertAcknowledged) {
-                    document.getElementById('owlBubble').innerHTML = "⚠️ ВНИМАНИЕ, ИЗМЕНЕНИЯ!";
-                    document.getElementById('owlBubble').style.borderColor = "#CA0F3E";
-                    document.getElementById('owlBubble').style.boxShadow = "0 0 20px rgba(202, 15, 62, 0.6)";
-                }
+                tickerTextEl.innerHTML = `⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ${globalAlert.text} &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 🖱️ Нажмите сюда, чтобы прочитать полностью`;
+                tickerEl.style.display = 'block';
+            } else {
+                globalAlert = null;
+                tickerEl.style.display = 'none';
             }
 
             buildPrograms(data.programs || data);
@@ -1337,35 +1365,23 @@
     function setOptions(html) { chatOptions.innerHTML = html; }
 
     function resetMenu() {
-        if (globalAlert && !alertAcknowledged) {
-            chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>Поступило срочное уведомление от преподавателя!</span></div>`;
-            setOptions(`
-                <button class="chat-opt-btn" style="background: var(--ranepa-red); border-color: var(--ranepa-red); text-align: center; font-size: 1rem; padding: 15px; text-transform: uppercase;" onclick="showUrgentAlert()">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</button>
-            `);
-        } else {
-            chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
-            setOptions(`
-                <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
-                <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
-                <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
-            `);
-        }
+        chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
+        setOptions(`
+            <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
+            <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
+            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+        `);
     }
 
     function showUrgentAlert() {
-        document.getElementById('urgentAlertText').innerHTML = globalAlert.text.replace(/\n/g, '<br>');
-        document.getElementById('urgentAlertModal').classList.add('active');
+        if (globalAlert && globalAlert.text) {
+            document.getElementById('urgentAlertText').innerHTML = globalAlert.text.replace(/\n/g, '<br>');
+            document.getElementById('urgentAlertModal').classList.add('active');
+        }
     }
 
-    function acknowledgeAlert() {
+    function closeUrgentAlertModal() {
         document.getElementById('urgentAlertModal').classList.remove('active');
-        alertAcknowledged = true;
-        
-        document.getElementById('owlBubble').innerHTML = translationsHTML[currentLang].owlHelp;
-        document.getElementById('owlBubble').style.borderColor = "";
-        document.getElementById('owlBubble').style.boxShadow = "";
-        
-        resetMenu();
     }
 
     function showCatalog() {
