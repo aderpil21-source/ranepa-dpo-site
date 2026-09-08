@@ -159,7 +159,6 @@
         .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
         .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
         @media (max-width: 768px) {
-            /* mobile: no 3D tilt, just a simple, plain smooth fade/slide */
             .reveal-3d { transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
             .reveal-3d.in-view { transform: translateY(0); }
         }
@@ -268,7 +267,6 @@
         /* ===== OWL ASSISTANT & CHAT INPUT ===== */
         .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.4s var(--bezier-smooth); pointer-events: none; transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
-        /* while the page is being scrolled the owl stays fixed in place and only shrinks by 35% — it never disappears */
         .owl-ecosystem.scroll-mini { transform: scale(0.65); }
 
         .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
@@ -329,7 +327,6 @@
 
         .mobile-chat-icon { display: none; }
 
-        /* ===== SCROLL-TO-TOP / SCROLL-TO-BOTTOM NATIVE ARROWS ===== */
         .scroll-nav { position: fixed; left: 22px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
         .scroll-nav-btn {
             width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-glass);
@@ -673,6 +670,15 @@
         </div>
     </div>
 
+    <!-- ОКНО ЭКСТРЕННОЙ ТРЕВОГИ -->
+    <div class="modal-overlay" id="urgentAlertModal" style="z-index: 25000;">
+        <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
+            <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
+            <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
+            <div class="buy-btn" onclick="acknowledgeAlert()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);">Принято</div>
+        </div>
+    </div>
+
     <div class="owl-ecosystem" id="owlContainer">
         <svg class="oak-branch" viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
@@ -830,16 +836,16 @@
     </div>
 
     <script>
-    /* Prevent the browser from restoring a previous scroll position and force the page to always open at the very top */
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
     if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
     window.scrollTo(0, 0);
 
-    /* ================= ВАША ССЫЛКА НА БАЗУ ДАННЫХ ================= */
     const API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 
     let globalOwlFiles = [];
     let currentLang = 'ru';
+    let globalAlert = null;
+    let alertAcknowledged = false;
 
     const SECTOR_NAMES = {
         'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
@@ -978,6 +984,15 @@
                 globalOwlFiles = data.owlFiles;
             }
 
+            if (data.currentAlert) {
+                globalAlert = data.currentAlert;
+                if (!alertAcknowledged) {
+                    document.getElementById('owlBubble').innerHTML = "⚠️ ВНИМАНИЕ, ИЗМЕНЕНИЯ!";
+                    document.getElementById('owlBubble').style.borderColor = "#CA0F3E";
+                    document.getElementById('owlBubble').style.boxShadow = "0 0 20px rgba(202, 15, 62, 0.6)";
+                }
+            }
+
             buildPrograms(data.programs || data);
         } catch (error) {
             console.error("Ошибка API:", error);
@@ -1014,9 +1029,6 @@
                 extraInfoHTML += `</div>`;
             }
 
-            /* No inline puzzle-piece / reveal-3d / in-view classes here on purpose:
-               the reveal-on-scroll observer (armRevealTargets) is the single source
-               of the entry animation, so cards never animate twice on first render. */
             let cardHTML = `
             <div class="card">
                 <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
@@ -1063,7 +1075,6 @@
         });
 
         setLanguage(currentLang);
-        /* single reveal pass — no animateAssembly() call here, so the intro never plays twice */
         armRevealTargets();
     }
 
@@ -1077,8 +1088,6 @@
     }
 
     function animateAssembly(tabId) {
-        /* Desktop-only 3D puzzle assembly. On mobile we deliberately skip this and rely on
-           plain smooth scrolling + the simple fade defined for .reveal-3d in the mobile media query. */
         if (window.innerWidth <= 768) return;
 
         const cards = document.querySelectorAll('#' + tabId + ' .card');
@@ -1179,9 +1188,6 @@
         }
     }, 20000);
 
-    /* Scrolling never hides the owl anymore — it stays fixed in its corner and just
-       shrinks by 35% (via .scroll-mini) for the duration of the scroll, then returns
-       to full size shortly after scrolling stops. */
     let scrollMiniTimeout;
     window.addEventListener('scroll', () => {
         const container = document.getElementById('owlContainer');
@@ -1212,7 +1218,6 @@
         }
     }
 
-    /* ================= NATIVE SCROLL-TO-TOP / SCROLL-TO-BOTTOM ARROWS ================= */
     function updateScrollNav() {
         const scrollY = window.scrollY || document.documentElement.scrollTop;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
@@ -1225,7 +1230,6 @@
     }
     window.addEventListener('resize', updateScrollNav, { passive: true });
 
-    /* ================= ИНТЕРАКТИВНЫЙ ЧАТ И ПРОВЕРКА КОДОВ С ГАЛОЧКОЙ И ДАТОЙ ================= */
     function handleUserMessage() {
         const input = document.getElementById('chatUserInput');
         const text = input.value.trim();
@@ -1240,16 +1244,12 @@
         if (foundFile) {
             setTimeout(() => {
                 if (foundFile.isPublished) {
-                    // Собираем сообщение по частям
                     let responseMsg = `📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`;
                     
-                    // Если есть комментарий от преподавателя, добавляем его
                     if (foundFile.comment && foundFile.comment.trim() !== "") {
-                        // .replace(/\n/g, '<br>') сохраняет переносы строк из почты
                         responseMsg += `<br><br>💬 <b>Комментарий преподавателя:</b><br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
                     }
 
-                    // Добавляем дату в самом конце
                     responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Загружено / обновлено: ${foundFile.date}</span>`;
 
                     addBotMsg(responseMsg);
@@ -1337,12 +1337,35 @@
     function setOptions(html) { chatOptions.innerHTML = html; }
 
     function resetMenu() {
-        chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
-        setOptions(`
-            <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
-            <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
-        `);
+        if (globalAlert && !alertAcknowledged) {
+            chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>Поступило срочное уведомление от преподавателя!</span></div>`;
+            setOptions(`
+                <button class="chat-opt-btn" style="background: var(--ranepa-red); border-color: var(--ranepa-red); text-align: center; font-size: 1rem; padding: 15px; text-transform: uppercase;" onclick="showUrgentAlert()">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</button>
+            `);
+        } else {
+            chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
+            setOptions(`
+                <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
+                <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
+                <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+            `);
+        }
+    }
+
+    function showUrgentAlert() {
+        document.getElementById('urgentAlertText').innerHTML = globalAlert.text.replace(/\n/g, '<br>');
+        document.getElementById('urgentAlertModal').classList.add('active');
+    }
+
+    function acknowledgeAlert() {
+        document.getElementById('urgentAlertModal').classList.remove('active');
+        alertAcknowledged = true;
+        
+        document.getElementById('owlBubble').innerHTML = translationsHTML[currentLang].owlHelp;
+        document.getElementById('owlBubble').style.borderColor = "";
+        document.getElementById('owlBubble').style.boxShadow = "";
+        
+        resetMenu();
     }
 
     function showCatalog() {
@@ -1419,7 +1442,6 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
-        /* make absolutely sure the page opens at the very top, not scrolled to Contacts */
         window.scrollTo(0, 0);
 
         fetchPrograms();
