@@ -6,6 +6,7 @@
     <title data-i18n="pageTitle">Академия Кадров | Западный филиал РАНХиГС</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
     <style>
+        /* === БАЗОВЫЕ ПЕРЕМЕННЫЕ И ТЕМЫ === */
         :root {
             --ranepa-red: #CA0F3E;
             --ranepa-burgundy: #881337;
@@ -22,11 +23,11 @@
             --text-main: #F8FAFC;
             --text-muted: #94A3B8;
             --border-glass: rgba(255, 255, 255, 0.08);
-            --header-bg: rgba(5, 8, 14, 0.9);
+            --header-bg: rgba(5, 8, 14, 0.95);
             --btn-glass: rgba(255, 255, 255, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.6);
-            --tag-color: rgba(255, 255, 255, 0.06); 
-            --tag-shadow: rgba(255, 255, 255, 0.12);
+            --tag-color: rgba(255, 255, 255, 0.04); 
+            --tag-shadow: rgba(255, 255, 255, 0.08);
             --card-hover-border: rgba(56, 189, 248, 0.4);
         }
 
@@ -37,31 +38,33 @@
             --text-main: #0F172A;
             --text-muted: #475569;
             --border-glass: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(5, 8, 14, 0.95); /* Верхняя панель всегда темная и премиальная */
+            --header-bg: rgba(5, 8, 14, 0.98); /* Жестко темная шапка в светлой теме */
             --btn-glass: rgba(0, 0, 0, 0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --tag-color: rgba(0, 0, 0, 0.05);
-            --tag-shadow: rgba(0, 0, 0, 0.08);
+            --tag-color: rgba(0, 0, 0, 0.03);
+            --tag-shadow: rgba(0, 0, 0, 0.05);
             --card-hover-border: var(--ranepa-red);
         }
 
-        html, body { width: 100%; max-width: 100vw; font-size: 16px; overflow-x: hidden; scroll-behavior: smooth; }
+        /* === ГЛОБАЛЬНЫЕ СТИЛИ === */
+        html, body { width: 100%; max-width: 100vw; font-size: 16px; overflow-x: hidden; scroll-behavior: smooth; margin: 0; padding: 0; }
         html { transition: font-size var(--transition-speed) var(--bezier-smooth); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-deep); color: var(--text-main); position: relative; font-size: var(--font-scale); transition: background-color var(--transition-speed), color var(--transition-speed); z-index: 0; }
 
         .system-cite { display: none !important; }
 
-        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; }
         @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
-        /* ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ ( НИЖЕ HERO ЭКРАНА ) */
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
+        /* === ИЗОЛИРОВАННОЕ ОБЛАКО ТЕГОВ (СТРОГО НИЖЕ 600PX) === */
+        .bg-tags-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
         .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 25px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 6s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
-        .bg-tag:nth-child(1) { top: 45%; left: 5%; font-size: 4.5vw; transform: translateZ(-20px); }
-        .bg-tag:nth-child(2) { top: 60%; right: 5%; font-size: 5vw; transform: translateZ(-40px); animation-delay: -1.5s; }
-        .bg-tag:nth-child(3) { top: 75%; left: 8%; font-size: 4vw; transform: translateZ(-10px); animation-delay: -3s; }
-        .bg-tag:nth-child(4) { top: 90%; right: 10%; font-size: 4.5vw; transform: translateZ(-30px); animation-delay: -4.5s; }
+        /* Теги смещены глубоко вниз, чтобы не трогать верхний экран */
+        .bg-tag:nth-child(1) { top: 800px; left: 5%; font-size: 4.5vw; transform: translateZ(-20px); }
+        .bg-tag:nth-child(2) { top: 1400px; right: 5%; font-size: 5vw; transform: translateZ(-40px); animation-delay: -1.5s; }
+        .bg-tag:nth-child(3) { top: 2000px; left: 8%; font-size: 4vw; transform: translateZ(-10px); animation-delay: -3s; }
+        .bg-tag:nth-child(4) { top: 2600px; right: 10%; font-size: 4.5vw; transform: translateZ(-30px); animation-delay: -4.5s; }
         @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.6; } 100% { transform: scale(1.04) translateY(-12px); opacity: 1; } }
 
         .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; }
@@ -70,12 +73,12 @@
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
         @keyframes float { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) scale(1.15); } }
 
-        /* ШАПКА (ВСЕГДА ТЕМНАЯ БРЕНДОВАЯ ПАНЕЛЬ РАНХИГС) */
-        header { background: rgba(5, 8, 14, 0.95) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 18px max(40px, env(safe-area-inset-right)) 18px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
+        /* === ШАПКА (ЖЕЛЕЗОБЕТОННО ТЕМНАЯ) === */
+        header { background: var(--header-bg) !important; backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%); padding: 18px max(40px, env(safe-area-inset-right)) 18px max(40px, env(safe-area-inset-left)); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: sticky; top: 0; z-index: 10050; flex-wrap: wrap; gap: 15px; }
 
         .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; }
-        /* УВЕЛИЧЕНО В 2 РАЗА ПО ТЗ */
-        .logo-group img { height: 160px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8)); transition: transform 0.2s; }
+        /* ЛОГОТИП УВЕЛИЧЕН В 2 РАЗА (с 90px до 180px) */
+        .logo-group img { height: 180px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8)); transition: transform 0.2s; }
         .logo-group:hover img { transform: scale(1.03); }
         .logo-subtitle { font-size: 0.75rem; color: #94A3B8 !important; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 6px; text-align: left; }
 
@@ -83,16 +86,16 @@
         
         .header-controls { display: flex; gap: 10px; align-items: center; }
         .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.08); padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); }
-        .control-panel-btn { background: transparent; border: none; color: #94A3B8; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
-        .control-panel-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.15); }
+        .control-panel-btn { background: transparent; border: none; color: #94A3B8 !important; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
+        .control-panel-btn:hover { color: #fff !important; background: rgba(255, 255, 255, 0.15); }
         .lang-active, .active-font { background: var(--ranepa-red) !important; color: #fff !important; box-shadow: 0 4px 12px rgba(202, 15, 62, 0.6); }
-        .theme-btn { font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; padding: 0; }
+        .theme-btn { font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; padding: 0; color: #fff !important; }
 
         .header-nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
         .header-nav-link { color: #94A3B8 !important; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; transition: color 0.2s; cursor: pointer; touch-action: manipulation; position: relative; }
         .header-nav-link:hover { color: #fff !important; }
         
-        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 10px 24px; border-radius: 10px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); cursor: pointer; touch-action: manipulation; }
+        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff !important; padding: 10px 24px; border-radius: 10px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); cursor: pointer; touch-action: manipulation; }
         .header-nav-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6); }
 
         .header-kadry { flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; z-index: 10051; max-width: 250px; }
@@ -100,11 +103,13 @@
 
         .footer-kadry-mobile { display: none; }
 
-        .hero { padding: 110px max(20px, env(safe-area-inset-right)) 70px max(20px, env(safe-area-inset-left)); text-align: center; position: relative; z-index: 5; }
-        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 4rem); font-weight: 900; margin-bottom: 20px; line-height: 1.15; letter-spacing: -1px; text-shadow: 0 10px 25px var(--shadow-color); animation: fadeUp 0.8s var(--bezier-smooth) forwards; }
-        .hero p { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--text-muted); max-width: 850px; margin: 0 auto; font-weight: 500; line-height: 1.6; animation: fadeUp 0.8s var(--bezier-smooth) 0.1s forwards; opacity: 0; }
+        /* === ГЛАВНЫЙ ЭКРАН === */
+        .hero { padding: 120px max(20px, env(safe-area-inset-right)) 80px max(20px, env(safe-area-inset-left)); text-align: center; position: relative; z-index: 5; }
+        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 4.2rem); font-weight: 900; margin-bottom: 20px; line-height: 1.15; letter-spacing: -1px; text-shadow: 0 10px 25px var(--shadow-color); animation: fadeUp 0.8s var(--bezier-smooth) forwards; }
+        .hero p { font-size: clamp(1.05rem, 2.5vw, 1.3rem); color: var(--text-muted); max-width: 850px; margin: 0 auto; font-weight: 500; line-height: 1.6; animation: fadeUp 0.8s var(--bezier-smooth) 0.1s forwards; opacity: 0; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
+        /* === КАТАЛОГ ПРОГРАММ === */
         .container { max-width: 1350px; margin: 0 auto; padding: 40px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); position: relative; z-index: 5; perspective: 1500px; }
 
         .tabs-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 50px; background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 14px; border-radius: 18px; border: 1px solid var(--border-glass); box-shadow: 0 15px 30px var(--shadow-color); animation: fadeUp 0.8s var(--bezier-smooth) 0.2s forwards; opacity: 0; }
@@ -115,7 +120,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: clamp(25px, 3vw, 35px); }
         
-        /* 3D ПАЗЛ СБОРКА И ПОДСВЕТКА */
+        /* 3D ПАЗЛ СБОРКА И ПОДСВЕТКА ДЛЯ КАРТОЧЕК */
         .puzzle-piece { animation: assemblePuzzle 0.8s var(--bezier-bounce) forwards; }
         @keyframes assemblePuzzle {
             0% { opacity: 0; transform: translate3d(var(--x-dist, 200px), var(--y-dist, 200px), -400px) rotateX(40deg) rotateY(-40deg) scale(0.6); }
@@ -147,7 +152,7 @@
         .buy-btn { display: inline-block; width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 18px; text-align: center; border-radius: 14px; font-weight: 900; text-decoration: none; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; font-size: 1rem; box-shadow: 0 8px 20px rgba(202, 15, 62, 0.3); }
         .buy-btn:hover { background: linear-gradient(135deg, #f43f5e, var(--ranepa-red)); box-shadow: 0 12px 25px rgba(202, 15, 62, 0.5); transform: translateY(-3px) scale(1.02); }
 
-        /* FAQ РАЗДЕЛ */
+        /* === FAQ РАЗДЕЛ === */
         .section-header { font-family: 'Montserrat', sans-serif; font-size: clamp(2rem, 5vw, 2.6rem); font-weight: 900; color: var(--text-main); margin: 70px 0 35px; text-align: center; z-index: 5; text-shadow: 0 4px 12px var(--shadow-color); }
         
         .faq-container { max-width: 950px; margin: 0 auto 70px; display: flex; flex-direction: column; gap: 16px; z-index: 5; position: relative; }
@@ -160,7 +165,7 @@
         .faq-answer { padding: 0 28px 22px; color: var(--text-muted); font-size: 1rem; line-height: 1.7; animation: slideDown 0.3s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* КОНТАКТЫ ВНИЗУ (ЧЕТКИЕ СТРОКИ) */
+        /* === КОНТАКТЫ ВНИЗУ (СТРОГО ОДНОКОЛОНОЧНЫЕ КАРТОЧКИ) === */
         .contacts-wrapper { background: var(--bg-glass); border-top: 1px solid var(--border-glass); backdrop-filter: blur(30px); padding: 70px max(15px, env(safe-area-inset-right)) 70px max(15px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; clear: both; box-shadow: 0 -15px 40px var(--shadow-color); }
         .contacts-container { max-width: 1350px; margin: 0 auto; display: block; }
         
@@ -171,6 +176,8 @@
         .contact-link:hover { color: #f43f5e; text-decoration: underline; }
 
         .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); gap: 24px; }
+        
+        /* Карточка контакта: жестко новые строки, без растягиваний */
         .contact-card { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 28px; border-radius: 18px; transition: transform 0.3s ease; box-shadow: 0 10px 20px var(--shadow-color); display: flex; flex-direction: column; }
         .contact-card:hover { transform: translateY(-5px); border-color: var(--ranepa-red); }
         .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; margin-bottom: 6px; color: var(--text-main); font-weight: 800; }
@@ -187,7 +194,7 @@
         .vk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(39, 135, 245, 0.15); border: 1px solid rgba(39, 135, 245, 0.4); color: #38bdf8; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; transition: 0.3s; cursor: pointer; margin-top: 10px; }
         .vk-btn:hover { background: rgba(39, 135, 245, 0.3); transform: translateY(-2px); }
 
-        /* МОДАЛЬНЫЕ ОКНА */
+        /* === ВЫЛЕТАЮЩИЕ МОДАЛЬНЫЕ ОКНА (LIQUID GLASS + БЫСТРЫЙ CUBIC-BEZIER) === */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.3s ease; padding: 15px; perspective: 1000px; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
@@ -208,19 +215,25 @@
 
         .compliance-text { font-size: 0.8rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: justify; opacity: 0.85; }
 
-        /* --- ЭКОСИСТЕМА СО ВСТРОЕННЫМ ВИДЕО ОРИГИНАЛОМ (OWL.MOV) --- */
-        .owl-ecosystem { position: fixed; bottom: 0px; right: 0px; width: 450px; height: 380px; z-index: 9999; pointer-events: auto; }
+        /* === ЭКОСИСТЕМА СОВЫ (ГЕНИАЛЬНАЯ ИНТЕГРАЦИЯ ВИДЕО OWL.MOV) === */
+        /* Контейнер смещен вправо вниз, чтобы сова не обрезалась */
+        .owl-ecosystem { position: fixed; bottom: 0px; right: 0px; width: 450px; height: 500px; z-index: 9999; pointer-events: auto; }
+        
+        /* Видео контейнер в 2 раза крупнее: width 440px */
         .owl-container {
-            position: absolute; bottom: 35px; left: 35px; width: 280px; height: 320px; cursor: pointer; pointer-events: auto;
-            z-index: 10000; touch-action: manipulation;
+            position: absolute; bottom: 0px; right: 0px; width: 440px; height: 500px; cursor: pointer; pointer-events: auto;
+            z-index: 10000; touch-action: manipulation; transform-origin: bottom right; will-change: transform;
         }
 
-        .owl-body { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 25px 35px rgba(0,0,0,0.85)); transition: transform 0.3s ease; }
+        /* Видео совы. Тень не применяем на видео напрямую, чтобы не резать FPS */
+        .owl-body { width: 100%; height: 100%; object-fit: contain; object-position: bottom right; pointer-events: none; }
 
-        .owl-bubble { position: absolute; bottom: 105%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
-        .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
+        /* Пузырь жестко привязан сверху над совой */
+        .owl-bubble { position: absolute; top: 10%; right: 45%; transform: translateX(50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 14px 20px; border-radius: 20px 20px 0 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.95rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
+        .owl-bubble.show { opacity: 1; transform: translateX(50%) scale(1); pointer-events: auto; }
         .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
 
+        /* ЧАТ ПАНЕЛЬ */
         .owl-chat-panel { position: fixed; bottom: 120px; right: 40px; width: 390px; background: var(--bg-glass); backdrop-filter: blur(30px); border-radius: 26px; box-shadow: 0 35px 70px rgba(0,0,0,0.7); border: 1px solid var(--border-glass); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translate3d(0, 40px, 0) scale(0.9); transition: all 0.4s var(--bezier-bounce); will-change: transform, opacity; }
         .owl-chat-panel.active { display: flex; opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
         .owl-chat-header { background: rgba(5, 8, 14, 0.85); color: #fff; padding: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; border-radius: 26px 26px 0 0; border-bottom: 2px solid var(--ranepa-red); }
@@ -234,16 +247,17 @@
 
         .mobile-chat-icon { display: none; }
 
+        /* === ЖЕСТКИЙ АЛГОРИТМ ОБХОДА ДЛЯ МОБИЛОК (СТРОГО СВЕРХУ ВНИЗ) === */
         @media (max-width: 768px) {
-            html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; }
+            html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; margin: 0; padding: 0; }
             header { padding: 15px; flex-direction: column; gap: 15px; align-items: stretch; background: rgba(5, 8, 14, 0.95) !important; }
-            .logo-group { align-items: center; width: 100%; text-align: center; }
+            .logo-group { align-items: center; width: 100%; text-align: center; margin: 0 auto; }
             .logo-group img { height: auto !important; width: 100%; max-height: 120px; object-position: center; }
             .logo-subtitle { text-align: center; }
             .header-right-panel { width: 100%; align-items: center; margin: 0; }
             .header-controls { justify-content: center; flex-wrap: wrap; width: 100%; }
             .header-nav { justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap; }
-            .header-kadry { display: none !important; } 
+            .header-kadry { display: none !important; } /* Лого нацпроектов убираем из шапки */
             
             .tabs-nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px; gap: 10px; width: 100%; }
             .tab-btn { flex-shrink: 0; }
@@ -251,6 +265,7 @@
             .contacts-wrapper { padding: 40px 15px; }
             .contact-card { display: block; white-space: normal; word-wrap: normal; }
             
+            /* Лого нацпроектов строго в самом низу страницы */
             .footer-kadry-mobile { display: block !important; margin: 40px auto 0; text-align: center; }
             .footer-kadry-mobile img { height: 100px; max-width: 100%; object-fit: contain; }
 
@@ -263,14 +278,13 @@
                 display: flex; justify-content: center; align-items: center;
                 animation: none !important; pointer-events: auto; z-index: 10000;
             }
+            .owl-body { display: none !important; }
             .mobile-chat-icon { display: block; width: 32px; height: 32px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
             .owl-chat-panel { width: calc(100vw - 30px); left: 15px; right: 15px; bottom: max(95px, calc(env(safe-area-inset-bottom) + 95px)); height: min(65vh, 500px); max-width: 100vw; }
         }
     </style>
 </head>
 <body>
-
-    <audio id="hootSound" src="https://actions.google.com/sounds/v1/animals/owl_hoot.ogg" preload="auto"></audio>
 
     <div id="progress-bar"></div>
 
@@ -629,36 +643,36 @@
                     <h4>Канаш Ирина Степановна</h4>
                     <div class="position" data-i18n="dirCenter">Директор центра</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 304<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">+7 (4012) 97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)<br>
-                        E-mail: <a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 304</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">+7 (4012) 97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)</div>
+                        <div>E-mail: <a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a></div>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Крупин Артур Леонидович</h4>
                     <div class="position" data-i18n="depDir">Заместитель директора центра</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</div>
+                        <div>E-mail: <a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a></div>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Перетяка Нина Петровна</h4>
                     <div class="position" data-i18n="projDir">Директор проекта</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br>
-                        E-mail: <a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</div>
+                        <div>E-mail: <a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a></div>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Лощилова М.А.</h4>
                     <div class="position" data-i18n="spec">Специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br>
-                        E-mail: <a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</div>
+                        <div>E-mail: <a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a></div>
                     </div>
                 </div>
             </div>
@@ -669,18 +683,18 @@
                     <h4>Михина Елена Владимировна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</div>
+                        <div>E-mail: <a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a></div>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Беспалова Валерия Вадимовна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</div>
+                        <div>E-mail: <a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a></div>
                     </div>
                 </div>
             </div>
@@ -691,27 +705,27 @@
                     <h4>Дацун Татьяна Григорьевна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br>
-                        E-mail: <a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</div>
+                        <div>E-mail: <a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a></div>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Чижекова Наталья Владимировна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</div>
+                        <div>E-mail: <a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a></div>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Хамзина Ирина Александровна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a>
+                        <div><span data-i18n="cabText">Каб.</span> 312</div>
+                        <div><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</div>
+                        <div>E-mail: <a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></div>
                     </div>
                 </div>
             </div>
@@ -721,7 +735,7 @@
                 <div data-i18n="footerRights" style="font-weight: 700; font-size: 0.95rem;">© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
                 
                 <div class="legal-footer-links">
-                    <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
+                    <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (FL-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
                 </div>
 
@@ -798,11 +812,11 @@
     </div>
 
     <div class="owl-ecosystem" id="owlContainer">
+        
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
-            <div class="zzz-particles" id="zzzText">Zzz...</div>
             
-            <video autoplay loop muted playsinline class="owl-body">
+            <video autoplay loop muted playsinline class="owl-body" style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8));">
                 <source src="./img/owl.mov" type="video/quicktime">
                 <source src="./img/owl.webm" type="video/webm">
             </video>
@@ -828,6 +842,8 @@
 
     <script>
         let currentLang = 'ru';
+        let isOwlFlying = false;
+        let owlReturnTimer;
 
         function toggleTheme() {
             const root = document.documentElement;
@@ -852,6 +868,14 @@
             
             document.querySelectorAll('.font-controls .control-panel-btn').forEach(btn => btn.classList.remove('active-font'));
             if(btnElement) btnElement.classList.add('active-font');
+        }
+
+        function showVkAlert() {
+            if(currentLang === 'ru') {
+                alert('Официальное сообщество VK находится на стадии оформления и интеграции. Скоро здесь появится ссылка!');
+            } else {
+                alert('The official VK community is under development. A link will appear here soon!');
+            }
         }
 
         const translationsHTML = {
@@ -919,247 +943,11 @@
                 contModTitle: "Center Contacts", contModDesc: "Management and key departments:",
                 polModTitle: "Personal Data Processing Policy", polModText: "This Privacy Policy applies to all information that the Western Branch of RANEPA can obtain about the User during the use of the site.<br><br>1. Processing of personal data is carried out in accordance with the Federal Law of the Russian Federation No. 152-FL.<br>2. The user consents to the processing of their personal data (surname, name, patronymic, contact phone number, email) for the purpose of registering an application for training within the national project \"Personnel\".<br>3. The operator takes necessary organizational and technical measures to protect personal information from unauthorized access.",
                 termModTitle: "User Agreement and Offer", termModText: "The use of materials and services of the site is governed by the laws of the Russian Federation.<br><br>1. Site is for informational purposes and is not a public offer.<br>2. All rights to the text materials, graphic images, and site structure belong to the Western Branch of RANEPA.<br>3. By submitting an application through communication forms, the user confirms their familiarity with the terms of federal educational programs.", modOk: "Understood",
-                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?", owlOpt1: "🎯 Take a career test", owlOpt2: "📚 Brief overview of all programs", owlOpt3: "📞 Open management contacts"
+                owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:", owlWelcome: "Good afternoon. I am the official digital analyst of the Center for Continuing Education. Shall we run a career guidance test or go to the catalog?", owlOpt1: "🎯 Take a career test", owlOpt2: "📚 Brief overview of all programs", owlOpt3: "📞 Open management contacts", vkText: "VKontakte (Soon)"
             }
         };
 
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
-            document.getElementById('langEnBtn').classList.toggle('lang-active', lang === 'en');
-
-            const elements = document.querySelectorAll('[data-i18n]');
-            elements.forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if(translationsHTML[lang][key]) {
-                    if(el.tagName === 'TITLE') {
-                        document.title = translationsHTML[lang][key];
-                    } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                        el.placeholder = translationsHTML[lang][key];
-                    } else {
-                        el.innerHTML = translationsHTML[lang][key];
-                    }
-                }
-            });
-
-            document.querySelectorAll('.accordion-btn').forEach(btn => {
-                const card = btn.closest('.card');
-                if (card.classList.contains('active')) {
-                    btn.textContent = lang === 'ru' ? 'Свернуть учебный план' : 'Collapse Curriculum';
-                } else {
-                    btn.textContent = lang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum';
-                }
-            });
-
-            if(!document.getElementById('chatOptions').innerHTML.includes('catPrompt')) { resetMenu(); }
-        }
-
-        window.addEventListener('scroll', () => {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            document.getElementById('progress-bar').style.width = (winScroll / height) * 100 + "%";
-        });
-
-        function filterPrograms(evt, tabName) {
-            let contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-            let buttons = document.getElementsByClassName("tab-btn");
-            for (let i = 0; i < buttons.length; i++) buttons[i].classList.remove("active");
-            document.getElementById(tabName).classList.add("active");
-            if(evt && evt.currentTarget) evt.currentTarget.classList.add("active");
-        }
-
-        function toggleCard(btn) {
-            const card = btn.closest('.card');
-            card.classList.toggle('active');
-            if (currentLang === 'ru') {
-                btn.textContent = card.classList.contains('active') ? 'Свернуть учебный план' : 'Изучить учебный план';
-            } else {
-                btn.textContent = card.classList.contains('active') ? 'Collapse Curriculum' : 'Explore Curriculum';
-            }
-        }
-
-        function openModal() { document.getElementById('enrollModal').classList.add('active'); }
-        function closeModal() { document.getElementById('enrollModal').classList.remove('active'); }
-        function openContactsModal() { document.getElementById('contactsModal').classList.add('active'); }
-        function closeContactsModal() { document.getElementById('contactsModal').classList.remove('active'); }
-        function openPolicyModal() { document.getElementById('policyModal').classList.add('active'); }
-        function closePolicyModal() { document.getElementById('policyModal').classList.remove('active'); }
-        function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
-        function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
-
-        setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, 7000);
-        
-        setInterval(() => {
-            const bubble = document.getElementById('owlBubble');
-            if (!document.getElementById('owlChat').classList.contains('active')) {
-                bubble.classList.toggle('show');
-            } else {
-                bubble.classList.remove('show');
-            }
-        }, 5000);
-
-        function playHoot() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.5);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.6);
-            } catch(e) {}
-        }
-
-        let isScrolling;
-        window.addEventListener('scroll', function() {
-            window.clearTimeout(isScrolling);
-            let chat = document.getElementById('owlChat');
-            let ecosystem = document.getElementById('owlContainer');
-            let bubble = document.getElementById('owlBubble');
-
-            if(chat.classList.contains('active')) {
-                chat.classList.remove('active');
-                ecosystem.classList.remove('chat-opened');
-            }
-            if(bubble) bubble.classList.remove('show');
-
-            isScrolling = setTimeout(function() {}, 200);
-        }, false);
-
-        function toggleChat() {
-            playHoot();
-            let chat = document.getElementById('owlChat');
-            let ecosystem = document.getElementById('owlContainer');
-            
-            if (chat.classList.contains('active')) {
-                chat.classList.remove('active');
-                ecosystem.classList.remove('chat-opened');
-            } else {
-                chat.classList.add('active');
-                ecosystem.classList.add('chat-opened');
-            }
-        }
-
-        const chatBody = document.getElementById('chatBody');
-        const chatOptions = document.getElementById('chatOptions');
-
-        function addUserMsg(text) { 
-            chatBody.innerHTML += `<div class="msg-user">${text}</div>`; 
-            scrollToBottom(); 
-        }
-        function addBotMsg(text) { 
-            const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
-            chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`; 
-            scrollToBottom(); 
-        }
-        function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
-        function setOptions(buttonsHTML) { chatOptions.innerHTML = buttonsHTML; }
-
-        function showCatalog() {
-            addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
-            addBotMsg(botTexts[currentLang].catPrompt);
-            setOptions(`
-                <button class="chat-opt-btn" onclick="focusTab('tab-gos')">${botTexts[currentLang].optGos}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-prof')">${botTexts[currentLang].optProf}</button>
-                <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-            `);
-        }
-
-        function focusTab(tabId) {
-            const section = document.getElementById('programsSection');
-            const y = section.getBoundingClientRect().top + window.pageYOffset - 80;
-            window.scrollTo({top: y, behavior: 'smooth'});
-
-            filterPrograms(new Event('click'), tabId);
-            const tabsMap = {'tab-gos':1, 'tab-biz':2, 'tab-horeca':3, 'tab-prof':4};
-            let buttons = document.getElementsByClassName("tab-btn");
-            if(buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add("active");
-
-            const activeContent = document.getElementById(tabId);
-            const cards = activeContent.querySelectorAll('.card');
-
-            cards.forEach((card, index) => {
-                const signX = Math.random() > 0.5 ? 1 : -1;
-                const signY = Math.random() > 0.5 ? 1 : -1;
-                card.style.setProperty('--x-dist', (Math.random() * 500 * signX) + 'px');
-                card.style.setProperty('--y-dist', (Math.random() * 500 * signY) + 'px');
-                
-                card.classList.remove('puzzle-piece', 'glow-effect');
-                void card.offsetWidth;
-                
-                card.style.animationDelay = (index * 0.15) + 's';
-                card.classList.add('puzzle-piece');
-                
-                setTimeout(() => {
-                    card.classList.add('glow-effect');
-                    setTimeout(() => card.classList.remove('glow-effect'), 2000);
-                }, 1000 + (index * 150));
-            });
-
-            document.getElementById('owlChat').classList.remove('active');
-            document.getElementById('owlContainer').classList.remove('chat-opened');
-            playHoot();
-        }
-
-        let currentQ = 0;
-        let scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
-
-        function startTest() {
-            addUserMsg(currentLang === 'ru' ? "Инициировать профильное тестирование." : "Initiate career profiling test.");
-            addBotMsg(botTexts[currentLang].testStart);
-            currentQ = 0;
-            scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
-            setTimeout(askQuestion, 800);
-        }
-
-        function askQuestion() {
-            if(currentQ >= testQuestionsData[currentLang].length) { showTestResult(); return; }
-            let q = testQuestionsData[currentLang][currentQ];
-            addBotMsg(q.q);
-
-            let html = "";
-            q.answers.forEach(a => {
-                html += `<button class="chat-opt-btn" onclick="answerTest('${a.t}', '${a.v}')">${a.t}</button>`;
-            });
-            setOptions(html);
-        }
-
-        function answerTest(text, value) {
-            addUserMsg(text);
-            scores[value]++;
-            currentQ++;
-            setTimeout(askQuestion, 400);
-        }
-
-        function showTestResult() {
-            let maxScore = 0;
-            let bestCategory = "";
-            for (let key in scores) {
-                if(scores[key] > maxScore) { maxScore = scores[key]; bestCategory = key; }
-            }
-
-            let resultText = "";
-            if(bestCategory === 'gos') resultText = botTexts[currentLang].resGos;
-            if(bestCategory === 'biz') resultText = botTexts[currentLang].resBiz;
-            if(bestCategory === 'horeca') resultText = botTexts[currentLang].resHoreca;
-            if(bestCategory === 'prof') resultText = botTexts[currentLang].resProf;
-
-            addBotMsg((currentLang === 'ru' ? "Анализ завершен. " : "Analysis completed. ") + resultText);
-
-            setOptions(`
-                <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
-                <button class="chat-opt-btn" onclick="focusTab('tab-all'); toggleChat();">${botTexts[currentLang].resCat}</button>
-                <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-            `);
-        }
-    </script>
-</body>
-</html>
+        const testQuestionsData = {
+            ru: [
+                { q: "1/12. Какова главная цель инвестиций в ваше образование?", answers: [{t: "Карьера на государственной службе", v: "gos"}, {t: "Масштабирование бизнес-показателей", v: "biz"}, {t: "Управление сервисом (HoReCa)", v: "horeca"}, {t: "Освоение новой прикладной профессии", v: "prof"}] },
+                { q: "2/12. С каким типом задач вы предпочитаете работать?", answers: [{t: "Нормативно-правовая документация", v: "gos"}, {t: "Стратегии и ИТ-инструментарий", v: "biz"}, {t: "Команда
