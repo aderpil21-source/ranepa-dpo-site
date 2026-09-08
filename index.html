@@ -260,7 +260,7 @@
 
         .compliance-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: left; opacity: 0.85; }
 
-        /* ===== OWL ASSISTANT ===== */
+        /* ===== OWL ASSISTANT & CHAT INPUT ===== */
         .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.45s var(--bezier-smooth); pointer-events: none; transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
         .owl-ecosystem.scroll-mini { transform: scale(0.52); }
@@ -307,13 +307,21 @@
         .owl-chat-panel { position: fixed; bottom: 100px; right: 32px; width: 390px; max-width: calc(100vw - 30px); background: var(--bg-glass); backdrop-filter: blur(30px); border-radius: 26px; box-shadow: 0 35px 70px rgba(0,0,0,0.7); border: 1px solid var(--border-glass); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translate3d(0, 40px, 0) scale(0.9); transition: all 0.4s var(--bezier-bounce); will-change: transform, opacity; }
         .owl-chat-panel.active { display: flex; opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
         .owl-chat-header { background: rgba(5, 8, 14, 0.85); color: #fff; padding: 18px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-radius: 26px 26px 0 0; border-bottom: 2px solid var(--ranepa-red); }
-        .owl-chat-body { padding: 20px; height: 340px; overflow-y: auto; background: transparent; font-size: 0.92rem; display: flex; flex-direction: column; gap: 14px; color: var(--text-main); }
+        .owl-chat-body { padding: 20px; height: 270px; overflow-y: auto; background: transparent; font-size: 0.92rem; display: flex; flex-direction: column; gap: 14px; color: var(--text-main); }
         .msg-bot { background: var(--btn-glass); padding: 14px; border-radius: 14px; border-bottom-left-radius: 0; color: var(--text-main); align-self: flex-start; max-width: 92%; border: 1px solid var(--border-glass); line-height: 1.5; }
         .msg-bot b { color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 6px; }
         .msg-user { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 14px; border-radius: 14px; border-bottom-right-radius: 0; align-self: flex-end; max-width: 92%; font-weight: 600; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.3); }
-        .chat-options { padding: 14px; background: rgba(5, 8, 14, 0.85); display: flex; flex-direction: column; gap: 8px; border-radius: 0 0 26px 26px; max-height: 40vh; overflow-y: auto; }
-        .chat-opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 700; text-align: left; transition: background 0.25s ease, padding-left 0.25s ease; touch-action: manipulation; }
-        .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 18px; }
+        
+        /* Стили строки ввода и кнопки отправки в чате Совы */
+        .chat-input-box { display: flex; padding: 10px 14px; background: rgba(5, 8, 14, 0.9); border-top: 1px solid var(--border-glass); gap: 8px; align-items: center; }
+        .chat-text-input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+        .chat-text-input:focus { border-color: var(--ranepa-red); }
+        .chat-send-btn { background: var(--ranepa-red); border: none; color: #fff; padding: 10px 16px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
+        .chat-send-btn:hover { transform: scale(1.05); }
+
+        .chat-options { padding: 12px 14px; background: rgba(5, 8, 14, 0.85); display: flex; flex-direction: column; gap: 8px; border-radius: 0 0 26px 26px; max-height: 35vh; overflow-y: auto; }
+        .chat-opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-align: left; transition: background 0.25s ease, padding-left 0.25s ease; touch-action: manipulation; }
+        .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 16px; }
 
         .mobile-chat-icon { display: none; }
 
@@ -777,8 +785,15 @@
     <div class="owl-chat-panel" id="owlChat">
         <div class="owl-chat-header"><span data-i18n="owlHeader">Цифровой ассистент</span> <span style="cursor:pointer; font-size:1.1rem;" onclick="toggleChat()">✖</span></div>
         <div class="owl-chat-body" id="chatBody">
-            <div class="msg-bot"><b data-i18n="owlName">Сова:</b> <span data-i18n="owlWelcome">Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?</span></div>
+            <div class="msg-bot"><b data-i18n="owlName">Сова:</b> <span data-i18n="owlWelcome">Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.</span></div>
         </div>
+        
+        <!-- Добавлено поле ввода текста для общения с Совой и проверки кодов -->
+        <div class="chat-input-box">
+            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции или вопрос..." onkeydown="if(event.key === 'Enter') handleUserMessage()">
+            <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
+        </div>
+
         <div class="chat-options" id="chatOptions">
             <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
             <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
@@ -789,6 +804,9 @@
     <script>
     /* ================= ВАША ССЫЛКА НА БАЗУ ДАННЫХ ================= */
     const API_URL = 'https://script.google.com/macros/s/AKfycbxrRIk-tDyNmHos4vYLRUtwv9S8iDK0ssIiYnWpvSk8sb0FIU6pexSQ3dY0SUBNs-g/exec';
+
+    /* ================= GLOBAL STATE FOR OWL FILES ================= */
+    let globalOwlFiles = [];
 
     /* ================= STATE ================= */
     let currentLang = 'ru';
@@ -854,7 +872,7 @@
             termModTitle: "Пользовательское соглашение и оферта",
             termModText: "Использование цифровых сервисов регулируется актуальным законодательством РФ.<br><br>1. Материалы сайта носят информационный характер и не являются публичной офертой, если иное не указано явно.<br>2. Все интеллектуальные права на дизайн, графические элементы и тексты принадлежат Западному филиалу РАНХиГС.<br>3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.",
             owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
-            owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?",
+            owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.",
             owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся."
         },
         en: {
@@ -883,7 +901,7 @@
             termModTitle: "Terms of Use & Public Offer",
             termModText: "Use of digital services is governed by applicable Russian law.<br><br>1. Site materials are informational and do not constitute a public offer unless explicitly stated.<br>2. All intellectual property rights to the design, graphics and text belong to RANEPA Western Branch.<br>3. By submitting an application, the User confirms full awareness of the admission and enrollment rules for continuing-education programs.",
             owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
-            owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog?",
+            owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog? You can also enter a lecture code to get materials.",
             owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon."
         }
     };
@@ -928,7 +946,13 @@
         try {
             const response = await fetch(API_URL);
             const data = await response.json();
-            buildPrograms(data);
+            
+            // Сохраняем файлы Совы в глобальную переменную
+            if (data.owlFiles) {
+                globalOwlFiles = data.owlFiles;
+            }
+
+            buildPrograms(data.programs || data);
         } catch (error) {
             console.error("Ошибка API:", error);
             document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Не удалось загрузить программы. Пожалуйста, обновите страницу.</div>`;
@@ -955,7 +979,6 @@
                 bulletsHTML += `<li data-i18n="${bulletKey}">✔️ ${b_ru.trim()}</li>`;
             });
 
-            // Формируем красивый блок с типом, формой и датами
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
                 extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
@@ -1153,6 +1176,32 @@
         } else {
             chat.classList.add('active');
             ecosystem.classList.add('chat-opened');
+        }
+    }
+
+    /* ================= ИНТЕРАКТИВНЫЙ ЧАТ И ПРОВЕРКА КОДОВ ЛЕКЦИЙ ================= */
+    function handleUserMessage() {
+        const input = document.getElementById('chatUserInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        addUserMsg(text);
+        input.value = '';
+
+        // Проверяем, есть ли введенный текст в списке кодов файлов Совы
+        const cleanCode = text.toUpperCase();
+        const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
+
+        if (foundFile) {
+            setTimeout(() => {
+                addBotMsg(`📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`);
+            }, 500);
+        } else {
+            setTimeout(() => {
+                addBotMsg(currentLang === 'ru' 
+                    ? `Я внимательно вас выслушала. По данному вопросу лучше обратиться к нашему каталогу программ или связаться с сотрудниками Центра.` 
+                    : `I listened carefully. For this query, it's best to check our program catalog or contact Center staff.`);
+            }, 500);
         }
     }
 
