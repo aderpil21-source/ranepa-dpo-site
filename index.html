@@ -77,7 +77,6 @@
         .shape { position: absolute; filter: blur(140px); opacity: 0.45; animation: float 22s infinite alternate ease-in-out; will-change: transform; transform: translateZ(0); }
         .shape-1 { background: var(--ranepa-burgundy); width: 45vw; height: 45vw; border-radius: 50%; top: -10%; left: -10%; animation-duration: 25s; }
         .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
-        @keyframes float { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(8vw, 12vh, 0) scale(1.15); } }
         @media (max-width: 768px) { .shape { filter: blur(70px); opacity: 0.3; } }
 
         /* ===== HEADER ===== */
@@ -134,6 +133,18 @@
         .tab-content { display: none; perspective: 1500px; }
         .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: clamp(25px, 3vw, 35px); align-items: start; }
 
+        /* Лоадер для загрузки программ */
+        .loader-box { grid-column: 1 / -1; width: 100%; text-align: center; padding: 50px; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
+        .loader-spinner { width: 40px; height: 40px; border: 4px solid rgba(202, 15, 62, 0.2); border-top-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Заголовок сектора внутри вкладок */
+        .sector-header {
+            grid-column: 1 / -1; font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 800;
+            color: var(--text-main); margin: 30px 0 10px; border-bottom: 2px solid var(--border-glass);
+            padding-bottom: 12px;
+        }
+
         /* 3D puzzle assembly — 4s duration as required */
         .puzzle-piece { animation: assemblePuzzle 1s var(--bezier-bounce) forwards; }
         @keyframes assemblePuzzle {
@@ -150,7 +161,7 @@
         .card { background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative; transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth); box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style; }
         .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
 
-        /* seamless volumetric reveal-on-scroll (applies to cards, FAQ items, contact cards) */
+        /* seamless volumetric reveal-on-scroll */
         .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
         .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
 
@@ -198,13 +209,11 @@
         .contact-card:hover { transform: translateY(-5px); border-color: var(--ranepa-red); }
         .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; margin-bottom: 6px; color: var(--text-main); font-weight: 800; }
         .contact-card .position { font-size: 0.85rem; color: var(--ranepa-red); margin-bottom: 16px; font-weight: 700; text-transform: uppercase; }
-        /* .details is a plain block: each logical line is its own <p>, so text never gets force-split like flex-column used to do */
         .contact-card .details { font-size: 0.92rem; color: var(--text-muted); line-height: 1.9; }
         .contact-card .details p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; white-space: normal; }
         .contact-card .details a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.2s; word-break: break-word; }
         .contact-card .details a:hover { color: var(--ranepa-red); }
 
-        /* liquid-glass chrome upgrade */
         .contact-card, .main-contact-box {
             position: relative; overflow: hidden;
             background: linear-gradient(160deg, var(--bg-card) 0%, rgba(255,255,255,0.02) 100%);
@@ -231,7 +240,6 @@
         .modal-box { background: var(--bg-glass); backdrop-filter: blur(35px) saturate(200%); border-radius: 30px; max-width: 580px; width: 100%; text-align: center; border: 1px solid var(--border-glass); box-shadow: 0 45px 90px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 88vh; overflow-y: auto; overscroll-behavior: contain; transform: scale(0.8) translateY(30px); opacity: 0; transition: transform 0.4s var(--bezier-bounce), opacity 0.3s ease; will-change: transform, opacity; padding: clamp(28px, 5vw, 50px); color: var(--text-main); }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
 
-        /* chrome / liquid-glass variant — drops from the top like a physical panel */
         .chrome-glass {
             background: linear-gradient(165deg, rgba(255,255,255,0.14) 0%, var(--bg-glass) 35%, var(--bg-glass) 100%) !important;
             border: 1px solid rgba(255,255,255,0.35) !important;
@@ -260,7 +268,6 @@
         /* ===== OWL ASSISTANT ===== */
         .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.45s var(--bezier-smooth); pointer-events: none; transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
-        /* stays fixed in place while scrolling — only shrinks, never disappears */
         .owl-ecosystem.scroll-mini { transform: scale(0.52); }
 
         .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
@@ -268,7 +275,6 @@
 
         .owl-container { position: absolute; bottom: 46px; left: 0; width: 100%; height: 210px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; overflow: visible; }
 
-        /* hand-drawn animated owl: paces back and forth along the branch */
         .owl-walker { position: absolute; bottom: 0; left: 10%; width: 130px; height: 190px; animation: owlPace 16s ease-in-out infinite; will-change: transform; }
         @keyframes owlPace {
             0%   { transform: translateX(0) scaleX(1); }
@@ -290,7 +296,6 @@
         .owl-wing-l { animation-delay: 0s; }
         .owl-wing-r { animation-delay: 0.15s; }
         @keyframes wingFlutter { 0%,100% { transform: rotate(0deg) scaleY(1); } 45% { transform: rotate(6deg) scaleY(1.03); } 50% { transform: rotate(-3deg) scaleY(0.97); } 55% { transform: rotate(6deg) scaleY(1.03); } }
-        /* blinking: eyelids sweep down and back up quickly, each eye slightly offset for a natural, non-robotic blink */
         .eyelid { transform-origin: center; animation: blink 4.6s ease-in-out infinite; }
         .owl-eye-r .eyelid { animation-delay: 0.06s; }
         @keyframes blink {
@@ -298,7 +303,6 @@
             94% { transform: scaleY(1); opacity: 1; }
             97% { transform: scaleY(0.02); opacity: 0; }
         }
-        /* scroll behaviour: hides within ~1s while scrolling, comes back 5s after scrolling stops */
         .owl-ecosystem.scroll-hidden { display: none; }
 
         .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
@@ -344,7 +348,6 @@
             .footer-kadry-mobile { display: block !important; margin: 40px auto 0; text-align: center; }
             .footer-kadry-mobile img { height: 90px; max-width: 100%; object-fit: contain; }
 
-            /* Owl on mobile becomes a compact circular launcher — same functions, no desktop-only bulk */
             .owl-ecosystem { right: 0; bottom: 0; width: auto; height: auto; pointer-events: none; }
             .oak-branch { display: none !important; }
             .owl-container {
@@ -423,140 +426,28 @@
 
     <div class="container" id="programsSection">
 
+        <!-- ОБНОВЛЕННЫЕ ВЕРХНИЕ КНОПКИ-ВКЛАДКИ -->
         <div class="tabs-nav">
             <button class="tab-btn active" onclick="filterPrograms(event,'tab-all')" data-i18n="tabAll">Все программы</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-gos')" data-i18n="tabGos">🏛️ Госслужба и закупки</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-biz')" data-i18n="tabBiz">🚀 Цифровой бизнес и ИИ</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-horeca')" data-i18n="tabHoreca">🏨 HoReCa и Туризм</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-prof')" data-i18n="tabProf">⚡ Быстрые профессии</button>
+            <button class="tab-btn" onclick="filterPrograms(event,'tab-kadry')" data-i18n="tabKadry">🎓 Нацпроект «Кадры»</button>
+            <button class="tab-btn" onclick="filterPrograms(event,'tab-pk')" data-i18n="tabPk">📈 Повышение квалификации</button>
+            <button class="tab-btn" onclick="filterPrograms(event,'tab-pp')" data-i18n="tabPp">🔄 Переподготовка</button>
+            <button class="tab-btn" onclick="filterPrograms(event,'tab-po')" data-i18n="tabPo">🛠️ Проф. обучение</button>
+            <button class="tab-btn" onclick="filterPrograms(event,'tab-sem')" data-i18n="tabSem">🗣️ Семинары</button>
         </div>
 
+        <!-- ОБНОВЛЕННЫЕ ПУСТЫЕ КОНТЕЙНЕРЫ (ОНИ БУДУТ ЗАПОЛНЯТЬСЯ ИЗ GOOGLE ТАБЛИЦ) -->
         <div id="tab-all" class="tab-content active">
-            <div class="card">
-                <div class="card-meta"><span class="price">56 000 ₽</span><span class="hours" data-i18n="cardHours1">506 ч.</span></div>
-                <h3 data-i18n="c1Title">Государственное управление</h3>
-                <p class="desc-text" data-i18n="c1Desc">Программа разработана для действующих госслужащих, стремящихся к стремительному карьерному росту. Лекции читаются ведущими экспертами, практика закрепляется на семинарах, студенты решают кейсы, а итоговый экзамен подтверждает квалификацию.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c1p1">✔️ Правовые основы ГМУ</li>
-                        <li data-i18n="c1p2">✔️ Финансовое управление</li>
-                        <li data-i18n="c1p3">✔️ Публичная политика</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
-                <h3 data-i18n="c2Title">Управление закупками</h3>
-                <p class="desc-text" data-i18n="c2Desc">Внимательно анализируя тендерную документацию, вы избежите юридических ошибок. Мы разбираем актуальную арбитражную практику текущего года на реальных примерах из практики ФАС.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c2p1">✔️ Арбитражная практика</li>
-                        <li data-i18n="c2p2">✔️ Антимонопольный контроль</li>
-                        <li data-i18n="c2p3">✔️ Сквозное проектирование закупки</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-meta"><span class="price">10 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
-                <h3 data-i18n="c3Title">Профилактика терроризма</h3>
-                <p class="desc-text" data-i18n="c3Desc">Курс обязателен для современных руководителей. Мы научим минимизировать риски, обеспечить защиту объектов и уверенно проходить проверки.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c3p1">✔️ Антитеррористическая защищенность</li>
-                        <li data-i18n="c3p2">✔️ Противодействие коррупции</li>
-                        <li data-i18n="c3p3">✔️ Минимизация рисков проверок</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-meta"><span class="price">38 000 ₽</span><span class="hours" data-i18n="cardHours4">98 ч.</span></div>
-                <h3 data-i18n="c4Title">Искусственный Интеллект</h3>
-                <p class="desc-text" data-i18n="c4Desc">Нейросети, внедренные в рабочие процессы, экономят сотни часов. Вы научитесь писать промпты, автоматизировать аналитику и интегрировать ИИ в бизнес-процессы.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c4p1">✔️ Инжиниринг промптов</li>
-                        <li data-i18n="c4p2">✔️ Автоматизация процессов</li>
-                        <li data-i18n="c4p3">✔️ Интеграция AI в бизнес</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-meta"><span class="price">46 300 ₽</span><span class="hours" data-i18n="cardHours5">252 ч.</span></div>
-                <h3 data-i18n="c5Title">Управление бизнесом</h3>
-                <p class="desc-text" data-i18n="c5Desc">Курс для предпринимателей. Мы учим выходить из операционки, систематизировать процессы и повышать маржинальность через понятную экономику и право МСП.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c5p1">✔️ Экономика и право МСП</li>
-                        <li data-i18n="c5p2">✔️ Управление персоналом</li>
-                        <li data-i18n="c5p3">✔️ Выход из операционки</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-meta"><span class="price">43 000 ₽</span><span class="hours" data-i18n="cardHours2">144 ч.</span></div>
-                <h3 data-i18n="c6Title">Менеджмент гостеприимства</h3>
-                <p class="desc-text" data-i18n="c6Desc">Наш курс дает фундаментальные практические знания HoReCa: маркетинг впечатлений, управление конфликтами и оптимизацию затрат для роста прибыли.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c6p1">✔️ Маркетинг впечатлений</li>
-                        <li data-i18n="c6p2">✔️ Управление конфликтами</li>
-                        <li data-i18n="c6p3">✔️ Оптимизация затрат HoReCa</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-meta"><span class="price">60 000 ₽</span><span class="hours" data-i18n="cardHours6">150 ч.</span></div>
-                <h3 data-i18n="c7Title">Повар (3-4 разряд)</h3>
-                <p class="desc-text" data-i18n="c7Desc">Профессия повара всегда востребована. Вы освоите технологические карты, пройдете интенсивную практику и получите государственную квалификацию.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c7p1">✔️ Технологические карты</li>
-                        <li data-i18n="c7p2">✔️ Практика приготовления блюд</li>
-                        <li data-i18n="c7p3">✔️ Присвоение гос. квалификации</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-meta"><span class="price">13 500 ₽</span><span class="hours" data-i18n="cardHours3">36 ч.</span></div>
-                <h3 data-i18n="c8Title">1С:Предприятие & Бухучет</h3>
-                <p class="desc-text" data-i18n="c8Desc">Курс охватывает полный цикл современной бухгалтерии: налоговую отчетность, регламентные расчеты в 1С и упрощенные алгоритмы учета для ИП и малых предприятий.</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        <li data-i18n="c8p1">✔️ Налоговая отчетность</li>
-                        <li data-i18n="c8p2">✔️ Регламентные расчеты 1С</li>
-                        <li data-i18n="c8p3">✔️ Упрощенные алгоритмы учета</li>
-                    </ul>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
+            <div class="loader-box">
+                <div class="loader-spinner"></div>
+                <span data-i18n="loading">Связываемся с базой данных...</span>
             </div>
         </div>
-
-        <div id="tab-gos" class="tab-content"></div>
-        <div id="tab-biz" class="tab-content"></div>
-        <div id="tab-horeca" class="tab-content"></div>
-        <div id="tab-prof" class="tab-content"></div>
+        <div id="tab-kadry" class="tab-content"></div>
+        <div id="tab-pk" class="tab-content"></div>
+        <div id="tab-pp" class="tab-content"></div>
+        <div id="tab-po" class="tab-content"></div>
+        <div id="tab-sem" class="tab-content"></div>
 
         <h2 class="section-header" data-i18n="faqTitle">Часто задаваемые вопросы</h2>
         <div class="faq-container">
@@ -821,13 +712,11 @@
                     <g class="owl-foot owl-foot-r"><ellipse cx="100" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M90 184 q -6 3 -9 8 M100 186 q 0 5 0 9 M110 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
 
                     <g class="owl-body-group">
-                        <!-- ear tufts -->
                         <path d="M44 42 Q 34 8 52 -4 Q 56 20 58 46 Z" fill="url(#owlBodyGrad)"/>
                         <path d="M116 42 Q 126 8 108 -4 Q 104 20 102 46 Z" fill="url(#owlBodyGrad)"/>
                         <path d="M46 40 Q 40 16 52 4" stroke="#2f2114" stroke-width="1.4" fill="none" opacity="0.55"/>
                         <path d="M114 40 Q 120 16 108 4" stroke="#2f2114" stroke-width="1.4" fill="none" opacity="0.55"/>
 
-                        <!-- wings (behind body) -->
                         <g class="owl-wing owl-wing-l"><path d="M46 66 Q 18 90 24 138 Q 30 158 48 150 Q 40 110 50 72 Z" fill="url(#wingGrad)"/>
                             <path d="M30 96 Q 26 118 32 140 M36 84 Q 30 112 36 146 M42 76 Q 38 108 42 148" stroke="#241a10" stroke-width="1.3" fill="none" opacity="0.55"/>
                         </g>
@@ -835,17 +724,14 @@
                             <path d="M130 96 Q 134 118 128 140 M124 84 Q 130 112 124 146 M118 76 Q 122 108 118 148" stroke="#241a10" stroke-width="1.3" fill="none" opacity="0.55"/>
                         </g>
 
-                        <!-- body -->
                         <ellipse cx="80" cy="112" rx="50" ry="64" fill="url(#owlBodyGrad)"/>
                         <ellipse cx="80" cy="122" rx="34" ry="46" fill="url(#owlChestGrad)"/>
-                        <!-- chest feather streaks -->
                         <g opacity="0.5" stroke="#8a6a42" stroke-width="1.4" fill="none">
                             <path d="M64 96 Q 62 118 66 148"/>
                             <path d="M74 92 Q 72 122 76 156"/>
                             <path d="M86 92 Q 88 122 84 156"/>
                             <path d="M96 96 Q 98 118 94 148"/>
                         </g>
-                        <!-- mottled speckles across the back/shoulders -->
                         <g opacity="0.65" fill="#3a2a18">
                             <ellipse cx="52" cy="76" rx="4" ry="6" transform="rotate(-18 52 76)"/>
                             <ellipse cx="108" cy="76" rx="4" ry="6" transform="rotate(18 108 76)"/>
@@ -855,11 +741,9 @@
                             <ellipse cx="102" cy="60" rx="3" ry="4.5" transform="rotate(14 102 60)"/>
                         </g>
 
-                        <!-- facial disc -->
                         <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="#e8d3a8" opacity="0.9"/>
                         <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="none" stroke="#5a4326" stroke-width="1.3" opacity="0.5"/>
 
-                        <!-- eyes -->
                         <circle cx="61" cy="86" r="20" fill="#e8d3a8"/>
                         <circle cx="99" cy="86" r="20" fill="#e8d3a8"/>
                         <circle cx="61" cy="86" r="20" fill="none" stroke="#5a4326" stroke-width="1.2" opacity="0.6"/>
@@ -882,11 +766,9 @@
                             <rect class="eyelid" x="85" y="72" width="28" height="28" rx="14" fill="#8A5F35"/>
                         </g>
 
-                        <!-- brow ridges for a sharper, more realistic gaze -->
                         <path d="M46 72 Q 61 64 76 72" stroke="#3a2a18" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
                         <path d="M84 72 Q 99 64 114 72" stroke="#3a2a18" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
 
-                        <!-- beak -->
                         <path d="M73 96 Q 80 92 87 96 L83 116 Q 80 122 77 116 Z" fill="url(#beakGrad)"/>
                         <path d="M76 98 L84 98" stroke="#000" stroke-width="1" opacity="0.4"/>
                     </g>
@@ -913,10 +795,21 @@
     </div>
 
     <script>
+    /* ================= ВАША ССЫЛКА НА БАЗУ ДАННЫХ ================= */
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxpT1RYhGsnolxaM83bIHDwnZ4qYPGR6zKfB5Ik3XAF6dlieJ3u_qVFeMxa2EmJq-my/exec';
+
     /* ================= STATE ================= */
     let currentLang = 'ru';
 
-    /* ================= THEME ================= */
+    /* ================= НАЗВАНИЯ ДЛЯ СЕКТОРОВ ================= */
+    const SECTOR_NAMES = {
+        'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
+        'biz': { ru: '🚀 Цифровой бизнес, ИИ и управление', en: '🚀 Digital Business, AI & Management' },
+        'horeca': { ru: '🏨 HoReCa, туризм и сервис', en: '🏨 HoReCa, Tourism & Service' },
+        'prof': { ru: '⚡ Прикладные профессии и навыки', en: '⚡ Applied Professions & Skills' }
+    };
+
+    /* ================= THEME & FONT SIZE ================= */
     function toggleTheme() {
         const root = document.documentElement;
         const newTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -925,7 +818,6 @@
         document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '🌙' : '☀️';
     }
 
-    /* ================= FONT SIZE ================= */
     function changeFontSize(size, btnElement) {
         const root = document.documentElement;
         if (size === 'small') root.style.fontSize = '14px';
@@ -941,41 +833,12 @@
             : 'The official VK community is under development. A link will appear here soon!');
     }
 
-    /* ================= FULL PAGE TRANSLATIONS ================= */
-    /* every data-i18n key present in the markup gets a RU/EN pair so switching is instant and complete */
+    /* ================= TRANSLATIONS ================= */
     const translationsHTML = {
         ru: {
-            pageTitle: "Академия Кадров | Западный филиал РАНХиГС",
-            logoSub: "Западный филиал • Центр дополнительного образования",
-            navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
-            heroTitle: "Академия управления<br>и профессионального роста",
-            heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
-            tabAll: "Все программы", tabGos: "🏛️ Госслужба и закупки", tabBiz: "🚀 Цифровой бизнес и ИИ", tabHoreca: "🏨 HoReCa и Туризм", tabProf: "⚡ Быстрые профессии",
-            cardHours1: "506 ч.", cardHours2: "144 ч.", cardHours3: "36 ч.", cardHours4: "98 ч.", cardHours5: "252 ч.", cardHours6: "150 ч.",
-            c1Title: "Государственное управление",
-            c1Desc: "Программа разработана для действующих госслужащих, стремящихся к стремительному карьерному росту. Лекции читаются ведущими экспертами, практика закрепляется на семинарах, студенты решают кейсы, а итоговый экзамен подтверждает квалификацию.",
-            c1p1: "✔️ Правовые основы ГМУ", c1p2: "✔️ Финансовое управление", c1p3: "✔️ Публичная политика",
-            c2Title: "Управление закупками",
-            c2Desc: "Внимательно анализируя тендерную документацию, вы избежите юридических ошибок. Мы разбираем актуальную арбитражную практику текущего года на реальных примерах из практики ФАС.",
-            c2p1: "✔️ Арбитражная практика", c2p2: "✔️ Антимонопольный контроль", c2p3: "✔️ Сквозное проектирование закупки",
-            c3Title: "Профилактика терроризма",
-            c3Desc: "Курс обязателен для современных руководителей. Мы научим минимизировать риски, обеспечить защиту объектов и уверенно проходить проверки.",
-            c3p1: "✔️ Антитеррористическая защищенность", c3p2: "✔️ Противодействие коррупции", c3p3: "✔️ Минимизация рисков проверок",
-            c4Title: "Искусственный Интеллект",
-            c4Desc: "Нейросети, внедренные в рабочие процессы, экономят сотни часов. Вы научитесь писать промпты, автоматизировать аналитику и интегрировать ИИ в бизнес-процессы.",
-            c4p1: "✔️ Инжиниринг промптов", c4p2: "✔️ Автоматизация процессов", c4p3: "✔️ Интеграция AI в бизнес",
-            c5Title: "Управление бизнесом",
-            c5Desc: "Курс для предпринимателей. Мы учим выходить из операционки, систематизировать процессы и повышать маржинальность через понятную экономику и право МСП.",
-            c5p1: "✔️ Экономика и право МСП", c5p2: "✔️ Управление персоналом", c5p3: "✔️ Выход из операционки",
-            c6Title: "Менеджмент гостеприимства",
-            c6Desc: "Наш курс дает фундаментальные практические знания HoReCa: маркетинг впечатлений, управление конфликтами и оптимизацию затрат для роста прибыли.",
-            c6p1: "✔️ Маркетинг впечатлений", c6p2: "✔️ Управление конфликтами", c6p3: "✔️ Оптимизация затрат HoReCa",
-            c7Title: "Повар (3-4 разряд)",
-            c7Desc: "Профессия повара всегда востребована. Вы освоите технологические карты, пройдете интенсивную практику и получите государственную квалификацию.",
-            c7p1: "✔️ Технологические карты", c7p2: "✔️ Практика приготовления блюд", c7p3: "✔️ Присвоение гос. квалификации",
-            c8Title: "1С:Предприятие & Бухучет",
-            c8Desc: "Курс охватывает полный цикл современной бухгалтерии: налоговую отчетность, регламентные расчеты в 1С и упрощенные алгоритмы учета для ИП и малых предприятий.",
-            c8p1: "✔️ Налоговая отчетность", c8p2: "✔️ Регламентные расчеты 1С", c8p3: "✔️ Упрощенные алгоритмы учета",
+            pageTitle: "Академия Кадров | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
+            heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
+            tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
             studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
             faqTitle: "Часто задаваемые вопросы",
             faqQ1: "Какие документы нужны для поступления?", faqA1: "Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).",
@@ -988,56 +851,25 @@
             telLabel: "Телефоны:", addressLabel: "Адрес:", addressText: "236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62",
             dept1: "Центр дополнительного образования", dept2: "Отдел ПК и переподготовки государственных служащих", dept3: "Отдел дополнительного образования",
             dirCenter: "Директор центра", depDir: "Заместитель директора центра", projDir: "Директор проекта", spec: "Специалист", headDep: "Начальник отдела", leadSpec: "Ведущий специалист",
-            cabText: "Каб.", telText: "Тел:", extText: "доб.",
-            footerRights: "© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.",
+            cabText: "Каб.", telText: "Тел:", extText: "доб.", footerRights: "© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.",
             polLink: "Политика конфиденциальности и обработки персональных данных (ФЗ-152)", termLink: "Пользовательское соглашение и оферта", vkText: "ВКонтакте (Скоро)",
             modTitle: "Оформление заявки", modDesc: "Выберите удобный способ регистрации на программу обучения:",
             modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму",
             complianceText: "Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.",
-            modClose: "Закрыть окно", modOk: "Понятно",
-            qcTitle: "Быстрый контакт", qcAll: "Все контакты и сотрудники",
+            modClose: "Закрыть окно", modOk: "Понятно", qcTitle: "Быстрый контакт", qcAll: "Все контакты и сотрудники",
             polModTitle: "Политика обработки персональных данных",
             polModText: "В соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных» в редакции 2026 года и актуальными нормативными актами Роскомнадзора, Западный филиал РАНХиГС осуществляет сбор, хранение и обработку информации о Пользователе исключительно в образовательных целях.<br><br>1. Пользователь выражает прямое информированное согласие на обработку ПДн, использование файлов cookie и метрических систем при использовании сайта.<br>2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.",
             termModTitle: "Пользовательское соглашение и оферта",
             termModText: "Использование цифровых сервисов регулируется актуальным законодательством РФ.<br><br>1. Материалы сайта носят информационный характер и не являются публичной офертой, если иное не указано явно.<br>2. Все интеллектуальные права на дизайн, графические элементы и тексты принадлежат Западному филиалу РАНХиГС.<br>3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.",
             owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
             owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу?",
-            owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства"
+            owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся."
         },
         en: {
-            pageTitle: "Personnel Academy | RANEPA Western Branch",
-            logoSub: "Western Branch • Center for Continuing Education",
-            navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now",
-            heroTitle: "Academy of Management<br>and Professional Growth",
-            heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
-            tabAll: "All Programs", tabGos: "🏛️ Public Service & Procurement", tabBiz: "🚀 Digital Business & AI", tabHoreca: "🏨 HoReCa & Tourism", tabProf: "⚡ Fast-Track Professions",
-            cardHours1: "506 hrs", cardHours2: "144 hrs", cardHours3: "36 hrs", cardHours4: "98 hrs", cardHours5: "252 hrs", cardHours6: "150 hrs",
-            c1Title: "Public Administration",
-            c1Desc: "Designed for current civil servants seeking rapid career growth. Lectures by leading experts, hands-on seminars, real case studies, and a final exam confirming qualification.",
-            c1p1: "✔️ Legal foundations of public administration", c1p2: "✔️ Financial management", c1p3: "✔️ Public policy",
-            c2Title: "Procurement Management",
-            c2Desc: "Carefully analyzing tender documentation helps you avoid costly legal mistakes. We cover current arbitration practice using real FAS case studies.",
-            c2p1: "✔️ Arbitration practice", c2p2: "✔️ Antitrust control", c2p3: "✔️ End-to-end procurement design",
-            c3Title: "Anti-Terrorism Prevention",
-            c3Desc: "Mandatory for modern managers. We teach you to minimize risks, secure facilities and pass inspections with confidence.",
-            c3p1: "✔️ Anti-terrorist security", c3p2: "✔️ Anti-corruption measures", c3p3: "✔️ Inspection risk minimization",
-            c4Title: "Artificial Intelligence",
-            c4Desc: "Neural networks embedded in workflows save hundreds of hours. You'll learn to write effective prompts, automate analytics and integrate AI into business processes.",
-            c4p1: "✔️ Prompt engineering", c4p2: "✔️ Process automation", c4p3: "✔️ AI integration in business",
-            c5Title: "Business Management",
-            c5Desc: "A course for entrepreneurs. We teach you to step out of daily operations, systematize processes and boost margins through clear SME economics and law.",
-            c5p1: "✔️ SME economics and law", c5p2: "✔️ People management", c5p3: "✔️ Stepping out of daily operations",
-            c6Title: "Hospitality Management",
-            c6Desc: "Fundamental, practical HoReCa knowledge: experience marketing, conflict management and cost optimization to grow profit.",
-            c6p1: "✔️ Experience marketing", c6p2: "✔️ Conflict management", c6p3: "✔️ HoReCa cost optimization",
-            c7Title: "Chef (Grade 3-4)",
-            c7Desc: "The chef profession is always in demand. You'll master technological process cards, get intensive hands-on practice and earn an official state qualification.",
-            c7p1: "✔️ Technological process cards", c7p2: "✔️ Cooking practice", c7p3: "✔️ Official state qualification",
-            c8Title: "1C:Enterprise & Accounting",
-            c8Desc: "Covers the full modern accounting cycle: tax reporting, standard 1C calculations and simplified accounting workflows for sole proprietors and small businesses.",
-            c8p1: "✔️ Tax reporting", c8p2: "✔️ Standard 1C calculations", c8p3: "✔️ Simplified accounting workflows",
-            studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now",
-            faqTitle: "Frequently Asked Questions",
+            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now",
+            heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
+            tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
+            studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now", faqTitle: "Frequently Asked Questions",
             faqQ1: "What documents are required for admission?", faqA1: "You'll need a copy of your passport, SNILS, and proof of prior education (vocational or higher-education diploma).",
             faqQ2: "How is training conducted?", faqA2: "Training is blended (part-time in-person plus remote technologies). Practical sessions take place at the Academy.",
             faqQ3: "Is a state-recognized diploma issued?", faqA3: "Yes — after passing the final assessment you receive a RANEPA professional retraining diploma granting the right to a new field of practice.",
@@ -1048,21 +880,19 @@
             telLabel: "Phone:", addressLabel: "Address:", addressText: "62 Artilleriyskaya St., Kaliningrad, Kaliningrad Region, Russia, 236038",
             dept1: "Center for Continuing Education", dept2: "Department for Civil Servant Training & Retraining", dept3: "Department of Continuing Education",
             dirCenter: "Center Director", depDir: "Deputy Center Director", projDir: "Project Director", spec: "Specialist", headDep: "Head of Department", leadSpec: "Lead Specialist",
-            cabText: "Office", telText: "Tel:", extText: "ext.",
-            footerRights: "© 2026 RANEPA Western Branch. Center for Continuing Education. All rights reserved. Educational activities are conducted under a perpetual license.",
+            cabText: "Office", telText: "Tel:", extText: "ext.", footerRights: "© 2026 RANEPA Western Branch. Center for Continuing Education. All rights reserved. Educational activities are conducted under a perpetual license.",
             polLink: "Privacy Policy & Personal Data Processing (Federal Law 152-FZ)", termLink: "Terms of Use & Offer", vkText: "VKontakte (Coming Soon)",
             modTitle: "Application", modDesc: "Choose a convenient way to register for the program:",
             modTrud: "Apply via \"Work of Russia\" (Kaliningrad)", modYan: "Apply via Yandex Form",
             complianceText: "By clicking the button, you give direct informed consent to the processing of personal data in accordance with Federal Law 152-FZ and current Roskomnadzor requirements (2026), and accept the Terms of Use.",
-            modClose: "Close", modOk: "Got it",
-            qcTitle: "Quick Contact", qcAll: "All contacts and staff",
+            modClose: "Close", modOk: "Got it", qcTitle: "Quick Contact", qcAll: "All contacts and staff",
             polModTitle: "Personal Data Processing Policy",
             polModText: "In accordance with Federal Law No. 152-FZ \"On Personal Data\" (2026 edition) and current Roskomnadzor regulations, RANEPA Western Branch collects, stores and processes User information solely for educational purposes.<br><br>1. The User gives direct informed consent to the processing of personal data and the use of cookies and analytics on the site.<br>2. The Operator uses certified cryptographic protection protocols. Covert collection of biometric data is strictly prohibited.<br>3. No cross-border data transfer takes place. Data is stored on servers physically located in the Russian Federation.",
             termModTitle: "Terms of Use & Public Offer",
             termModText: "Use of digital services is governed by applicable Russian law.<br><br>1. Site materials are informational and do not constitute a public offer unless explicitly stated.<br>2. All intellectual property rights to the design, graphics and text belong to RANEPA Western Branch.<br>3. By submitting an application, the User confirms full awareness of the admission and enrollment rules for continuing-education programs.",
             owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
             owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog?",
-            owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts"
+            owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon."
         }
     };
 
@@ -1093,8 +923,6 @@
                 : (lang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum');
         });
 
-        rebuildTabClones();
-        armRevealTargets();
         resetMenu();
     }
 
@@ -1105,24 +933,94 @@
         document.getElementById('progress-bar').style.width = (height > 0 ? (winScroll / height) * 100 : 0) + "%";
     }, { passive: true });
 
-    /* ================= TABS + 4s 3D PUZZLE ASSEMBLY ================= */
-    const CATEGORY_MAP = { 'tab-gos': ['c1Title','c2Title','c3Title'], 'tab-biz': ['c4Title','c5Title'], 'tab-horeca': ['c6Title'], 'tab-prof': ['c7Title','c8Title'] };
-
-    // Build category tabs by cloning the matching cards out of #tab-all once, so content always matches current language.
-    function rebuildTabClones() {
-        const allCards = Array.from(document.querySelectorAll('#tab-all .card'));
-        Object.keys(CATEGORY_MAP).forEach(tabId => {
-            const target = document.getElementById(tabId);
-            target.innerHTML = '';
-            allCards.forEach(card => {
-                const titleKey = card.querySelector('h3').getAttribute('data-i18n');
-                if (CATEGORY_MAP[tabId].includes(titleKey)) {
-                    target.appendChild(card.cloneNode(true));
-                }
-            });
-        });
+    /* ================= АВТОМАТИЧЕСКОЕ ПОЛУЧЕНИЕ ДАННЫХ ИЗ GOOGLE ТАБЛИЦЫ ================= */
+    async function fetchPrograms() {
+        try {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            buildPrograms(data);
+        } catch (error) {
+            console.error("Ошибка API:", error);
+            document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Не удалось загрузить программы. Пожалуйста, обновите страницу.</div>`;
+        }
     }
 
+    function buildPrograms(programs) {
+        const tabs = ['tab-all', 'tab-kadry', 'tab-pk', 'tab-pp', 'tab-po', 'tab-sem'];
+        const htmlMap = {};
+        tabs.forEach(t => htmlMap[t] = {}); // htmlMap[tabId][sectorId]
+
+        programs.forEach(prog => {
+            // Добавляем новые переводы в словарь
+            translationsHTML.ru[`${prog.id}_title`] = prog.title_ru;
+            translationsHTML.ru[`${prog.id}_desc`] = prog.desc_ru;
+            translationsHTML.en[`${prog.id}_title`] = prog.title_en;
+            translationsHTML.en[`${prog.id}_desc`] = prog.desc_en;
+
+            let bulletsHTML = '';
+            prog.bullets_ru.forEach((b_ru, i) => {
+                if(!b_ru.trim()) return;
+                let bulletKey = `${prog.id}_b${i}`;
+                translationsHTML.ru[bulletKey] = `✔️ ${b_ru.trim()}`;
+                translationsHTML.en[bulletKey] = prog.bullets_en[i] ? `✔️ ${prog.bullets_en[i].trim()}` : `✔️ ${b_ru.trim()}`;
+                bulletsHTML += `<li data-i18n="${bulletKey}">✔️ ${b_ru.trim()}</li>`;
+            });
+
+            // Формируем HTML самой карточки
+            let cardHTML = `
+            <div class="card puzzle-piece reveal-3d in-view">
+                <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
+                <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
+                <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
+                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
+                <div class="accordion-content">
+                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
+                        ${bulletsHTML}
+                    </ul>
+                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
+                </div>
+            </div>`;
+
+            // Раскидываем карточки по секторам во вкладку "Все программы"
+            if (!htmlMap['tab-all'][prog.sector]) htmlMap['tab-all'][prog.sector] = [];
+            htmlMap['tab-all'][prog.sector].push(cardHTML);
+
+            // И в их родную вкладку
+            if (tabs.includes(prog.tab)) {
+                if (!htmlMap[prog.tab][prog.sector]) htmlMap[prog.tab][prog.sector] = [];
+                htmlMap[prog.tab][prog.sector].push(cardHTML);
+            }
+        });
+
+        // Строим HTML для каждой вкладки
+        const sectorOrder = ['gos', 'biz', 'horeca', 'prof']; // Задаем порядок блоков на сайте
+        
+        // Вшиваем заголовки секторов в переводы
+        Object.keys(SECTOR_NAMES).forEach(sec => {
+            translationsHTML.ru[`sec_${sec}`] = SECTOR_NAMES[sec].ru;
+            translationsHTML.en[`sec_${sec}`] = SECTOR_NAMES[sec].en;
+        });
+
+        tabs.forEach(tabId => {
+            let tabHTML = '';
+            sectorOrder.forEach(sector => {
+                if (htmlMap[tabId][sector] && htmlMap[tabId][sector].length > 0) {
+                    tabHTML += `<h3 class="sector-header reveal-3d in-view" data-i18n="sec_${sector}">${SECTOR_NAMES[sector].ru}</h3>`;
+                    tabHTML += htmlMap[tabId][sector].join('');
+                }
+            });
+            if(tabHTML === '') tabHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);" data-i18n="noPrograms">Программы в данном разделе скоро появятся.</div>`;
+            
+            const container = document.getElementById(tabId);
+            if(container) container.innerHTML = tabHTML;
+        });
+
+        setLanguage(currentLang);
+        armRevealTargets(); // Применяем 3D-анимации прокрутки к новым карточкам
+        animateAssembly('tab-all'); // Запускаем сборку мозаики
+    }
+
+    /* ================= УПРАВЛЕНИЕ ВКЛАДКАМИ ================= */
     function filterPrograms(evt, tabName) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1140,7 +1038,7 @@
             card.style.setProperty('--y-dist', (Math.random() * 400 + 100) * signY + 'px');
             card.classList.remove('puzzle-piece', 'glow-effect');
             void card.offsetWidth;
-            const delay = Math.min(index * 0.15, 3);      // whole formation completes within 4s total
+            const delay = Math.min(index * 0.15, 3);
             card.style.animationDelay = delay + 's';
             card.style.animationDuration = (4 - delay) + 's';
             card.classList.add('puzzle-piece');
@@ -1151,7 +1049,6 @@
         });
     }
 
-    // Owl-triggered navigation: owl stays put, only the cards fly in as a 4s puzzle effect
     function focusTab(tabId) {
         const section = document.getElementById('programsSection');
         const y = section.getBoundingClientRect().top + window.pageYOffset - (document.querySelector('header').offsetHeight + 20);
@@ -1160,13 +1057,12 @@
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        const tabsMap = { 'tab-all': 0, 'tab-gos': 1, 'tab-biz': 2, 'tab-horeca': 3, 'tab-prof': 4 };
+        
+        const tabsMap = { 'tab-kadry': 1, 'tab-pk': 2, 'tab-pp': 3, 'tab-po': 4, 'tab-sem': 5 };
         const buttons = document.querySelectorAll('.tab-btn');
         if (buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add('active');
 
         animateAssembly(tabId);
-
-        // owl chat/panel deliberately left open & in place — only content moves
         playHoot();
     }
 
@@ -1188,8 +1084,8 @@
     function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
     function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
 
-    /* ================= OWL APPEARANCE (5 minutes after page load, as requested) ================= */
-    const OWL_DELAY_MS = 5 * 1000; // 5 seconds
+    /* ================= OWL APPEARANCE ================= */
+    const OWL_DELAY_MS = 5 * 1000;
     let owlIntroduced = false;
     setTimeout(() => {
         document.getElementById('owlContainer').classList.add('visible');
@@ -1207,7 +1103,6 @@
         }
     }, 5000);
 
-    /* one hoot, with a soft decaying echo across 3 repeats to sound like it carries through a forest */
     function playHoot() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1227,7 +1122,6 @@
         } catch (e) {}
     }
 
-    // spontaneous hoot with echo every 20 seconds once the owl has appeared
     setInterval(() => {
         const container = document.getElementById('owlContainer');
         if (owlIntroduced && container.classList.contains('visible') && !container.classList.contains('scroll-hidden')) {
@@ -1235,8 +1129,6 @@
         }
     }, 20000);
 
-    /* Scrolling: owl fades out within ~1s of the first scroll movement, and returns
-       (with a friendly bubble) 5s after scrolling has fully stopped. */
     let scrollHideTimeout, scrollShowTimeout;
     window.addEventListener('scroll', () => {
         const container = document.getElementById('owlContainer');
@@ -1250,7 +1142,7 @@
                 container.classList.add('scroll-hidden');
                 if (chat.classList.contains('active')) { chat.classList.remove('active'); container.classList.remove('chat-opened'); }
                 bubble.classList.remove('show');
-            }, 150); // starts hiding almost immediately; the 1s is the fade transition itself
+            }, 150);
         }
 
         scrollShowTimeout = setTimeout(() => {
@@ -1276,7 +1168,7 @@
     const botTexts = {
         ru: {
             catPrompt: "Мы реализуем обучение по 4 профессиональным трекам. Какой сектор вас интересует?",
-            optGos: "🏛️ Госслужба и закупки", optBiz: "🚀 Цифровой бизнес и ИИ", optHoreca: "🏨 HoReCa и Туризм", optProf: "⚡ Быстрые профессии",
+            optKadry: "🎓 Нацпроект «Кадры»", optPk: "📈 Повышение квалификации", optPp: "🔄 Переподготовка", optPo: "🛠️ Проф. обучение",
             optBack: "⬅️ Назад в меню",
             optEnroll: "✍️ Инициировать заявку", optOther: "🔄 Анализировать другие направления",
             testStart: "Анализ запущен. Ответьте на 12 вопросов, чтобы алгоритм вычислил оптимальный вектор вашего профессионального развития.",
@@ -1288,7 +1180,7 @@
         },
         en: {
             catPrompt: "We provide training across 4 professional tracks. Which sector are you interested in?",
-            optGos: "🏛️ Public Administration & Procurement", optBiz: "🚀 Digital Business & AI", optHoreca: "🏨 HoReCa & Tourism", optProf: "⚡ Fast-Track Professions",
+            optKadry: "🎓 National Project «Kadry»", optPk: "📈 Upgrading Qualifications", optPp: "🔄 Retraining", optPo: "🛠️ Vocational Training",
             optBack: "⬅️ Back to main menu",
             optEnroll: "✍️ Initiate application", optOther: "🔄 Analyze other tracks",
             testStart: "Analysis launched. Please answer 12 questions so the algorithm can determine your optimal professional development vector.",
@@ -1352,15 +1244,14 @@
         `);
     }
 
-    // "Кратко обо всех программах" — owl stays put, cards fly into a 4s 3D puzzle formation
     function showCatalog() {
         addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
         addBotMsg(botTexts[currentLang].catPrompt);
         setOptions(`
-            <button class="chat-opt-btn" onclick="focusTab('tab-gos')">${botTexts[currentLang].optGos}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-biz')">${botTexts[currentLang].optBiz}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-horeca')">${botTexts[currentLang].optHoreca}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-prof')">${botTexts[currentLang].optProf}</button>
+            <button class="chat-opt-btn" onclick="focusTab('tab-kadry')">${botTexts[currentLang].optKadry}</button>
+            <button class="chat-opt-btn" onclick="focusTab('tab-pk')">${botTexts[currentLang].optPk}</button>
+            <button class="chat-opt-btn" onclick="focusTab('tab-pp')">${botTexts[currentLang].optPp}</button>
+            <button class="chat-opt-btn" onclick="focusTab('tab-po')">${botTexts[currentLang].optPo}</button>
             <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
         `);
     }
@@ -1415,7 +1306,7 @@
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
     function armRevealTargets(root = document) {
-        root.querySelectorAll('.card, .faq-item, .contact-card, .main-contact-box').forEach(el => {
+        root.querySelectorAll('.card, .faq-item, .contact-card, .main-contact-box, .sector-header').forEach(el => {
             if (!el.classList.contains('reveal-3d')) {
                 el.classList.add('reveal-3d');
                 revealObserver.observe(el);
@@ -1425,12 +1316,11 @@
 
     /* ================= INIT ================= */
     window.addEventListener('DOMContentLoaded', () => {
-        // theme: dark by default on first visit, remembered afterwards
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
-        rebuildTabClones();
+        fetchPrograms(); // ЗАГРУЗКА ИЗ БАЗЫ ДАННЫХ ПРИ СТАРТЕ
         armRevealTargets();
     });
     </script>
