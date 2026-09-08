@@ -257,10 +257,12 @@
         .compliance-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: left; opacity: 0.85; }
 
         /* ===== OWL ASSISTANT ===== */
-        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce); pointer-events: none; transform-origin: bottom right; }
+        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.45s var(--bezier-smooth); pointer-events: none; transform-origin: bottom right; }
         .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
+        /* stays fixed in place while scrolling — only shrinks, never disappears */
+        .owl-ecosystem.scroll-mini { transform: scale(0.52); }
 
-        .oak-branch { position: absolute; bottom: 15px; right: -10px; width: 400px; height: auto; filter: drop-shadow(0 25px 45px rgba(0,0,0,0.85)); transform: rotate(-5deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
+        .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
         .owl-container { position: absolute; bottom: 46px; left: 0; width: 100%; height: 210px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; overflow: visible; }
@@ -279,14 +281,14 @@
         .owl-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 18px 20px rgba(0,0,0,0.75)); overflow: visible; }
         .owl-body-group { animation: owlBob 1.1s ease-in-out infinite; transform-origin: 80px 170px; }
         @keyframes owlBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(-1deg); } }
-        .owl-leg-l { animation: stepL 1.1s ease-in-out infinite; transform-origin: 66px 150px; }
-        .owl-leg-r { animation: stepR 1.1s ease-in-out infinite; transform-origin: 93px 150px; }
+        .owl-leg-l { animation: stepL 1.1s ease-in-out infinite; transform-origin: 66px 158px; }
+        .owl-leg-r { animation: stepR 1.1s ease-in-out infinite; transform-origin: 93px 158px; }
         @keyframes stepL { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-14deg); } 50% { transform: rotate(0deg); } }
         @keyframes stepR { 0%,100% { transform: rotate(0deg); } 75% { transform: rotate(14deg); } 50% { transform: rotate(0deg); } }
-        .owl-wing { transform-origin: top center; animation: wingFlutter 3.4s ease-in-out infinite; }
+        .owl-wing { transform-origin: 80px 78px; animation: wingFlutter 3.4s ease-in-out infinite; }
         .owl-wing-l { animation-delay: 0s; }
         .owl-wing-r { animation-delay: 0.15s; }
-        @keyframes wingFlutter { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(6deg); } }
+        @keyframes wingFlutter { 0%,100% { transform: rotate(0deg) scaleY(1); } 45% { transform: rotate(6deg) scaleY(1.03); } 50% { transform: rotate(-3deg) scaleY(0.97); } 55% { transform: rotate(6deg) scaleY(1.03); } }
         /* blinking: eyelids sweep down and back up quickly, each eye slightly offset for a natural, non-robotic blink */
         .eyelid { transform-origin: center; animation: blink 4.6s ease-in-out infinite; }
         .owl-eye-r .eyelid { animation-delay: 0.06s; }
@@ -296,8 +298,7 @@
             97% { transform: scaleY(0.02); opacity: 0; }
         }
         /* scroll behaviour: hides within ~1s while scrolling, comes back 5s after scrolling stops */
-        .owl-ecosystem.scroll-hidden { opacity: 0; transform: translateY(70px) scale(0.85); pointer-events: none; transition: opacity 1s ease, transform 1s ease; }
-        .owl-ecosystem.visible:not(.scroll-hidden) { transition: opacity 0.5s ease, transform 0.5s var(--bezier-bounce), bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce); opacity: 1; }
+        .owl-ecosystem.scroll-hidden { display: none; }
 
         .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -761,43 +762,132 @@
     </div>
 
     <div class="owl-ecosystem" id="owlContainer">
-        <svg class="oak-branch" viewBox="0 0 500 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <path d="M0 55 Q 90 30 180 42 T 360 35 T 500 45" stroke="#4a3220" stroke-width="14" fill="none" stroke-linecap="round"/>
-            <path d="M0 55 Q 90 30 180 42 T 360 35 T 500 45" stroke="#6b4a2c" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.6"/>
-            <path d="M120 40 q 10 -22 22 -30" stroke="#4a3220" stroke-width="7" fill="none" stroke-linecap="round"/>
-            <path d="M310 38 q -8 -20 -20 -26" stroke="#4a3220" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <svg class="oak-branch" viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <defs>
+                <linearGradient id="barkGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#5c4028"/>
+                    <stop offset="55%" stop-color="#3c2a18"/>
+                    <stop offset="100%" stop-color="#241708"/>
+                </linearGradient>
+            </defs>
+            <ellipse cx="260" cy="98" rx="230" ry="10" fill="#000" opacity="0.45"/>
+            <path d="M0 62 Q 100 34 200 48 T 400 40 T 520 52 L520 78 Q 400 66 200 74 T 0 88 Z" fill="url(#barkGrad)"/>
+            <path d="M0 62 Q 100 34 200 48 T 400 40 T 520 52" stroke="#2a1c0e" stroke-width="2" fill="none" opacity="0.7"/>
+            <path d="M10 74 Q 110 50 210 62 T 410 56" stroke="#6b4a2c" stroke-width="1.5" fill="none" opacity="0.5"/>
+            <path d="M15 80 Q 120 58 230 68 T 430 64" stroke="#2a1c0e" stroke-width="1.5" fill="none" opacity="0.5"/>
+            <ellipse cx="140" cy="66" rx="6" ry="4" fill="#241708" opacity="0.6"/>
+            <ellipse cx="360" cy="52" rx="5" ry="3.5" fill="#241708" opacity="0.6"/>
+            <path d="M135 55 q 8 -26 24 -36 q -4 20 -10 40 Z" fill="url(#barkGrad)"/>
+            <path d="M345 46 q -8 -22 -22 -30 q 4 18 10 34 Z" fill="url(#barkGrad)"/>
         </svg>
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
 
             <div class="owl-walker" id="owlWalker">
-                <svg class="owl-svg" viewBox="0 0 160 190" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="80" cy="182" rx="22" ry="4" fill="#000" opacity="0.35"/>
-                    <g class="owl-leg owl-leg-l"><rect x="63" y="150" width="7" height="22" rx="3" fill="#C98A3D"/></g>
-                    <g class="owl-leg owl-leg-r"><rect x="90" y="150" width="7" height="22" rx="3" fill="#C98A3D"/></g>
+                <svg class="owl-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="owlBodyGrad" cx="45%" cy="35%" r="75%">
+                            <stop offset="0%" stop-color="#9c7c52"/>
+                            <stop offset="55%" stop-color="#7a5c3a"/>
+                            <stop offset="100%" stop-color="#4f3a24"/>
+                        </radialGradient>
+                        <radialGradient id="owlChestGrad" cx="50%" cy="30%" r="70%">
+                            <stop offset="0%" stop-color="#f1e2c4"/>
+                            <stop offset="70%" stop-color="#d9bf95"/>
+                            <stop offset="100%" stop-color="#b89968"/>
+                        </radialGradient>
+                        <radialGradient id="owlEyeGrad" cx="42%" cy="38%" r="65%">
+                            <stop offset="0%" stop-color="#fff3c4"/>
+                            <stop offset="35%" stop-color="#ffcf40"/>
+                            <stop offset="75%" stop-color="#f08a1e"/>
+                            <stop offset="100%" stop-color="#a85c10"/>
+                        </radialGradient>
+                        <linearGradient id="beakGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#3a3230"/>
+                            <stop offset="100%" stop-color="#0f0d0c"/>
+                        </linearGradient>
+                        <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#6a4e30"/>
+                            <stop offset="100%" stop-color="#3a2a18"/>
+                        </linearGradient>
+                    </defs>
+
+                    <ellipse cx="80" cy="192" rx="26" ry="5" fill="#000" opacity="0.4"/>
+
+                    <g class="owl-leg owl-leg-l"><rect x="62" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/></g>
+                    <g class="owl-leg owl-leg-r"><rect x="90" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/></g>
+                    <g class="owl-foot owl-foot-l"><ellipse cx="60" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M50 184 q -6 3 -9 8 M60 186 q 0 5 0 9 M70 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+                    <g class="owl-foot owl-foot-r"><ellipse cx="100" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M90 184 q -6 3 -9 8 M100 186 q 0 5 0 9 M110 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
+
                     <g class="owl-body-group">
-                        <ellipse cx="80" cy="105" rx="52" ry="62" fill="#6B4A2C"/>
-                        <ellipse cx="80" cy="112" rx="38" ry="46" fill="#8A5F35"/>
-                        <ellipse cx="80" cy="122" rx="26" ry="30" fill="#D9B278"/>
-                        <path d="M45 70 Q 30 30 48 15 Q 55 40 60 58 Z" fill="#6B4A2C"/>
-                        <path d="M115 70 Q 130 30 112 15 Q 105 40 100 58 Z" fill="#6B4A2C"/>
-                        <g class="owl-wing owl-wing-l"><ellipse cx="42" cy="110" rx="16" ry="38" fill="#5A3F26"/></g>
-                        <g class="owl-wing owl-wing-r"><ellipse cx="118" cy="110" rx="16" ry="38" fill="#5A3F26"/></g>
-                        <circle cx="61" cy="88" r="19" fill="#F4E9D8"/>
-                        <circle cx="99" cy="88" r="19" fill="#F4E9D8"/>
+                        <!-- ear tufts -->
+                        <path d="M44 42 Q 34 8 52 -4 Q 56 20 58 46 Z" fill="url(#owlBodyGrad)"/>
+                        <path d="M116 42 Q 126 8 108 -4 Q 104 20 102 46 Z" fill="url(#owlBodyGrad)"/>
+                        <path d="M46 40 Q 40 16 52 4" stroke="#2f2114" stroke-width="1.4" fill="none" opacity="0.55"/>
+                        <path d="M114 40 Q 120 16 108 4" stroke="#2f2114" stroke-width="1.4" fill="none" opacity="0.55"/>
+
+                        <!-- wings (behind body) -->
+                        <g class="owl-wing owl-wing-l"><path d="M46 66 Q 18 90 24 138 Q 30 158 48 150 Q 40 110 50 72 Z" fill="url(#wingGrad)"/>
+                            <path d="M30 96 Q 26 118 32 140 M36 84 Q 30 112 36 146 M42 76 Q 38 108 42 148" stroke="#241a10" stroke-width="1.3" fill="none" opacity="0.55"/>
+                        </g>
+                        <g class="owl-wing owl-wing-r"><path d="M114 66 Q 142 90 136 138 Q 130 158 112 150 Q 120 110 110 72 Z" fill="url(#wingGrad)"/>
+                            <path d="M130 96 Q 134 118 128 140 M124 84 Q 130 112 124 146 M118 76 Q 122 108 118 148" stroke="#241a10" stroke-width="1.3" fill="none" opacity="0.55"/>
+                        </g>
+
+                        <!-- body -->
+                        <ellipse cx="80" cy="112" rx="50" ry="64" fill="url(#owlBodyGrad)"/>
+                        <ellipse cx="80" cy="122" rx="34" ry="46" fill="url(#owlChestGrad)"/>
+                        <!-- chest feather streaks -->
+                        <g opacity="0.5" stroke="#8a6a42" stroke-width="1.4" fill="none">
+                            <path d="M64 96 Q 62 118 66 148"/>
+                            <path d="M74 92 Q 72 122 76 156"/>
+                            <path d="M86 92 Q 88 122 84 156"/>
+                            <path d="M96 96 Q 98 118 94 148"/>
+                        </g>
+                        <!-- mottled speckles across the back/shoulders -->
+                        <g opacity="0.65" fill="#3a2a18">
+                            <ellipse cx="52" cy="76" rx="4" ry="6" transform="rotate(-18 52 76)"/>
+                            <ellipse cx="108" cy="76" rx="4" ry="6" transform="rotate(18 108 76)"/>
+                            <ellipse cx="46" cy="98" rx="3.5" ry="5" transform="rotate(-10 46 98)"/>
+                            <ellipse cx="114" cy="98" rx="3.5" ry="5" transform="rotate(10 114 98)"/>
+                            <ellipse cx="58" cy="60" rx="3" ry="4.5" transform="rotate(-14 58 60)"/>
+                            <ellipse cx="102" cy="60" rx="3" ry="4.5" transform="rotate(14 102 60)"/>
+                        </g>
+
+                        <!-- facial disc -->
+                        <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="#e8d3a8" opacity="0.9"/>
+                        <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="none" stroke="#5a4326" stroke-width="1.3" opacity="0.5"/>
+
+                        <!-- eyes -->
+                        <circle cx="61" cy="86" r="20" fill="#e8d3a8"/>
+                        <circle cx="99" cy="86" r="20" fill="#e8d3a8"/>
+                        <circle cx="61" cy="86" r="20" fill="none" stroke="#5a4326" stroke-width="1.2" opacity="0.6"/>
+                        <circle cx="99" cy="86" r="20" fill="none" stroke="#5a4326" stroke-width="1.2" opacity="0.6"/>
+
                         <g class="owl-eye owl-eye-l">
-                            <circle cx="61" cy="88" r="12" fill="#2b1c10"/>
-                            <circle cx="64" cy="84" r="4" fill="#fff"/>
-                            <rect class="eyelid" x="49" y="76" width="24" height="24" rx="12" fill="#8A5F35"/>
+                            <circle cx="61" cy="86" r="13.5" fill="url(#owlEyeGrad)"/>
+                            <circle cx="61" cy="86" r="13.5" fill="none" stroke="#7a3d08" stroke-width="0.8"/>
+                            <circle cx="61" cy="86" r="6" fill="#1a1008"/>
+                            <circle cx="58" cy="82" r="3" fill="#fff" opacity="0.85"/>
+                            <path d="M53 78 L69 78 M54 74 L68 74" stroke="#c8791c" stroke-width="0.6" opacity="0.5"/>
+                            <rect class="eyelid" x="47" y="72" width="28" height="28" rx="14" fill="#8A5F35"/>
                         </g>
                         <g class="owl-eye owl-eye-r">
-                            <circle cx="99" cy="88" r="12" fill="#2b1c10"/>
-                            <circle cx="102" cy="84" r="4" fill="#fff"/>
-                            <rect class="eyelid" x="87" y="76" width="24" height="24" rx="12" fill="#8A5F35"/>
+                            <circle cx="99" cy="86" r="13.5" fill="url(#owlEyeGrad)"/>
+                            <circle cx="99" cy="86" r="13.5" fill="none" stroke="#7a3d08" stroke-width="0.8"/>
+                            <circle cx="99" cy="86" r="6" fill="#1a1008"/>
+                            <circle cx="96" cy="82" r="3" fill="#fff" opacity="0.85"/>
+                            <path d="M91 78 L107 78 M92 74 L106 74" stroke="#c8791c" stroke-width="0.6" opacity="0.5"/>
+                            <rect class="eyelid" x="85" y="72" width="28" height="28" rx="14" fill="#8A5F35"/>
                         </g>
-                        <path d="M75 98 L80 112 L85 98 Z" fill="#E8A33D"/>
-                        <path d="M40 62 L48 44 L56 60 Z" fill="#5A3F26"/>
-                        <path d="M120 62 L112 44 L104 60 Z" fill="#5A3F26"/>
+
+                        <!-- brow ridges for a sharper, more realistic gaze -->
+                        <path d="M46 72 Q 61 64 76 72" stroke="#3a2a18" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
+                        <path d="M84 72 Q 99 64 114 72" stroke="#3a2a18" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
+
+                        <!-- beak -->
+                        <path d="M73 96 Q 80 92 87 96 L83 116 Q 80 122 77 116 Z" fill="url(#beakGrad)"/>
+                        <path d="M76 98 L84 98" stroke="#000" stroke-width="1" opacity="0.4"/>
                     </g>
                 </svg>
             </div>
