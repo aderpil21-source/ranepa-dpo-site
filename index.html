@@ -149,6 +149,10 @@
         .card { background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative; transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth); box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style; }
         .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
 
+        /* seamless volumetric reveal-on-scroll (applies to cards, FAQ items, contact cards) */
+        .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
+        .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
+
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; gap: 10px; flex-wrap: wrap; }
         .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.7rem; color: var(--text-main); text-shadow: 0 2px 4px var(--shadow-color); }
         .hours { font-size: 0.85rem; background: rgba(202, 15, 62, 0.15); border: 1px solid rgba(202, 15, 62, 0.3); color: var(--ranepa-red); padding: 7px 14px; border-radius: 9px; font-weight: 800; white-space: nowrap; }
@@ -193,9 +197,23 @@
         .contact-card:hover { transform: translateY(-5px); border-color: var(--ranepa-red); }
         .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; margin-bottom: 6px; color: var(--text-main); font-weight: 800; }
         .contact-card .position { font-size: 0.85rem; color: var(--ranepa-red); margin-bottom: 16px; font-weight: 700; text-transform: uppercase; }
-        .contact-card .details { font-size: 0.92rem; color: var(--text-muted); line-height: 1.9; display: flex; flex-direction: column; gap: 4px; word-break: break-word; }
-        .contact-card .details a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.2s; }
+        /* .details is a plain block: each logical line is its own <p>, so text never gets force-split like flex-column used to do */
+        .contact-card .details { font-size: 0.92rem; color: var(--text-muted); line-height: 1.9; }
+        .contact-card .details p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; white-space: normal; }
+        .contact-card .details a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.2s; word-break: break-word; }
         .contact-card .details a:hover { color: var(--ranepa-red); }
+
+        /* liquid-glass chrome upgrade */
+        .contact-card, .main-contact-box {
+            position: relative; overflow: hidden;
+            background: linear-gradient(160deg, var(--bg-card) 0%, rgba(255,255,255,0.02) 100%);
+        }
+        .contact-card::before, .main-contact-box::before {
+            content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+            background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.12) 45%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.12) 55%, transparent 100%);
+            transform: skewX(-18deg); pointer-events: none; transition: left 1.1s var(--bezier-smooth);
+        }
+        .contact-card:hover::before, .main-contact-box:hover::before { left: 130%; }
 
         .legal-footer { margin-top: 60px; padding-top: 35px; border-top: 1px solid var(--border-glass); font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; text-align: center; }
         .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 15px; margin-bottom: 25px; }
@@ -211,6 +229,20 @@
 
         .modal-box { background: var(--bg-glass); backdrop-filter: blur(35px) saturate(200%); border-radius: 30px; max-width: 580px; width: 100%; text-align: center; border: 1px solid var(--border-glass); box-shadow: 0 45px 90px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 88vh; overflow-y: auto; overscroll-behavior: contain; transform: scale(0.8) translateY(30px); opacity: 0; transition: transform 0.4s var(--bezier-bounce), opacity 0.3s ease; will-change: transform, opacity; padding: clamp(28px, 5vw, 50px); color: var(--text-main); }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
+
+        /* chrome / liquid-glass variant — drops from the top like a physical panel */
+        .chrome-glass {
+            background: linear-gradient(165deg, rgba(255,255,255,0.14) 0%, var(--bg-glass) 35%, var(--bg-glass) 100%) !important;
+            border: 1px solid rgba(255,255,255,0.35) !important;
+            box-shadow: 0 55px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.2), 0 0 60px rgba(202,15,62,0.12) !important;
+            position: relative; overflow: hidden;
+        }
+        .chrome-glass::after {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, transparent 18%, transparent 82%, rgba(255,255,255,0.12) 100%);
+        }
+        #quickContactsModal .modal-box { transform: translateY(-60px) scale(0.92); }
+        #quickContactsModal.active .modal-box { transform: translateY(0) scale(1); }
 
         .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.4rem, 5vw, 2rem); color: var(--text-main); margin-bottom: 18px; font-weight: 900; line-height: 1.3; }
         .modal-box p { color: var(--text-muted); margin-bottom: 30px; font-size: 1.05rem; text-align: left; line-height: 1.6; }
@@ -231,11 +263,41 @@
         .oak-branch { position: absolute; bottom: 15px; right: -10px; width: 400px; height: auto; filter: drop-shadow(0 25px 45px rgba(0,0,0,0.85)); transform: rotate(-5deg); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        .owl-container { position: absolute; bottom: 40px; left: 30px; width: 260px; height: 320px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; }
+        .owl-container { position: absolute; bottom: 46px; left: 0; width: 100%; height: 210px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; overflow: visible; }
 
-        /* canvas used instead of raw <video> to genuinely strip the black background pixel-by-pixel (not a CSS blend hack) */
-        #owlCanvas { width: 100%; height: 100%; display: block; filter: drop-shadow(0 20px 25px rgba(0,0,0,0.8)); }
-        #owlVideoSource { display: none; }
+        /* hand-drawn animated owl: paces back and forth along the branch */
+        .owl-walker { position: absolute; bottom: 0; left: 10%; width: 130px; height: 190px; animation: owlPace 16s ease-in-out infinite; will-change: transform; }
+        @keyframes owlPace {
+            0%   { transform: translateX(0) scaleX(1); }
+            22%  { transform: translateX(0) scaleX(1); }
+            45%  { transform: translateX(190px) scaleX(1); }
+            50%  { transform: translateX(190px) scaleX(-1); }
+            72%  { transform: translateX(190px) scaleX(-1); }
+            95%  { transform: translateX(0) scaleX(-1); }
+            100% { transform: translateX(0) scaleX(1); }
+        }
+        .owl-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 18px 20px rgba(0,0,0,0.75)); overflow: visible; }
+        .owl-body-group { animation: owlBob 1.1s ease-in-out infinite; transform-origin: 80px 170px; }
+        @keyframes owlBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(-1deg); } }
+        .owl-leg-l { animation: stepL 1.1s ease-in-out infinite; transform-origin: 66px 150px; }
+        .owl-leg-r { animation: stepR 1.1s ease-in-out infinite; transform-origin: 93px 150px; }
+        @keyframes stepL { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-14deg); } 50% { transform: rotate(0deg); } }
+        @keyframes stepR { 0%,100% { transform: rotate(0deg); } 75% { transform: rotate(14deg); } 50% { transform: rotate(0deg); } }
+        .owl-wing { transform-origin: top center; animation: wingFlutter 3.4s ease-in-out infinite; }
+        .owl-wing-l { animation-delay: 0s; }
+        .owl-wing-r { animation-delay: 0.15s; }
+        @keyframes wingFlutter { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(6deg); } }
+        /* blinking: eyelids sweep down and back up quickly, each eye slightly offset for a natural, non-robotic blink */
+        .eyelid { transform-origin: center; animation: blink 4.6s ease-in-out infinite; }
+        .owl-eye-r .eyelid { animation-delay: 0.06s; }
+        @keyframes blink {
+            0%, 92%, 100% { transform: scaleY(0.02); opacity: 0; }
+            94% { transform: scaleY(1); opacity: 1; }
+            97% { transform: scaleY(0.02); opacity: 0; }
+        }
+        /* scroll behaviour: hides within ~1s while scrolling, comes back 5s after scrolling stops */
+        .owl-ecosystem.scroll-hidden { opacity: 0; transform: translateY(70px) scale(0.85); pointer-events: none; transition: opacity 1s ease, transform 1s ease; }
+        .owl-ecosystem.visible:not(.scroll-hidden) { transition: opacity 0.5s ease, transform 0.5s var(--bezier-bounce), bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce); opacity: 1; }
 
         .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -291,7 +353,7 @@
                 display: flex; justify-content: center; align-items: center;
                 pointer-events: auto; z-index: 10000;
             }
-            #owlCanvas { display: none; }
+            .owl-walker { display: none; }
             .mobile-chat-icon { display: block; width: 30px; height: 30px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
             .owl-bubble { right: 0; left: auto; bottom: 72px; transform: translateX(0) scale(0.5); }
             .owl-bubble.show { transform: translateX(0) scale(1); }
@@ -342,7 +404,7 @@
 
             <nav class="header-nav">
                 <span class="header-nav-link" onclick="document.getElementById('programsSection').scrollIntoView({behavior: 'smooth'});" data-i18n="navProg">Программы</span>
-                <span class="header-nav-link" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'});" data-i18n="navCont">Контакты</span>
+                <span class="header-nav-link" onclick="openQuickContacts()" data-i18n="navCont">Контакты</span>
                 <button class="header-nav-btn" onclick="openModal()" data-i18n="navBtn">Записаться</button>
             </nav>
         </div>
@@ -542,36 +604,36 @@
                     <h4>Канаш Ирина Степановна</h4>
                     <div class="position" data-i18n="dirCenter">Директор центра</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 304<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">+7 (4012) 97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)<br>
-                        E-mail: <a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 304</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">+7 (4012) 97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)</p>
+                        <p>E-mail: <a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a></p>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Крупин Артур Леонидович</h4>
                     <div class="position" data-i18n="depDir">Заместитель директора центра</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
+                        <p>E-mail: <a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a></p>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Перетяка Нина Петровна</h4>
                     <div class="position" data-i18n="projDir">Директор проекта</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br>
-                        E-mail: <a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</p>
+                        <p>E-mail: <a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a></p>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Лощилова М.А.</h4>
                     <div class="position" data-i18n="spec">Специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br>
-                        E-mail: <a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</p>
+                        <p>E-mail: <a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a></p>
                     </div>
                 </div>
             </div>
@@ -582,18 +644,18 @@
                     <h4>Михина Елена Владимировна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
+                        <p>E-mail: <a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a></p>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Беспалова Валерия Вадимовна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
+                        <p>E-mail: <a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a></p>
                     </div>
                 </div>
             </div>
@@ -604,27 +666,27 @@
                     <h4>Дацун Татьяна Григорьевна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)<br>
-                        E-mail: <a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</p>
+                        <p>E-mail: <a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a></p>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Чижекова Наталья Владимировна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
+                        <p>E-mail: <a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a></p>
                     </div>
                 </div>
                 <div class="contact-card">
                     <h4>Хамзина Ирина Александровна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
-                        <span data-i18n="cabText">Каб.</span> 312<br>
-                        <span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)<br>
-                        E-mail: <a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a>
+                        <p><span data-i18n="cabText">Каб.</span> 312</p>
+                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
+                        <p>E-mail: <a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></p>
                     </div>
                 </div>
             </div>
@@ -647,6 +709,17 @@
             <div class="footer-kadry-mobile">
                 <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="quickContactsModal">
+        <div class="modal-box chrome-glass" style="text-align: left; max-width: 560px;">
+            <h3 data-i18n="qcTitle">Быстрый контакт</h3>
+            <p style="margin-bottom: 18px;"><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
+            <p style="margin-bottom: 18px;"><b style="color: var(--ranepa-red);">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
+            <p style="margin-bottom: 28px;"><b style="color: var(--ranepa-red);" data-i18n="addressLabel">Адрес:</b> <span data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span></p>
+            <div class="modal-btn modal-btn-trudvsem" style="background: linear-gradient(135deg, var(--ranepa-red), #e11d48);" onclick="closeQuickContacts(); document.getElementById('contactsSection').scrollIntoView({behavior:'smooth'});" data-i18n="qcAll">Все контакты и сотрудники</div>
+            <div class="close-modal" onclick="closeQuickContacts()" data-i18n="modClose">Закрыть окно</div>
         </div>
     </div>
 
@@ -688,16 +761,47 @@
     </div>
 
     <div class="owl-ecosystem" id="owlContainer">
-        <svg class="oak-branch" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 100 Q 100 60 200 80 T 400 60" stroke="#3f2a1a" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <svg class="oak-branch" viewBox="0 0 500 90" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path d="M0 55 Q 90 30 180 42 T 360 35 T 500 45" stroke="#4a3220" stroke-width="14" fill="none" stroke-linecap="round"/>
+            <path d="M0 55 Q 90 30 180 42 T 360 35 T 500 45" stroke="#6b4a2c" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.6"/>
+            <path d="M120 40 q 10 -22 22 -30" stroke="#4a3220" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <path d="M310 38 q -8 -20 -20 -26" stroke="#4a3220" stroke-width="7" fill="none" stroke-linecap="round"/>
         </svg>
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
-            <canvas id="owlCanvas" width="260" height="320"></canvas>
-            <video id="owlVideoSource" autoplay loop muted playsinline crossorigin="anonymous">
-                <source src="./img/owl.webm" type="video/webm">
-                <source src="./img/owl.mov" type="video/quicktime">
-            </video>
+
+            <div class="owl-walker" id="owlWalker">
+                <svg class="owl-svg" viewBox="0 0 160 190" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="80" cy="182" rx="22" ry="4" fill="#000" opacity="0.35"/>
+                    <g class="owl-leg owl-leg-l"><rect x="63" y="150" width="7" height="22" rx="3" fill="#C98A3D"/></g>
+                    <g class="owl-leg owl-leg-r"><rect x="90" y="150" width="7" height="22" rx="3" fill="#C98A3D"/></g>
+                    <g class="owl-body-group">
+                        <ellipse cx="80" cy="105" rx="52" ry="62" fill="#6B4A2C"/>
+                        <ellipse cx="80" cy="112" rx="38" ry="46" fill="#8A5F35"/>
+                        <ellipse cx="80" cy="122" rx="26" ry="30" fill="#D9B278"/>
+                        <path d="M45 70 Q 30 30 48 15 Q 55 40 60 58 Z" fill="#6B4A2C"/>
+                        <path d="M115 70 Q 130 30 112 15 Q 105 40 100 58 Z" fill="#6B4A2C"/>
+                        <g class="owl-wing owl-wing-l"><ellipse cx="42" cy="110" rx="16" ry="38" fill="#5A3F26"/></g>
+                        <g class="owl-wing owl-wing-r"><ellipse cx="118" cy="110" rx="16" ry="38" fill="#5A3F26"/></g>
+                        <circle cx="61" cy="88" r="19" fill="#F4E9D8"/>
+                        <circle cx="99" cy="88" r="19" fill="#F4E9D8"/>
+                        <g class="owl-eye owl-eye-l">
+                            <circle cx="61" cy="88" r="12" fill="#2b1c10"/>
+                            <circle cx="64" cy="84" r="4" fill="#fff"/>
+                            <rect class="eyelid" x="49" y="76" width="24" height="24" rx="12" fill="#8A5F35"/>
+                        </g>
+                        <g class="owl-eye owl-eye-r">
+                            <circle cx="99" cy="88" r="12" fill="#2b1c10"/>
+                            <circle cx="102" cy="84" r="4" fill="#fff"/>
+                            <rect class="eyelid" x="87" y="76" width="24" height="24" rx="12" fill="#8A5F35"/>
+                        </g>
+                        <path d="M75 98 L80 112 L85 98 Z" fill="#E8A33D"/>
+                        <path d="M40 62 L48 44 L56 60 Z" fill="#5A3F26"/>
+                        <path d="M120 62 L112 44 L104 60 Z" fill="#5A3F26"/>
+                    </g>
+                </svg>
+            </div>
+
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
                 <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
@@ -800,6 +904,7 @@
             modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму",
             complianceText: "Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.",
             modClose: "Закрыть окно", modOk: "Понятно",
+            qcTitle: "Быстрый контакт", qcAll: "Все контакты и сотрудники",
             polModTitle: "Политика обработки персональных данных",
             polModText: "В соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных» в редакции 2026 года и актуальными нормативными актами Роскомнадзора, Западный филиал РАНХиГС осуществляет сбор, хранение и обработку информации о Пользователе исключительно в образовательных целях.<br><br>1. Пользователь выражает прямое информированное согласие на обработку ПДн, использование файлов cookie и метрических систем при использовании сайта.<br>2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.",
             termModTitle: "Пользовательское соглашение и оферта",
@@ -859,6 +964,7 @@
             modTrud: "Apply via \"Work of Russia\" (Kaliningrad)", modYan: "Apply via Yandex Form",
             complianceText: "By clicking the button, you give direct informed consent to the processing of personal data in accordance with Federal Law 152-FZ and current Roskomnadzor requirements (2026), and accept the Terms of Use.",
             modClose: "Close", modOk: "Got it",
+            qcTitle: "Quick Contact", qcAll: "All contacts and staff",
             polModTitle: "Personal Data Processing Policy",
             polModText: "In accordance with Federal Law No. 152-FZ \"On Personal Data\" (2026 edition) and current Roskomnadzor regulations, RANEPA Western Branch collects, stores and processes User information solely for educational purposes.<br><br>1. The User gives direct informed consent to the processing of personal data and the use of cookies and analytics on the site.<br>2. The Operator uses certified cryptographic protection protocols. Covert collection of biometric data is strictly prohibited.<br>3. No cross-border data transfer takes place. Data is stored on servers physically located in the Russian Federation.",
             termModTitle: "Terms of Use & Public Offer",
@@ -897,6 +1003,7 @@
         });
 
         rebuildTabClones();
+        armRevealTargets();
         resetMenu();
     }
 
@@ -981,6 +1088,8 @@
     }
 
     /* ================= MODALS ================= */
+    function openQuickContacts() { document.getElementById('quickContactsModal').classList.add('active'); }
+    function closeQuickContacts() { document.getElementById('quickContactsModal').classList.remove('active'); }
     function openModal() { document.getElementById('enrollModal').classList.add('active'); }
     function closeModal() { document.getElementById('enrollModal').classList.remove('active'); }
     function openPolicyModal() { document.getElementById('policyModal').classList.add('active'); }
@@ -988,40 +1097,18 @@
     function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
     function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
 
-    /* ================= OWL VIDEO — real background removal via canvas chroma-key ================= */
-    // A CSS blend-mode trick only fakes transparency against a pure-black page background.
-    // Since the theme can be light or dark, we genuinely strip near-black pixels frame by frame.
-    (function initOwlCanvas() {
-        const video = document.getElementById('owlVideoSource');
-        const canvas = document.getElementById('owlCanvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        let raf = null;
-
-        function draw() {
-            if (video.readyState >= 2) {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const d = frame.data;
-                for (let i = 0; i < d.length; i += 4) {
-                    // near-black pixels (the recorded background) become fully transparent
-                    if (d[i] < 32 && d[i + 1] < 32 && d[i + 2] < 32) {
-                        d[i + 3] = 0;
-                    }
-                }
-                ctx.putImageData(frame, 0, 0);
-            }
-            raf = requestAnimationFrame(draw);
-        }
-        video.addEventListener('loadeddata', () => { if (!raf) draw(); });
-        video.play().catch(() => {});
-    })();
-
     /* ================= OWL APPEARANCE (5 minutes after page load, as requested) ================= */
     const OWL_DELAY_MS = 5 * 60 * 1000; // 5 minutes
-    setTimeout(() => { document.getElementById('owlContainer').classList.add('visible'); }, OWL_DELAY_MS);
+    let owlIntroduced = false;
+    setTimeout(() => {
+        document.getElementById('owlContainer').classList.add('visible');
+        owlIntroduced = true;
+    }, OWL_DELAY_MS);
 
     setInterval(() => {
+        const container = document.getElementById('owlContainer');
         const bubble = document.getElementById('owlBubble');
+        if (!container.classList.contains('visible') || container.classList.contains('scroll-hidden')) return;
         if (!document.getElementById('owlChat').classList.contains('active')) {
             bubble.classList.toggle('show');
         } else {
@@ -1029,33 +1116,56 @@
         }
     }, 5000);
 
+    /* one hoot, with a soft decaying echo across 3 repeats to sound like it carries through a forest */
     function playHoot() {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(90, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+            const repeats = [{ t: 0, g: 0.06 }, { t: 0.42, g: 0.03 }, { t: 0.85, g: 0.015 }];
+            repeats.forEach(r => {
+                const start = audioCtx.currentTime + r.t;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, start);
+                osc.frequency.exponentialRampToValueAtTime(90, start + 0.5);
+                gain.gain.setValueAtTime(r.g, start);
+                gain.gain.exponentialRampToValueAtTime(0.001, start + 0.65);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(start); osc.stop(start + 0.7);
+            });
         } catch (e) {}
     }
 
-    let scrollTimer;
-    window.addEventListener('scroll', () => {
-        clearTimeout(scrollTimer);
-        const chat = document.getElementById('owlChat');
-        const ecosystem = document.getElementById('owlContainer');
-        const bubble = document.getElementById('owlBubble');
-        if (chat.classList.contains('active')) {
-            chat.classList.remove('active');
-            ecosystem.classList.remove('chat-opened');
+    // spontaneous hoot with echo every 20 seconds once the owl has appeared
+    setInterval(() => {
+        const container = document.getElementById('owlContainer');
+        if (owlIntroduced && container.classList.contains('visible') && !container.classList.contains('scroll-hidden')) {
+            playHoot();
         }
-        if (bubble) bubble.classList.remove('show');
-        scrollTimer = setTimeout(() => {}, 200);
+    }, 20000);
+
+    /* Scrolling: owl fades out within ~1s of the first scroll movement, and returns
+       (with a friendly bubble) 5s after scrolling has fully stopped. */
+    let scrollHideTimeout, scrollShowTimeout;
+    window.addEventListener('scroll', () => {
+        const container = document.getElementById('owlContainer');
+        const chat = document.getElementById('owlChat');
+        const bubble = document.getElementById('owlBubble');
+
+        clearTimeout(scrollShowTimeout);
+        if (!container.classList.contains('scroll-hidden')) {
+            clearTimeout(scrollHideTimeout);
+            scrollHideTimeout = setTimeout(() => {
+                container.classList.add('scroll-hidden');
+                if (chat.classList.contains('active')) { chat.classList.remove('active'); container.classList.remove('chat-opened'); }
+                bubble.classList.remove('show');
+            }, 150); // starts hiding almost immediately; the 1s is the fade transition itself
+        }
+
+        scrollShowTimeout = setTimeout(() => {
+            container.classList.remove('scroll-hidden');
+            setTimeout(() => bubble.classList.add('show'), 300);
+        }, 5000);
     }, { passive: true });
 
     function toggleChat() {
@@ -1203,6 +1313,25 @@
         `);
     }
 
+    /* ================= VOLUMETRIC SCROLL REVEAL ================= */
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    function armRevealTargets(root = document) {
+        root.querySelectorAll('.card, .faq-item, .contact-card, .main-contact-box').forEach(el => {
+            if (!el.classList.contains('reveal-3d')) {
+                el.classList.add('reveal-3d');
+                revealObserver.observe(el);
+            }
+        });
+    }
+
     /* ================= INIT ================= */
     window.addEventListener('DOMContentLoaded', () => {
         // theme: dark by default on first visit, remembered afterwards
@@ -1211,6 +1340,7 @@
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
         rebuildTabClones();
+        armRevealTargets();
     });
     </script>
 </body>
