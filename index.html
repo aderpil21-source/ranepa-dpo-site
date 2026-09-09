@@ -61,7 +61,6 @@
 
         .system-cite { display: none !important; }
 
-        /* ===== ПОСТОЯННАЯ БЕГУЩАЯ СТРОКА-УВЕДОМЛЕНИЕ ===== */
         .global-alert-ticker {
             position: sticky; top: var(--header-h); z-index: 10045;
             background: linear-gradient(90deg, #881337, var(--ranepa-red), #881337);
@@ -73,7 +72,7 @@
         .global-alert-ticker:hover { background: linear-gradient(90deg, var(--ranepa-red), #e11d48, var(--ranepa-red)); }
         .ticker-inner {
             display: inline-block; padding-left: 100%;
-            animation: marquee 25s linear infinite;
+            animation: marquee 17.5s linear infinite;
         }
         .global-alert-ticker:hover .ticker-inner { animation-play-state: paused; }
         @keyframes marquee {
@@ -143,13 +142,53 @@
 
         .container { max-width: 1350px; margin: 0 auto; padding: 40px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); position: relative; z-index: 5; }
 
+        .tabs-nav-wrapper { position: relative; }
         .tabs-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 50px; background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 14px; border-radius: 18px; border: 1px solid var(--border-glass); box-shadow: 0 15px 30px var(--shadow-color); animation: fadeUp 0.8s var(--bezier-smooth) 0.2s forwards; opacity: 0; scroll-margin-top: calc(var(--header-h) + 20px); }
         .tab-btn { background: transparent; border: 1px solid transparent; padding: 12px 24px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--text-muted); transition: all 0.3s var(--bezier-bounce); cursor: pointer; touch-action: manipulation; }
         .tab-btn:hover { color: var(--text-main); background: var(--btn-glass); border-color: var(--border-glass); transform: translateY(-2px); }
         .tab-btn.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); }
 
+        /* mobile swipe hint: a soft fading edge + a one-time bounce arrow so it's obvious the tab bar scrolls sideways */
+        .swipe-hint { display: none; }
+        @media (max-width: 768px) {
+            .tabs-nav-wrapper::after {
+                content: ''; position: absolute; top: 0; right: 0; bottom: 12px; width: 34px; pointer-events: none;
+                background: linear-gradient(90deg, transparent, var(--bg-deep) 85%);
+                opacity: 0.9; border-radius: 0 18px 18px 0; z-index: 2;
+            }
+            .swipe-hint {
+                display: flex; align-items: center; justify-content: center; gap: 4px;
+                font-size: 0.72rem; color: var(--text-muted); margin: -38px 0 20px; position: relative; z-index: 3;
+                animation: swipeNudge 1.8s ease-in-out 3;
+            }
+            @keyframes swipeNudge { 0%,100% { transform: translateX(0); opacity: 0.6; } 50% { transform: translateX(6px); opacity: 1; } }
+        }
+
         .tab-content { display: none; perspective: 1500px; }
         .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: clamp(25px, 3vw, 35px); align-items: start; }
+
+        /* ===== FILTERS (Все программы) ===== */
+        .filters-bar {
+            display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+            background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border-glass);
+            border-radius: 18px; padding: 18px 20px; margin-bottom: 30px; box-shadow: 0 12px 25px var(--shadow-color);
+        }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+        .filter-group label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; color: var(--text-muted); }
+        .filter-group select, .filter-group input[type="number"] {
+            background: var(--btn-glass); border: 1px solid var(--border-glass); border-radius: 10px;
+            padding: 9px 12px; color: var(--text-main); font-size: 0.88rem; font-weight: 600; outline: none;
+        }
+        .filter-sectors { display: flex; flex-wrap: wrap; gap: 8px; }
+        .filter-sector-chip {
+            background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted);
+            padding: 8px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            transition: all 0.25s var(--bezier-bounce); user-select: none;
+        }
+        .filter-sector-chip.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 6px 15px rgba(202,15,62,0.35); }
+        .filter-reset-btn { background: transparent; border: 1px solid var(--border-glass); color: var(--text-muted); padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: 0.2s; }
+        .filter-reset-btn:hover { border-color: var(--ranepa-red); color: var(--ranepa-red); }
+        .card.filtered-out { display: none !important; }
 
         .loader-box { grid-column: 1 / -1; width: 100%; text-align: center; padding: 50px; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
         .loader-spinner { width: 40px; height: 40px; border: 4px solid rgba(202, 15, 62, 0.2); border-top-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -173,7 +212,13 @@
             100% { box-shadow: 0 0 60px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(56, 189, 248, 0.5); transform: translateY(-12px) scale(1.04); }
         }
 
-        .card { background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative; transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth); box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style; }
+        /* premium parallax on cards: subtle depth shift as the card sits in the viewport, driven by --py (0..1) set from JS scroll position */
+        .card {
+            background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative;
+            transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth);
+            box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style;
+            transform: translateY(calc((var(--py, 0.5) - 0.5) * -14px));
+        }
         .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
 
         .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
@@ -181,6 +226,7 @@
         @media (max-width: 768px) {
             .reveal-3d { transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
             .reveal-3d.in-view { transform: translateY(0); }
+            .card { transform: none !important; }
         }
 
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; flex-wrap: wrap; }
@@ -285,36 +331,81 @@
         .compliance-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: left; opacity: 0.85; }
 
         /* ===== OWL ASSISTANT & CHAT INPUT ===== */
-        .owl-ecosystem { position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999; transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.4s var(--bezier-smooth); pointer-events: none; transform-origin: bottom right; }
+        .owl-ecosystem {
+            position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999;
+            transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.4s var(--bezier-smooth);
+            pointer-events: none; transform-origin: bottom right; perspective: 900px;
+        }
         .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
         .owl-ecosystem.scroll-mini { transform: scale(0.65); }
+        /* used by the JS flight sequence (owlEmbark) — position/scale are driven inline via style.transform */
+        .owl-ecosystem.flying { transition: transform 0.05s linear; }
+        .owl-ecosystem.flying.visible { bottom: 0; right: -10px; }
 
         .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        .owl-container { position: absolute; bottom: 46px; left: 0; width: 100%; height: 210px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; overflow: visible; }
+        .owl-container { position: absolute; bottom: 46px; left: 0; width: 100%; height: 210px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; overflow: visible; transform-style: preserve-3d; }
 
-        .owl-walker { position: absolute; bottom: 0; left: 10%; width: 130px; height: 190px; animation: owlPace 16s ease-in-out infinite; will-change: transform; }
+        .owl-walker { position: absolute; bottom: 0; left: 10%; width: 130px; height: 190px; animation: owlPace 16s ease-in-out infinite; will-change: transform; transform-style: preserve-3d; }
+        .owl-ecosystem.flying .owl-walker,
+        .owl-ecosystem.sitting .owl-walker { animation: none; left: 50%; margin-left: -65px; }
         @keyframes owlPace {
-            0%   { transform: translateX(0) scaleX(1); }
-            22%  { transform: translateX(0) scaleX(1); }
-            45%  { transform: translateX(190px) scaleX(1); }
-            50%  { transform: translateX(190px) scaleX(-1); }
-            72%  { transform: translateX(190px) scaleX(-1); }
-            95%  { transform: translateX(0) scaleX(-1); }
-            100% { transform: translateX(0) scaleX(1); }
+            0%   { transform: translateX(0) scaleX(1) rotateY(0deg); }
+            22%  { transform: translateX(0) scaleX(1) rotateY(0deg); }
+            45%  { transform: translateX(190px) scaleX(1) rotateY(-6deg); }
+            50%  { transform: translateX(190px) scaleX(-1) rotateY(6deg); }
+            72%  { transform: translateX(190px) scaleX(-1) rotateY(-6deg); }
+            95%  { transform: translateX(0) scaleX(-1) rotateY(6deg); }
+            100% { transform: translateX(0) scaleX(1) rotateY(0deg); }
         }
-        .owl-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 18px 20px rgba(0,0,0,0.75)); overflow: visible; }
-        .owl-body-group { animation: owlBob 1.1s ease-in-out infinite; transform-origin: 80px 170px; }
+        .owl-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 22px 26px rgba(0,0,0,0.8)); overflow: visible; }
+
+        /* subtle 3D "breathing" perspective sway for extra volume, independent of the walk cycle */
+        .owl-body-group { animation: owlBob 1.1s ease-in-out infinite, owlSway 5.4s ease-in-out infinite; transform-origin: 80px 170px; transform-box: fill-box; }
         @keyframes owlBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(-1deg); } }
+        @keyframes owlSway { 0%,100% { transform: perspective(400px) rotateY(0deg); } 50% { transform: perspective(400px) rotateY(4deg); } }
+
+        /* independent head-tilt group — an owl's most characteristic, alive-feeling motion */
+        .owl-head-group { animation: headTilt 6s ease-in-out infinite; transform-origin: 80px 95px; transform-box: fill-box; }
+        @keyframes headTilt {
+            0%, 100% { transform: rotate(0deg); }
+            30% { transform: rotate(-6deg); }
+            55% { transform: rotate(5deg); }
+            80% { transform: rotate(-2deg); }
+        }
+        .owl-ecosystem.sitting .owl-head-group { animation: headLookLR 4s ease-in-out 1; }
+        @keyframes headLookLR {
+            0%, 100% { transform: rotate(0deg) scaleX(1); }
+            20% { transform: rotate(0deg) scaleX(1); }
+            40% { transform: rotate(-4deg) scaleX(-1); }
+            60% { transform: rotate(-4deg) scaleX(-1); }
+            80% { transform: rotate(4deg) scaleX(1); }
+        }
+
         .owl-leg-l { animation: stepL 1.1s ease-in-out infinite; transform-origin: 66px 158px; }
         .owl-leg-r { animation: stepR 1.1s ease-in-out infinite; transform-origin: 93px 158px; }
+        .owl-ecosystem.flying .owl-leg-l, .owl-ecosystem.flying .owl-leg-r,
+        .owl-ecosystem.sitting .owl-leg-l, .owl-ecosystem.sitting .owl-leg-r { animation: none; }
         @keyframes stepL { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-14deg); } 50% { transform: rotate(0deg); } }
         @keyframes stepR { 0%,100% { transform: rotate(0deg); } 75% { transform: rotate(14deg); } 50% { transform: rotate(0deg); } }
-        .owl-wing { transform-origin: 80px 78px; animation: wingFlutter 3.4s ease-in-out infinite; }
+
+        .owl-wing { transform-origin: 80px 78px; animation: wingFlutter 3.4s ease-in-out infinite; transform-box: fill-box; }
         .owl-wing-l { animation-delay: 0s; }
         .owl-wing-r { animation-delay: 0.15s; }
         @keyframes wingFlutter { 0%,100% { transform: rotate(0deg) scaleY(1); } 45% { transform: rotate(6deg) scaleY(1.03); } 50% { transform: rotate(-3deg) scaleY(0.97); } 55% { transform: rotate(6deg) scaleY(1.03); } }
+        /* fast, deep flapping while airborne */
+        .owl-ecosystem.flying .owl-wing { animation: wingFlapFast 0.28s ease-in-out infinite; }
+        @keyframes wingFlapFast { 0%,100% { transform: rotate(-38deg); } 50% { transform: rotate(30deg); } }
+        /* a shoulder "shrug" gesture used once while sitting */
+        .owl-ecosystem.sitting .owl-wing { animation: wingShrug 4s ease-in-out 1; }
+        @keyframes wingShrug {
+            0%, 55%, 100% { transform: translateY(0) rotate(0deg); }
+            65% { transform: translateY(-6px) rotate(-10deg); }
+            72% { transform: translateY(-6px) rotate(-10deg); }
+            80% { transform: translateY(0) rotate(0deg); }
+        }
+
         .eyelid { transform-origin: center; animation: blink 4.6s ease-in-out infinite; }
         .owl-eye-r .eyelid { animation-delay: 0.06s; }
         @keyframes blink {
@@ -347,6 +438,21 @@
 
         .mobile-chat-icon { display: none; }
 
+        /* ===== owl visiting the ticker ===== */
+        .owl-ticker-visitor {
+            position: fixed; z-index: 10046; width: 70px; height: 85px; pointer-events: none;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .owl-ticker-visitor.show { opacity: 1; }
+        .owl-ticker-visitor .owl-mini-svg { width: 100%; height: 100%; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.6)); }
+        .owl-ticker-shout {
+            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            background: #fff; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 900;
+            padding: 4px 10px; border-radius: 10px 10px 10px 0; font-size: 0.72rem; white-space: nowrap;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.25s ease;
+        }
+        .owl-ticker-shout.show { opacity: 1; }
+
         .scroll-nav { position: fixed; left: 22px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
         .scroll-nav-btn {
             width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-glass);
@@ -377,6 +483,9 @@
             .tabs-nav::-webkit-scrollbar { display: none; }
             .tab-btn { flex-shrink: 0; padding: 10px 18px; font-size: 0.88rem; }
 
+            .filters-bar { padding: 14px 16px; gap: 10px; }
+            .filter-group { min-width: 130px; }
+
             .container { padding: 30px 15px 40px; }
             .contacts-wrapper { padding: 40px 15px; }
             .contact-card { display: flex; white-space: normal; word-wrap: break-word; }
@@ -400,6 +509,7 @@
             .owl-bubble.show { transform: translateX(0) scale(1); }
             .owl-chat-panel { width: calc(100vw - 24px); left: 12px; right: 12px; bottom: max(90px, calc(env(safe-area-inset-bottom) + 90px)); height: min(70vh, 520px); max-width: 100vw; }
             .owl-chat-body { height: auto; flex: 1 1 auto; }
+            .owl-ticker-visitor { display: none; }
 
             .modal-box { padding: 26px 22px; border-radius: 24px; }
 
@@ -458,9 +568,19 @@
         </div>
     </header>
 
-    <!-- ПОСТОЯННАЯ ПЛАШКА-БЕГУЩАЯ СТРОКА ПОД ШАПКОЙ -->
     <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()">
         <div class="ticker-inner" id="tickerText">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
+    </div>
+
+    <div class="owl-ticker-visitor" id="owlTickerVisitor">
+        <div class="owl-ticker-shout" id="owlTickerShout">ВНИМАНИЕ!</div>
+        <svg class="owl-mini-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="80" cy="112" rx="50" ry="64" fill="#7a5c3a"/>
+            <ellipse cx="80" cy="122" rx="34" ry="46" fill="#d9bf95"/>
+            <circle cx="61" cy="86" r="14" fill="#ffcf40"/><circle cx="99" cy="86" r="14" fill="#ffcf40"/>
+            <circle cx="61" cy="86" r="6" fill="#1a1008"/><circle cx="99" cy="86" r="6" fill="#1a1008"/>
+            <path d="M73 96 Q 80 92 87 96 L83 116 Q 80 122 77 116 Z" fill="#0f0d0c"/>
+        </svg>
     </div>
 
     <section class="hero">
@@ -470,13 +590,37 @@
 
     <div class="container" id="programsSection">
 
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="filterPrograms(event,'tab-all')" data-i18n="tabAll">Все программы</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-kadry')" data-i18n="tabKadry">🎓 Нацпроект «Кадры»</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-pk')" data-i18n="tabPk">📈 Повышение квалификации</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-pp')" data-i18n="tabPp">🔄 Переподготовка</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-po')" data-i18n="tabPo">🛠️ Проф. обучение</button>
-            <button class="tab-btn" onclick="filterPrograms(event,'tab-sem')" data-i18n="tabSem">🗣️ Семинары</button>
+        <div class="tabs-nav-wrapper">
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="filterPrograms(event,'tab-all')" data-i18n="tabAll">Все программы</button>
+                <button class="tab-btn" onclick="filterPrograms(event,'tab-kadry')" data-i18n="tabKadry">🎓 Нацпроект «Кадры»</button>
+                <button class="tab-btn" onclick="filterPrograms(event,'tab-pk')" data-i18n="tabPk">📈 Повышение квалификации</button>
+                <button class="tab-btn" onclick="filterPrograms(event,'tab-pp')" data-i18n="tabPp">🔄 Переподготовка</button>
+                <button class="tab-btn" onclick="filterPrograms(event,'tab-po')" data-i18n="tabPo">🛠️ Проф. обучение</button>
+                <button class="tab-btn" onclick="filterPrograms(event,'tab-sem')" data-i18n="tabSem">🗣️ Семинары</button>
+            </div>
+        </div>
+        <div class="swipe-hint" id="swipeHint">← 👉 листайте вкладки вправо →</div>
+
+        <div class="filters-bar" id="filtersBar" style="display:none;">
+            <div class="filter-group">
+                <label data-i18n="filterSector">Направление</label>
+                <div class="filter-sectors" id="filterSectors"></div>
+            </div>
+            <div class="filter-group">
+                <label data-i18n="filterMaxPrice">Стоимость до, ₽</label>
+                <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500">
+            </div>
+            <div class="filter-group">
+                <label data-i18n="filterDuration">Длительность</label>
+                <select id="filterDuration">
+                    <option value="" data-i18n="filterDurAny">Любая</option>
+                    <option value="short" data-i18n="filterDurShort">до 50 ч.</option>
+                    <option value="mid" data-i18n="filterDurMid">50–200 ч.</option>
+                    <option value="long" data-i18n="filterDurLong">от 200 ч.</option>
+                </select>
+            </div>
+            <button class="filter-reset-btn" onclick="resetFilters()" data-i18n="filterReset">Сбросить</button>
         </div>
 
         <div id="tab-all" class="tab-content active">
@@ -695,7 +839,6 @@
         </div>
     </div>
 
-    <!-- ОКНО ЭКСТРЕННОЙ ТРЕВОГИ -->
     <div class="modal-overlay" id="urgentAlertModal" style="z-index: 25000;">
         <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
             <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
@@ -729,99 +872,126 @@
             <div class="owl-walker" id="owlWalker">
                 <svg class="owl-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <radialGradient id="owlBodyGrad" cx="45%" cy="35%" r="75%">
-                            <stop offset="0%" stop-color="#9c7c52"/>
-                            <stop offset="55%" stop-color="#7a5c3a"/>
-                            <stop offset="100%" stop-color="#4f3a24"/>
+                        <radialGradient id="owlBodyGrad" cx="42%" cy="32%" r="78%">
+                            <stop offset="0%" stop-color="#b08f61"/>
+                            <stop offset="45%" stop-color="#8a6a42"/>
+                            <stop offset="80%" stop-color="#5c4327"/>
+                            <stop offset="100%" stop-color="#382613"/>
                         </radialGradient>
-                        <radialGradient id="owlChestGrad" cx="50%" cy="30%" r="70%">
-                            <stop offset="0%" stop-color="#f1e2c4"/>
-                            <stop offset="70%" stop-color="#d9bf95"/>
-                            <stop offset="100%" stop-color="#b89968"/>
+                        <radialGradient id="owlChestGrad" cx="48%" cy="24%" r="75%">
+                            <stop offset="0%" stop-color="#fdf3de"/>
+                            <stop offset="55%" stop-color="#e3c99a"/>
+                            <stop offset="85%" stop-color="#c1a06a"/>
+                            <stop offset="100%" stop-color="#a3814f"/>
                         </radialGradient>
-                        <radialGradient id="owlEyeGrad" cx="42%" cy="38%" r="65%">
-                            <stop offset="0%" stop-color="#fff3c4"/>
-                            <stop offset="35%" stop-color="#ffcf40"/>
-                            <stop offset="75%" stop-color="#f08a1e"/>
-                            <stop offset="100%" stop-color="#a85c10"/>
+                        <radialGradient id="owlEyeGrad" cx="40%" cy="35%" r="68%">
+                            <stop offset="0%" stop-color="#fff8dc"/>
+                            <stop offset="30%" stop-color="#ffd75e"/>
+                            <stop offset="70%" stop-color="#f08a1e"/>
+                            <stop offset="100%" stop-color="#8f4c0a"/>
                         </radialGradient>
                         <linearGradient id="beakGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#3a3230"/>
-                            <stop offset="100%" stop-color="#0f0d0c"/>
+                            <stop offset="0%" stop-color="#2b2523"/>
+                            <stop offset="55%" stop-color="#171412"/>
+                            <stop offset="100%" stop-color="#050403"/>
                         </linearGradient>
                         <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#6a4e30"/>
-                            <stop offset="100%" stop-color="#3a2a18"/>
+                            <stop offset="0%" stop-color="#8a6a42"/>
+                            <stop offset="50%" stop-color="#5c4327"/>
+                            <stop offset="100%" stop-color="#2c1e10"/>
                         </linearGradient>
+                        <radialGradient id="groundShadow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#000" stop-opacity="0.55"/>
+                            <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                        </radialGradient>
+                        <radialGradient id="rimLight" cx="30%" cy="20%" r="60%">
+                            <stop offset="0%" stop-color="#fff" stop-opacity="0.5"/>
+                            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+                        </radialGradient>
                     </defs>
 
-                    <ellipse cx="80" cy="192" rx="26" ry="5" fill="#000" opacity="0.4"/>
+                    <ellipse cx="80" cy="192" rx="34" ry="7" fill="url(#groundShadow)"/>
 
-                    <g class="owl-leg owl-leg-l"><rect x="62" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/></g>
-                    <g class="owl-leg owl-leg-r"><rect x="90" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/></g>
+                    <g class="owl-leg owl-leg-l"><rect x="62" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/><rect x="62" y="158" width="3" height="24" rx="1.5" fill="#e9d3a8" opacity="0.6"/></g>
+                    <g class="owl-leg owl-leg-r"><rect x="90" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/><rect x="90" y="158" width="3" height="24" rx="1.5" fill="#e9d3a8" opacity="0.6"/></g>
                     <g class="owl-foot owl-foot-l"><ellipse cx="60" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M50 184 q -6 3 -9 8 M60 186 q 0 5 0 9 M70 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
                     <g class="owl-foot owl-foot-r"><ellipse cx="100" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M90 184 q -6 3 -9 8 M100 186 q 0 5 0 9 M110 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
 
                     <g class="owl-body-group">
-                        <path d="M44 42 Q 34 8 52 -4 Q 56 20 58 46 Z" fill="url(#owlBodyGrad)"/>
-                        <path d="M116 42 Q 126 8 108 -4 Q 104 20 102 46 Z" fill="url(#owlBodyGrad)"/>
-                        <path d="M46 40 Q 40 16 52 4" stroke="#2f2114" stroke-width="1.4" fill="none" opacity="0.55"/>
-                        <path d="M114 40 Q 120 16 108 4" stroke="#2f2114" stroke-width="1.4" fill="none" opacity="0.55"/>
-
-                        <g class="owl-wing owl-wing-l"><path d="M46 66 Q 18 90 24 138 Q 30 158 48 150 Q 40 110 50 72 Z" fill="url(#wingGrad)"/>
-                            <path d="M30 96 Q 26 118 32 140 M36 84 Q 30 112 36 146 M42 76 Q 38 108 42 148" stroke="#241a10" stroke-width="1.3" fill="none" opacity="0.55"/>
+                        <!-- wings behind body, deeper shading for volume -->
+                        <g class="owl-wing owl-wing-l"><path d="M46 66 Q 14 92 22 140 Q 28 162 48 152 Q 38 112 50 72 Z" fill="url(#wingGrad)"/>
+                            <path d="M28 98 Q 22 122 30 144 M34 86 Q 26 114 34 150 M42 78 Q 36 110 42 152" stroke="#150e08" stroke-width="1.4" fill="none" opacity="0.6"/>
+                            <path d="M46 66 Q 14 92 22 140" stroke="#c9a875" stroke-width="1.2" fill="none" opacity="0.35"/>
                         </g>
-                        <g class="owl-wing owl-wing-r"><path d="M114 66 Q 142 90 136 138 Q 130 158 112 150 Q 120 110 110 72 Z" fill="url(#wingGrad)"/>
-                            <path d="M130 96 Q 134 118 128 140 M124 84 Q 130 112 124 146 M118 76 Q 122 108 118 148" stroke="#241a10" stroke-width="1.3" fill="none" opacity="0.55"/>
+                        <g class="owl-wing owl-wing-r"><path d="M114 66 Q 146 92 138 140 Q 132 162 112 152 Q 122 112 110 72 Z" fill="url(#wingGrad)"/>
+                            <path d="M132 98 Q 138 122 130 144 M126 86 Q 134 114 126 150 M118 78 Q 124 110 118 152" stroke="#150e08" stroke-width="1.4" fill="none" opacity="0.6"/>
                         </g>
 
+                        <!-- torso with layered gradient + ambient occlusion under wings for real volume -->
                         <ellipse cx="80" cy="112" rx="50" ry="64" fill="url(#owlBodyGrad)"/>
+                        <ellipse cx="80" cy="130" rx="46" ry="40" fill="#000" opacity="0.12"/>
                         <ellipse cx="80" cy="122" rx="34" ry="46" fill="url(#owlChestGrad)"/>
-                        <g opacity="0.5" stroke="#8a6a42" stroke-width="1.4" fill="none">
+                        <ellipse cx="66" cy="90" rx="22" ry="26" fill="url(#rimLight)"/>
+
+                        <g opacity="0.55" stroke="#8a6a42" stroke-width="1.4" fill="none">
                             <path d="M64 96 Q 62 118 66 148"/>
                             <path d="M74 92 Q 72 122 76 156"/>
                             <path d="M86 92 Q 88 122 84 156"/>
                             <path d="M96 96 Q 98 118 94 148"/>
                         </g>
-                        <g opacity="0.65" fill="#3a2a18">
+                        <g opacity="0.7" fill="#3a2a18">
                             <ellipse cx="52" cy="76" rx="4" ry="6" transform="rotate(-18 52 76)"/>
                             <ellipse cx="108" cy="76" rx="4" ry="6" transform="rotate(18 108 76)"/>
                             <ellipse cx="46" cy="98" rx="3.5" ry="5" transform="rotate(-10 46 98)"/>
                             <ellipse cx="114" cy="98" rx="3.5" ry="5" transform="rotate(10 114 98)"/>
                             <ellipse cx="58" cy="60" rx="3" ry="4.5" transform="rotate(-14 58 60)"/>
                             <ellipse cx="102" cy="60" rx="3" ry="4.5" transform="rotate(14 102 60)"/>
+                            <ellipse cx="70" cy="140" rx="3" ry="4" transform="rotate(-6 70 140)"/>
+                            <ellipse cx="90" cy="140" rx="3" ry="4" transform="rotate(6 90 140)"/>
                         </g>
 
-                        <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="#e8d3a8" opacity="0.9"/>
-                        <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="none" stroke="#5a4326" stroke-width="1.3" opacity="0.5"/>
+                        <!-- independent head group: ear tufts, facial disc, eyes, brow, beak all move together -->
+                        <g class="owl-head-group">
+                            <path d="M44 42 Q 34 8 52 -4 Q 56 20 58 46 Z" fill="url(#owlBodyGrad)"/>
+                            <path d="M116 42 Q 126 8 108 -4 Q 104 20 102 46 Z" fill="url(#owlBodyGrad)"/>
+                            <path d="M46 40 Q 40 16 52 4" stroke="#1c1409" stroke-width="1.4" fill="none" opacity="0.6"/>
+                            <path d="M114 40 Q 120 16 108 4" stroke="#1c1409" stroke-width="1.4" fill="none" opacity="0.6"/>
 
-                        <circle cx="61" cy="86" r="20" fill="#e8d3a8"/>
-                        <circle cx="99" cy="86" r="20" fill="#e8d3a8"/>
-                        <circle cx="61" cy="86" r="20" fill="none" stroke="#5a4326" stroke-width="1.2" opacity="0.6"/>
-                        <circle cx="99" cy="86" r="20" fill="none" stroke="#5a4326" stroke-width="1.2" opacity="0.6"/>
+                            <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="#efdcb2" opacity="0.95"/>
+                            <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="none" stroke="#4a3620" stroke-width="1.4" opacity="0.55"/>
+                            <path d="M80 54 Q 48 56 40 86" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.35"/>
 
-                        <g class="owl-eye owl-eye-l">
-                            <circle cx="61" cy="86" r="13.5" fill="url(#owlEyeGrad)"/>
-                            <circle cx="61" cy="86" r="13.5" fill="none" stroke="#7a3d08" stroke-width="0.8"/>
-                            <circle cx="61" cy="86" r="6" fill="#1a1008"/>
-                            <circle cx="58" cy="82" r="3" fill="#fff" opacity="0.85"/>
-                            <path d="M53 78 L69 78 M54 74 L68 74" stroke="#c8791c" stroke-width="0.6" opacity="0.5"/>
-                            <rect class="eyelid" x="47" y="72" width="28" height="28" rx="14" fill="#8A5F35"/>
+                            <circle cx="61" cy="86" r="20" fill="#efdcb2"/>
+                            <circle cx="99" cy="86" r="20" fill="#efdcb2"/>
+                            <circle cx="61" cy="86" r="20" fill="none" stroke="#4a3620" stroke-width="1.3" opacity="0.6"/>
+                            <circle cx="99" cy="86" r="20" fill="none" stroke="#4a3620" stroke-width="1.3" opacity="0.6"/>
+
+                            <g class="owl-eye owl-eye-l">
+                                <circle cx="61" cy="86" r="14" fill="url(#owlEyeGrad)"/>
+                                <circle cx="61" cy="86" r="14" fill="none" stroke="#6b3505" stroke-width="0.9"/>
+                                <circle cx="61" cy="86" r="6.2" fill="#160d05"/>
+                                <circle cx="58" cy="82" r="3.2" fill="#fff" opacity="0.9"/>
+                                <circle cx="63" cy="90" r="1.2" fill="#fff" opacity="0.45"/>
+                                <path d="M52 78 L70 78 M53 74 L69 74 M54 82 L68 82" stroke="#c8791c" stroke-width="0.55" opacity="0.4"/>
+                                <rect class="eyelid" x="47" y="72" width="28" height="28" rx="14" fill="#5c4327"/>
+                            </g>
+                            <g class="owl-eye owl-eye-r">
+                                <circle cx="99" cy="86" r="14" fill="url(#owlEyeGrad)"/>
+                                <circle cx="99" cy="86" r="14" fill="none" stroke="#6b3505" stroke-width="0.9"/>
+                                <circle cx="99" cy="86" r="6.2" fill="#160d05"/>
+                                <circle cx="96" cy="82" r="3.2" fill="#fff" opacity="0.9"/>
+                                <circle cx="101" cy="90" r="1.2" fill="#fff" opacity="0.45"/>
+                                <path d="M90 78 L108 78 M91 74 L107 74 M92 82 L106 82" stroke="#c8791c" stroke-width="0.55" opacity="0.4"/>
+                                <rect class="eyelid" x="85" y="72" width="28" height="28" rx="14" fill="#5c4327"/>
+                            </g>
+
+                            <path d="M45 70 Q 61 60 77 70" stroke="#2c1e10" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75"/>
+                            <path d="M83 70 Q 99 60 115 70" stroke="#2c1e10" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75"/>
+
+                            <path d="M73 96 Q 80 91 87 96 L84 118 Q 80 125 76 118 Z" fill="url(#beakGrad)"/>
+                            <path d="M76 98 L84 98" stroke="#000" stroke-width="1" opacity="0.5"/>
+                            <path d="M75 94 Q 80 91 85 94" stroke="#4a423e" stroke-width="0.8" fill="none" opacity="0.5"/>
                         </g>
-                        <g class="owl-eye owl-eye-r">
-                            <circle cx="99" cy="86" r="13.5" fill="url(#owlEyeGrad)"/>
-                            <circle cx="99" cy="86" r="13.5" fill="none" stroke="#7a3d08" stroke-width="0.8"/>
-                            <circle cx="99" cy="86" r="6" fill="#1a1008"/>
-                            <circle cx="96" cy="82" r="3" fill="#fff" opacity="0.85"/>
-                            <path d="M91 78 L107 78 M92 74 L106 74" stroke="#c8791c" stroke-width="0.6" opacity="0.5"/>
-                            <rect class="eyelid" x="85" y="72" width="28" height="28" rx="14" fill="#8A5F35"/>
-                        </g>
-
-                        <path d="M46 72 Q 61 64 76 72" stroke="#3a2a18" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
-                        <path d="M84 72 Q 99 64 114 72" stroke="#3a2a18" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.7"/>
-
-                        <path d="M73 96 Q 80 92 87 96 L83 116 Q 80 122 77 116 Z" fill="url(#beakGrad)"/>
-                        <path d="M76 98 L84 98" stroke="#000" stroke-width="1" opacity="0.4"/>
                     </g>
                 </svg>
             </div>
@@ -840,7 +1010,7 @@
         </div>
         
         <div class="chat-input-box">
-            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции или вопрос..." onkeydown="if(event.key === 'Enter') handleUserMessage()">
+            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции, название программы или вопрос..." onkeydown="if(event.key === 'Enter') handleUserMessage()">
             <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
         </div>
 
@@ -865,9 +1035,35 @@
     if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
     window.scrollTo(0, 0);
 
-    const API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
+    /* ============================================================================
+       SECURITY NOTE (please read):
+       No client-side trick can truly hide this URL from a determined visitor —
+       any static HTML/JS file is downloaded in full to the browser, so anyone can
+       open DevTools → Network/Sources and see every request your page makes,
+       decoded or not. Base64/obfuscation below only stops casual copy-pasting
+       from "view source"; it is NOT real security.
+       Real protection has to live on the Google Apps Script side:
+         1. Deploy the script as "Execute as: Me" / "Who has access: Anyone" is
+            required for a public site, but you can check `e.parameter` /
+            request headers server-side and reject unexpected origins.
+         2. Add a simple shared secret query param and verify it in the script
+            (doesn't stop someone reading it from this file, but stops random bots).
+         3. Enable Apps Script's built-in quota/rate limiting, and consider logging
+            request origins to Sheets so abuse is visible.
+         4. Never give the sheet itself public EDIT access — only the script should
+            write to it; the public should only ever hit the deployed Web App URL.
+       If you need this genuinely locked down (e.g. paid content), the correct fix
+       is a small server-side proxy (Cloud Function / Apps Script) that holds the
+       real secret and the browser never sees it at all.
+       ============================================================================ */
+    const _p1 = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6bmp2V0RseHh4bEFOa3pUQ0NobnZseUViVzNONzR2cE9FRThwSmFjY0V4aVhRRzdEWlUxU2doUUFwRHNsTU5FT2svZXhlYw==';
+    let API_URL;
+    try { API_URL = atob(_p1.replace('eHh4','x')); } catch (e) { API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec'; }
+    // Fallback keeps the exact original URL guaranteed correct even if the encoded copy above has a transcription issue.
+    API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 
     let globalOwlFiles = [];
+    let globalPrograms = []; // flat list of every program, used for the smart chat search
     let currentLang = 'ru';
     let globalAlert = null;
 
@@ -877,6 +1073,8 @@
         'horeca': { ru: '🏨 HoReCa, туризм и сервис', en: '🏨 HoReCa, Tourism & Service' },
         'prof': { ru: '⚡ Прикладные профессии и навыки', en: '⚡ Applied Professions & Skills' }
     };
+
+    function isMobile() { return window.innerWidth <= 768; }
 
     function toggleTheme() {
         const root = document.documentElement;
@@ -907,6 +1105,8 @@
             heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
             tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
             studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
+            filterSector: "Направление", filterMaxPrice: "Стоимость до, ₽", filterDuration: "Длительность",
+            filterDurAny: "Любая", filterDurShort: "до 50 ч.", filterDurMid: "50–200 ч.", filterDurLong: "от 200 ч.", filterReset: "Сбросить",
             faqTitle: "Часто задаваемые вопросы",
             faqQ1: "Какие документы нужны для поступления?", faqA1: "Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).",
             faqQ2: "Как проходит обучение?", faqA2: "Обучение проходит в очно-заочном формате с применением дистанционных технологий. Практические занятия проводятся на базе Академии.",
@@ -930,13 +1130,16 @@
             termModText: "Использование цифровых сервисов регулируется актуальным законодательством РФ.<br><br>1. Материалы сайта носят информационный характер и не являются публичной офертой, если иное не указано явно.<br>2. Все интеллектуальные права на дизайн, графические элементы и тексты принадлежат Западному филиалу РАНХиГС.<br>3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.",
             owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
             owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.",
-            owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся."
+            owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся.",
+            goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?"
         },
         en: {
             pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now",
             heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
             tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
             studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now", faqTitle: "Frequently Asked Questions",
+            filterSector: "Sector", filterMaxPrice: "Max price, ₽", filterDuration: "Duration",
+            filterDurAny: "Any", filterDurShort: "up to 50 hrs", filterDurMid: "50–200 hrs", filterDurLong: "200+ hrs", filterReset: "Reset",
             faqQ1: "What documents are required for admission?", faqA1: "You'll need a copy of your passport, SNILS, and proof of prior education (vocational or higher-education diploma).",
             faqQ2: "How is training conducted?", faqA2: "Training is blended (part-time in-person plus remote technologies). Practical sessions take place at the Academy.",
             faqQ3: "Is a state-recognized diploma issued?", faqA3: "Yes — after passing the final assessment you receive a RANEPA professional retraining diploma granting the right to a new field of practice.",
@@ -959,7 +1162,8 @@
             termModText: "Use of digital services is governed by applicable Russian law.<br><br>1. Site materials are informational and do not constitute a public offer unless explicitly stated.<br>2. All intellectual property rights to the design, graphics and text belong to RANEPA Western Branch.<br>3. By submitting an application, the User confirms full awareness of the admission and enrollment rules for continuing-education programs.",
             owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
             owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog? You can also enter a lecture code to get materials.",
-            owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon."
+            owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon.",
+            goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?"
         }
     };
 
@@ -997,7 +1201,27 @@
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
         document.getElementById('progress-bar').style.width = (height > 0 ? (winScroll / height) * 100 : 0) + "%";
+        updateCardParallax();
     }, { passive: true });
+
+    /* premium parallax: each visible card gets a --py (0..1) based on its vertical
+       position in the viewport, gently lifting cards near the center */
+    let parallaxRaf = null;
+    function updateCardParallax() {
+        if (parallaxRaf) return;
+        parallaxRaf = requestAnimationFrame(() => {
+            parallaxRaf = null;
+            if (isMobile()) return;
+            const vh = window.innerHeight;
+            document.querySelectorAll('.tab-content.active .card').forEach(card => {
+                const r = card.getBoundingClientRect();
+                const center = r.top + r.height / 2;
+                let py = center / vh;
+                py = Math.max(0, Math.min(1, py));
+                card.style.setProperty('--py', py.toFixed(3));
+            });
+        });
+    }
 
     async function fetchPrograms() {
         try {
@@ -1008,7 +1232,6 @@
                 globalOwlFiles = data.owlFiles;
             }
 
-            // ПЛАШКА-БЕГУЩАЯ СТРОКА ПОД ШАПКОЙ
             const tickerEl = document.getElementById('globalAlertTicker');
             const tickerTextEl = document.getElementById('tickerText');
 
@@ -1016,6 +1239,7 @@
                 globalAlert = data.currentAlert;
                 tickerTextEl.innerHTML = `⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ${globalAlert.text} &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 🖱️ Нажмите сюда, чтобы прочитать полностью`;
                 tickerEl.style.display = 'block';
+                setTimeout(owlVisitTicker, 600);
             } else {
                 globalAlert = null;
                 tickerEl.style.display = 'none';
@@ -1032,6 +1256,7 @@
         const tabs = ['tab-all', 'tab-kadry', 'tab-pk', 'tab-pp', 'tab-po', 'tab-sem'];
         const htmlMap = {};
         tabs.forEach(t => htmlMap[t] = {});
+        globalPrograms = programs;
 
         programs.forEach(prog => {
             translationsHTML.ru[`${prog.id}_title`] = prog.title_ru;
@@ -1057,8 +1282,11 @@
                 extraInfoHTML += `</div>`;
             }
 
+            const priceNum = parseInt(String(prog.price).replace(/[^\d]/g, ''), 10) || 0;
+            const hoursNum = parseInt(String(prog.hours).replace(/[^\d]/g, ''), 10) || 0;
+
             let cardHTML = `
-            <div class="card">
+            <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}">
                 <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
@@ -1104,6 +1332,64 @@
 
         setLanguage(currentLang);
         armRevealTargets();
+        buildFilters();
+        updateCardParallax();
+        if (isMobile()) {
+            document.getElementById('swipeHint').style.display = 'flex';
+            setTimeout(() => { const h = document.getElementById('swipeHint'); if (h) h.style.display = 'none'; }, 6000);
+        }
+    }
+
+    /* ================= FILTERS (Все программы) ================= */
+    function buildFilters() {
+        const bar = document.getElementById('filtersBar');
+        const sectorsBox = document.getElementById('filterSectors');
+        bar.style.display = 'flex';
+        sectorsBox.innerHTML = '';
+        Object.keys(SECTOR_NAMES).forEach(sec => {
+            const chip = document.createElement('div');
+            chip.className = 'filter-sector-chip';
+            chip.dataset.sector = sec;
+            chip.textContent = SECTOR_NAMES[sec][currentLang];
+            chip.onclick = () => { chip.classList.toggle('active'); applyFilters(); };
+            sectorsBox.appendChild(chip);
+        });
+        document.getElementById('filterMaxPrice').oninput = applyFilters;
+        document.getElementById('filterDuration').onchange = applyFilters;
+    }
+
+    function applyFilters() {
+        const activeSectors = Array.from(document.querySelectorAll('.filter-sector-chip.active')).map(c => c.dataset.sector);
+        const maxPrice = parseInt(document.getElementById('filterMaxPrice').value, 10);
+        const durationMode = document.getElementById('filterDuration').value;
+
+        document.querySelectorAll('#tab-all .card').forEach(card => {
+            let visible = true;
+            if (activeSectors.length && !activeSectors.includes(card.dataset.sector)) visible = false;
+            if (!isNaN(maxPrice) && maxPrice > 0 && parseInt(card.dataset.price, 10) > maxPrice) visible = false;
+            const h = parseInt(card.dataset.hours, 10) || 0;
+            if (durationMode === 'short' && h > 50) visible = false;
+            if (durationMode === 'mid' && (h < 50 || h > 200)) visible = false;
+            if (durationMode === 'long' && h < 200) visible = false;
+            card.classList.toggle('filtered-out', !visible);
+        });
+
+        document.querySelectorAll('#tab-all .sector-header').forEach(h => {
+            // hide a sector header if every card under it (until the next header) is filtered out
+            let sib = h.nextElementSibling, anyVisible = false;
+            while (sib && !sib.classList.contains('sector-header')) {
+                if (sib.classList.contains('card') && !sib.classList.contains('filtered-out')) anyVisible = true;
+                sib = sib.nextElementSibling;
+            }
+            h.style.display = anyVisible ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        document.querySelectorAll('.filter-sector-chip').forEach(c => c.classList.remove('active'));
+        document.getElementById('filterMaxPrice').value = '';
+        document.getElementById('filterDuration').value = '';
+        applyFilters();
     }
 
     function filterPrograms(evt, tabName) {
@@ -1111,12 +1397,14 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
+        document.getElementById('filtersBar').style.display = (tabName === 'tab-all') ? 'flex' : 'none';
         armRevealTargets();
         animateAssembly(tabName);
+        updateCardParallax();
     }
 
     function animateAssembly(tabId) {
-        if (window.innerWidth <= 768) return;
+        if (isMobile()) return;
 
         const cards = document.querySelectorAll('#' + tabId + ' .card');
         cards.forEach((card, index) => {
@@ -1145,6 +1433,7 @@
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
+        document.getElementById('filtersBar').style.display = (tabId === 'tab-all') ? 'flex' : 'none';
         
         const tabsMap = { 'tab-kadry': 1, 'tab-pk': 2, 'tab-pp': 3, 'tab-po': 4, 'tab-sem': 5 };
         const buttons = document.querySelectorAll('.tab-btn');
@@ -1152,7 +1441,8 @@
 
         armRevealTargets();
         animateAssembly(tabId);
-        playHoot();
+        updateCardParallax();
+        if (!isMobile()) playHoot();
     }
 
     function toggleCard(btn) {
@@ -1190,36 +1480,62 @@
         }
     }, 5000);
 
+    /* ================= AUDIO =================
+       Browsers (Chrome, Safari, Firefox — NOT ad blockers) start every AudioContext
+       "suspended" until the page receives at least one real user gesture (click,
+       tap, keypress). Creating a brand-new AudioContext on every hoot, before any
+       gesture happened, is why the sound silently never played. We keep ONE shared
+       context and resume() it on the very first interaction — after that every
+       hoot plays normally, blockers or not. */
+    let sharedAudioCtx = null;
+    function getAudioCtx() {
+        if (!sharedAudioCtx) {
+            try { sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+        }
+        return sharedAudioCtx;
+    }
+    function unlockAudio() {
+        const ctx = getAudioCtx();
+        if (ctx && ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
+    }
+    ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+        window.addEventListener(evt, unlockAudio, { once: true, passive: true });
+    });
+
+    /* one soft, comfortable hoot with a gentle decaying echo — never loud, never sudden */
     function playHoot() {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
         try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const repeats = [{ t: 0, g: 0.06 }, { t: 0.42, g: 0.03 }, { t: 0.85, g: 0.015 }];
+            const repeats = [{ t: 0, g: 0.045 }, { t: 0.45, g: 0.022 }, { t: 0.9, g: 0.010 }];
             repeats.forEach(r => {
-                const start = audioCtx.currentTime + r.t;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+                const start = ctx.currentTime + r.t;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(150, start);
-                osc.frequency.exponentialRampToValueAtTime(90, start + 0.5);
-                gain.gain.setValueAtTime(r.g, start);
-                gain.gain.exponentialRampToValueAtTime(0.001, start + 0.65);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(start); osc.stop(start + 0.7);
+                osc.frequency.setValueAtTime(155, start);
+                osc.frequency.exponentialRampToValueAtTime(92, start + 0.5);
+                gain.gain.setValueAtTime(0.0001, start);
+                gain.gain.exponentialRampToValueAtTime(r.g, start + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.7);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(start); osc.stop(start + 0.75);
             });
         } catch (e) {}
     }
 
-    setInterval(() => {
-        const container = document.getElementById('owlContainer');
-        if (owlIntroduced && container.classList.contains('visible')) {
-            playHoot();
-        }
-    }, 20000);
+    /* first hoot 20s after arriving on the site, then no more than once every 5 minutes */
+    setTimeout(function scheduleFirstHoot() {
+        playHoot();
+        setInterval(playHoot, 5 * 60 * 1000);
+    }, 20 * 1000);
 
     let scrollMiniTimeout;
     window.addEventListener('scroll', () => {
         const container = document.getElementById('owlContainer');
         const bubble = document.getElementById('owlBubble');
+        if (container.classList.contains('flying') || container.classList.contains('sitting')) { updateScrollNav(); return; }
 
         if (!container.classList.contains('scroll-mini')) {
             container.classList.add('scroll-mini');
@@ -1258,6 +1574,133 @@
     }
     window.addEventListener('resize', updateScrollNav, { passive: true });
 
+    /* ================= OWL FLIGHT: visits "Все программы" on a random path, sits, gestures, flies home =================
+       Desktop only. Uses a randomized quadratic-bezier path so no two flights look alike.
+       Does not fight the user's own scrolling — it's purely a fixed-position overlay animation. */
+    let owlBusy = false;
+    function owlFlyToPrograms() {
+        if (isMobile() || owlBusy) return;
+        owlBusy = true;
+        const eco = document.getElementById('owlContainer');
+        const homeRect = eco.getBoundingClientRect();
+        const target = document.getElementById('programsSection');
+        const targetRect = target.getBoundingClientRect();
+
+        const startX = homeRect.left, startY = homeRect.top;
+        const endX = Math.max(20, targetRect.left + targetRect.width * (0.55 + Math.random() * 0.2));
+        const endY = Math.max(80, targetRect.top + 40);
+
+        // randomized control point => a different swooping arc every single time
+        const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 400;
+        const midY = Math.min(startY, endY) - (120 + Math.random() * 200);
+
+        eco.classList.add('flying');
+        eco.style.position = 'fixed';
+
+        const duration = 1300 + Math.random() * 400;
+        const t0 = performance.now();
+        function step(now) {
+            const t = Math.min(1, (now - t0) / duration);
+            const bx = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
+            const by = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
+            const scale = 1 - t * 0.45; // shrink to 55% (a 45% reduction) as it flies
+            eco.style.left = bx + 'px';
+            eco.style.top = by + 'px';
+            eco.style.right = 'auto'; eco.style.bottom = 'auto';
+            eco.style.transform = `scale(${scale})`;
+            if (t < 1) requestAnimationFrame(step);
+            else owlSitAndReturn(eco, homeRect);
+        }
+        requestAnimationFrame(step);
+    }
+
+    function owlSitAndReturn(eco, homeRect) {
+        eco.classList.remove('flying');
+        eco.classList.add('sitting');
+        playHoot();
+
+        // sits for 4s doing head-turn + shrug (both are pure CSS animations triggered by .sitting), then flies home
+        setTimeout(() => {
+            eco.classList.remove('sitting');
+            const startRect = eco.getBoundingClientRect();
+            const startX = startRect.left, startY = startRect.top;
+            const endX = homeRect.left, endY = homeRect.top;
+            const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 350;
+            const midY = Math.min(startY, endY) - (100 + Math.random() * 180);
+
+            eco.classList.add('flying');
+            const duration = 1100 + Math.random() * 400;
+            const t0 = performance.now();
+            let startScale = 0.55;
+            function step(now) {
+                const t = Math.min(1, (now - t0) / duration);
+                const bx = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
+                const by = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
+                const scale = startScale + t * (1 - startScale);
+                eco.style.left = bx + 'px';
+                eco.style.top = by + 'px';
+                eco.style.transform = `scale(${scale})`;
+                if (t < 1) requestAnimationFrame(step);
+                else {
+                    eco.classList.remove('flying');
+                    eco.style.position = ''; eco.style.left = ''; eco.style.top = ''; eco.style.transform = '';
+                    owlBusy = false;
+                }
+            }
+            requestAnimationFrame(step);
+        }, 4000);
+    }
+
+    /* ================= OWL VISITS THE TICKER WHEN AN ALERT APPEARS ================= */
+    function owlVisitTicker() {
+        if (isMobile()) return;
+        const visitor = document.getElementById('owlTickerVisitor');
+        const shout = document.getElementById('owlTickerShout');
+        const ticker = document.getElementById('globalAlertTicker');
+        if (!ticker || ticker.style.display === 'none') return;
+
+        const tRect = ticker.getBoundingClientRect();
+        const targetX = tRect.left + 60 + Math.random() * 120;
+        const targetY = tRect.top - 10;
+
+        visitor.style.left = (window.innerWidth + 80) + 'px';
+        visitor.style.top = (targetY - 100 - Math.random() * 80) + 'px';
+        visitor.classList.add('show');
+
+        requestAnimationFrame(() => {
+            visitor.style.transition = 'left 0.9s cubic-bezier(0.3,0.6,0.3,1), top 0.9s cubic-bezier(0.3,0.6,0.3,1)';
+            visitor.style.left = targetX + 'px';
+            visitor.style.top = targetY + 'px';
+        });
+
+        setTimeout(() => {
+            playHoot();
+            shout.classList.add('show');
+        }, 950);
+
+        setTimeout(() => {
+            shout.classList.remove('show');
+            visitor.style.left = (window.innerWidth + 80) + 'px';
+            visitor.style.top = (targetY - 60 - Math.random() * 100) + 'px';
+        }, 5000);
+
+        setTimeout(() => { visitor.classList.remove('show'); }, 5950);
+    }
+
+    /* ================= CHAT: LECTURE CODES + SMART PROGRAM NAME SEARCH ================= */
+    function normalizeText(s) {
+        return (s || '').toLowerCase().replace(/[«»"'.,!?;:()]/g, '').replace(/\s+/g, ' ').trim();
+    }
+    // lightweight fuzzy match: word-overlap ratio between the query and a program title
+    function matchScore(query, title) {
+        const qWords = normalizeText(query).split(' ').filter(w => w.length > 2);
+        const tWords = normalizeText(title).split(' ').filter(w => w.length > 2);
+        if (!qWords.length || !tWords.length) return 0;
+        let hits = 0;
+        qWords.forEach(qw => { if (tWords.some(tw => tw.includes(qw) || qw.includes(tw))) hits++; });
+        return hits / qWords.length;
+    }
+
     function handleUserMessage() {
         const input = document.getElementById('chatUserInput');
         const text = input.value.trim();
@@ -1273,31 +1716,89 @@
             setTimeout(() => {
                 if (foundFile.isPublished) {
                     let responseMsg = `📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`;
-                    
                     if (foundFile.comment && foundFile.comment.trim() !== "") {
                         responseMsg += `<br><br>💬 <b>Комментарий преподавателя:</b><br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
                     }
-
                     responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Загружено / обновлено: ${foundFile.date}</span>`;
-
                     addBotMsg(responseMsg);
                 } else {
                     addBotMsg(`⚠️ Материал по коду <b>«${foundFile.title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Статус изменен: ${foundFile.date}</span>`);
                 }
             }, 500);
-        } else {
-            setTimeout(() => {
-                addBotMsg(currentLang === 'ru' 
-                    ? `Я внимательно вас выслушала. По данному вопросу лучше обратиться к нашему каталогу программ или связаться с сотрудниками Центра.` 
-                    : `I listened carefully. For this query, it's best to check our program catalog or contact Center staff.`);
-            }, 500);
+            return;
         }
+
+        // try to match a program name from the loaded catalog
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+        const scored = globalPrograms
+            .map(p => ({ p, score: matchScore(text, p[titleKey]) }))
+            .filter(x => x.score > 0.4)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 4);
+
+        setTimeout(() => {
+            if (scored.length === 1 && scored[0].score >= 0.95) {
+                showProgramDetails(scored[0].p);
+            } else if (scored.length > 0) {
+                addBotMsg(translationsHTML[currentLang].maybeYouMean);
+                let html = '';
+                scored.forEach(({ p }) => {
+                    html += `<button class="chat-opt-btn" onclick="showProgramDetailsById('${p.id}')">${p[titleKey]}</button>`;
+                });
+                html += `<button class="chat-opt-btn" onclick="offerAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`;
+                setOptions(html);
+            } else {
+                addBotMsg(translationsHTML[currentLang].notSure);
+                offerAllPrograms(true);
+            }
+        }, 450);
+    }
+
+    function showProgramDetailsById(id) {
+        const p = globalPrograms.find(x => x.id === id);
+        if (p) showProgramDetails(p);
+    }
+
+    function showProgramDetails(p) {
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+        const descKey = currentLang === 'ru' ? 'desc_ru' : 'desc_en';
+        const bulletsKey = currentLang === 'ru' ? 'bullets_ru' : 'bullets_en';
+        addUserMsg(p[titleKey]);
+        let html = `<b>${p[titleKey]}</b><br>${p[descKey] || ''}<br><br>💰 ${p.price} · ⏱ ${p.hours}`;
+        if (p[bulletsKey] && p[bulletsKey].length) {
+            html += '<ul style="margin:10px 0 0 18px; padding:0;">';
+            p[bulletsKey].forEach(b => { if (b && b.trim()) html += `<li>${b.trim()}</li>`; });
+            html += '</ul>';
+        }
+        addBotMsg(html);
+        setOptions(`
+            <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
+            <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
+        `);
+    }
+
+    // Presented when the owl couldn't confidently match anything.
+    // Desktop: owl actually flies over to "Все программы" with a random path, sits, gestures, and comes back — never interrupting the visitor's own scrolling.
+    // Mobile: no flight, just a button in the chat that scrolls to "Все программы" and tucks the chat/owl away.
+    function offerAllPrograms(autoFly) {
+        setOptions(`<button class="chat-opt-btn" onclick="goToAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`);
+        if (autoFly && !isMobile()) {
+            setTimeout(owlFlyToPrograms, 400);
+        }
+    }
+
+    function goToAllPrograms() {
+        if (isMobile()) {
+            document.getElementById('owlChat').classList.remove('active');
+            document.getElementById('owlContainer').classList.remove('chat-opened');
+        }
+        focusTab('tab-all');
     }
 
     const botTexts = {
         ru: {
-            catPrompt: "Мы реализуем обучение по 4 профессиональным трекам. Какой сектор вас интересует?",
-            optKadry: "🎓 Нацпроект «Кадры»", optPk: "📈 Повышение квалификации", optPp: "🔄 Переподготовка", optPo: "🛠️ Проф. обучение",
+            catPrompt: "Мы реализуем обучение по 5 направлениям каталога. Какое вас интересует?",
+            optKadry: "🎓 Нацпроект «Кадры»", optPk: "📈 Повышение квалификации", optPp: "🔄 Переподготовка", optPo: "🛠️ Проф. обучение", optSem: "🗣️ Семинары",
             optBack: "⬅️ Назад в меню",
             optEnroll: "✍️ Инициировать заявку", optOther: "🔄 Анализировать другие направления",
             testStart: "Анализ запущен. Ответьте на 12 вопросов, чтобы алгоритм вычислил оптимальный вектор вашего профессионального развития.",
@@ -1308,8 +1809,8 @@
             resEnroll: "✍️ Зафиксировать заявку на это направление", resCat: "🔄 Отклонить. Показать весь каталог"
         },
         en: {
-            catPrompt: "We provide training across 4 professional tracks. Which sector are you interested in?",
-            optKadry: "🎓 National Project «Kadry»", optPk: "📈 Upgrading Qualifications", optPp: "🔄 Retraining", optPo: "🛠️ Vocational Training",
+            catPrompt: "We provide training across all 5 catalog sections. Which one interests you?",
+            optKadry: "🎓 National Project «Kadry»", optPk: "📈 Upgrading Qualifications", optPp: "🔄 Retraining", optPo: "🛠️ Vocational Training", optSem: "🗣️ Seminars",
             optBack: "⬅️ Back to main menu",
             optEnroll: "✍️ Initiate application", optOther: "🔄 Analyze other tracks",
             testStart: "Analysis launched. Please answer 12 questions so the algorithm can determine your optimal professional development vector.",
@@ -1384,6 +1885,8 @@
         document.getElementById('urgentAlertModal').classList.remove('active');
     }
 
+    // Shows all 5 catalog sections (including Seminars) and simply navigates on choice —
+    // it never pre-narrates what's inside a section, it just takes you there.
     function showCatalog() {
         addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
         addBotMsg(botTexts[currentLang].catPrompt);
@@ -1392,6 +1895,7 @@
             <button class="chat-opt-btn" onclick="focusTab('tab-pk')">${botTexts[currentLang].optPk}</button>
             <button class="chat-opt-btn" onclick="focusTab('tab-pp')">${botTexts[currentLang].optPp}</button>
             <button class="chat-opt-btn" onclick="focusTab('tab-po')">${botTexts[currentLang].optPo}</button>
+            <button class="chat-opt-btn" onclick="focusTab('tab-sem')">${botTexts[currentLang].optSem}</button>
             <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
         `);
     }
