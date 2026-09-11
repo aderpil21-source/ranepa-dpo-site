@@ -78,8 +78,9 @@
             transition: all 0.5s ease;
         }
         
+        /* Изменено на 3 колонки и 2 ряда */
         .puzzle-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr);
+            display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr);
             width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none;
         }
         .grid-slot { border: 1px dashed rgba(255,255,255,0.05); }
@@ -97,30 +98,36 @@
 
         /* КУСОЧКИ ПАЗЛА */
         .puzzle-piece {
-            position: absolute; width: 200px; height: 200px;
+            position: absolute; 
+            /* Ширина и высота теперь вычисляются скриптом, но база 800x600 */
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 800px 600px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
             transition: box-shadow 0.2s, filter 0.2s;
-            /* Форма задается через JS clip-path */
         }
         .puzzle-piece::after {
             content: ''; position: absolute; inset: 0; pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.3); /* Рамки осколков */
+            border: 1px solid rgba(255,255,255,0.4); /* Рамки осколков */
             transition: opacity 0.5s;
         }
         .piece-num {
-            position: absolute; top: 8px; left: 12px; font-size: 14px; font-weight: 900;
-            color: #fff; opacity: 0.5; pointer-events: none; transition: opacity 0.5s;
+            position: absolute; top: 12px; left: 16px; font-size: 18px; font-weight: 900;
+            color: #fff; opacity: 0.6; pointer-events: none; transition: opacity 0.5s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
+        /* Состояние перетаскивания */
         .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
-        .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; }
         
-        /* СОСТОЯНИЕ МОНОЛИТА */
-        .puzzle-piece.completed { clip-path: none !important; z-index: 2; box-shadow: none; }
-        .puzzle-piece.completed::after { opacity: 0; }
-        .puzzle-piece.completed .piece-num { opacity: 0; }
+        /* СОСТОЯНИЕ "ВШИТО В СТОЛ" (Идеальное попадание) */
+        .puzzle-piece.locked { 
+            filter: brightness(1); 
+            box-shadow: none; 
+            z-index: 1; 
+            clip-path: none !important; /* Рваные края мгновенно выравниваются по квадрату сетки */
+        }
+        .puzzle-piece.locked::after { opacity: 0; /* Пропадает рамка */ }
+        .puzzle-piece.locked .piece-num { opacity: 0; /* Пропадает цифра */ }
 
         /* ЭКРАН 2: ТЕРМИНЫ */
         .screen-terms {
@@ -131,7 +138,7 @@
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
-            transform-origin: center; transition: box-shadow 0.2s; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transform-origin: center; transition: box-shadow 0.2s, transform 0.1s; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
@@ -163,14 +170,13 @@
     <div id="cursor0" class="hand-cursor"></div>
     <div id="cursor1" class="hand-cursor"></div>
 
-    <!-- Контейнер всего контента для плавного скролла -->
     <div id="scroll-container">
         
         <!-- СТОЛ С ПАЗЛАМИ -->
         <div class="screen-puzzle">
             <div class="header">
                 <h1>Сборка Нейронного Ядра</h1>
-                <p>Берите осколки <b>щипком</b>. Зажмите пустое место, чтобы двигать стол вниз.<br>Скролльте ниже, чтобы изучить базу данных.</p>
+                <p>Берите 6 фрагментов <b>щипком</b>. Зажмите пустое место, чтобы двигать стол вниз.<br>Скролльте ниже, чтобы изучить базу данных.</p>
             </div>
             <div class="board-wrapper">
                 <div class="puzzle-area" id="puzzleArea">
@@ -185,7 +191,6 @@
                 <h2 style="font-size: 2rem; color: var(--accent);">База данных ИИ</h2>
                 <p style="color: #94A3B8;">Масштабируйте карточки щипком двумя руками</p>
             </div>
-            <!-- Карточки генерируются через JS -->
         </div>
 
     </div>
@@ -194,13 +199,13 @@
 
     <script>
         // ==========================================
-        // 1. ГЕНЕРАЦИЯ НЕКВАДРАТНЫХ ПАЗЛОВ (ОСКОЛКИ)
+        // 1. ГЕНЕРАЦИЯ 6 ПАЗЛОВ (3 Колонки х 2 Ряда)
         // ==========================================
         const puzzleArea = document.getElementById('puzzleArea');
         const grid = document.getElementById('grid');
-        const cols = 4, rows = 3;
-        const pW = 800 / cols; // 200
-        const pH = 600 / rows; // 200
+        const cols = 3, rows = 2; // УМЕНЬШИЛИ ДО 6 ШТУК
+        const pW = 800 / cols; // ~266.6px
+        const pH = 600 / rows; // 300px
         let lockedCount = 0;
 
         // Генерируем "кривую" сетку точек для эффекта осколков
@@ -210,8 +215,8 @@
             for(let c = 0; c <= cols; c++) {
                 let x = c * pW; let y = r * pH;
                 // Смещаем внутренние точки хаотично
-                if (c > 0 && c < cols) x += (Math.random() - 0.5) * 60;
-                if (r > 0 && r < rows) y += (Math.random() - 0.5) * 60;
+                if (c > 0 && c < cols) x += (Math.random() - 0.5) * 80;
+                if (r > 0 && r < rows) y += (Math.random() - 0.5) * 80;
                 rowPts.push({x, y});
             }
             pts.push(rowPts);
@@ -226,6 +231,11 @@
 
                 let piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
+                
+                // Устанавливаем ширину и высоту динамически
+                piece.style.width = `${pW}px`;
+                piece.style.height = `${pH}px`;
+
                 piece.dataset.correctX = c * pW;
                 piece.dataset.correctY = r * pH;
                 piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
@@ -235,13 +245,13 @@
                 const tl = pts[r][c], tr = pts[r][c+1];
                 const br = pts[r+1][c+1], bl = pts[r+1][c];
                 
-                // Переводим абсолютные координаты в проценты относительно 200x200
+                // Переводим абсолютные координаты в проценты относительно ширины/высоты куска
                 const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
                 const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
                 
                 const clipStr = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
                 piece.style.clipPath = clipStr;
-                piece.style.setProperty('--clip', clipStr); // Сохраняем для псевдоэлемента-рамки
+                piece.style.setProperty('--clip', clipStr);
 
                 // Раскидываем пазлы СТРОГО за пределы стола
                 const isLeft = (c < cols / 2);
@@ -249,12 +259,10 @@
                 if (isLeft) {
                     startX = 20 + Math.random() * (window.innerWidth * 0.15); // Левый край
                 } else {
-                    startX = window.innerWidth - 220 - Math.random() * (window.innerWidth * 0.15); // Правый край
+                    startX = window.innerWidth - 300 - Math.random() * (window.innerWidth * 0.15); // Правый край
                 }
                 startY = 100 + Math.random() * (window.innerHeight - 300);
 
-                // Координаты пазлов абсолютны относительно #scroll-container, поэтому считаем оффсет доски
-                // Но так как пазлы лежат внутри .puzzle-area, нужно вычесть позицию самой доски
                 setTimeout(() => {
                     const boardRect = puzzleArea.getBoundingClientRect();
                     piece.style.left = `${startX - boardRect.left}px`;
@@ -313,7 +321,7 @@
         let zoomedCard = null;
         let initialCardScale = 1;
 
-        let clapFrames = 0; // Счетчик кадров для надежного хлопка
+        let clapFrames = 0; 
 
         const hands = new Hands({locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
@@ -327,7 +335,6 @@
         });
         camera.start().then(() => { document.getElementById('loader').style.display = 'none'; });
 
-        // Функция проверки: находится ли точка внутри кадра (защита от глюков на краях экрана)
         const isInsideFrame = (x, y) => x > 0.05 && x < 0.95 && y > 0.05 && y < 0.95;
 
         function onResults(results) {
@@ -342,7 +349,6 @@
 
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                 
-                // РИСУЕМ СКЕЛЕТ
                 for (const landmarks of results.multiHandLandmarks) {
                     drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3});
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
@@ -350,7 +356,6 @@
 
                 // 1. ИДЕАЛЬНЫЙ ХЛОПОК (Взрыв)
                 if (results.multiHandLandmarks.length === 2 && results.multiHandedness && results.multiHandedness.length === 2) {
-                    // Убеждаемся, что алгоритм видит именно левую и правую руку (а не одну руку дважды)
                     const labelA = results.multiHandedness[0].label; 
                     const labelB = results.multiHandedness[1].label;
 
@@ -358,15 +363,13 @@
                         const hA = results.multiHandLandmarks[0];
                         const hB = results.multiHandLandmarks[1];
                         
-                        // Проверяем, что запястья (точка 0) не находятся на самом краю экрана
                         if (isInsideFrame(hA[0].x, hA[0].y) && isInsideFrame(hB[0].x, hB[0].y)) {
-                            // Расстояние между ладонями и указательными пальцами
                             const palmDist = Math.hypot(hA[0].x - hB[0].x, hA[0].y - hB[0].y);
                             const indexDist = Math.hypot(hA[8].x - hB[8].x, hA[8].y - hB[8].y);
 
                             if (palmDist < 0.08 && indexDist < 0.08) {
                                 clapFrames++;
-                                if (clapFrames > 4) { // Нужно удерживать хлопок доли секунды для защиты
+                                if (clapFrames > 4) { 
                                     triggerImplosion();
                                     return;
                                 }
@@ -398,13 +401,10 @@
 
                 // 3. ЗУМ ТЕРМИНОВ (Две руки)
                 if (pinch0 && pinch1) {
-                    lastDragY = null; // Глушим скролл
+                    lastDragY = null; 
                     const currentDist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
                     const midX = (p0.x + p1.x) / 2;
                     const midY = (p0.y + p1.y) / 2;
-
-                    // Учитываем скролл для поиска элемента
-                    const scrollOffset = Math.abs(scrollY);
 
                     if (!isZooming) {
                         isZooming = true;
@@ -433,7 +433,6 @@
                         if (!draggedPiece) {
                             const el = document.elementFromPoint(activeP.x, activeP.y);
                             if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                                // Берем пазл
                                 draggedPiece = el;
                                 const rect = el.getBoundingClientRect();
                                 dragOffsetX = activeP.x - rect.left;
@@ -441,12 +440,10 @@
                                 el.classList.add('dragging');
                                 lastDragY = null;
                             } else if (!el || !el.closest('.puzzle-area')) {
-                                // СКРОЛЛ (Тянем пустое место)
                                 if (lastDragY !== null) {
                                     const deltaY = activeP.y - lastDragY;
                                     scrollY += deltaY * 2.0; 
                                     
-                                    // Ограничиваем скролл высотой контента
                                     const maxScrollLimit = -(scrollContainer.scrollHeight - window.innerHeight);
                                     scrollY = Math.max(maxScrollLimit, Math.min(0, scrollY));
                                     
@@ -455,7 +452,6 @@
                                 lastDragY = activeP.y;
                             }
                         } else {
-                            // Тащим пазл
                             const containerRect = puzzleArea.getBoundingClientRect();
                             let newX = activeP.x - dragOffsetX - containerRect.left;
                             let newY = activeP.y - dragOffsetY - containerRect.top;
@@ -464,7 +460,6 @@
                             lastDragY = null;
                         }
                     } else {
-                        // Отпустили щипок
                         if (draggedPiece) {
                             draggedPiece.classList.remove('dragging');
                             checkSnap(draggedPiece);
@@ -492,10 +487,12 @@
             const targetX = parseInt(piece.dataset.correctX);
             const targetY = parseInt(piece.dataset.correctY);
 
-            // Мягкое прилипание
-            if (Math.abs(currentX - targetX) < 45 && Math.abs(currentY - targetY) < 45) {
+            // Радиус магнита увеличен для удобства (т.к. пазлы стали больше)
+            if (Math.abs(currentX - targetX) < 55 && Math.abs(currentY - targetY) < 55) {
                 piece.style.left = `${targetX}px`;
                 piece.style.top = `${targetY}px`;
+                
+                // Класс locked автоматически скрывает рамки, цифры и рваные края
                 piece.classList.add('locked');
                 lockedCount++;
 
@@ -503,9 +500,8 @@
                     document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
                     document.querySelector('.header h1').style.color = "#10b981";
                     
-                    // Запускаем слияние в монолит и неоновую змею
+                    // Запускаем неоновую змею
                     puzzleArea.classList.add('completed');
-                    document.querySelectorAll('.puzzle-piece').forEach(p => p.classList.add('completed'));
                 }
             }
         }
