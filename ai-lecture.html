@@ -22,7 +22,7 @@
         
         body {
             background-color: var(--bg); color: #fff;
-            overflow: hidden; /* Скроллинг только жестами */
+            overflow: hidden; 
             transition: all 0.8s ease;
         }
 
@@ -51,15 +51,15 @@
         .hand-cursor {
             position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
             border-radius: 50%; pointer-events: none; z-index: 1000;
-            transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s, border-color 0.1s;
+            transform: translate(-50%, -50%); transition: background 0.1s, border-color 0.1s;
             box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
-        .hand-cursor.pinched { background: var(--accent); transform: translate(-50%, -50%) scale(0.6); border-color: #fff; box-shadow: 0 0 25px #fff; }
+        .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
 
         /* КОНТЕЙНЕР ДЛЯ СКРОЛЛА */
         #scroll-container {
             width: 100vw; display: flex; flex-direction: column;
-            position: absolute; top: 0; left: 0; transition: transform 0.05s linear;
+            position: absolute; top: 0; left: 0; will-change: transform;
         }
 
         /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
@@ -101,6 +101,7 @@
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 800px 600px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            /* Мгновенная реакция */
             transition: box-shadow 0.1s, filter 0.1s; 
         }
         .puzzle-piece::after {
@@ -129,9 +130,10 @@
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
             transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            transition: box-shadow 0.2s, border-color 0.2s; 
+            /* Плавный зум */
+            transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s ease-out; 
         }
-        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
+        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); z-index: 10; }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
         .term-card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
 
@@ -141,9 +143,18 @@
             background: rgba(202, 15, 62, 0.8); backdrop-filter: blur(10px); padding: 12px 24px;
             border-radius: 30px; font-weight: 800; font-size: 0.9rem; letter-spacing: 1px;
             z-index: 500; text-transform: uppercase; box-shadow: 0 10px 20px rgba(202, 15, 62, 0.4);
-            animation: pulse 2s infinite; transition: background 0.3s;
+            animation: pulse 2s infinite; transition: background 0.3s, opacity 0.3s;
         }
         @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } }
+
+        /* Всплывающее уведомление (Лайк) */
+        .toast {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #000; font-weight: 800; padding: 15px 30px;
+            border-radius: 20px; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5);
+            transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2000;
+        }
+        .toast.show { top: 40px; }
 
     </style>
 </head>
@@ -152,7 +163,7 @@
     <div id="loader">
         <div class="spinner"></div>
         <h2 style="margin-bottom: 10px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;">Предоставьте доступ к камере. Изображение обрабатывается локально.</p>
+        <p style="color: #94A3B8;">Предоставьте доступ к камере. Включены Инерция и Кинематика.</p>
     </div>
 
     <video id="webcam" class="video-feed" autoplay playsinline></video>
@@ -166,7 +177,7 @@
         <div class="screen-puzzle">
             <div class="header">
                 <h1>Сборка Нейронного Ядра</h1>
-                <p>Берите 6 фрагментов <b>щипком</b>. Зажмите пустое место, чтобы двигать стол вниз.<br>Скролльте ниже, чтобы изучить базу данных.</p>
+                <p><b>Щипок пустого места</b> — скроллинг. <b>Щипок карточки + вверх/вниз</b> — зум.<br><b>Хлопок</b> — возврат на базу. Покажите <b>Класс 👍</b> для проверки системы.</p>
             </div>
             <div class="board-wrapper">
                 <div class="puzzle-area" id="puzzleArea">
@@ -179,12 +190,13 @@
         <div class="screen-terms" id="termsSection">
             <div style="width: 100%; text-align: center; margin-bottom: 40px;">
                 <h2 style="font-size: 2rem; color: var(--accent);">База данных ИИ</h2>
-                <p style="color: #94A3B8;">Масштабируйте карточки щипком двумя руками</p>
+                <p style="color: #94A3B8;">Схватите карточку и потяните руку вверх для увеличения</p>
             </div>
         </div>
     </div>
 
-    <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ (В ЦЕНТРЕ ЭКРАНА), ЧТОБЫ ВЕРНУТЬСЯ</div>
+    <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ, ЧТОБЫ ВЕРНУТЬСЯ НА САЙТ</div>
+    <div class="toast" id="toast">👍 Жест распознан: Отличная работа!</div>
 
     <script>
         // ==========================================
@@ -279,39 +291,67 @@
             termCards.push(card);
         });
 
+
         // ==========================================
-        // 2. ЖЕСТЫ, СКОРОСТЬ 1 К 1 И УМНЫЙ ХЛОПОК
+        // 2. ДВИЖОК ЖЕСТОВ И ФИЗИКИ (Gesture Engine)
         // ==========================================
         const videoElement = document.getElementById('webcam');
         const canvasElement = document.getElementById('output_canvas');
         const canvasCtx = canvasElement.getContext('2d');
         const scrollContainer = document.getElementById('scroll-container');
-        
         const cursor0 = document.getElementById('cursor0');
         const cursor1 = document.getElementById('cursor1');
 
-        let isPinching0 = false;
-        let isPinching1 = false;
-        
+        // Состояния
+        let isPinching0 = false, isPinching1 = false;
         let p0 = {x:0, y:0}, p1 = {x:0, y:0};
-
+        
         let draggedPiece = null;
         let dragOffsetX = 0, dragOffsetY = 0;
-        
-        let scrollY = 0;
-        let lastDragY = null; 
 
-        let isZooming = false;
-        let initialPinchDist = 0;
+        // Физика Скролла (Инерция)
+        let scrollY = 0;
+        let targetScrollY = 0;
+        let scrollVelocity = 0;
+        let lastDragY = null; 
+        const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
+
+        // Физика Зума (Одной рукой)
         let zoomedCard = null;
+        let zoomStartY = 0;
         let initialCardScale = 1;
 
-        let clapFrames = 0; 
+        // Кинематика Хлопка
+        let handDistHistory = [];
+
+        // Лайк
+        let thumbsUpCooldown = false;
+
+        // Сглаживание курсора
+        function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
+        let smoothP0 = {x: window.innerWidth/2, y: window.innerHeight/2};
+        let smoothP1 = {x: window.innerWidth/2, y: window.innerHeight/2};
+
+        // Главный цикл отрисовки физики (60 FPS)
+        function physicsLoop() {
+            // Инерция скролла
+            if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
+                targetScrollY += scrollVelocity;
+                scrollVelocity *= 0.9; // Затухание
+            }
+            
+            // Плавное применение скролла
+            targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
+            scrollY = lerp(scrollY, targetScrollY, 0.2);
+            scrollContainer.style.transform = `translateY(${scrollY}px)`;
+
+            requestAnimationFrame(physicsLoop);
+        }
+        physicsLoop(); // Запускаем движок
 
         const hands = new Hands({locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         }});
-        
         hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
@@ -337,37 +377,48 @@
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
-                // 1. ИДЕАЛЬНЫЙ ХЛОПОК (Защищенный)
-                // Хлопок работает ТОЛЬКО если руки пусты, скролл не идет и мы не зумируем
-                if (!draggedPiece && !isZooming && lastDragY === null) {
-                    if (results.multiHandLandmarks.length === 2 && results.multiHandedness.length === 2) {
-                        const labelA = results.multiHandedness[0].label; 
-                        const labelB = results.multiHandedness[1].label;
+                // --- 1. КИНЕМАТИКА ХЛОПКА (Скорость сближения) ---
+                if (!draggedPiece && zoomedCard === null && lastDragY === null) {
+                    if (results.multiHandLandmarks.length === 2) {
+                        const hA = results.multiHandLandmarks[0][0]; // Запястье 1
+                        const hB = results.multiHandLandmarks[1][0]; // Запястье 2
+                        
+                        const dist = Math.hypot(hA.x - hB.x, hA.y - hB.y);
+                        handDistHistory.push(dist);
+                        if (handDistHistory.length > 5) handDistHistory.shift();
 
-                        if (labelA !== labelB) {
-                            const hA = results.multiHandLandmarks[0];
-                            const hB = results.multiHandLandmarks[1];
-                            
-                            // ЗАЩИТА ОТ КРАЕВ: Хлопок сработает только в центре экрана (15% от краев)
-                            const isSafeZone = (x, y) => x > 0.15 && x < 0.85 && y > 0.10 && y < 0.80;
+                        // Если скорость сближения очень высокая и руки близко
+                        if (handDistHistory.length === 5) {
+                            const velocity = handDistHistory[0] - handDistHistory[4];
+                            if (velocity > 0.15 && dist < 0.25) {
+                                triggerImplosion();
+                                return;
+                            }
+                        }
+                    } else { handDistHistory = []; }
+                } else { handDistHistory = []; }
 
-                            if (isSafeZone(hA[0].x, hA[0].y) && isSafeZone(hB[0].x, hB[0].y)) {
-                                const wristDist = Math.hypot(hA[0].x - hB[0].x, hA[0].y - hB[0].y);
-                                const indexDist = Math.hypot(hA[8].x - hB[8].x, hA[8].y - hB[8].y);
+                // --- 2. ЖЕСТ "ЛАЙК" (Thumbs Up) ---
+                if (results.multiHandLandmarks.length === 1 && !draggedPiece && !zoomedCard) {
+                    const lm = results.multiHandLandmarks[0];
+                    // Большой палец вытянут вверх (его кончик выше сустава), остальные пальцы сжаты (кончики ниже суставов)
+                    const thumbUp = lm[4].y < lm[3].y;
+                    const indexDown = lm[8].y > lm[6].y;
+                    const middleDown = lm[12].y > lm[10].y;
+                    const ringDown = lm[16].y > lm[14].y;
+                    const pinkyDown = lm[20].y > lm[18].y;
 
-                                if (wristDist < 0.12 && indexDist < 0.12) {
-                                    clapFrames++;
-                                    if (clapFrames > 3) { 
-                                        triggerImplosion();
-                                        return;
-                                    }
-                                } else { clapFrames = 0; }
-                            } else { clapFrames = 0; }
-                        } else { clapFrames = 0; }
-                    } else { clapFrames = 0; }
-                } else { clapFrames = 0; } // Если что-то тащим — хлопок блокируется аппаратно
+                    if (thumbUp && indexDown && middleDown && ringDown && pinkyDown) {
+                        if (!thumbsUpCooldown) {
+                            thumbsUpCooldown = true;
+                            showToast();
+                            setTimeout(() => thumbsUpCooldown = false, 3000);
+                        }
+                    }
+                }
 
-                // 2. ВЫЧИСЛЕНИЕ ЩИПКОВ (БЕЗ ОСИ Z - НАДЕЖНЫЙ ХВАТ)
+
+                // --- 3. ВЫЧИСЛЕНИЕ ЩИПКОВ ---
                 results.multiHandLandmarks.forEach((landmarks, index) => {
                     const tip = landmarks[8];   
                     const thumb = landmarks[4]; 
@@ -375,97 +426,99 @@
                     const px = window.innerWidth - (tip.x * window.innerWidth);
                     const py = tip.y * window.innerHeight;
 
-                    // Высчитываем только X и Y. Ось Z убираем, чтобы детали не падали по краям!
                     const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
 
                     if (index === 0) { 
-                        p0 = {x: px, y: py}; 
-                        // Гистерезис: берем при 0.05, отпускаем при 0.09. Деталь "приклеивается".
+                        smoothP0.x = lerp(smoothP0.x, px, 0.5);
+                        smoothP0.y = lerp(smoothP0.y, py, 0.5);
+                        p0 = {x: smoothP0.x, y: smoothP0.y}; 
                         isPinching0 = dist2D < (isPinching0 ? 0.09 : 0.05);
                         pinch0 = isPinching0;
                         updateCursor(cursor0, p0, pinch0); 
                     }
                     if (index === 1) { 
-                        p1 = {x: px, y: py}; 
+                        smoothP1.x = lerp(smoothP1.x, px, 0.5);
+                        smoothP1.y = lerp(smoothP1.y, py, 0.5);
+                        p1 = {x: smoothP1.x, y: smoothP1.y}; 
                         isPinching1 = dist2D < (isPinching1 ? 0.09 : 0.05);
                         pinch1 = isPinching1;
                         updateCursor(cursor1, p1, pinch1); 
                     }
                 });
 
-                // 3. ЗУМ ТЕРМИНОВ (Две руки)
-                if (pinch0 && pinch1) {
-                    lastDragY = null; 
-                    const currentDist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
-                    const midX = (p0.x + p1.x) / 2;
-                    const midY = (p0.y + p1.y) / 2;
-
-                    if (!isZooming) {
-                        isZooming = true;
-                        initialPinchDist = currentDist;
-                        const el = document.elementFromPoint(midX, midY);
-                        zoomedCard = el ? el.closest('.term-card') : null;
-                        if (zoomedCard) {
-                            initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
-                            zoomedCard.classList.add('hovered');
-                        }
-                    } else if (zoomedCard) {
-                        const scaleMultiplier = currentDist / initialPinchDist;
-                        let targetScale = initialCardScale * scaleMultiplier;
-                        targetScale = Math.max(0.6, Math.min(targetScale, 2.5));
+                // --- 4. МУЛЬТИ-ИНСТРУМЕНТ (Одной рукой: Скролл, Пазл или Зум) ---
+                const activePinch = pinch0 ? p0 : (pinch1 ? p1 : null);
+                
+                if (activePinch) {
+                    
+                    // Если мы УЖЕ зумируем карточку
+                    if (zoomedCard !== null) {
+                        // Тянем руку вверх (разница Y отрицательная) -> зум увеличивается
+                        const deltaY = zoomStartY - activePinch.y; 
+                        let targetScale = initialCardScale + (deltaY * 0.006); // Коэффициент чувствительности зума
+                        targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
                         
                         zoomedCard.style.transform = `scale(${targetScale})`;
                         zoomedCard.dataset.scale = targetScale;
+                    } 
+                    // Если мы УЖЕ тащим пазл
+                    else if (draggedPiece !== null) {
+                        const containerRect = puzzleArea.getBoundingClientRect();
+                        let newX = activePinch.x - dragOffsetX - containerRect.left;
+                        let newY = activePinch.y - dragOffsetY - containerRect.top;
+                        draggedPiece.style.left = `${newX}px`;
+                        draggedPiece.style.top = `${newY}px`;
+                    } 
+                    // Если мы УЖЕ скроллим
+                    else if (lastDragY !== null) {
+                        const deltaY = activePinch.y - lastDragY;
+                        targetScrollY += deltaY * 2.5; 
+                        scrollVelocity = deltaY * 0.5; // Накапливаем инерцию
+                        lastDragY = activePinch.y;
+                    } 
+                    // МЫ ТОЛЬКО ЧТО СДЕЛАЛИ ЩИПОК — Определяем цель
+                    else {
+                        // Что находится под курсором с учетом скролла?
+                        const el = document.elementFromPoint(activePinch.x, activePinch.y);
+                        
+                        if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
+                            // ХВАТАЕМ ПАЗЛ
+                            draggedPiece = el;
+                            const rect = el.getBoundingClientRect();
+                            dragOffsetX = activePinch.x - rect.left;
+                            dragOffsetY = activePinch.y - rect.top;
+                            el.classList.add('dragging');
+                        } 
+                        else if (el && el.closest('.term-card')) {
+                            // ХВАТАЕМ КАРТОЧКУ ДЛЯ ЗУМА
+                            zoomedCard = el.closest('.term-card');
+                            zoomedCard.classList.add('hovered');
+                            zoomStartY = activePinch.y;
+                            initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
+                        } 
+                        else {
+                            // ХВАТАЕМ ВОЗДУХ ДЛЯ СКРОЛЛА
+                            lastDragY = activePinch.y;
+                            scrollVelocity = 0;
+                        }
                     }
                 } else {
-                    isZooming = false;
-                    termCards.forEach(c => c.classList.remove('hovered'));
-
-                    // 4. ПАЗЛЫ И СКРОЛЛ (Одна рука)
-                    if (pinch0 || pinch1) {
-                        const activeP = pinch0 ? p0 : p1;
-
-                        if (!draggedPiece) {
-                            const el = document.elementFromPoint(activeP.x, activeP.y);
-                            if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                                draggedPiece = el;
-                                const rect = el.getBoundingClientRect();
-                                dragOffsetX = activeP.x - rect.left;
-                                dragOffsetY = activeP.y - rect.top;
-                                el.classList.add('dragging');
-                                lastDragY = null;
-                            } else if (!el || !el.closest('.puzzle-area')) {
-                                if (lastDragY !== null) {
-                                    const deltaY = activeP.y - lastDragY;
-                                    scrollY += deltaY * 2.5; 
-                                    
-                                    const maxScrollLimit = -(scrollContainer.scrollHeight - window.innerHeight);
-                                    scrollY = Math.max(maxScrollLimit, Math.min(0, scrollY));
-                                    
-                                    scrollContainer.style.transform = `translateY(${scrollY}px)`;
-                                }
-                                lastDragY = activeP.y;
-                            }
-                        } else {
-                            const containerRect = puzzleArea.getBoundingClientRect();
-                            let newX = activeP.x - dragOffsetX - containerRect.left;
-                            let newY = activeP.y - dragOffsetY - containerRect.top;
-                            draggedPiece.style.left = `${newX}px`;
-                            draggedPiece.style.top = `${newY}px`;
-                            lastDragY = null;
-                        }
-                    } else {
-                        if (draggedPiece) {
-                            draggedPiece.classList.remove('dragging');
-                            checkSnap(draggedPiece);
-                            draggedPiece = null;
-                        }
-                        lastDragY = null;
+                    // ОТПУСТИЛИ ЩИПОК — СБРОС ВСЕХ РЕЖИМОВ
+                    if (draggedPiece) {
+                        draggedPiece.classList.remove('dragging');
+                        checkSnap(draggedPiece);
+                        draggedPiece = null;
                     }
+                    if (zoomedCard) {
+                        zoomedCard.classList.remove('hovered');
+                        zoomedCard = null;
+                    }
+                    lastDragY = null;
                 }
+
             } else {
                 lastDragY = null;
-                clapFrames = 0;
+                handDistHistory = [];
             }
 
             canvasCtx.restore();
@@ -482,7 +535,6 @@
             const targetX = parseInt(piece.dataset.correctX);
             const targetY = parseInt(piece.dataset.correctY);
 
-            // Магнитное поле (70 пикселей) - легко класть на место
             if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
                 piece.style.left = `${targetX}px`;
                 piece.style.top = `${targetY}px`;
@@ -492,7 +544,6 @@
                 if (lockedCount === cols * rows) {
                     document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
                     document.querySelector('.header h1').style.color = "#10b981";
-                    
                     puzzleArea.classList.add('completed');
                 }
             }
@@ -509,10 +560,13 @@
             hint.style.boxShadow = "0 0 40px #10b981";
 
             document.body.classList.add('implode');
+            setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+        }
 
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1400);
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
 
     </script>
