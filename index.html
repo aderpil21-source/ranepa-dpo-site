@@ -1336,6 +1336,9 @@
                     <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         ${bulletsHTML}
                     </ul>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; border-left: 2px solid var(--ranepa-red); padding-left: 8px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 0 8px 8px 0;">
+                        📄 Полная официальная программа и аннотация доступны в <span onclick="openDocsModal()" style="color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700;">архиве программ</span> внизу страницы.
+                    </div>
                     <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
                 </div>
             </div>`;
@@ -1378,6 +1381,7 @@
             document.getElementById('swipeHint').style.display = 'flex';
             setTimeout(() => { const h = document.getElementById('swipeHint'); if (h) h.style.display = 'none'; }, 6000);
         }
+    }
     }
 
     function buildFilters() {
