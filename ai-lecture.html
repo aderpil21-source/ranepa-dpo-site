@@ -51,15 +51,16 @@
         .hand-cursor {
             position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
             border-radius: 50%; pointer-events: none; z-index: 1000;
-            transform: translate(-50%, -50%); transition: background 0.1s, border-color 0.1s;
+            transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s, border-color 0.1s;
             box-shadow: 0 0 15px var(--accent); opacity: 0;
+            /* ВАЖНО: Убрали transition для left и top, чтобы курсор летал 1 в 1 с рукой без задержек */
         }
-        .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
+        .hand-cursor.pinched { background: var(--accent); transform: translate(-50%, -50%) scale(0.6); border-color: #fff; box-shadow: 0 0 25px #fff; }
 
         /* КОНТЕЙНЕР ДЛЯ СКРОЛЛА */
         #scroll-container {
             width: 100vw; display: flex; flex-direction: column;
-            position: absolute; top: 0; left: 0; transition: transform 0.05s linear;
+            position: absolute; top: 0; left: 0; transition: transform 0.05s linear; /* Максимально быстрый скролл */
         }
 
         /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
@@ -101,7 +102,8 @@
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 800px 600px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            transition: box-shadow 0.2s, filter 0.2s;
+            /* ВАЖНО: Убрали left/top из transition для нулевой задержки перетаскивания */
+            transition: box-shadow 0.1s, filter 0.1s; 
         }
         .puzzle-piece::after {
             content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -129,6 +131,8 @@
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
             transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            /* Быстрый отклик на масштабирование */
+            transition: box-shadow 0.2s, border-color 0.2s; 
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
@@ -187,7 +191,7 @@
 
     <script>
         // ==========================================
-        // 1. ГЕНЕРАЦИЯ 6 ПАЗЛОВ (3 Колонки х 2 Ряда)
+        // 1. ГЕНЕРАЦИЯ 6 ПАЗЛОВ
         // ==========================================
         const puzzleArea = document.getElementById('puzzleArea');
         const grid = document.getElementById('grid');
@@ -279,7 +283,7 @@
         });
 
         // ==========================================
-        // 2. ЖЕСТЫ, СКРОЛЛ И ХЛОПОК С ГИСТЕРЕЗИСОМ И СГЛАЖИВАНИЕМ
+        // 2. ЖЕСТЫ, СКОРОСТЬ 1 К 1 И УМНЫЙ ХЛОПОК
         // ==========================================
         const videoElement = document.getElementById('webcam');
         const canvasElement = document.getElementById('output_canvas');
@@ -289,12 +293,10 @@
         const cursor0 = document.getElementById('cursor0');
         const cursor1 = document.getElementById('cursor1');
 
-        // Состояния для гистерезиса и сглаживания (Анти-дребезг)
         let isPinching0 = false;
         let isPinching1 = false;
         
-        let smoothP0 = {x: window.innerWidth / 2, y: window.innerHeight / 2};
-        let smoothP1 = {x: window.innerWidth / 2, y: window.innerHeight / 2};
+        let p0 = {x:0, y:0}, p1 = {x:0, y:0};
 
         let draggedPiece = null;
         let dragOffsetX = 0, dragOffsetY = 0;
@@ -309,14 +311,10 @@
 
         let clapFrames = 0; 
 
-        // Функция линейной интерполяции (сглаживание движений)
-        function lerp(start, end, amt) {
-            return (1 - amt) * start + amt * end;
-        }
-
         const hands = new Hands({locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         }});
+        // Повысили частоту и точность отслеживания
         hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
@@ -334,7 +332,6 @@
 
             cursor0.style.opacity = 0; cursor1.style.opacity = 0;
             let pinch0 = false, pinch1 = false;
-            let p0 = {x:0, y:0}, p1 = {x:0, y:0};
 
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                 
@@ -343,62 +340,34 @@
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
-                // 1. ИДЕАЛЬНЫЙ ХЛОПОК (Защищенный от ложных срабатываний)
-                if (results.multiHandLandmarks.length === 2) {
-                    const wrist1 = results.multiHandLandmarks[0][0]; // Запястье первой руки
-                    const wrist2 = results.multiHandLandmarks[1][0]; // Запястье второй руки
-                    
-                    // Вычисляем расстояние между запястьями (MediaPipe лучше всего отслеживает их при сближении)
-                    const wristDist = Math.hypot(wrist1.x - wrist2.x, wrist1.y - wrist2.y);
-
-                    // Если запястья находятся ближе чем 20% ширины экрана — это хлопок
-                    if (wristDist < 0.20) {
-                        clapFrames++;
-                        if (clapFrames > 2) { 
-                            triggerImplosion();
-                            return;
-                        }
-                    } else {
-                        clapFrames = 0;
-                    }
-                } else {
-                    clapFrames = 0;
-                }
-
-                // 2. ВЫЧИСЛЕНИЕ ЩИПКОВ СО СГЛАЖИВАНИЕМ И ГИСТЕРЕЗИСОМ
+                // ВЫЧИСЛЕНИЕ ЩИПКОВ (БЕЗ ЗАДЕРЖЕК, С 3D-ДИСТАНЦИЕЙ)
                 results.multiHandLandmarks.forEach((landmarks, index) => {
-                    const tip = landmarks[8];   // Указательный палец
-                    const thumb = landmarks[4]; // Большой палец
+                    const tip = landmarks[8];   
+                    const thumb = landmarks[4]; 
 
-                    // Зеркальные пиксельные координаты
+                    // Абсолютные пиксели (мгновенная передача)
                     const px = window.innerWidth - (tip.x * window.innerWidth);
                     const py = tip.y * window.innerHeight;
 
-                    const dist = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
+                    // Вычисляем дистанцию с учетом глубины (z) - так пальцы не "отклеиваются" при повороте кисти
+                    const dist3D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y, tip.z - thumb.z);
 
                     if (index === 0) { 
-                        // Плавное следование курсора за пальцем (убирает дергания)
-                        smoothP0.x = lerp(smoothP0.x, px, 0.4);
-                        smoothP0.y = lerp(smoothP0.y, py, 0.4);
-                        p0 = {x: smoothP0.x, y: smoothP0.y}; 
-                        
-                        // Гистерезис: захватить сложно (0.045), а отпустить легко (0.085). Вещи не выпадают!
-                        isPinching0 = dist < (isPinching0 ? 0.085 : 0.045);
+                        p0 = {x: px, y: py}; 
+                        // Железобетонный гистерезис: берем при 0.06, отпускаем только если пальцы разошлись шире 0.12
+                        isPinching0 = dist3D < (isPinching0 ? 0.12 : 0.06);
                         pinch0 = isPinching0;
                         updateCursor(cursor0, p0, pinch0); 
                     }
                     if (index === 1) { 
-                        smoothP1.x = lerp(smoothP1.x, px, 0.4);
-                        smoothP1.y = lerp(smoothP1.y, py, 0.4);
-                        p1 = {x: smoothP1.x, y: smoothP1.y}; 
-                        
-                        isPinching1 = dist < (isPinching1 ? 0.085 : 0.045);
+                        p1 = {x: px, y: py}; 
+                        isPinching1 = dist3D < (isPinching1 ? 0.12 : 0.06);
                         pinch1 = isPinching1;
                         updateCursor(cursor1, p1, pinch1); 
                     }
                 });
 
-                // 3. ЗУМ ТЕРМИНОВ (Две руки)
+                // ЗУМ ТЕРМИНОВ (Две руки)
                 if (pinch0 && pinch1) {
                     lastDragY = null; 
                     const currentDist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
@@ -419,18 +388,14 @@
                         let targetScale = initialCardScale * scaleMultiplier;
                         targetScale = Math.max(0.6, Math.min(targetScale, 2.5));
                         
-                        // Плавное изменение масштаба
-                        let currentScale = parseFloat(zoomedCard.dataset.scale) || 1;
-                        let newScale = currentScale + (targetScale - currentScale) * 0.2;
-
-                        zoomedCard.style.transform = `scale(${newScale})`;
-                        zoomedCard.dataset.scale = newScale;
+                        zoomedCard.style.transform = `scale(${targetScale})`;
+                        zoomedCard.dataset.scale = targetScale;
                     }
                 } else {
                     isZooming = false;
                     termCards.forEach(c => c.classList.remove('hovered'));
 
-                    // 4. ПАЗЛЫ И СКРОЛЛ (Одна рука)
+                    // ПАЗЛЫ И СКРОЛЛ (Одна рука)
                     if (pinch0 || pinch1) {
                         const activeP = pinch0 ? p0 : p1;
 
@@ -446,7 +411,7 @@
                             } else if (!el || !el.closest('.puzzle-area')) {
                                 if (lastDragY !== null) {
                                     const deltaY = activeP.y - lastDragY;
-                                    scrollY += deltaY * 2.0; 
+                                    scrollY += deltaY * 2.5; // Скролл стал чуть быстрее и отзывчивее
                                     
                                     const maxScrollLimit = -(scrollContainer.scrollHeight - window.innerHeight);
                                     scrollY = Math.max(maxScrollLimit, Math.min(0, scrollY));
@@ -459,6 +424,7 @@
                             const containerRect = puzzleArea.getBoundingClientRect();
                             let newX = activeP.x - dragOffsetX - containerRect.left;
                             let newY = activeP.y - dragOffsetY - containerRect.top;
+                            // Мгновенная позиция (задержка убрана в CSS)
                             draggedPiece.style.left = `${newX}px`;
                             draggedPiece.style.top = `${newY}px`;
                             lastDragY = null;
@@ -472,6 +438,40 @@
                         lastDragY = null;
                     }
                 }
+
+                // ИДЕАЛЬНЫЙ ХЛОПОК (Защита: не срабатывает, если мы скроллим, тащим пазл или зумируем карточку)
+                if (!draggedPiece && !isZooming && lastDragY === null) {
+                    if (results.multiHandLandmarks.length === 2 && results.multiHandedness.length === 2) {
+                        const labelA = results.multiHandedness[0].label; 
+                        const labelB = results.multiHandedness[1].label;
+
+                        if (labelA !== labelB) {
+                            const hA = results.multiHandLandmarks[0];
+                            const hB = results.multiHandLandmarks[1];
+                            
+                            const wristDist = Math.hypot(hA[0].x - hB[0].x, hA[0].y - hB[0].y);
+                            const indexDist = Math.hypot(hA[8].x - hB[8].x, hA[8].y - hB[8].y);
+
+                            // Жесткое условие: запястья и пальцы должны быть ОЧЕНЬ близко друг к другу
+                            if (wristDist < 0.12 && indexDist < 0.12) {
+                                clapFrames++;
+                                if (clapFrames > 3) { 
+                                    triggerImplosion();
+                                    return;
+                                }
+                            } else {
+                                clapFrames = 0;
+                            }
+                        } else {
+                            clapFrames = 0;
+                        }
+                    } else {
+                        clapFrames = 0;
+                    }
+                } else {
+                    clapFrames = 0; // Блокируем хлопок во время других действий
+                }
+
             } else {
                 lastDragY = null;
                 clapFrames = 0;
