@@ -51,15 +51,15 @@
         .hand-cursor {
             position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
             border-radius: 50%; pointer-events: none; z-index: 1000;
-            transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s;
+            transform: translate(-50%, -50%); transition: background 0.1s, border-color 0.1s;
             box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
-        .hand-cursor.pinched { background: var(--accent); transform: translate(-50%, -50%) scale(0.6); border-color: #fff; box-shadow: 0 0 25px #fff; }
+        .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
 
         /* КОНТЕЙНЕР ДЛЯ СКРОЛЛА */
         #scroll-container {
             width: 100vw; display: flex; flex-direction: column;
-            position: absolute; top: 0; left: 0; transition: transform 0.1s linear;
+            position: absolute; top: 0; left: 0; transition: transform 0.05s linear;
         }
 
         /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
@@ -78,7 +78,6 @@
             transition: all 0.5s ease;
         }
         
-        /* Изменено на 3 колонки и 2 ряда */
         .puzzle-grid {
             display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr);
             width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none;
@@ -99,7 +98,6 @@
         /* КУСОЧКИ ПАЗЛА */
         .puzzle-piece {
             position: absolute; 
-            /* Ширина и высота теперь вычисляются скриптом, но база 800x600 */
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 800px 600px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
@@ -107,7 +105,7 @@
         }
         .puzzle-piece::after {
             content: ''; position: absolute; inset: 0; pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.4); /* Рамки осколков */
+            border: 1px solid rgba(255,255,255,0.4);
             transition: opacity 0.5s;
         }
         .piece-num {
@@ -116,18 +114,10 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
 
-        /* Состояние перетаскивания */
         .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
-        
-        /* СОСТОЯНИЕ "ВШИТО В СТОЛ" (Идеальное попадание) */
-        .puzzle-piece.locked { 
-            filter: brightness(1); 
-            box-shadow: none; 
-            z-index: 1; 
-            clip-path: none !important; /* Рваные края мгновенно выравниваются по квадрату сетки */
-        }
-        .puzzle-piece.locked::after { opacity: 0; /* Пропадает рамка */ }
-        .puzzle-piece.locked .piece-num { opacity: 0; /* Пропадает цифра */ }
+        .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; }
+        .puzzle-piece.locked::after { opacity: 0; }
+        .puzzle-piece.locked .piece-num { opacity: 0; }
 
         /* ЭКРАН 2: ТЕРМИНЫ */
         .screen-terms {
@@ -138,7 +128,7 @@
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
-            transform-origin: center; transition: box-shadow 0.2s, transform 0.1s; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
@@ -171,7 +161,6 @@
     <div id="cursor1" class="hand-cursor"></div>
 
     <div id="scroll-container">
-        
         <!-- СТОЛ С ПАЗЛАМИ -->
         <div class="screen-puzzle">
             <div class="header">
@@ -192,7 +181,6 @@
                 <p style="color: #94A3B8;">Масштабируйте карточки щипком двумя руками</p>
             </div>
         </div>
-
     </div>
 
     <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ, ЧТОБЫ ВЕРНУТЬСЯ НА САЙТ</div>
@@ -203,18 +191,16 @@
         // ==========================================
         const puzzleArea = document.getElementById('puzzleArea');
         const grid = document.getElementById('grid');
-        const cols = 3, rows = 2; // УМЕНЬШИЛИ ДО 6 ШТУК
-        const pW = 800 / cols; // ~266.6px
-        const pH = 600 / rows; // 300px
+        const cols = 3, rows = 2;
+        const pW = 800 / cols; 
+        const pH = 600 / rows; 
         let lockedCount = 0;
 
-        // Генерируем "кривую" сетку точек для эффекта осколков
         const pts = [];
         for(let r = 0; r <= rows; r++) {
             let rowPts = [];
             for(let c = 0; c <= cols; c++) {
                 let x = c * pW; let y = r * pH;
-                // Смещаем внутренние точки хаотично
                 if (c > 0 && c < cols) x += (Math.random() - 0.5) * 80;
                 if (r > 0 && r < rows) y += (Math.random() - 0.5) * 80;
                 rowPts.push({x, y});
@@ -231,8 +217,6 @@
 
                 let piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
-                
-                // Устанавливаем ширину и высоту динамически
                 piece.style.width = `${pW}px`;
                 piece.style.height = `${pH}px`;
 
@@ -241,25 +225,21 @@
                 piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
                 piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
 
-                // Высчитываем полигон для конкретного осколка
                 const tl = pts[r][c], tr = pts[r][c+1];
                 const br = pts[r+1][c+1], bl = pts[r+1][c];
                 
-                // Переводим абсолютные координаты в проценты относительно ширины/высоты куска
                 const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
                 const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
                 
                 const clipStr = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
                 piece.style.clipPath = clipStr;
-                piece.style.setProperty('--clip', clipStr);
 
-                // Раскидываем пазлы СТРОГО за пределы стола
                 const isLeft = (c < cols / 2);
                 let startX, startY;
                 if (isLeft) {
-                    startX = 20 + Math.random() * (window.innerWidth * 0.15); // Левый край
+                    startX = 20 + Math.random() * (window.innerWidth * 0.15); 
                 } else {
-                    startX = window.innerWidth - 300 - Math.random() * (window.innerWidth * 0.15); // Правый край
+                    startX = window.innerWidth - 300 - Math.random() * (window.innerWidth * 0.15); 
                 }
                 startY = 100 + Math.random() * (window.innerHeight - 300);
 
@@ -274,7 +254,6 @@
             }
         }
 
-        // Термины
         const termsData = [
             { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных." },
             { t: "Нейросеть", d: "Математическая модель, имитирующая работу мозга." },
@@ -300,7 +279,7 @@
         });
 
         // ==========================================
-        // 2. ЖЕСТЫ, СКРОЛЛ И ХЛОПОК (ЗАЩИТА)
+        // 2. ЖЕСТЫ, СКРОЛЛ И ХЛОПОК С ГИСТЕРЕЗИСОМ И СГЛАЖИВАНИЕМ
         // ==========================================
         const videoElement = document.getElementById('webcam');
         const canvasElement = document.getElementById('output_canvas');
@@ -309,6 +288,13 @@
         
         const cursor0 = document.getElementById('cursor0');
         const cursor1 = document.getElementById('cursor1');
+
+        // Состояния для гистерезиса и сглаживания (Анти-дребезг)
+        let isPinching0 = false;
+        let isPinching1 = false;
+        
+        let smoothP0 = {x: window.innerWidth / 2, y: window.innerHeight / 2};
+        let smoothP1 = {x: window.innerWidth / 2, y: window.innerHeight / 2};
 
         let draggedPiece = null;
         let dragOffsetX = 0, dragOffsetY = 0;
@@ -323,6 +309,11 @@
 
         let clapFrames = 0; 
 
+        // Функция линейной интерполяции (сглаживание движений)
+        function lerp(start, end, amt) {
+            return (1 - amt) * start + amt * end;
+        }
+
         const hands = new Hands({locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         }});
@@ -334,8 +325,6 @@
             width: 1280, height: 720
         });
         camera.start().then(() => { document.getElementById('loader').style.display = 'none'; });
-
-        const isInsideFrame = (x, y) => x > 0.05 && x < 0.95 && y > 0.05 && y < 0.95;
 
         function onResults(results) {
             canvasElement.width = window.innerWidth;
@@ -354,49 +343,59 @@
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
-                // 1. ИДЕАЛЬНЫЙ ХЛОПОК (Взрыв)
-                if (results.multiHandLandmarks.length === 2 && results.multiHandedness && results.multiHandedness.length === 2) {
-                    const labelA = results.multiHandedness[0].label; 
-                    const labelB = results.multiHandedness[1].label;
+                // 1. ИДЕАЛЬНЫЙ ХЛОПОК (Защищенный от ложных срабатываний)
+                if (results.multiHandLandmarks.length === 2) {
+                    const wrist1 = results.multiHandLandmarks[0][0]; // Запястье первой руки
+                    const wrist2 = results.multiHandLandmarks[1][0]; // Запястье второй руки
+                    
+                    // Вычисляем расстояние между запястьями (MediaPipe лучше всего отслеживает их при сближении)
+                    const wristDist = Math.hypot(wrist1.x - wrist2.x, wrist1.y - wrist2.y);
 
-                    if (labelA !== labelB) {
-                        const hA = results.multiHandLandmarks[0];
-                        const hB = results.multiHandLandmarks[1];
-                        
-                        if (isInsideFrame(hA[0].x, hA[0].y) && isInsideFrame(hB[0].x, hB[0].y)) {
-                            const palmDist = Math.hypot(hA[0].x - hB[0].x, hA[0].y - hB[0].y);
-                            const indexDist = Math.hypot(hA[8].x - hB[8].x, hA[8].y - hB[8].y);
-
-                            if (palmDist < 0.08 && indexDist < 0.08) {
-                                clapFrames++;
-                                if (clapFrames > 4) { 
-                                    triggerImplosion();
-                                    return;
-                                }
-                            } else {
-                                clapFrames = 0;
-                            }
-                        } else {
-                            clapFrames = 0;
+                    // Если запястья находятся ближе чем 20% ширины экрана — это хлопок
+                    if (wristDist < 0.20) {
+                        clapFrames++;
+                        if (clapFrames > 2) { 
+                            triggerImplosion();
+                            return;
                         }
+                    } else {
+                        clapFrames = 0;
                     }
                 } else {
                     clapFrames = 0;
                 }
 
-                // 2. ВЫЧИСЛЕНИЕ ЩИПКОВ
+                // 2. ВЫЧИСЛЕНИЕ ЩИПКОВ СО СГЛАЖИВАНИЕМ И ГИСТЕРЕЗИСОМ
                 results.multiHandLandmarks.forEach((landmarks, index) => {
-                    const indexTip = landmarks[8];
-                    const thumbTip = landmarks[4];
+                    const tip = landmarks[8];   // Указательный палец
+                    const thumb = landmarks[4]; // Большой палец
 
-                    const px = window.innerWidth - (indexTip.x * window.innerWidth);
-                    const py = indexTip.y * window.innerHeight;
+                    // Зеркальные пиксельные координаты
+                    const px = window.innerWidth - (tip.x * window.innerWidth);
+                    const py = tip.y * window.innerHeight;
 
-                    const dist = Math.hypot(indexTip.x - thumbTip.x, indexTip.y - thumbTip.y);
-                    const isPinched = dist < 0.05; 
+                    const dist = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
 
-                    if (index === 0) { p0 = {x: px, y: py}; pinch0 = isPinched; updateCursor(cursor0, p0, pinch0); }
-                    if (index === 1) { p1 = {x: px, y: py}; pinch1 = isPinched; updateCursor(cursor1, p1, pinch1); }
+                    if (index === 0) { 
+                        // Плавное следование курсора за пальцем (убирает дергания)
+                        smoothP0.x = lerp(smoothP0.x, px, 0.4);
+                        smoothP0.y = lerp(smoothP0.y, py, 0.4);
+                        p0 = {x: smoothP0.x, y: smoothP0.y}; 
+                        
+                        // Гистерезис: захватить сложно (0.045), а отпустить легко (0.085). Вещи не выпадают!
+                        isPinching0 = dist < (isPinching0 ? 0.085 : 0.045);
+                        pinch0 = isPinching0;
+                        updateCursor(cursor0, p0, pinch0); 
+                    }
+                    if (index === 1) { 
+                        smoothP1.x = lerp(smoothP1.x, px, 0.4);
+                        smoothP1.y = lerp(smoothP1.y, py, 0.4);
+                        p1 = {x: smoothP1.x, y: smoothP1.y}; 
+                        
+                        isPinching1 = dist < (isPinching1 ? 0.085 : 0.045);
+                        pinch1 = isPinching1;
+                        updateCursor(cursor1, p1, pinch1); 
+                    }
                 });
 
                 // 3. ЗУМ ТЕРМИНОВ (Две руки)
@@ -417,8 +416,13 @@
                         }
                     } else if (zoomedCard) {
                         const scaleMultiplier = currentDist / initialPinchDist;
-                        let newScale = initialCardScale * scaleMultiplier;
-                        newScale = Math.max(0.6, Math.min(newScale, 2.5));
+                        let targetScale = initialCardScale * scaleMultiplier;
+                        targetScale = Math.max(0.6, Math.min(targetScale, 2.5));
+                        
+                        // Плавное изменение масштаба
+                        let currentScale = parseFloat(zoomedCard.dataset.scale) || 1;
+                        let newScale = currentScale + (targetScale - currentScale) * 0.2;
+
                         zoomedCard.style.transform = `scale(${newScale})`;
                         zoomedCard.dataset.scale = newScale;
                     }
@@ -487,12 +491,9 @@
             const targetX = parseInt(piece.dataset.correctX);
             const targetY = parseInt(piece.dataset.correctY);
 
-            // Радиус магнита увеличен для удобства (т.к. пазлы стали больше)
             if (Math.abs(currentX - targetX) < 55 && Math.abs(currentY - targetY) < 55) {
                 piece.style.left = `${targetX}px`;
                 piece.style.top = `${targetY}px`;
-                
-                // Класс locked автоматически скрывает рамки, цифры и рваные края
                 piece.classList.add('locked');
                 lockedCount++;
 
@@ -500,7 +501,6 @@
                     document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
                     document.querySelector('.header h1').style.color = "#10b981";
                     
-                    // Запускаем неоновую змею
                     puzzleArea.classList.add('completed');
                 }
             }
