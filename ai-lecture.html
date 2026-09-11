@@ -53,14 +53,13 @@
             border-radius: 50%; pointer-events: none; z-index: 1000;
             transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s, border-color 0.1s;
             box-shadow: 0 0 15px var(--accent); opacity: 0;
-            /* ВАЖНО: Убрали transition для left и top, чтобы курсор летал 1 в 1 с рукой без задержек */
         }
         .hand-cursor.pinched { background: var(--accent); transform: translate(-50%, -50%) scale(0.6); border-color: #fff; box-shadow: 0 0 25px #fff; }
 
         /* КОНТЕЙНЕР ДЛЯ СКРОЛЛА */
         #scroll-container {
             width: 100vw; display: flex; flex-direction: column;
-            position: absolute; top: 0; left: 0; transition: transform 0.05s linear; /* Максимально быстрый скролл */
+            position: absolute; top: 0; left: 0; transition: transform 0.05s linear;
         }
 
         /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
@@ -102,7 +101,6 @@
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 800px 600px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            /* ВАЖНО: Убрали left/top из transition для нулевой задержки перетаскивания */
             transition: box-shadow 0.1s, filter 0.1s; 
         }
         .puzzle-piece::after {
@@ -131,7 +129,6 @@
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
             transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            /* Быстрый отклик на масштабирование */
             transition: box-shadow 0.2s, border-color 0.2s; 
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
@@ -187,7 +184,7 @@
         </div>
     </div>
 
-    <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ, ЧТОБЫ ВЕРНУТЬСЯ НА САЙТ</div>
+    <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ (В ЦЕНТРЕ ЭКРАНА), ЧТОБЫ ВЕРНУТЬСЯ</div>
 
     <script>
         // ==========================================
@@ -314,7 +311,7 @@
         const hands = new Hands({locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         }});
-        // Повысили частоту и точность отслеживания
+        
         hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
@@ -340,34 +337,63 @@
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
-                // ВЫЧИСЛЕНИЕ ЩИПКОВ (БЕЗ ЗАДЕРЖЕК, С 3D-ДИСТАНЦИЕЙ)
+                // 1. ИДЕАЛЬНЫЙ ХЛОПОК (Защищенный)
+                // Хлопок работает ТОЛЬКО если руки пусты, скролл не идет и мы не зумируем
+                if (!draggedPiece && !isZooming && lastDragY === null) {
+                    if (results.multiHandLandmarks.length === 2 && results.multiHandedness.length === 2) {
+                        const labelA = results.multiHandedness[0].label; 
+                        const labelB = results.multiHandedness[1].label;
+
+                        if (labelA !== labelB) {
+                            const hA = results.multiHandLandmarks[0];
+                            const hB = results.multiHandLandmarks[1];
+                            
+                            // ЗАЩИТА ОТ КРАЕВ: Хлопок сработает только в центре экрана (15% от краев)
+                            const isSafeZone = (x, y) => x > 0.15 && x < 0.85 && y > 0.10 && y < 0.80;
+
+                            if (isSafeZone(hA[0].x, hA[0].y) && isSafeZone(hB[0].x, hB[0].y)) {
+                                const wristDist = Math.hypot(hA[0].x - hB[0].x, hA[0].y - hB[0].y);
+                                const indexDist = Math.hypot(hA[8].x - hB[8].x, hA[8].y - hB[8].y);
+
+                                if (wristDist < 0.12 && indexDist < 0.12) {
+                                    clapFrames++;
+                                    if (clapFrames > 3) { 
+                                        triggerImplosion();
+                                        return;
+                                    }
+                                } else { clapFrames = 0; }
+                            } else { clapFrames = 0; }
+                        } else { clapFrames = 0; }
+                    } else { clapFrames = 0; }
+                } else { clapFrames = 0; } // Если что-то тащим — хлопок блокируется аппаратно
+
+                // 2. ВЫЧИСЛЕНИЕ ЩИПКОВ (БЕЗ ОСИ Z - НАДЕЖНЫЙ ХВАТ)
                 results.multiHandLandmarks.forEach((landmarks, index) => {
                     const tip = landmarks[8];   
                     const thumb = landmarks[4]; 
 
-                    // Абсолютные пиксели (мгновенная передача)
                     const px = window.innerWidth - (tip.x * window.innerWidth);
                     const py = tip.y * window.innerHeight;
 
-                    // Вычисляем дистанцию с учетом глубины (z) - так пальцы не "отклеиваются" при повороте кисти
-                    const dist3D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y, tip.z - thumb.z);
+                    // Высчитываем только X и Y. Ось Z убираем, чтобы детали не падали по краям!
+                    const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
 
                     if (index === 0) { 
                         p0 = {x: px, y: py}; 
-                        // Железобетонный гистерезис: берем при 0.06, отпускаем только если пальцы разошлись шире 0.12
-                        isPinching0 = dist3D < (isPinching0 ? 0.12 : 0.06);
+                        // Гистерезис: берем при 0.05, отпускаем при 0.09. Деталь "приклеивается".
+                        isPinching0 = dist2D < (isPinching0 ? 0.09 : 0.05);
                         pinch0 = isPinching0;
                         updateCursor(cursor0, p0, pinch0); 
                     }
                     if (index === 1) { 
                         p1 = {x: px, y: py}; 
-                        isPinching1 = dist3D < (isPinching1 ? 0.12 : 0.06);
+                        isPinching1 = dist2D < (isPinching1 ? 0.09 : 0.05);
                         pinch1 = isPinching1;
                         updateCursor(cursor1, p1, pinch1); 
                     }
                 });
 
-                // ЗУМ ТЕРМИНОВ (Две руки)
+                // 3. ЗУМ ТЕРМИНОВ (Две руки)
                 if (pinch0 && pinch1) {
                     lastDragY = null; 
                     const currentDist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
@@ -395,7 +421,7 @@
                     isZooming = false;
                     termCards.forEach(c => c.classList.remove('hovered'));
 
-                    // ПАЗЛЫ И СКРОЛЛ (Одна рука)
+                    // 4. ПАЗЛЫ И СКРОЛЛ (Одна рука)
                     if (pinch0 || pinch1) {
                         const activeP = pinch0 ? p0 : p1;
 
@@ -411,7 +437,7 @@
                             } else if (!el || !el.closest('.puzzle-area')) {
                                 if (lastDragY !== null) {
                                     const deltaY = activeP.y - lastDragY;
-                                    scrollY += deltaY * 2.5; // Скролл стал чуть быстрее и отзывчивее
+                                    scrollY += deltaY * 2.5; 
                                     
                                     const maxScrollLimit = -(scrollContainer.scrollHeight - window.innerHeight);
                                     scrollY = Math.max(maxScrollLimit, Math.min(0, scrollY));
@@ -424,7 +450,6 @@
                             const containerRect = puzzleArea.getBoundingClientRect();
                             let newX = activeP.x - dragOffsetX - containerRect.left;
                             let newY = activeP.y - dragOffsetY - containerRect.top;
-                            // Мгновенная позиция (задержка убрана в CSS)
                             draggedPiece.style.left = `${newX}px`;
                             draggedPiece.style.top = `${newY}px`;
                             lastDragY = null;
@@ -438,40 +463,6 @@
                         lastDragY = null;
                     }
                 }
-
-                // ИДЕАЛЬНЫЙ ХЛОПОК (Защита: не срабатывает, если мы скроллим, тащим пазл или зумируем карточку)
-                if (!draggedPiece && !isZooming && lastDragY === null) {
-                    if (results.multiHandLandmarks.length === 2 && results.multiHandedness.length === 2) {
-                        const labelA = results.multiHandedness[0].label; 
-                        const labelB = results.multiHandedness[1].label;
-
-                        if (labelA !== labelB) {
-                            const hA = results.multiHandLandmarks[0];
-                            const hB = results.multiHandLandmarks[1];
-                            
-                            const wristDist = Math.hypot(hA[0].x - hB[0].x, hA[0].y - hB[0].y);
-                            const indexDist = Math.hypot(hA[8].x - hB[8].x, hA[8].y - hB[8].y);
-
-                            // Жесткое условие: запястья и пальцы должны быть ОЧЕНЬ близко друг к другу
-                            if (wristDist < 0.12 && indexDist < 0.12) {
-                                clapFrames++;
-                                if (clapFrames > 3) { 
-                                    triggerImplosion();
-                                    return;
-                                }
-                            } else {
-                                clapFrames = 0;
-                            }
-                        } else {
-                            clapFrames = 0;
-                        }
-                    } else {
-                        clapFrames = 0;
-                    }
-                } else {
-                    clapFrames = 0; // Блокируем хлопок во время других действий
-                }
-
             } else {
                 lastDragY = null;
                 clapFrames = 0;
@@ -491,7 +482,8 @@
             const targetX = parseInt(piece.dataset.correctX);
             const targetY = parseInt(piece.dataset.correctY);
 
-            if (Math.abs(currentX - targetX) < 55 && Math.abs(currentY - targetY) < 55) {
+            // Магнитное поле (70 пикселей) - легко класть на место
+            if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
                 piece.style.left = `${targetX}px`;
                 piece.style.top = `${targetY}px`;
                 piece.classList.add('locked');
