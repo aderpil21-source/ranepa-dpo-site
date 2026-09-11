@@ -1996,7 +1996,58 @@
             }
         });
     }
+// Функция открытия и рендера расписания
+function showSchedule() {
+    const overlay = document.getElementById('scheduleOverlay');
+    const container = document.getElementById('scheduleTimeline');
+    
+    // Проверка: есть ли вообще данные
+    if (!window.schedules || window.schedules.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:#94A3B8; margin-top: 50px; font-size: 1.2rem;">Расписание пока формируется... Загляните позже! 🦉</div>`;
+        overlay.classList.add('active');
+        return;
+    }
 
+    // Группируем лекции по датам
+    const grouped = {};
+    window.schedules.forEach(s => {
+        if (!grouped[s.date]) grouped[s.date] = [];
+        grouped[s.date].push(s);
+    });
+
+    // Генерируем HTML
+    let html = '';
+    for (const [date, lessons] of Object.entries(grouped)) {
+        html += `
+        <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">🗓️ ${date}</div>`;
+        
+        lessons.forEach(l => {
+            html += `
+            <div class="timeline-card">
+                <div class="sch-top">
+                    <div class="sch-program">${l.program}</div>
+                    <div class="sch-time">⏰ ${l.time}</div>
+                </div>
+                <div class="sch-subject">${l.subject}</div>
+                <div class="sch-bottom">
+                    <span>👨‍🏫 <b>${l.teacher}</b></span>
+                    <span>📍 ${l.room}</span>
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+    }
+
+    container.innerHTML = html;
+    overlay.classList.add('active');
+}
+
+// Закрыть расписание
+function closeSchedule() {
+    document.getElementById('scheduleOverlay').classList.remove('active');
+}
     window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
