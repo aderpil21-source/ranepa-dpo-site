@@ -1865,7 +1865,7 @@
     function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
     function setOptions(html) { chatOptions.innerHTML = html; }
 
-  function resetMenu() {
+ function resetMenu() {
         chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
         setOptions(`
             <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
