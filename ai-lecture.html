@@ -23,18 +23,18 @@
             background-color: var(--bg);
             color: #fff;
             overflow-x: hidden;
-            overflow-y: hidden; /* Скролл будем делать жестами */
+            overflow-y: hidden;
             transition: all 0.8s ease;
         }
 
         /* Анимация взрыва вселенной */
         body.implode {
-            animation: blackHole 2s forwards ease-in;
+            animation: blackHole 1.8s forwards ease-in;
         }
         @keyframes blackHole {
             0% { filter: brightness(1) contrast(1); transform: scale(1) rotate(0deg); opacity: 1; }
-            40% { filter: brightness(2) contrast(1.5); transform: scale(0.8) rotate(5deg); }
-            80% { filter: brightness(10) contrast(3); transform: scale(0.01) rotate(180deg); opacity: 0.5; }
+            30% { filter: brightness(2) contrast(1.5); transform: scale(0.8) rotate(5deg); }
+            70% { filter: brightness(10) contrast(3); transform: scale(0.01) rotate(180deg); opacity: 0.5; }
             100% { filter: brightness(100); transform: scale(0) rotate(360deg); opacity: 0; }
         }
 
@@ -53,18 +53,18 @@
 
         /* Указатели рук (щипок) */
         .hand-cursor {
-            position: fixed; width: 24px; height: 24px; border: 2px solid var(--accent);
+            position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
             border-radius: 50%; pointer-events: none; z-index: 1000;
-            transform: translate(-50%, -50%); transition: background 0.2s, transform 0.1s;
+            transform: translate(-50%, -50%); transition: background 0.15s, transform 0.15s;
             box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
-        .hand-cursor.pinched { background: var(--accent); transform: translate(-50%, -50%) scale(0.7); border-color: #fff; box-shadow: 0 0 25px #fff; }
+        .hand-cursor.pinched { background: var(--accent); transform: translate(-50%, -50%) scale(0.6); border-color: #fff; box-shadow: 0 0 25px #fff; }
 
         /* Игровая доска (Стол) */
-        #scroll-container { width: 100vw; height: 200vh; position: absolute; top: 0; left: 0; transition: transform 0.3s ease-out; }
+        #scroll-container { width: 100vw; height: 200vh; position: absolute; top: 0; left: 0; transition: transform 0.1s linear; }
 
         .header { text-align: center; padding: 40px 20px; z-index: 10; position: relative; }
-        .header h1 { font-size: 2.5rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 10px; }
+        .header h1 { font-size: 2.5rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 10px; transition: color 0.5s; }
         .header p { color: #94A3B8; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.5; }
 
         /* Зона Пазла */
@@ -84,13 +84,12 @@
         /* Сами кусочки пазла */
         .puzzle-piece {
             position: absolute; width: 200px; height: 200px;
-            background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop'); /* Нейро-ядро */
+            background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 800px 600px;
             border-radius: 12px; cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.2);
-            transition: box-shadow 0.2s, transform 0.1s;
-            /* Реалистичный вырез пазла сделан с помощью clip-path для футуристичности */
+            transition: box-shadow 0.2s, filter 0.2s;
         }
-        .puzzle-piece.dragging { z-index: 50; box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px var(--accent); filter: brightness(1.2); }
+        .puzzle-piece.dragging { z-index: 50; box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px var(--accent); filter: brightness(1.3); }
         .puzzle-piece.locked { filter: brightness(1); box-shadow: none; border-radius: 0; z-index: 1; border: 1px solid rgba(255,255,255,0.05); }
 
         /* Раздел терминов (под столом) */
@@ -101,7 +100,7 @@
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 30px; width: 280px; text-align: center;
-            transform-origin: center; transition: box-shadow 0.2s; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transform-origin: center; transition: box-shadow 0.2s, transform 0.1s; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
@@ -113,7 +112,7 @@
             background: rgba(202, 15, 62, 0.8); backdrop-filter: blur(10px); padding: 12px 24px;
             border-radius: 30px; font-weight: 800; font-size: 0.9rem; letter-spacing: 1px;
             z-index: 500; text-transform: uppercase; box-shadow: 0 10px 20px rgba(202, 15, 62, 0.4);
-            animation: pulse 2s infinite;
+            animation: pulse 2s infinite; transition: background 0.3s;
         }
         @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } }
 
@@ -139,7 +138,7 @@
         <!-- ВЕРХ: Пазл -->
         <div class="header">
             <h1>Сборка Нейронного Ядра</h1>
-            <p>Используйте жест <b>«Щипок»</b> (сомкните указательный и большой палец), чтобы брать и перемещать пазлы. Соберите структуру воедино.</p>
+            <p>Схватите кубик <b>щипком</b>. Зажмите пустое место, чтобы двигать стол вниз.<br>Масштабируйте термины внизу <b>двумя руками</b>.</p>
         </div>
 
         <div class="puzzle-area" id="puzzleArea">
@@ -153,7 +152,7 @@
         </div>
     </div>
 
-    <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ, ЧТОБЫ ВЕРНУТЬСЯ</div>
+    <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ, ЧТОБЫ ВЕРНУТЬСЯ НА САЙТ</div>
 
     <script>
         // ==========================================
@@ -166,29 +165,25 @@
         const pHeight = 600 / rows; // 200
         let lockedCount = 0;
 
-        // Создаем слоты и кусочки
         let pieces = [];
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-                // Слот сетки
                 let slot = document.createElement('div');
                 slot.className = 'grid-slot';
                 grid.appendChild(slot);
 
-                // Сам кусочек
                 let piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
                 piece.dataset.correctX = c * pWidth;
                 piece.dataset.correctY = r * pHeight;
                 piece.style.backgroundPosition = `-${c * pWidth}px -${r * pHeight}px`;
                 
-                // Раскидываем пазлы хаотично вокруг центра
-                const rx = (Math.random() - 0.5) * window.innerWidth * 0.6;
-                const ry = (Math.random() - 0.5) * window.innerHeight * 0.4 + 200;
+                // Хаотичный разброс
+                const rx = (Math.random() - 0.5) * window.innerWidth * 0.5;
+                const ry = (Math.random() - 0.5) * window.innerHeight * 0.3 + 200;
                 piece.style.left = `calc(50% - 100px + ${rx}px)`;
                 piece.style.top = `${ry}px`;
                 
-                // Делаем легкую "кривизну" краев (эффект осколков)
                 const clipPaths = [
                     "polygon(5% 0%, 95% 0%, 100% 5%, 100% 95%, 95% 100%, 5% 100%, 0% 95%, 0% 5%)",
                     "polygon(0% 5%, 90% 0%, 100% 10%, 95% 95%, 85% 100%, 5% 90%)",
@@ -201,19 +196,18 @@
             }
         }
 
-        // Данные терминов ИИ
         const termsData = [
             { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
             { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
             { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
             { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
-            { t: "LLM (Большие языковые модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
+            { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
             { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире (как мы сейчас!)." }
         ];
 
         const termsContainer = document.getElementById('termsSection');
         let termCards = [];
-        termsData.forEach((term, i) => {
+        termsData.forEach((term) => {
             let card = document.createElement('div');
             card.className = 'term-card';
             card.innerHTML = `<h3>${term.t}</h3><p>${term.d}</p>`;
@@ -221,7 +215,6 @@
             termsContainer.appendChild(card);
             termCards.push(card);
         });
-
 
         // ==========================================
         // 2. ЛОГИКА ОТСЛЕЖИВАНИЯ РУК И ЖЕСТОВ
@@ -238,15 +231,16 @@
         let dragOffsetX = 0, dragOffsetY = 0;
         
         let scrollY = 0;
-        const maxScroll = window.innerHeight;
+        const maxScroll = window.innerHeight; // Максимально можем скроллить на 1 экран вниз
+        let lastDragY = null; // Для отслеживания жеста скроллинга
 
-        // Переменные для зума (масштабирования текста)
         let isZooming = false;
         let initialPinchDist = 0;
         let zoomedCard = null;
         let initialCardScale = 1;
 
-        // Настройка MediaPipe Hands
+        let clapFrames = 0; // Защита от случайного взмаха
+
         const hands = new Hands({locateFile: (file) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         }});
@@ -260,26 +254,21 @@
 
         hands.onResults(onResults);
 
-        // Запуск камеры
         const camera = new Camera(videoElement, {
             onFrame: async () => { await hands.send({image: videoElement}); },
-            width: 1280,
-            height: 720
+            width: 1280, height: 720
         });
         camera.start().then(() => {
             document.getElementById('loader').style.display = 'none';
         });
 
         function onResults(results) {
-            // Настраиваем канвас (зеркалим, т.к. фронталка)
             canvasElement.width = window.innerWidth;
             canvasElement.height = window.innerHeight;
             canvasCtx.save();
             canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-            // Сброс состояний курсоров
-            cursor0.style.opacity = 0;
-            cursor1.style.opacity = 0;
+            cursor0.style.opacity = 0; cursor1.style.opacity = 0;
             let pinch0 = false, pinch1 = false;
             let p0 = {x:0, y:0}, p1 = {x:0, y:0};
 
@@ -291,41 +280,53 @@
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
-                // ОБРАБОТКА ХЛОПКА (Взрыв и выход)
-                if (results.multiHandLandmarks.length === 2) {
-                    const handA = results.multiHandLandmarks[0];
-                    const handB = results.multiHandLandmarks[1];
-                    
-                    // Вычисляем расстояние между основаниями ладоней (точка 0) и кончиками указательных пальцев (точка 8)
-                    const palmDist = Math.hypot(handA[0].x - handB[0].x, handA[0].y - handB[0].y);
-                    const indexDist = Math.hypot(handA[8].x - handB[8].x, handA[8].y - handB[8].y);
+                // 1. ПРОВЕРКА ХЛОПКА (ВЗРЫВ)
+                // Проверяем, что в кадре ДВЕ руки и они РАЗНЫЕ (левая и правая)
+                if (results.multiHandLandmarks.length === 2 && results.multiHandedness && results.multiHandedness.length === 2) {
+                    const labelA = results.multiHandedness[0].label; // Left / Right
+                    const labelB = results.multiHandedness[1].label;
 
-                    // Если обе руки очень близко друг к другу (Хлопок)
-                    if (palmDist < 0.08 && indexDist < 0.08) {
-                        triggerImplosion();
-                        return; // Останавливаем обработку других жестов
+                    if (labelA !== labelB) {
+                        const handA = results.multiHandLandmarks[0];
+                        const handB = results.multiHandLandmarks[1];
+                        
+                        // Расстояние между ладонями и указательными пальцами
+                        const palmDist = Math.hypot(handA[0].x - handB[0].x, handA[0].y - handB[0].y);
+                        const indexDist = Math.hypot(handA[8].x - handB[8].x, handA[8].y - handB[8].y);
+
+                        // Если руки близко
+                        if (palmDist < 0.06 && indexDist < 0.06) {
+                            clapFrames++;
+                            if (clapFrames > 4) { // Ждем 4 кадра для точности
+                                triggerImplosion();
+                                return;
+                            }
+                        } else {
+                            clapFrames = 0;
+                        }
                     }
+                } else {
+                    clapFrames = 0;
                 }
 
-                // ОБРАБОТКА ЩИПКОВ
+                // 2. ВЫЧИСЛЕНИЕ ЩИПКОВ И КООРДИНАТ
                 results.multiHandLandmarks.forEach((landmarks, index) => {
                     const indexTip = landmarks[8];
                     const thumbTip = landmarks[4];
 
-                    // Переводим в пиксели (зеркально)
                     const px = window.innerWidth - (indexTip.x * window.innerWidth);
                     const py = indexTip.y * window.innerHeight;
 
-                    // Вычисляем расстояние для щипка
                     const dist = Math.hypot(indexTip.x - thumbTip.x, indexTip.y - thumbTip.y);
-                    const isPinched = dist < 0.05;
+                    const isPinched = dist < 0.045; // Идеальная чувствительность
 
                     if (index === 0) { p0 = {x: px, y: py}; pinch0 = isPinched; updateCursor(cursor0, p0, pinch0); }
                     if (index === 1) { p1 = {x: px, y: py}; pinch1 = isPinched; updateCursor(cursor1, p1, pinch1); }
                 });
 
-                // --- ЛОГИКА ДВУМЯ РУКАМИ: МАСШТАБИРОВАНИЕ ---
+                // 3. ЗУМ (МАСШТАБИРОВАНИЕ ДВУМЯ РУКАМИ)
                 if (pinch0 && pinch1) {
+                    lastDragY = null; // При зуме скроллить не нужно
                     const currentDist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
                     const midX = (p0.x + p1.x) / 2;
                     const midY = (p0.y + p1.y) / 2;
@@ -333,7 +334,6 @@
                     if (!isZooming) {
                         isZooming = true;
                         initialPinchDist = currentDist;
-                        // Ищем карточку под центром между руками
                         const el = document.elementFromPoint(midX, midY);
                         zoomedCard = el ? el.closest('.term-card') : null;
                         if (zoomedCard) {
@@ -341,55 +341,62 @@
                             zoomedCard.classList.add('hovered');
                         }
                     } else if (zoomedCard) {
-                        // Меняем размер
                         const scaleMultiplier = currentDist / initialPinchDist;
                         let newScale = initialCardScale * scaleMultiplier;
-                        // Ограничения размера
-                        newScale = Math.max(0.5, Math.min(newScale, 2.5));
+                        newScale = Math.max(0.6, Math.min(newScale, 2.5));
                         zoomedCard.style.transform = `scale(${newScale})`;
                         zoomedCard.dataset.scale = newScale;
                     }
                 } else {
                     isZooming = false;
                     termCards.forEach(c => c.classList.remove('hovered'));
-                }
 
-                // --- ЛОГИКА ОДНОЙ РУКОЙ: ПАЗЛЫ И СКРОЛЛ ---
-                if (!isZooming && (pinch0 || pinch1)) {
-                    // Берем активную руку
-                    const activeP = pinch0 ? p0 : p1;
+                    // 4. ПАЗЛЫ И СКРОЛЛ (ОДНОЙ РУКОЙ)
+                    if (pinch0 || pinch1) {
+                        const activeP = pinch0 ? p0 : p1;
 
-                    if (!draggedPiece) {
-                        // Пытаемся схватить пазл
-                        const el = document.elementFromPoint(activeP.x, activeP.y);
-                        if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                            draggedPiece = el;
-                            const rect = el.getBoundingClientRect();
-                            dragOffsetX = activeP.x - rect.left;
-                            dragOffsetY = activeP.y - rect.top;
-                            el.classList.add('dragging');
-                        } else if (!el || !el.closest('.puzzle-area')) {
-                            // Если щипок вне пазла — скроллим страницу
-                            scrollY -= (pinch0 ? p0.y : p1.y) * 0.05; // чувствительность
-                            scrollY = Math.max(-maxScroll, Math.min(0, scrollY));
-                            scrollContainer.style.transform = `translateY(${scrollY}px)`;
+                        if (!draggedPiece) {
+                            const el = document.elementFromPoint(activeP.x, activeP.y);
+                            if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
+                                // Схватили пазл
+                                draggedPiece = el;
+                                const rect = el.getBoundingClientRect();
+                                dragOffsetX = activeP.x - rect.left;
+                                dragOffsetY = activeP.y - rect.top;
+                                el.classList.add('dragging');
+                                lastDragY = null;
+                            } else if (!el || !el.closest('.puzzle-area')) {
+                                // СКРОЛЛИНГ: тянем пустое место
+                                if (lastDragY !== null) {
+                                    const deltaY = activeP.y - lastDragY;
+                                    scrollY += deltaY * 1.8; // Скорость скролла
+                                    scrollY = Math.max(-maxScroll, Math.min(0, scrollY));
+                                    scrollContainer.style.transform = `translateY(${scrollY}px)`;
+                                }
+                                lastDragY = activeP.y;
+                            }
+                        } else {
+                            // Тащим пазл
+                            const containerRect = puzzleArea.getBoundingClientRect();
+                            let newX = activeP.x - dragOffsetX - containerRect.left;
+                            let newY = activeP.y - dragOffsetY - containerRect.top;
+                            draggedPiece.style.left = `${newX}px`;
+                            draggedPiece.style.top = `${newY}px`;
+                            lastDragY = null;
                         }
                     } else {
-                        // Тащим пазл (с учетом скролла)
-                        const containerRect = puzzleArea.getBoundingClientRect();
-                        let newX = activeP.x - dragOffsetX - containerRect.left;
-                        let newY = activeP.y - dragOffsetY - containerRect.top;
-                        draggedPiece.style.left = `${newX}px`;
-                        draggedPiece.style.top = `${newY}px`;
-                    }
-                } else {
-                    // Отпустили щипок
-                    if (draggedPiece) {
-                        draggedPiece.classList.remove('dragging');
-                        checkSnap(draggedPiece);
-                        draggedPiece = null;
+                        // Отпустили щипок
+                        if (draggedPiece) {
+                            draggedPiece.classList.remove('dragging');
+                            checkSnap(draggedPiece);
+                            draggedPiece = null;
+                        }
+                        lastDragY = null; // Сброс скролла
                     }
                 }
+            } else {
+                lastDragY = null;
+                clapFrames = 0;
             }
 
             canvasCtx.restore();
@@ -410,36 +417,36 @@
             const targetX = parseInt(piece.dataset.correctX);
             const targetY = parseInt(piece.dataset.correctY);
 
-            // Погрешность (магнитное прилипание)
-            if (Math.abs(currentX - targetX) < 40 && Math.abs(currentY - targetY) < 40) {
+            if (Math.abs(currentX - targetX) < 45 && Math.abs(currentY - targetY) < 45) {
                 piece.style.left = `${targetX}px`;
                 piece.style.top = `${targetY}px`;
                 piece.classList.add('locked');
                 lockedCount++;
 
-                // Победа в пазле
                 if (lockedCount === cols * rows) {
-                    document.querySelector('.header h1').innerHTML = "✨ Ядро собрано! ✨";
+                    document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
                     document.querySelector('.header h1').style.color = "#10b981";
+                    document.querySelector('.header h1').style.textShadow = "0 0 30px #10b981";
                 }
             }
         }
 
-        // Функция Взрыва и возврата
+        // Взрыв и возврат
         let isImploding = false;
         function triggerImplosion() {
             if (isImploding) return;
             isImploding = true;
-            document.getElementById('hint').innerText = "СИНХРОНИЗАЦИЯ...";
-            document.getElementById('hint').style.background = "#10b981";
+            
+            const hint = document.getElementById('hint');
+            hint.innerText = "СИНХРОНИЗАЦИЯ...";
+            hint.style.background = "#10b981";
+            hint.style.boxShadow = "0 0 40px #10b981";
 
-            // Запускаем CSS анимацию на body
             document.body.classList.add('implode');
 
-            // Через 1.8 секунды (в пик "схлопывания") перенаправляем на главную
             setTimeout(() => {
                 window.location.href = 'index.html';
-            }, 1800);
+            }, 1600);
         }
 
     </script>
