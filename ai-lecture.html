@@ -35,7 +35,7 @@
             z-index: -3; pointer-events: none; opacity: 0.8;
         }
 
-        /* АНИМАЦИЯ ХЛОПКА (Схлопывание) */
+        /* АНИМАЦИЯ ВЗРЫВА (Схлопывание) */
         body.implode { animation: blackHole 1.5s forwards cubic-bezier(0.5, 0, 0.5, 1); }
         @keyframes blackHole {
             0% { filter: brightness(1); transform: scale(1) rotate(0deg); opacity: 1; }
@@ -125,7 +125,7 @@
         .puzzle-piece {
             position: absolute; width: 200px; height: 200px;
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
-            background-size: 600px 400px; /* Размер подогнан под стол */
+            background-size: 600px 400px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
             transition: box-shadow 0.1s, filter 0.1s; 
         }
@@ -149,7 +149,7 @@
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
         .term-card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
 
-        /* МОДАЛКА УСПЕХА (БЕЗ GOOGLE ТАБЛИЦ) */
+        /* МОДАЛКА УСПЕХА */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
         .modal-box { background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.2); transform: scale(0.9); transition: transform 0.3s; }
@@ -165,6 +165,7 @@
             transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; letter-spacing: 1px;
         }
         .toast.show { bottom: 40px; }
+        .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
 
     </style>
 </head>
@@ -200,8 +201,8 @@
                 <h1>Практика ИИ</h1>
                 <div class="instructions">
                     <div class="instr-block"><b>1.</b> Берите осколки <b>щипком</b> руки и ставьте на сетку.</div>
-                    <div class="instr-block"><b>2.</b> <b>Зажмите воздух</b> щипком и тяните руку вверх (или крутите колесико мыши) для скролла.</div>
-                    <div class="instr-block"><b>3.</b> Скажите <b>«Сова, взрыв»</b> (или хлопните перед камерой) для выхода.</div>
+                    <div class="instr-block"><b>2.</b> <b>Зажмите воздух</b> щипком и тяните руку вверх (или крутите мышку) для скролла.</div>
+                    <div class="instr-block"><b>3.</b> Покажите жест ✌️ <b>«Пис»</b> (или скажите "Взрыв") для выхода.</div>
                 </div>
             </div>
             
@@ -219,7 +220,6 @@
         </div>
     </div>
 
-    <!-- Простая модалка победы (Без БД) -->
     <div class="modal-overlay" id="victoryModal">
         <div class="modal-box">
             <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
@@ -228,7 +228,7 @@
         </div>
     </div>
 
-    <div class="toast" id="toast">ХЛОПНИТЕ В ЦЕНТРЕ ЭКРАНА</div>
+    <div class="toast" id="toast">ПОКАЖИТЕ ЖЕСТ ✌️ (ПИС) ДЛЯ ВЫХОДА</div>
 
     <script>
         // ==========================================
@@ -281,14 +281,14 @@
         }
 
         // ==========================================
-        // 1. УПОРЯДОЧЕННАЯ ГЕНЕРАЦИЯ ПАЗЛОВ (6 штук)
+        // 1. ГЕНЕРАЦИЯ ПАЗЛОВ (6 штук)
         // ==========================================
         const puzzleArea = document.getElementById('puzzleArea');
         const grid = document.getElementById('grid');
         const cols = 3, rows = 2;
-        const boardW = 600, boardH = 400; // Точный размер стола
-        const pW = boardW / cols; // 200px
-        const pH = boardH / rows; // 200px
+        const boardW = 600, boardH = 400; 
+        const pW = boardW / cols; 
+        const pH = boardH / rows; 
         let lockedCount = 0;
 
         const pts = [];
@@ -330,11 +330,9 @@
                 const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
                 piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
 
-                // АККУРАТНАЯ РАССТАНОВКА ОТНОСИТЕЛЬНО СТОЛА (Чтобы не вылетали за экран)
                 const isLeft = (c < cols / 2);
                 let startX = isLeft ? -250 : boardW + 50; 
                 let startY = isLeft ? leftCount * 120 : rightCount * 120;
-                // Немного хаоса для красоты
                 startX += (Math.random() * 30 - 15);
                 startY += (Math.random() * 30 - 15);
 
@@ -353,7 +351,7 @@
             { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
             { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
             { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
-            { t: "LLM (Большие языковые модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
+            { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
             { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
         ];
         const termsContainer = document.getElementById('termsSection');
@@ -409,13 +407,13 @@
         let zoomStartY = 0;
         let initialCardScale = 1;
 
-        let handDistHistory = [];
+        let peaceFrames = 0;
+        let thumbsUpCooldown = false;
 
         function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
         let smoothP0 = {x: window.innerWidth/2, y: window.innerHeight/2};
         let smoothP1 = {x: window.innerWidth/2, y: window.innerHeight/2};
 
-        // Главный цикл отрисовки (Инерция и 3D)
         function physicsLoop() {
             if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
                 targetScrollY += scrollVelocity;
@@ -435,7 +433,6 @@
         }
         physicsLoop();
 
-        // СКРОЛЛ ОБЫЧНОЙ МЫШКОЙ И ТАЧПАДОМ
         window.addEventListener('wheel', (e) => {
             targetScrollY -= e.deltaY;
             targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
@@ -475,27 +472,51 @@
                 targetRotX = (h1.y - 0.5) * 2;
                 targetRotY = (h1.x - 0.5) * 2;
 
-                // КИНЕМАТИКА ХЛОПКА
+                // 1. НОВЫЙ ЖЕСТ: PEACE (ВИКТОРИЯ ✌️) ДЛЯ ВЫХОДА
+                let isPeace = false;
                 if (!draggedPiece && zoomedCard === null && lastDragY === null) {
-                    if (results.multiHandLandmarks.length === 2) {
-                        const hA = results.multiHandLandmarks[0][0]; 
-                        const hB = results.multiHandLandmarks[1][0]; 
-                        
-                        // Защита: Хлопок только по центру экрана
-                        const isSafeZone = (x, y) => x > 0.20 && x < 0.80 && y > 0.20 && y < 0.80;
+                    for (const lm of results.multiHandLandmarks) {
+                        // Проверяем анатомию: указательный и средний подняты, остальные прижаты
+                        const indexUp = lm[8].y < lm[6].y;
+                        const middleUp = lm[12].y < lm[10].y;
+                        const ringDown = lm[16].y > lm[14].y;
+                        const pinkyDown = lm[20].y > lm[18].y;
 
-                        if (isSafeZone(hA.x, hA.y) && isSafeZone(hB.x, hB.y)) {
-                            const dist = Math.hypot(hA.x - hB.x, hA.y - hB.y);
-                            handDistHistory.push(dist);
-                            if (handDistHistory.length > 5) handDistHistory.shift();
+                        if (indexUp && middleUp && ringDown && pinkyDown) {
+                            isPeace = true;
+                            break;
+                        }
+                    }
+                }
 
-                            if (handDistHistory.length === 5) {
-                                const velocity = handDistHistory[0] - handDistHistory[4];
-                                if (velocity > 0.15 && dist < 0.25) { triggerImplosion(); return; }
-                            }
-                        } else { handDistHistory = []; }
-                    } else { handDistHistory = []; }
-                } else { handDistHistory = []; }
+                if (isPeace) {
+                    peaceFrames++;
+                    // Требуем удерживать жест ~15 кадров (полсекунды) для защиты от случайного маха
+                    if (peaceFrames > 15) {
+                        triggerImplosion();
+                        return;
+                    }
+                } else {
+                    peaceFrames = 0;
+                }
+
+                // 2. ЖЕСТ "ЛАЙК"
+                if (results.multiHandLandmarks.length === 1 && !draggedPiece && !zoomedCard) {
+                    const lm = results.multiHandLandmarks[0];
+                    const thumbUp = lm[4].y < lm[3].y;
+                    const indexDown = lm[8].y > lm[6].y;
+                    const middleDown = lm[12].y > lm[10].y;
+                    const ringDown = lm[16].y > lm[14].y;
+                    const pinkyDown = lm[20].y > lm[18].y;
+
+                    if (thumbUp && indexDown && middleDown && ringDown && pinkyDown) {
+                        if (!thumbsUpCooldown) {
+                            thumbsUpCooldown = true;
+                            showToast("👍 ОТЛИЧНАЯ РАБОТА!", true);
+                            setTimeout(() => thumbsUpCooldown = false, 3000);
+                        }
+                    }
+                }
 
                 // ВЫЧИСЛЕНИЕ ЩИПКОВ
                 results.multiHandLandmarks.forEach((landmarks, index) => {
@@ -585,7 +606,7 @@
 
             } else {
                 lastDragY = null;
-                handDistHistory = [];
+                peaceFrames = 0;
                 targetRotX = 0; targetRotY = 0; 
             }
 
@@ -623,13 +644,19 @@
             if (isImploding) return;
             isImploding = true;
             
-            const toast = document.getElementById('toast');
-            toast.innerText = "СИНХРОНИЗАЦИЯ... ВОЗВРАТ";
-            toast.style.background = "#10b981";
-            toast.classList.add('show');
-
+            showToast("СИНХРОНИЗАЦИЯ... ВОЗВРАТ", true);
             document.body.classList.add('implode');
             setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+        }
+
+        function showToast(text, isSuccess = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            if (isSuccess) toast.classList.add('success');
+            else toast.classList.remove('success');
+            
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
 
         window.addEventListener('resize', () => {
