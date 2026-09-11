@@ -804,7 +804,6 @@
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
-                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;">📄 Официальные образовательные программы (Архив)</span>
                 </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center;">
@@ -865,18 +864,6 @@
                 3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.
             </p>
             <div class="close-modal" onclick="closeTermsModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
-        </div>
-    </div>
-
-    <!-- ОКНО АРХИВА ПРОГРАММ (ДЛЯ БЮРОКРАТИИ) -->
-    <div class="modal-overlay" id="docsModal">
-        <div class="modal-box" style="text-align: left; max-width: 650px;">
-            <h3>Официальные образовательные программы</h3>
-            <p style="font-size: 0.95rem; line-height: 1.8;">
-                В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:<br><br>
-                📄 <a href="./docs/6.1. DPP_PK_Voprosy_funkcionirovaniya_kontraktnoi_sistemy_v_sfere_zakupok_TRU_dlya_obespecheniya_GMN_2026_108_chasov_.pdf" target="_blank" class="contact-link">Программа повышения квалификации «Вопросы функционирования контрактной системы в сфере закупок...» (108 часов)</a>
-            </p>
-            <div class="close-modal" onclick="closeDocsModal()" style="text-align: center;">Закрыть</div>
         </div>
     </div>
 
@@ -1336,9 +1323,6 @@
                     <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
                         ${bulletsHTML}
                     </ul>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; border-left: 2px solid var(--ranepa-red); padding-left: 8px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 0 8px 8px 0;">
-                        📄 Полная официальная программа и аннотация доступны в <span onclick="openDocsModal()" style="color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700;">архиве программ</span> внизу страницы.
-                    </div>
                     <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
                 </div>
             </div>`;
@@ -1381,7 +1365,6 @@
             document.getElementById('swipeHint').style.display = 'flex';
             setTimeout(() => { const h = document.getElementById('swipeHint'); if (h) h.style.display = 'none'; }, 6000);
         }
-    }
     }
 
     function buildFilters() {
@@ -1503,10 +1486,6 @@
     function closePolicyModal() { document.getElementById('policyModal').classList.remove('active'); }
     function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
     function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
-    
-    // Функции для архива программ
-    function openDocsModal() { document.getElementById('docsModal').classList.add('active'); }
-    function closeDocsModal() { document.getElementById('docsModal').classList.remove('active'); }
 
     const OWL_DELAY_MS = 5 * 1000;
     let owlIntroduced = false;
@@ -2060,13 +2039,6 @@
         armRevealTargets();
         updateScrollNav();
     });
-        function openDocsModal() {
-        document.getElementById('docsModal').classList.add('active');
-    }
-
-    function closeDocsModal() {
-        document.getElementById('docsModal').classList.remove('active');
-    }
     </script>
 </body>
 </html>
