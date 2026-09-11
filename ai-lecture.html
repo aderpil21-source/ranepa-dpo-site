@@ -6,11 +6,14 @@
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Библиотеки Google MediaPipe -->
+    <!-- Библиотеки Google MediaPipe (AR Жесты) -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- Библиотека Three.js (3D Графика) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
@@ -26,6 +29,12 @@
             transition: all 0.8s ease;
         }
 
+        /* 3D Фон */
+        #webgl-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -3; pointer-events: none; opacity: 0.8;
+        }
+
         /* АНИМАЦИЯ ХЛОПКА (Схлопывание) */
         body.implode { animation: blackHole 1.5s forwards cubic-bezier(0.5, 0, 0.5, 1); }
         @keyframes blackHole {
@@ -36,12 +45,31 @@
         }
 
         #loader {
-            position: fixed; inset: 0; z-index: 9999;
-            background: var(--bg); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
+            position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
         .spinner { width: 60px; height: 60px; border: 4px solid rgba(56, 189, 248, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* HUD: Таймер и Голос */
+        .hud-top {
+            position: fixed; top: 20px; right: 30px; z-index: 2000;
+            display: flex; gap: 20px; align-items: center;
+        }
+        .hud-timer {
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+            border: 1px solid var(--accent); padding: 10px 20px; border-radius: 15px;
+            font-size: 1.5rem; font-weight: 900; color: var(--accent);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+        .hud-mic {
+            display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 700; color: #94A3B8;
+        }
+        .mic-dot {
+            width: 12px; height: 12px; border-radius: 50%; background: #ef4444;
+            animation: pulseMic 1.5s infinite;
+        }
+        @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px #ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px #ef4444; } }
 
         /* Камера и Канвас */
         .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
@@ -51,23 +79,20 @@
         .hand-cursor {
             position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
             border-radius: 50%; pointer-events: none; z-index: 1000;
-            transform: translate(-50%, -50%); transition: background 0.1s, border-color 0.1s;
+            transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s, border-color 0.1s;
             box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
         .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
 
         /* КОНТЕЙНЕР ДЛЯ СКРОЛЛА */
-        #scroll-container {
-            width: 100vw; display: flex; flex-direction: column;
-            position: absolute; top: 0; left: 0; will-change: transform;
-        }
+        #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
 
         /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
         .screen-puzzle { height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; }
         
         .header { text-align: center; padding: 40px 20px 20px; z-index: 10; }
         .header h1 { font-size: 2.5rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 10px; transition: color 0.5s; }
-        .header p { color: #94A3B8; font-size: 1.1rem; max-width: 600px; margin: 0 auto; line-height: 1.5; }
+        .header p { color: #94A3B8; font-size: 1rem; max-width: 650px; margin: 0 auto; line-height: 1.5; }
 
         .board-wrapper { position: relative; flex: 1; width: 100%; display: flex; justify-content: center; align-items: center; }
         
@@ -77,11 +102,7 @@
             background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
             transition: all 0.5s ease;
         }
-        
-        .puzzle-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr);
-            width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none;
-        }
+        .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
         .grid-slot { border: 1px dashed rgba(255,255,255,0.05); }
 
         /* НЕОНОВАЯ ЗМЕЯ (для собранного пазла) */
@@ -91,8 +112,7 @@
             border: 2px solid transparent; border-radius: 20px;
             background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), conic-gradient(from var(--angle), transparent 70%, var(--accent) 100%);
             background-origin: border-box; background-clip: padding-box, border-box;
-            animation: neonSnake 2.5s linear infinite;
-            box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
+            animation: neonSnake 2.5s linear infinite; box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
         }
 
         /* КУСОЧКИ ПАЗЛА */
@@ -101,19 +121,10 @@
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 800px 600px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            /* Мгновенная реакция */
             transition: box-shadow 0.1s, filter 0.1s; 
         }
-        .puzzle-piece::after {
-            content: ''; position: absolute; inset: 0; pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.4);
-            transition: opacity 0.5s;
-        }
-        .piece-num {
-            position: absolute; top: 12px; left: 16px; font-size: 18px; font-weight: 900;
-            color: #fff; opacity: 0.6; pointer-events: none; transition: opacity 0.5s;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
+        .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
+        .piece-num { position: absolute; top: 12px; left: 16px; font-size: 18px; font-weight: 900; color: #fff; opacity: 0.6; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
         .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
         .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; }
@@ -121,40 +132,34 @@
         .puzzle-piece.locked .piece-num { opacity: 0; }
 
         /* ЭКРАН 2: ТЕРМИНЫ */
-        .screen-terms {
-            width: 100vw; min-height: 100vh; padding: 100px 50px;
-            display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 30px;
-            background: linear-gradient(to bottom, transparent, rgba(5,8,14,0.95));
-        }
+        .screen-terms { width: 100vw; min-height: 100vh; padding: 100px 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 30px; background: linear-gradient(to bottom, transparent, rgba(5,8,14,0.95)); }
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
             transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            /* Плавный зум */
             transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s ease-out; 
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); z-index: 10; }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
         .term-card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
 
-        /* UI Подсказки */
-        .gesture-hint {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(202, 15, 62, 0.8); backdrop-filter: blur(10px); padding: 12px 24px;
-            border-radius: 30px; font-weight: 800; font-size: 0.9rem; letter-spacing: 1px;
-            z-index: 500; text-transform: uppercase; box-shadow: 0 10px 20px rgba(202, 15, 62, 0.4);
-            animation: pulse 2s infinite; transition: background 0.3s, opacity 0.3s;
-        }
-        @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } }
-
-        /* Всплывающее уведомление (Лайк) */
+        /* Уведомления */
         .toast {
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: var(--accent); color: #000; font-weight: 800; padding: 15px 30px;
             border-radius: 20px; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.5);
-            transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2000;
+            transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000;
         }
         .toast.show { top: 40px; }
+
+        /* МОДАЛКА ЛИДЕРБОРДА */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
+        .modal-box { background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.2); transform: scale(0.9); transition: transform 0.3s; }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .modal-box input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--accent); border-radius: 10px; padding: 15px; color: #fff; font-size: 1rem; margin: 20px 0; outline: none; font-family: 'Montserrat', sans-serif; font-weight: 700; text-align: center; }
+        .save-btn { background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; }
+        .save-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
 
     </style>
 </head>
@@ -163,8 +168,19 @@
     <div id="loader">
         <div class="spinner"></div>
         <h2 style="margin-bottom: 10px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;">Предоставьте доступ к камере. Включены Инерция и Кинематика.</p>
+        <p style="color: #94A3B8;">Предоставьте доступ к камере. Включен 3D-движок и Распознавание речи.</p>
     </div>
+
+    <!-- HUD: Таймер и Голосовой статус -->
+    <div class="hud-top">
+        <div class="hud-mic">
+            <div class="mic-dot"></div> Голосовой ИИ активен
+        </div>
+        <div class="hud-timer" id="timerDisplay">00:00</div>
+    </div>
+
+    <!-- 3D Фон -->
+    <canvas id="webgl-canvas"></canvas>
 
     <video id="webcam" class="video-feed" autoplay playsinline></video>
     <canvas id="output_canvas" class="canvas-overlay"></canvas>
@@ -177,7 +193,7 @@
         <div class="screen-puzzle">
             <div class="header">
                 <h1>Сборка Нейронного Ядра</h1>
-                <p><b>Щипок пустого места</b> — скроллинг. <b>Щипок карточки + вверх/вниз</b> — зум.<br><b>Хлопок</b> — возврат на базу. Покажите <b>Класс 👍</b> для проверки системы.</p>
+                <p>Берите 6 фрагментов <b>щипком</b>. Зажмите пустое место (или крутите колесико мыши), чтобы двигать стол вниз.<br>Скажите <b>«Сова, закрой лабораторию»</b> для выхода.</p>
             </div>
             <div class="board-wrapper">
                 <div class="puzzle-area" id="puzzleArea">
@@ -190,17 +206,110 @@
         <div class="screen-terms" id="termsSection">
             <div style="width: 100%; text-align: center; margin-bottom: 40px;">
                 <h2 style="font-size: 2rem; color: var(--accent);">База данных ИИ</h2>
-                <p style="color: #94A3B8;">Схватите карточку и потяните руку вверх для увеличения</p>
+                <p style="color: #94A3B8;">Масштабируйте карточки щипком <b>одной руки (вверх/вниз)</b></p>
             </div>
         </div>
     </div>
 
-    <div class="gesture-hint" id="hint">ХЛОПНИТЕ В ЛАДОШИ, ЧТОБЫ ВЕРНУТЬСЯ НА САЙТ</div>
-    <div class="toast" id="toast">👍 Жест распознан: Отличная работа!</div>
+    <!-- Модалка Лидерборда -->
+    <div class="modal-overlay" id="leaderboardModal">
+        <div class="modal-box">
+            <h2 style="color: #10b981; margin-bottom: 10px;">Ядро собрано!</h2>
+            <p>Ваше время: <b id="finalTimeResult" style="color: #fff; font-size: 1.2rem;">00:00</b></p>
+            <input type="text" id="playerName" placeholder="Введите ваше имя или никнейм" autocomplete="off">
+            <button class="save-btn" onclick="saveRecord()">Сохранить результат</button>
+            <p style="margin-top: 15px; font-size: 0.8rem; color: #94A3B8; text-decoration: underline; cursor: pointer;" onclick="document.getElementById('leaderboardModal').classList.remove('active')">Закрыть без сохранения</p>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">👍 Отличная работа!</div>
 
     <script>
         // ==========================================
-        // 1. ГЕНЕРАЦИЯ 6 ПАЗЛОВ
+        // 0. ТАЙМЕР И ЛИДЕРБОРД
+        // ==========================================
+        let timerInterval = null;
+        let timeElapsed = 0;
+        let timerStarted = false;
+
+        // ВАЖНО: Вставьте сюда актуальный URL (например, 'https://ваш-домен.ru/api.php')
+        const API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
+
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
+                const s = String(timeElapsed % 60).padStart(2, '0');
+                document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function stopTimerAndShowModal() {
+            clearInterval(timerInterval);
+            const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
+            const s = String(timeElapsed % 60).padStart(2, '0');
+            document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
+            
+            setTimeout(() => {
+                document.getElementById('leaderboardModal').classList.add('active');
+            }, 1500); 
+        }
+
+        async function saveRecord() {
+            const name = document.getElementById('playerName').value.trim();
+            if (!name) { alert("Пожалуйста, введите имя!"); return; }
+            
+            const btn = document.querySelector('.save-btn');
+            btn.innerText = "Сохранение...";
+            btn.style.pointerEvents = "none";
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'submitScore', name: name, time: timeElapsed })
+                });
+                btn.style.background = "#10b981";
+                btn.innerText = "Успешно!";
+                setTimeout(() => { document.getElementById('leaderboardModal').classList.remove('active'); }, 1500);
+            } catch(e) {
+                btn.style.background = "#ef4444";
+                btn.innerText = "Ошибка сети";
+                setTimeout(() => { btn.style.background = "var(--accent)"; btn.innerText = "Сохранить результат"; btn.style.pointerEvents = "auto"; }, 2000);
+            }
+        }
+
+        // ==========================================
+        // 0.5 WEB SPEECH API (ГОЛОСОВЫЕ КОМАНДЫ)
+        // ==========================================
+        function initVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ru-RU';
+                recognition.continuous = true;
+                recognition.interimResults = false;
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+                    console.log("Услышано:", transcript);
+                    if (transcript.includes('сова') || transcript.includes('закрой') || transcript.includes('взрыв')) {
+                        triggerImplosion();
+                    }
+                };
+                
+                recognition.onend = () => { if(!isImploding) recognition.start(); };
+                
+                try { recognition.start(); } catch(e){}
+            } else {
+                document.querySelector('.hud-mic').innerHTML = "Голосовой ИИ не поддерживается";
+            }
+        }
+
+        // ==========================================
+        // 1. ГЕНЕРАЦИЯ 6 ПАЗЛОВ И ТЕРМИНОВ
         // ==========================================
         const puzzleArea = document.getElementById('puzzleArea');
         const grid = document.getElementById('grid');
@@ -243,18 +352,12 @@
                 
                 const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
                 const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
-                
                 const clipStr = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
                 piece.style.clipPath = clipStr;
 
                 const isLeft = (c < cols / 2);
-                let startX, startY;
-                if (isLeft) {
-                    startX = 20 + Math.random() * (window.innerWidth * 0.15); 
-                } else {
-                    startX = window.innerWidth - 300 - Math.random() * (window.innerWidth * 0.15); 
-                }
-                startY = 100 + Math.random() * (window.innerHeight - 300);
+                let startX = isLeft ? 20 + Math.random() * (window.innerWidth * 0.15) : window.innerWidth - 300 - Math.random() * (window.innerWidth * 0.15); 
+                let startY = 100 + Math.random() * (window.innerHeight - 300);
 
                 setTimeout(() => {
                     const boardRect = puzzleArea.getBoundingClientRect();
@@ -268,18 +371,13 @@
         }
 
         const termsData = [
-            { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных." },
-            { t: "Нейросеть", d: "Математическая модель, имитирующая работу мозга." },
-            { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа." },
-            { t: "Глубокое обучение", d: "Создание многослойных нейросетей для сверхсложных задач." },
-            { t: "LLM (Модели)", d: "ИИ, обученный на массивах текста, способный генерировать речь." },
-            { t: "Компьютерное зрение", d: "Технология, позволяющая камере распознавать объекты." },
-            { t: "Токенизация", d: "Процесс разбиения текста на смысловые части (токены) для ИИ." },
-            { t: "Галлюцинации ИИ", d: "Явление, когда нейросеть уверенно выдает выдуманный факт." },
-            { t: "Датасет", d: "Огромный набор данных, на котором тренируется искусственный интеллект." },
-            { t: "AGI (Сильный ИИ)", d: "Гипотетический ИИ, способный мыслить и осознавать себя как человек." }
+            { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
+            { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
+            { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
+            { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
+            { t: "LLM (Большие языковые модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
+            { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
         ];
-
         const termsContainer = document.getElementById('termsSection');
         let termCards = [];
         termsData.forEach((term) => {
@@ -291,9 +389,24 @@
             termCards.push(card);
         });
 
+        // ==========================================
+        // 2. ИНТЕГРАЦИЯ THREE.JS (Настоящее 3D)
+        // ==========================================
+        const scene = new THREE.Scene();
+        const camera3D = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const geometry = new THREE.IcosahedronGeometry(12, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.15 });
+        const coreMesh = new THREE.Mesh(geometry, material);
+        scene.add(coreMesh);
+        camera3D.position.z = 30;
+
+        let targetRotX = 0; let targetRotY = 0;
 
         // ==========================================
-        // 2. ДВИЖОК ЖЕСТОВ И ФИЗИКИ (Gesture Engine)
+        // 3. ДВИЖОК ЖЕСТОВ И ФИЗИКИ (Gesture Engine)
         // ==========================================
         const videoElement = document.getElementById('webcam');
         const canvasElement = document.getElementById('output_canvas');
@@ -302,64 +415,73 @@
         const cursor0 = document.getElementById('cursor0');
         const cursor1 = document.getElementById('cursor1');
 
-        // Состояния
         let isPinching0 = false, isPinching1 = false;
         let p0 = {x:0, y:0}, p1 = {x:0, y:0};
         
         let draggedPiece = null;
         let dragOffsetX = 0, dragOffsetY = 0;
 
-        // Физика Скролла (Инерция)
         let scrollY = 0;
         let targetScrollY = 0;
         let scrollVelocity = 0;
         let lastDragY = null; 
         const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
 
-        // Физика Зума (Одной рукой)
         let zoomedCard = null;
         let zoomStartY = 0;
         let initialCardScale = 1;
 
-        // Кинематика Хлопка
         let handDistHistory = [];
-
-        // Лайк
         let thumbsUpCooldown = false;
 
-        // Сглаживание курсора
         function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
         let smoothP0 = {x: window.innerWidth/2, y: window.innerHeight/2};
         let smoothP1 = {x: window.innerWidth/2, y: window.innerHeight/2};
 
-        // Главный цикл отрисовки физики (60 FPS)
+        // Главный цикл отрисовки (Инерция и 3D)
         function physicsLoop() {
             // Инерция скролла
             if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
                 targetScrollY += scrollVelocity;
-                scrollVelocity *= 0.9; // Затухание
+                scrollVelocity *= 0.9;
             }
-            
-            // Плавное применение скролла
             targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
             scrollY = lerp(scrollY, targetScrollY, 0.2);
             scrollContainer.style.transform = `translateY(${scrollY}px)`;
 
+            // Вращение 3D-модели (Базовое + Реакция на руку)
+            coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
+            coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
+            coreMesh.rotation.x += 0.001; 
+            coreMesh.rotation.y += 0.002;
+            renderer.render(scene, camera3D);
+
             requestAnimationFrame(physicsLoop);
         }
-        physicsLoop(); // Запускаем движок
+        physicsLoop();
 
-        const hands = new Hands({locateFile: (file) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-        }});
+        // ==========================================
+        // 4. ДОПОЛНЕНИЕ: СКРОЛЛ ОБЫЧНОЙ МЫШКОЙ И ТАЧПАДОМ
+        // ==========================================
+        window.addEventListener('wheel', (e) => {
+            targetScrollY -= e.deltaY;
+            targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
+            scrollVelocity = 0; // Глушим инерцию руки, чтобы мышка и рука не конфликтовали
+        });
+
+        // Запуск MediaPipe
+        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
         hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
-        const camera = new Camera(videoElement, {
+        const cameraFeed = new Camera(videoElement, {
             onFrame: async () => { await hands.send({image: videoElement}); },
             width: 1280, height: 720
         });
-        camera.start().then(() => { document.getElementById('loader').style.display = 'none'; });
+        cameraFeed.start().then(() => { 
+            document.getElementById('loader').style.display = 'none'; 
+            initVoice(); // Запускаем слушатель голоса после старта
+        });
 
         function onResults(results) {
             canvasElement.width = window.innerWidth;
@@ -377,31 +499,30 @@
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
-                // --- 1. КИНЕМАТИКА ХЛОПКА (Скорость сближения) ---
+                // Передаем координаты первой руки в 3D движок для параллакса
+                const h1 = results.multiHandLandmarks[0][0];
+                targetRotX = (h1.y - 0.5) * 2;
+                targetRotY = (h1.x - 0.5) * 2;
+
+                // КИНЕМАТИКА ХЛОПКА
                 if (!draggedPiece && zoomedCard === null && lastDragY === null) {
                     if (results.multiHandLandmarks.length === 2) {
-                        const hA = results.multiHandLandmarks[0][0]; // Запястье 1
-                        const hB = results.multiHandLandmarks[1][0]; // Запястье 2
-                        
+                        const hA = results.multiHandLandmarks[0][0]; 
+                        const hB = results.multiHandLandmarks[1][0]; 
                         const dist = Math.hypot(hA.x - hB.x, hA.y - hB.y);
                         handDistHistory.push(dist);
                         if (handDistHistory.length > 5) handDistHistory.shift();
 
-                        // Если скорость сближения очень высокая и руки близко
                         if (handDistHistory.length === 5) {
                             const velocity = handDistHistory[0] - handDistHistory[4];
-                            if (velocity > 0.15 && dist < 0.25) {
-                                triggerImplosion();
-                                return;
-                            }
+                            if (velocity > 0.15 && dist < 0.25) { triggerImplosion(); return; }
                         }
                     } else { handDistHistory = []; }
                 } else { handDistHistory = []; }
 
-                // --- 2. ЖЕСТ "ЛАЙК" (Thumbs Up) ---
+                // ЖЕСТ "ЛАЙК"
                 if (results.multiHandLandmarks.length === 1 && !draggedPiece && !zoomedCard) {
                     const lm = results.multiHandLandmarks[0];
-                    // Большой палец вытянут вверх (его кончик выше сустава), остальные пальцы сжаты (кончики ниже суставов)
                     const thumbUp = lm[4].y < lm[3].y;
                     const indexDown = lm[8].y > lm[6].y;
                     const middleDown = lm[12].y > lm[10].y;
@@ -417,15 +538,13 @@
                     }
                 }
 
-
-                // --- 3. ВЫЧИСЛЕНИЕ ЩИПКОВ ---
+                // ВЫЧИСЛЕНИЕ ЩИПКОВ
                 results.multiHandLandmarks.forEach((landmarks, index) => {
                     const tip = landmarks[8];   
                     const thumb = landmarks[4]; 
 
                     const px = window.innerWidth - (tip.x * window.innerWidth);
                     const py = tip.y * window.innerHeight;
-
                     const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
 
                     if (index === 0) { 
@@ -446,22 +565,19 @@
                     }
                 });
 
-                // --- 4. МУЛЬТИ-ИНСТРУМЕНТ (Одной рукой: Скролл, Пазл или Зум) ---
+                // МУЛЬТИ-ИНСТРУМЕНТ (Одной рукой)
                 const activePinch = pinch0 ? p0 : (pinch1 ? p1 : null);
                 
                 if (activePinch) {
-                    
-                    // Если мы УЖЕ зумируем карточку
+                    // ЗУМ (Щипок карточки + рука вверх/вниз)
                     if (zoomedCard !== null) {
-                        // Тянем руку вверх (разница Y отрицательная) -> зум увеличивается
                         const deltaY = zoomStartY - activePinch.y; 
-                        let targetScale = initialCardScale + (deltaY * 0.006); // Коэффициент чувствительности зума
+                        let targetScale = initialCardScale + (deltaY * 0.005); 
                         targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
-                        
                         zoomedCard.style.transform = `scale(${targetScale})`;
                         zoomedCard.dataset.scale = targetScale;
                     } 
-                    // Если мы УЖЕ тащим пазл
+                    // ТАЩИМ ПАЗЛ
                     else if (draggedPiece !== null) {
                         const containerRect = puzzleArea.getBoundingClientRect();
                         let newX = activePinch.x - dragOffsetX - containerRect.left;
@@ -469,20 +585,19 @@
                         draggedPiece.style.left = `${newX}px`;
                         draggedPiece.style.top = `${newY}px`;
                     } 
-                    // Если мы УЖЕ скроллим
+                    // СКРОЛЛИМ ЖЕСТОМ
                     else if (lastDragY !== null) {
                         const deltaY = activePinch.y - lastDragY;
                         targetScrollY += deltaY * 2.5; 
-                        scrollVelocity = deltaY * 0.5; // Накапливаем инерцию
+                        scrollVelocity = deltaY * 0.5; 
                         lastDragY = activePinch.y;
                     } 
-                    // МЫ ТОЛЬКО ЧТО СДЕЛАЛИ ЩИПОК — Определяем цель
+                    // ИНИЦИАЛИЗАЦИЯ ЩИПКА
                     else {
-                        // Что находится под курсором с учетом скролла?
                         const el = document.elementFromPoint(activePinch.x, activePinch.y);
                         
                         if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                            // ХВАТАЕМ ПАЗЛ
+                            startTimer(); 
                             draggedPiece = el;
                             const rect = el.getBoundingClientRect();
                             dragOffsetX = activePinch.x - rect.left;
@@ -490,20 +605,18 @@
                             el.classList.add('dragging');
                         } 
                         else if (el && el.closest('.term-card')) {
-                            // ХВАТАЕМ КАРТОЧКУ ДЛЯ ЗУМА
                             zoomedCard = el.closest('.term-card');
                             zoomedCard.classList.add('hovered');
                             zoomStartY = activePinch.y;
                             initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
                         } 
                         else {
-                            // ХВАТАЕМ ВОЗДУХ ДЛЯ СКРОЛЛА
                             lastDragY = activePinch.y;
                             scrollVelocity = 0;
                         }
                     }
                 } else {
-                    // ОТПУСТИЛИ ЩИПОК — СБРОС ВСЕХ РЕЖИМОВ
+                    // ОТПУСТИЛИ
                     if (draggedPiece) {
                         draggedPiece.classList.remove('dragging');
                         checkSnap(draggedPiece);
@@ -519,6 +632,7 @@
             } else {
                 lastDragY = null;
                 handDistHistory = [];
+                targetRotX = 0; targetRotY = 0; 
             }
 
             canvasCtx.restore();
@@ -545,6 +659,7 @@
                     document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
                     document.querySelector('.header h1').style.color = "#10b981";
                     puzzleArea.classList.add('completed');
+                    stopTimerAndShowModal();
                 }
             }
         }
@@ -568,6 +683,12 @@
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
+
+        window.addEventListener('resize', () => {
+            camera3D.aspect = window.innerWidth / window.innerHeight;
+            camera3D.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
 
     </script>
 </body>
