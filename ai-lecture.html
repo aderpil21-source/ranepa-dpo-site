@@ -6,7 +6,7 @@
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
-    <!-- MediaPipe Библиотеки -->
+    <!-- MediaPipe -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
@@ -233,7 +233,7 @@
 <body>
 
     <!-- Сова в шляпе и бордовом шарфе -->
-    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Я здесь! Скролль страницу или играй в дуэль со мной!</div>
+    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Двойной движок активирован со страховкой! Управлению ничто не помешает.</div>
     <div class="companion-owl">
         <svg viewBox="0 0 120 120" width="100%" height="100%">
             <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
@@ -260,7 +260,7 @@
     <div id="loader">
         <div class="spinner" id="loaderSpinner"></div>
         <h2 id="loaderTitle" style="margin-bottom: 6px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;">Запуск трекинга жестов.</p>
+        <p style="color: #94A3B8;">Запуск мультимодального трекинга со страховкой.</p>
         <button id="loaderTouchFallback" class="fallback-btn">👆 Режим мыши</button>
     </div>
 
@@ -274,10 +274,10 @@
     </div>
 
     <div class="hints-panel" id="hintsPanel">
-        <h3>Управление</h3>
-        <div class="hint-row"><span class="hint-icon">🖐️</span><span>Двигай рукой — двигай курсор.</span></div>
-        <div class="hint-row"><span class="hint-icon">🤏</span><span>Щипок пальцами — брать пазлы.</span></div>
-        <div class="hint-row"><span class="hint-icon">✊</span><span>Кулак — скролл страницы.</span></div>
+        <h3>Управление со страховкой</h3>
+        <div class="hint-row"><span class="hint-icon">🖐️</span><span>Движение рукой — управление курсором.</span></div>
+        <div class="hint-row"><span class="hint-icon">🤏</span><span>Щипок — перетаскивание пазлов.</span></div>
+        <div class="hint-row"><span class="hint-icon">✊</span><span>Кулак (или сгиб пальцев вниз) — скролл.</span></div>
     </div>
 
     <div class="hud-top">
@@ -290,7 +290,6 @@
     <canvas id="output_canvas" class="canvas-overlay"></canvas>
 
     <div id="cursor0" class="hand-cursor"></div>
-    <div id="cursor1" class="hand-cursor"></div>
 
     <div id="scroll-container">
         <!-- УРОВЕНЬ 1: ПАЗЛ -->
@@ -376,7 +375,7 @@
         owlBubble.classList.add('show');
         setTimeout(() => owlBubble.classList.remove('show'), duration);
     }
-    setTimeout(() => sayOwl("Ху-ху! Я здесь! Управляй курсором в воздухе!"), 1500);
+    setTimeout(() => sayOwl("Ху-ху! Двойной движок и страховка запущены!"), 1500);
 
     const hintsPanel = document.getElementById('hintsPanel');
     document.getElementById('hintsToggleBtn').addEventListener('click', () => hintsPanel.classList.toggle('open'));
@@ -527,7 +526,7 @@
             draggedPiece.style.left = `${x - dragOffsetX - cr.left}px`;
             draggedPiece.style.top = `${y - dragOffsetY - cr.top}px`;
         } else if (lastDragY !== null) {
-            targetScrollY += (y - lastDragY) * 2.5;
+            targetScrollY += (y - lastDragY) * 3.0;
             scrollVelocity = (y - lastDragY) * 0.4;
             lastDragY = y;
         }
@@ -600,7 +599,7 @@
             if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
             interactionMode = 'touch'; enableTouchMode(); showToast("Режим мыши включен", true);
         } else {
-            interactionMode = 'gesture'; startGesturePipeline(); showToast("Режим жестов включен", true);
+            interactionMode = 'gesture'; startGesturePipeline(); showToast("Режим жестов со страховкой включен", true);
         }
         setModeBadge();
     });
@@ -614,9 +613,8 @@
 
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
-        // Возвращаем старый надежный конфигуратор одной руки для 100% считывания
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
         hands.onResults(onResults);
 
         cameraFeed = new Camera(videoElement, {
@@ -625,7 +623,7 @@
         });
         cameraFeed.start().then(() => {
             document.getElementById('loader').style.display = 'none';
-            sayOwl("Камера активна! Курсор следует за рукой.");
+            sayOwl("Двойной движок со страховкой активен!");
         }).catch(() => {
             document.getElementById('loaderError').style.display = 'block';
             document.getElementById('loaderError').textContent = "Ошибка камеры. Используйте мышь.";
@@ -633,13 +631,18 @@
         });
     }
 
-    // ЖЕЛЕЗОБЕТОННЫЙ И БЫСТРЫЙ ДВИЖОК ОДНОЙ РУКИ (из вашего старого кода)
+    // СУПЕР-НАДЕЖНЫЙ ДВИЖОК СО СТРАХОВКОЙ И АВТО-ФОЛЛБЕКОМ
+    let failSafeCounter = 0;
+
     function onResults(results) {
         canvasElement.width = window.innerWidth; canvasElement.height = window.innerHeight;
         canvasCtx.save(); canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
         cursor0.style.opacity = 0;
 
-        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const handsFound = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
+
+        if (handsFound) {
+            failSafeCounter = 0; // Сбрасываем страховку при потере руки
             const lm = results.multiHandLandmarks[0];
             drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
             drawLandmarks(canvasCtx, lm, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
@@ -648,18 +651,20 @@
             const px = window.innerWidth - (tip.x * window.innerWidth);
             const py = tip.y * window.innerHeight;
 
-            smoothP0.x = lerp(smoothP0.x, px, 0.6);
-            smoothP0.y = lerp(smoothP0.y, py, 0.6);
+            smoothP0.x = lerp(smoothP0.x, px, 0.7);
+            smoothP0.y = lerp(smoothP0.y, py, 0.7);
 
             const dist = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
-            const pinch = dist < 0.06;
+            const pinch = dist < 0.065;
+
+            // Страховка для кулака: если средний и безымянный пальцы согнуты к ладони
+            const isFist = lm[12].y > lm[9].y && lm[16].y > lm[13].y;
 
             cursor0.style.opacity = 1;
             cursor0.style.left = `${smoothP0.x}px`;
             cursor0.style.top = `${smoothP0.y}px`;
             cursor0.classList.toggle('pinched', pinch);
 
-            // Обработка пазлов или скролла
             if (pinch) {
                 if (!draggedPiece) {
                     const el = document.elementFromPoint(smoothP0.x, smoothP0.y);
@@ -673,11 +678,18 @@
                     }
                 }
                 moveInteractionAt(smoothP0.x, smoothP0.y);
+            } else if (isFist) {
+                if (lastDragY === null) lastDragY = smoothP0.y;
+                moveInteractionAt(smoothP0.x, smoothP0.y);
             } else {
                 endInteraction();
             }
         } else {
-            endInteraction();
+            // СТРАХОВКА: если рука потеряна камерой на пару кадров, не сбрасываем движение резко
+            failSafeCounter++;
+            if (failSafeCounter > 15) {
+                endInteraction();
+            }
         }
         canvasCtx.restore();
     }
