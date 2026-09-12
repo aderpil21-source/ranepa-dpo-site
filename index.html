@@ -851,7 +851,7 @@
                 2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>
                 3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.
             </p>
-            <div class="close-modal" onclick="closePolicyModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
+            <div class="close-modal" onclick="openPolicyModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
         </div>
     </div>
 
@@ -874,7 +874,7 @@
             <h3>Официальные образовательные программы</h3>
             <p style="font-size: 0.95rem; line-height: 1.8;">
                 В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:<br><br>
-                📄 <a href="./docs/6.1. DPP_PK_Voprosy_funkcionirovaniya_kontraktnoi_sistemy_v_sfere_zakupok_TRU_dlya_obespecheniya_GMN_2026_108_chasov_.pdf" target="_blank" class="contact-link">Программа повышения квалификации «Вопросы функционирования контрактной системы в сфере закупок...» (108 часов)</a>[cite: 2]
+                📄 <a href="./docs/6.1. DPP_PK_Voprosy_funkcionirovaniya_kontraktnoi_sistemy_v_sfere_zakupok_TRU_dlya_obespecheniya_GMN_2026_108_chasov_.pdf" target="_blank" class="contact-link">Программа повышения квалификации «Вопросы функционирования контрактной системы в сфере закупок...» (108 часов)</a>
             </p>
             <div class="close-modal" onclick="closeDocsModal()" style="text-align: center;">Закрыть</div>
         </div>
@@ -1757,50 +1757,6 @@
             return;
         }
         // --- КОНЕЦ СЕКРЕТНОГО ВХОДА ---
-
-        const cleanCode = text.toUpperCase();
-        const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
-
-        if (foundFile) {
-            setTimeout(() => {
-                if (foundFile.isPublished) {
-                    let responseMsg = `📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`;
-                    if (foundFile.comment && foundFile.comment.trim() !== "") {
-                        responseMsg += `<br><br>💬 <b>Комментарий преподавателя:</b><br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
-                    }
-                    responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Загружено / обновлено: ${foundFile.date}</span>`;
-                    addBotMsg(responseMsg);
-                } else {
-                    addBotMsg(`⚠️ Материал по коду <b>«${foundFile.title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Статус изменен: ${foundFile.date}</span>`);
-                }
-            }, 500);
-            return;
-        }
-
-        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
-        const scored = globalPrograms
-            .map(p => ({ p, score: matchScore(text, p[titleKey]) }))
-            .filter(x => x.score > 0.4)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 4);
-
-        setTimeout(() => {
-            if (scored.length === 1 && scored[0].score >= 0.95) {
-                showProgramDetails(scored[0].p);
-            } else if (scored.length > 0) {
-                addBotMsg(translationsHTML[currentLang].maybeYouMean);
-                let html = '';
-                scored.forEach(({ p }) => {
-                    html += `<button class="chat-opt-btn" onclick="showProgramDetailsById('${p.id}')">${p[titleKey]}</button>`;
-                });
-                html += `<button class="chat-opt-btn" onclick="offerAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`;
-                setOptions(html);
-            } else {
-                addBotMsg(translationsHTML[currentLang].notSure);
-                offerAllPrograms(true);
-            }
-        }, 450);
-    }
 
         const cleanCode = text.toUpperCase();
         const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
