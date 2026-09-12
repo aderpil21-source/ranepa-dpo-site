@@ -93,6 +93,17 @@
             font-size: 1.3rem; font-weight: 900; color: var(--accent);
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
+        .hud-mic {
+            display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; color: #94A3B8;
+            background: rgba(0, 0, 0, 0.6); padding: 9px 14px; border-radius: 15px;
+        }
+        .mic-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; animation: pulseMic 1.5s infinite; flex-shrink: 0; }
+        @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px #ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px #ef4444; } }
+        .hud-mode-badge {
+            font-size: 0.72rem; font-weight: 800; color: #fff; background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 15px; white-space: nowrap;
+        }
+
         .hud-left {
             position: fixed; top: calc(20px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 2000;
             display: flex; gap: 10px; align-items: center;
@@ -176,39 +187,38 @@
         .puzzle-piece.locked .piece-num { opacity: 0; }
 
         .screen-terms { width: 100vw; min-height: 100vh; padding: 60px clamp(16px, 4vw, 50px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 26px; perspective: 1200px; }
+        
+        /* КАРТОЧКИ С МАСШТАБИРОВАНИЕМ ДВУМЯ ПАЛЬЦАМИ */
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 28px; width: 270px; text-align: center; height: fit-content;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform-style: preserve-3d;
-            transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s;
-            transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) scale(var(--cscale, 1));
+            transition: box-shadow 0.3s, border-color 0.3s;
+            transform: perspective(900px) scale(var(--cscale, 1));
+            touch-action: none;
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 50px rgba(56, 189, 248, 0.6); z-index: 10; }
+        .term-card h3 { font-size: 1.15rem; margin-bottom: 14px; color: var(--accent); }
+        .term-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
 
-        /* ИНТЕРАКТИВНАЯ АРЕНА КНБ С ВИЗУАЛЬНЫМ РЕНТГЕН-ОТРАЖЕНИЕМ */
+        /* ИГРА ДЕТЕКТИВ (ТЕСТ ТЬЮРИНГА) */
+        .suspect-card { cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.2) !important; }
+        .suspect-card:hover, .suspect-card.hovered { border-color: #fde68a !important; box-shadow: 0 0 30px rgba(253, 230, 138, 0.3); transform: scale(1.05); }
+
+        /* ИГРА КАМЕНЬ, НОЖНИЦЫ, БУМАГА */
         .rps-arena {
-            width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
-            border: 2px solid var(--accent); border-radius: 24px; padding: 30px; margin-top: 30px;
-            box-shadow: 0 0 40px rgba(56, 189, 248, 0.3); text-align: center; position: relative;
+            width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 24px; padding: 30px; margin-top: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center;
         }
-        .rps-zone-indicator {
-            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-            background: rgba(56, 189, 248, 0.2); border: 1px dashed var(--accent);
-            padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: var(--accent); font-weight: 700;
-        }
-        .rps-scores { display: flex; justify-content: space-around; font-size: 1.2rem; font-weight: 900; margin-top: 30px; margin-bottom: 20px; color: var(--accent); }
+        .rps-scores { display: flex; justify-content: space-around; font-size: 1.2rem; font-weight: 900; margin-bottom: 20px; color: var(--accent); }
         .rps-display { display: flex; justify-content: center; gap: 40px; margin: 25px 0; font-size: 3rem; align-items: center; }
         .rps-box { background: rgba(0,0,0,0.6); border: 2px dashed rgba(56,189,248,0.4); border-radius: 16px; width: 130px; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
         .rps-box span.icon { font-size: 3.5rem; }
         .rps-box span.label { font-size: 0.75rem; position: absolute; bottom: 6px; color: #94a3b8; }
         
-        /* Голографический эффект рентген-сканирования */
-        .xray-reflection {
-            position: relative; border-color: var(--ranepa-red) !important;
-            box-shadow: 0 0 30px rgba(202, 15, 62, 0.4);
-        }
         .xray-reflection::after {
-            content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(202,15,62,0.4), transparent);
+            content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(56,189,248,0.4), transparent);
             animation: xrayScan 1s linear infinite; pointer-events: none;
         }
         @keyframes xrayScan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
@@ -236,7 +246,7 @@
 <body>
 
     <!-- Сова в шляпе и бордовом шарфе -->
-    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Обе руки под контролем. В зоне дуэли твое отражение-рентген скопирует комбинацию!</div>
+    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Я здесь! Масштабируй карточки щипком двух пальцев и играй в детектива!</div>
     <div class="companion-owl">
         <svg viewBox="0 0 120 120" width="100%" height="100%">
             <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
@@ -263,7 +273,7 @@
     <div id="loader">
         <div class="spinner" id="loaderSpinner"></div>
         <h2 id="loaderTitle" style="margin-bottom: 6px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;">Запуск двухручного трекинга.</p>
+        <p style="color: #94A3B8;">Запуск лаборатории и трекинга.</p>
         <button id="loaderTouchFallback" class="fallback-btn">👆 Режим мыши</button>
     </div>
 
@@ -277,13 +287,14 @@
     </div>
 
     <div class="hints-panel" id="hintsPanel">
-        <h3>Управление двумя руками</h3>
-        <div class="hint-row"><span class="hint-icon">🖐️</span><span>Обе руки видны одновременно.</span></div>
-        <div class="hint-row"><span class="hint-icon">✊</span><span>Кулак — скролл страницы.</span></div>
+        <h3>Управление</h3>
+        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Кулак</b> — скролл страницы.</span></div>
+        <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — пазлы и масштаб карточек (тяни вверх/вниз).</span></div>
+        <div class="hint-row"><span class="hint-icon">✌️</span><span><b>Пис вверху</b> — выход из лаборатории.</span></div>
     </div>
 
     <div class="hud-top">
-        <div class="hud-mode-badge" id="modeBadge">Режим: жесты (2 руки)</div>
+        <div class="hud-mode-badge" id="modeBadge">Режим: жесты</div>
         <div class="hud-timer" id="timerDisplay">00:00</div>
     </div>
 
@@ -305,23 +316,45 @@
             </div>
         </div>
 
-        <!-- КАРТОЧКИ -->
+        <!-- УРОВЕНЬ 2: КАРТОЧКИ С МАСШТАБИРОВАНИЕМ ДВУМЯ ПАЛЬЦАМИ -->
         <div class="screen-terms" id="termsSection">
-            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+            <div style="width: 100%; text-align: center; margin-bottom: 20px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База знаний ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1rem;">Скролль обеими руками вниз к дуэли!</p>
+                <p style="color: #94A3B8; font-size: 1rem;">Щипните карточку двумя пальцами и тяните вверх/вниз для изменения масштаба!</p>
             </div>
         </div>
 
-        <!-- УРОВЕНЬ 2: ИГРА КАМЕНЬ, НОЖНИЦЫ, БУМАГА С РЕНТГЕН-ОТРАЖЕНИЕМ -->
+        <!-- УРОВЕНЬ 3: ИИ-ДЕТЕКТИВ (ТЕСТ ТЬЮРИНГА) -->
+        <div class="screen-terms" id="detectiveSection" style="padding-top: 20px; background: transparent;">
+            <div style="width: 100%; text-align: center; margin-bottom: 30px;">
+                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 2: Тест Тьюринга (ИИ-Детектив)</h2>
+                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Один из подозреваемых — вышедшая из-под контроля нейросеть. Наведите курсор и покажите жест <b>👍 (Лайк)</b> или сделайте тап, чтобы вынести вердикт!</p>
+            </div>
+            
+            <div class="term-card suspect-card" data-suspect="А" style="border-color: rgba(255,255,255,0.2);">
+                <h3 style="color: #fff;">Подозреваемый А</h3>
+                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>А:</b> Ну, оно хрустящее, кисло-сладкое. Если зеленое, то вяжет немного.</p>
+            </div>
+            
+            <div class="term-card suspect-card" data-suspect="Б" data-is-ai="true" style="border-color: rgba(255,255,255,0.2);">
+                <h3 style="color: #fff;">Подозреваемый Б</h3>
+                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>Б:</b> Яблоко — это плод яблони. Оно имеет сбалансированный профиль моносахаридов и фруктовых кислот.</p>
+            </div>
+            
+            <div class="term-card suspect-card" data-suspect="В" style="border-color: rgba(255,255,255,0.2);">
+                <h3 style="color: #fff;">Подозреваемый В</h3>
+                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>В:</b> Смотря какое! Я люблю Голден, они как мед. А вообще яблоки лучше в пирог пускать.</p>
+            </div>
+        </div>
+
+        <!-- УРОВЕНЬ 4: ДУЭЛЬ КНБ ПРОТИВ РЕНТГЕНА -->
         <div class="screen-terms" id="gameSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent; display: flex; flex-direction: column; align-items: center;">
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 2: Дуэль с ИИ-Рентгеном</h2>
-                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Покажи жест (Камень, Ножницы, Бумага) в зоне сканирования арены. Рентген-отражение ИИ мгновенно считает твой ход!</p>
+                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 3: Дуэль с ИИ-Рентгеном</h2>
+                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Сыграй в классическую дуэль против ИИ (до 3 побед). Бот сканирует твой выбор через 3D-рентген!</p>
             </div>
 
-            <div class="rps-arena" id="rpsArenaBox">
-                <div class="rps-zone-indicator">🎯 Зона сканирования жеста (Камень, Ножницы, Бумага)</div>
+            <div class="rps-arena">
                 <div class="rps-scores">
                     <span>Твой счет: <b id="playerScore">0</b></span>
                     <span>Счет ИИ-Рентгена: <b id="aiScore">0</b></span>
@@ -329,9 +362,14 @@
                 <div class="rps-display">
                     <div class="rps-box"><span class="icon" id="playerChoice">❔</span><span class="label">Твой жест</span></div>
                     <div style="font-size: 1.5rem; color: var(--accent);">VS</div>
-                    <div class="rps-box" id="aiBox"><span class="icon" id="aiChoice">🔮</span><span class="label">Рентген-отражение ИИ</span></div>
+                    <div class="rps-box" id="aiBox"><span class="icon" id="aiChoice">🔮</span><span class="label">Рентген ИИ</span></div>
                 </div>
-                <p id="rpsStatus" style="font-size: 1rem; color: #fde68a; margin-bottom: 15px; min-height: 24px;">Жду жест в рамке арены...</p>
+                <p id="rpsStatus" style="font-size: 1rem; color: #fde68a; margin-bottom: 15px; min-height: 24px;">Сделай свой выбор:</p>
+                <div class="rps-btns">
+                    <button class="rps-btn" onclick="playRPS('камень')">✊ Камень</button>
+                    <button class="rps-btn" onclick="playRPS('ножницы')">✌️ Ножницы</button>
+                    <button class="rps-btn" onclick="playRPS('бумага')">✋ Бумага</button>
+                </div>
             </div>
         </div>
     </div>
@@ -339,8 +377,8 @@
     <div class="modal-overlay" id="victoryModal" role="dialog" aria-modal="true">
         <div class="modal-box">
             <div class="shockwave" id="shockwave"></div>
-            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Дуэль выиграна!</h2>
-            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Ты превзошел алгоритм рентгена!<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
+            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Лаборатория пройдена!</h2>
+            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Вы успешно завершили все испытания ИИ.<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
             <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить</button>
         </div>
     </div>
@@ -374,7 +412,7 @@
         owlBubble.classList.add('show');
         setTimeout(() => owlBubble.classList.remove('show'), duration);
     }
-    setTimeout(() => sayOwl("Ху-ху! Обе руки под контролем! В зоне дуэли включено отражение-рентген."), 1500);
+    setTimeout(() => sayOwl("Ху-ху! Масштабируй карточки щипком двух пальцев и расследуй дело Тьюринга!"), 1500);
 
     const hintsPanel = document.getElementById('hintsPanel');
     document.getElementById('hintsToggleBtn').addEventListener('click', () => hintsPanel.classList.toggle('open'));
@@ -472,6 +510,28 @@
         }
     }
 
+    // Карточки терминов (8 штук для полной базы)
+    const termsData = [
+        { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных." },
+        { t: "Нейросеть", d: "Модель, имитирующая синапсы мозга для распознавания образов." },
+        { t: "Промптинг", d: "Инженерное искусство точного диалога с языковыми моделями." },
+        { t: "Глубокое обучение", d: "Многослойные нейросети для решения сложных задач." },
+        { t: "LLM (Модели)", d: "Языковые модели на огромных массивах текста." },
+        { t: "Комп. зрение", d: "Технология распознавания объектов камерой." },
+        { t: "Тест Тьюринга", d: "Экзамен на способность машины неотличимо мыслить как человек." },
+        { t: "Автономность", d: "Способность ИИ принимать решения без человека." }
+    ];
+    const termsContainer = document.getElementById('termsSection');
+    let termCards = [];
+    termsData.forEach((term) => {
+        let card = document.createElement('div');
+        card.className = 'term-card';
+        card.innerHTML = `<h3>${term.t}</h3><p>${term.d}</p>`;
+        card.dataset.scale = 1;
+        termsContainer.appendChild(card);
+        termCards.push(card);
+    });
+
     // 3D Scene
     let scene, camera3D, renderer, coreMesh, glowMesh, ringMesh;
     let sceneReady = false;
@@ -503,8 +563,16 @@
     let scrollY = 0, targetScrollY = 0, scrollVelocity = 0, lastDragY = null;
     const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
 
+    let zoomedCard = null, zoomStartY = 0, initialCardScale = 1;
+
     function moveInteractionAt(x, y) {
-        if (draggedPiece) {
+        if (zoomedCard) {
+            const deltaY = zoomStartY - y;
+            let targetScale = initialCardScale + (deltaY * 0.005);
+            targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
+            zoomedCard.style.setProperty('--cscale', targetScale);
+            zoomedCard.dataset.scale = targetScale;
+        } else if (draggedPiece) {
             const cr = puzzleArea.getBoundingClientRect();
             draggedPiece.style.left = `${x - dragOffsetX - cr.left}px`;
             draggedPiece.style.top = `${y - dragOffsetY - cr.top}px`;
@@ -522,6 +590,7 @@
             checkSnap(draggedPiece);
             draggedPiece = null;
         }
+        if (zoomedCard) { zoomedCard.classList.remove('hovered'); zoomedCard = null; }
         lastDragY = null;
     }
 
@@ -566,7 +635,7 @@
             if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
             interactionMode = 'touch'; showToast("Режим мыши включен", true);
         } else {
-            interactionMode = 'gesture'; startGesturePipeline(); showToast("Режим жестов (2 руки) включен", true);
+            interactionMode = 'gesture'; startGesturePipeline(); showToast("Режим жестов включен", true);
         }
         setModeBadge();
     });
@@ -596,21 +665,9 @@
         });
     }
 
-    // ДВУХРУЧНЫЙ ДВИЖОК + СХОЖДЕНИЕ С РЕНТГЕН-ОТРАЖЕНИЕМ
-    let rpsCooldown = false;
-    let playerScore = 0;
-    let aiScore = 0;
+    let peaceFrames = 0;
 
-    const arrogantTaunts = [
-        "Ваш выбор просчитан моим рентгеном мгновенно.",
-        "Элементарно. Мое отражение всегда на шаг впереди.",
-        "Кремниевая логика снова предсказала ваш ход."
-    ];
-    const respectfulCompliments = [
-        "Невероятно! Ваша интуиция обманула отражение.",
-        "Достойный ход. Отражение признает поражение в раунде."
-    ];
-
+    // ДВУХРУЧНЫЙ ДВИЖОК + МАСШТАБИРОВАНИЕ ДВУМЯ РУКАМИ И ДЕТЕКТИВ
     function onResults(results) {
         canvasElement.width = window.innerWidth; canvasElement.height = window.innerHeight;
         canvasCtx.save(); canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -621,58 +678,74 @@
         if (handsFound) {
             let activeFistY = null;
 
-            results.multiHandLandmarks.forEach((lm, idx) => {
-                const cursor = idx === 0 ? cursor0 : cursor1;
-                const px = window.innerWidth - (lm[8].x * window.innerWidth);
-                const py = lm[8].y * window.innerHeight;
+            // Детекция жеста Пис для выхода (вверху экрана)
+            const h1 = results.multiHandLandmarks[0];
+            const indexUp = h1[8].y < h1[6].y;
+            const middleUp = h1[12].y < h1[10].y;
+            const ringDown = h1[16].y > h1[14].y;
+            const pinkyDown = h1[20].y > h1[18].y;
+            if (indexUp && middleUp && ringDown && pinkyDown && h1[0].y < 0.4 && !draggedPiece) {
+                peaceFrames++;
+                if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; }
+            } else { peaceFrames = 0; }
 
-                cursor.style.opacity = 1;
-                cursor.style.left = `${px}px`;
-                cursor.style.top = `${py}px`;
+            // Если в кадре две руки — поддерживаем двухпальцевое масштабирование карточек
+            if (results.multiHandLandmarks.length === 2) {
+                const lm0 = results.multiHandLandmarks[0];
+                const lm1 = results.multiHandLandmarks[1];
+                const p0x = window.innerWidth - (lm0[8].x * window.innerWidth), p0y = lm0[8].y * window.innerHeight;
+                const p1x = window.innerWidth - (lm1[8].x * window.innerWidth), p1y = lm1[8].y * window.innerHeight;
 
-                drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
-                drawLandmarks(canvasCtx, lm, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
+                cursor0.style.opacity = 1; cursor0.style.left = `${p0x}px`; cursor0.style.top = `${p0y}px`;
+                cursor1.style.opacity = 1; cursor1.style.left = `${p1x}px`; cursor1.style.top = `${p1y}px`;
 
-                const dist = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y);
-                const pinch = dist < 0.055;
-                cursor.classList.toggle('pinched', pinch);
+                const el = document.elementFromPoint(p0x, p0y);
+                const card = el ? el.closest('.term-card') : null;
+                if (card) {
+                    zoomedCard = card;
+                    card.classList.add('hovered');
+                    initialCardScale = parseFloat(card.dataset.scale) || 1;
+                    zoomStartY = p0y;
+                }
+            } else {
+                results.multiHandLandmarks.forEach((lm, idx) => {
+                    const cursor = idx === 0 ? cursor0 : cursor1;
+                    const px = window.innerWidth - (lm[8].x * window.innerWidth);
+                    const py = lm[8].y * window.innerHeight;
 
-                const isFist = lm[12].y > lm[9].y && lm[16].y > lm[13].y;
-                if (isFist) activeFistY = lm[9].y * window.innerHeight;
+                    cursor.style.opacity = 1;
+                    cursor.style.left = `${px}px`;
+                    cursor.style.top = `${py}px`;
 
-                // Проверка зоны сканирования КНБ
-                const arenaBox = document.getElementById('rpsArenaBox');
-                if (arenaBox) {
-                    const r = arenaBox.getBoundingClientRect();
-                    if (px >= r.left && px <= r.right && py >= r.top && py <= r.bottom) {
-                        const indexEx = lm[8].y < lm[6].y;
-                        const middleEx = lm[12].y < lm[10].y;
-                        const ringEx = lm[16].y < lm[14].y;
-                        const pinkyEx = lm[20].y < lm[18].y;
+                    drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
+                    drawLandmarks(canvasCtx, lm, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
 
-                        let gesture = null;
-                        if (!indexEx && !middleEx && !ringEx && !pinkyEx) gesture = 'камень';
-                        else if (indexEx && middleEx && !ringEx && !pinkyEx) gesture = 'ножницы';
-                        else if (indexEx && middleEx && ringEx && pinkyEx) gesture = 'бумага';
+                    const dist = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y);
+                    const pinch = dist < 0.055;
+                    cursor.classList.toggle('pinched', pinch);
 
-                        if (gesture && !rpsCooldown) {
-                            rpsCooldown = true;
-                            triggerRPSReflection(gesture);
-                            setTimeout(() => rpsCooldown = false, 2500);
+                    const isFist = lm[12].y > lm[9].y && lm[16].y > lm[13].y;
+                    if (isFist) activeFistY = lm[9].y * window.innerHeight;
+
+                    // Голосование в ИИ-детективе (Лайк или тап)
+                    const thumbUp = lm[4].y < lm[3].y && isFist;
+                    if (thumbUp && !draggedPiece) {
+                        const targetEl = document.elementFromPoint(px, py);
+                        const suspect = targetEl ? targetEl.closest('.suspect-card') : null;
+                        if (suspect) checkDetectiveVote(suspect);
+                    }
+
+                    if (pinch && idx === 0 && !draggedPiece) {
+                        const targetEl = document.elementFromPoint(px, py);
+                        if (targetEl && targetEl.classList.contains('puzzle-piece') && !targetEl.classList.contains('locked')) {
+                            startTimer(); draggedPiece = targetEl;
+                            const box = targetEl.getBoundingClientRect();
+                            dragOffsetX = px - box.left; dragOffsetY = py - box.top;
+                            targetEl.classList.add('dragging');
                         }
                     }
-                }
-
-                if (pinch && idx === 0 && !draggedPiece) {
-                    const el = document.elementFromPoint(px, py);
-                    if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                        startTimer(); draggedPiece = el;
-                        const box = el.getBoundingClientRect();
-                        dragOffsetX = px - box.left; dragOffsetY = py - box.top;
-                        el.classList.add('dragging');
-                    }
-                }
-            });
+                });
+            }
 
             if (draggedPiece && results.multiHandLandmarks[0]) {
                 const lm = results.multiHandLandmarks[0];
@@ -695,16 +768,52 @@
         canvasCtx.restore();
     }
 
-    function triggerRPSReflection(playerChoiceStr) {
+    // МЕХАНИКА ИИ-ДЕТЕКТИВА (ТЕСТ ТЬЮРИНГА)
+    function checkDetectiveVote(card) {
+        const isAI = card.dataset.isAi === "true";
+        const suspectName = card.dataset.suspect;
+
+        document.querySelectorAll('.suspect-card').forEach(c => {
+            c.style.opacity = "0.3";
+            c.style.pointerEvents = "none";
+        });
+        card.style.opacity = "1";
+
+        if (isAI) {
+            card.style.borderColor = "#10b981";
+            card.style.boxShadow = "0 0 40px rgba(16, 185, 129, 0.6)";
+            showToast(`✅ ВЕРНО! Подозреваемый ${suspectName} — это нейросеть!`, true);
+            sayOwl("Блестяще! Тьюринг был бы доволен вашим расследованием.");
+        } else {
+            card.style.borderColor = "#CA0F3E";
+            card.style.boxShadow = "0 0 40px rgba(202, 15, 62, 0.6)";
+            showToast(`❌ ОШИБКА! Подозреваемый ${suspectName} — человек.`, false);
+            sayOwl("Осторожнее, вы ошиблись в человеке!");
+        }
+    }
+
+    // МЕХАНИКА ИГРЫ КАМЕНЬ, НОЖНИЦЫ, БУМАГА ПРОТИВ РЕНТГЕНА
+    let playerScore = 0, aiScore = 0;
+    const arrogantTaunts = [
+        "Ваш ход просчитан моим рентгеном за 3 миллисекунды.",
+        "Элементарно. Кремниевая логика триумфует.",
+        "Мое 3D-зеркало видит ваши намерения насквозь."
+    ];
+    const respectfulCompliments = [
+        "Невероятно! Ваша интуиция обманула рентген.",
+        "Достойный ход. Признаю превосходство."
+    ];
+
+    function playRPS(playerChoiceStr) {
         startTimer();
+        const choices = ['камень', 'ножницы', 'бумага'];
         const aiBox = document.getElementById('aiBox');
         aiBox.classList.add('xray-reflection');
-        document.getElementById('rpsStatus').textContent = "Рентген-отражение сканирует ваш жест...";
-        sayOwl("Мое отражение считывает твой жест...");
+        document.getElementById('rpsStatus').textContent = "Рентген-отражение сканирует ваш выбор...";
+        sayOwl("Отражение считывает ваш ход...");
 
         setTimeout(() => {
             aiBox.classList.remove('xray-reflection');
-            
             const winningMove = { 'камень': 'бумага', 'ножницы': 'камень', 'бумага': 'ножницы' };
             const losingMove = { 'камень': 'ножницы', 'ножницы': 'бумага', 'бумага': 'камень' };
             
@@ -720,8 +829,8 @@
 
             let resultText = "";
             if (playerChoiceStr === aiChoiceStr) {
-                resultText = "Ничья! Отражение повторило ваш квантовый жест.";
-                sayOwl("Ничья! Отражение зеркально отразило мысль.");
+                resultText = "Ничья! Рентген зафиксировал зеркальный выбор.";
+                sayOwl("Ничья! Отражение повторило вас.");
             } else if (
                 (playerChoiceStr === 'камень' && aiChoiceStr === 'ножницы') ||
                 (playerChoiceStr === 'ножницы' && aiChoiceStr === 'бумага') ||
@@ -747,7 +856,7 @@
                     stopTimerAndShowModal();
                 } else {
                     showToast("ИИ-Рентген выиграл серию до 3 побед!", false);
-                    sayOwl("Серия за отражением! Кремниевый разум победил.");
+                    sayOwl("Серия за отражением!");
                     playerScore = 0; aiScore = 0;
                     document.getElementById('playerScore').textContent = '0';
                     document.getElementById('aiScore').textContent = '0';
