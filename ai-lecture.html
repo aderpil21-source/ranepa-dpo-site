@@ -345,14 +345,6 @@
 
     <script>
     'use strict';
-    /* ============================================================================================
-       ENVIRONMENT DETECTION
-       Playing hand-gesture games one-handed while holding a phone in the other is genuinely
-       impractical — so rather than force webcam+MediaPipe everywhere, we detect the situation
-       and pick the interaction model that actually works well for it. Both models share the
-       same underlying drag/zoom/scroll logic (see the "Unified interaction core" section), so
-       nothing behaves differently between them except how coordinates get fed in.
-    ============================================================================================ */
     const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const isTouchCapable = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
     const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
@@ -363,9 +355,6 @@
         hasWebGL = !!(testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl'));
     } catch (e) { hasWebGL = false; }
 
-    // Touch-only devices (phones/tablets without a mouse) default to Touch Mode; anything with
-    // a real pointer + camera defaults to Gesture Mode. The mode toggle button always lets the
-    // person override this guess in either direction.
     let interactionMode = (isTouchCapable && !hasFinePointer) || !hasMediaDevices ? 'touch' : 'gesture';
 
     function setModeBadge() {
@@ -376,9 +365,6 @@
     }
     setModeBadge();
 
-    // ==========================================
-    // HINTS PANEL — dismissible, remembers the choice
-    // ==========================================
     const hintsPanel = document.getElementById('hintsPanel');
     const hintsToggleBtn = document.getElementById('hintsToggleBtn');
     const hintsDontShow = document.getElementById('hintsDontShow');
@@ -397,9 +383,6 @@
 
     document.getElementById('exitBtn').addEventListener('click', () => triggerImplosion());
 
-    // ==========================================
-    // TIMER
-    // ==========================================
     let timerInterval = null;
     let timeElapsed = 0;
     let timerStarted = false;
@@ -444,9 +427,6 @@
         }
     }
 
-    // ==========================================
-    // VOICE COMMANDS (optional nicety in either mode)
-    // ==========================================
     function initVoice() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) { document.getElementById('micBadge').style.display = 'none'; return; }
@@ -465,9 +445,6 @@
         } catch (e) { document.getElementById('micBadge').style.display = 'none'; }
     }
 
-    // ==========================================
-    // PUZZLE GENERATION (unchanged geometry/logic — jigsaw edges, 6 pieces)
-    // ==========================================
     const puzzleArea = document.getElementById('puzzleArea');
     const grid = document.getElementById('grid');
     const cols = 3, rows = 2;
@@ -544,7 +521,6 @@
         termCards.push(card);
     });
 
-    // card 3D tilt on mouse hover (desktop) — cheap, GPU-only, no layout cost
     if (hasFinePointer) {
         termCards.forEach(card => {
             card.addEventListener('mousemove', (e) => {
@@ -561,10 +537,6 @@
         });
     }
 
-    // ==========================================
-    // 3D DEPTH SCENE (Three.js) — layered wireframes + particle field + fake bloom halo
-    // Skipped entirely (with a CSS gradient fallback) if WebGL isn't available.
-    // ==========================================
     let scene, camera3D, renderer, coreMesh, glowMesh, ringMesh, particles;
     let targetRotX = 0, targetRotY = 0;
     let sceneReady = false;
@@ -582,21 +554,18 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, isTouchCapable ? 1.5 : 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
 
-            // core wireframe
             coreMesh = new THREE.Mesh(
                 new THREE.IcosahedronGeometry(12, 1),
                 new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.18 })
             );
             scene.add(coreMesh);
 
-            // fake "bloom" halo — a larger, dimmer duplicate with additive blending
             glowMesh = new THREE.Mesh(
                 new THREE.IcosahedronGeometry(13.5, 1),
                 new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.06, blending: THREE.AdditiveBlending, depthWrite: false })
             );
             scene.add(glowMesh);
 
-            // outer ring for extra depth layering / parallax read
             ringMesh = new THREE.Mesh(
                 new THREE.TorusGeometry(20, 0.15, 8, 80),
                 new THREE.MeshBasicMaterial({ color: 0xCA0F3E, transparent: true, opacity: 0.35 })
@@ -604,7 +573,6 @@
             ringMesh.rotation.x = Math.PI / 2.4;
             scene.add(ringMesh);
 
-            // drifting particle field for parallax depth as the camera dollies on scroll
             const particleCount = isTouchCapable ? 250 : 500;
             const posArr = new Float32Array(particleCount * 3);
             for (let i = 0; i < particleCount * 3; i += 3) {
@@ -630,12 +598,6 @@
     }
     initScene();
 
-    // ==========================================
-    // UNIFIED INTERACTION CORE
-    // One set of functions drives dragging pieces, pinch-zooming cards, and scrolling —
-    // fed either by the gesture pipeline's tracked pinch point or by real Pointer Events.
-    // This is what keeps Touch Mode and Gesture Mode behaviourally identical.
-    // ==========================================
     const scrollContainer = document.getElementById('scroll-container');
     let draggedPiece = null;
     let dragOffsetX = 0, dragOffsetY = 0;
@@ -647,7 +609,7 @@
     let zoomedCard = null, zoomStartY = 0, initialCardScale = 1;
 
     function beginInteractionAt(x, y) {
-        if (interactionMode === 'touch') return; // native scroll + native pointer events do this job in touch mode
+        if (interactionMode === 'touch') return;
         const el = document.elementFromPoint(x, y);
         if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
             startTimer();
@@ -679,7 +641,6 @@
             const newY = y - dragOffsetY - containerRect.top;
             draggedPiece.style.left = `${newX}px`;
             draggedPiece.style.top = `${newY}px`;
-            // subtle "lift toward camera" tilt while dragging — reads as depth/weight
             const dx = x - dragStartX, dy = y - dragStartY;
             draggedPiece.style.transform = `translateZ(30px) rotateX(${Math.max(-10, Math.min(10, -dy * 0.05))}deg) rotateY(${Math.max(-10, Math.min(10, dx * 0.05))}deg)`;
         } else if (lastDragY !== null) {
@@ -739,9 +700,6 @@
         }
     }
 
-    // ---- Touch / mouse path (Pointer Events — unifies mouse, touch, pen) ----
-    if (interactionMode !== 'gesture') { /* handlers attached lazily once touch mode is confirmed active, see enableTouchMode() */ }
-
     function enableTouchMode() {
         pieces.forEach(({ el }) => {
             el.addEventListener('pointerdown', (e) => {
@@ -763,7 +721,6 @@
             el.addEventListener('pointercancel', release);
         });
 
-        // two-finger pinch-to-scale per term card, using native Pointer Events
         termCards.forEach(card => {
             const active = new Map();
             let startDist = 0, startScale = 1;
@@ -793,11 +750,8 @@
             card.addEventListener('pointerup', release);
             card.addEventListener('pointercancel', release);
         });
-
-        // native browser scrolling handles the rest — no custom physics needed on touch devices
     }
 
-    // ---- Gesture path (desktop mouse wheel still works as a fallback even in gesture mode) ----
     function physicsLoop() {
         if (interactionMode === 'gesture') {
             if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
@@ -820,7 +774,6 @@
             glowMesh.rotation.copy(coreMesh.rotation);
             ringMesh.rotation.z += 0.0015;
             particles.rotation.y += 0.0006;
-            // cinematic dolly: camera pulls in and the ring tilts more as you scroll toward the terms screen
             camera3D.position.z = 30 - scrollProgress * 10;
             ringMesh.rotation.x = Math.PI / 2.4 + scrollProgress * 0.4;
             renderer.render(scene, camera3D);
@@ -838,12 +791,9 @@
             scrollVelocity = 0;
         }, { passive: true });
     } else {
-        window.addEventListener('scroll', () => {}, { passive: true }); // native scroll — nothing to drive manually
+        window.addEventListener('scroll', () => {}, { passive: true });
     }
 
-    // ==========================================
-    // MODE SWITCHING (clean start/stop of the camera pipeline either way)
-    // ==========================================
     let cameraFeed = null, hands = null;
     let mediaStream = null;
 
@@ -875,20 +825,15 @@
         document.getElementById('cursor1').style.opacity = 0;
     }
 
-    // ==========================================
-    // GESTURE PIPELINE — low-light & weak-camera hardened
-    // ==========================================
     const videoElement = document.getElementById('webcam');
     const canvasElement = document.getElementById('output_canvas');
     const canvasCtx = canvasElement.getContext('2d');
     const cursor0 = document.getElementById('cursor0');
     const cursor1 = document.getElementById('cursor1');
 
-    // an offscreen canvas we brighten BEFORE handing frames to MediaPipe — this is what actually
-    // helps detection in a dim room, since Hands never sees the raw dark frame at all
     const preCanvas = document.createElement('canvas');
     const preCtx = preCanvas.getContext('2d', { willReadFrequently: true });
-    let brightnessBoost = 1.0; // auto-tuned from measured scene luminance
+    let brightnessBoost = 1.0;
     let lastLumaCheck = 0;
 
     let isPinching0 = false, isPinching1 = false;
@@ -900,7 +845,7 @@
     let framesSinceHandSeen = 9999;
     let relaxedConfidence = false;
     let frameSkipCounter = 0;
-    let frameSkip = 1; // 1 = process every frame; raised automatically on slow devices
+    let frameSkip = 1;
 
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
@@ -913,8 +858,6 @@
         hands.setOptions({ maxNumHands: 2, modelComplexity: isTouchCapable ? 0 : 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
-        // resolution fallback chain: try a good size first, then progressively lower ones —
-        // this is what keeps weak/older webcams (and the constraint errors they throw) working
         const attempts = [
             { width: 1280, height: 720 },
             { width: 640, height: 480 },
@@ -933,13 +876,20 @@
                     stop: () => {},
                     _raf: null
                 };
-                // drive MediaPipe ourselves (instead of the bundled Camera helper) so we can
-                // inject the brightness pre-pass and frame-skipping without fighting its loop
+                
+                // ВАЖНО: Добавлена блокировка isMediaPipeProcessing, чтобы избежать перегрузки WebAssembly
+                let isMediaPipeProcessing = false;
                 function loop() {
                     if (interactionMode !== 'gesture' || document.hidden) { cameraFeed._raf = requestAnimationFrame(loop); return; }
                     frameSkipCounter++;
-                    if (frameSkipCounter % frameSkip === 0 && videoElement.readyState >= 2) {
-                        processFrame();
+                    if (frameSkipCounter % frameSkip === 0 && videoElement.readyState >= 2 && !isMediaPipeProcessing) {
+                        isMediaPipeProcessing = true;
+                        processFrame().then(() => {
+                            isMediaPipeProcessing = false;
+                        }).catch((err) => {
+                            console.error('MediaPipe error:', err);
+                            isMediaPipeProcessing = false;
+                        });
                     }
                     cameraFeed._raf = requestAnimationFrame(loop);
                 }
@@ -961,7 +911,6 @@
         if (!vw || !vh) return;
         if (preCanvas.width !== vw) { preCanvas.width = vw; preCanvas.height = vh; }
 
-        // periodically sample average luminance on a tiny downscaled copy — cheap, ~once/sec
         const now = performance.now();
         if (now - lastLumaCheck > 1000) {
             lastLumaCheck = now;
@@ -982,18 +931,15 @@
             const data = sctx.getImageData(0, 0, sampleSize, sampleSize).data;
             let sum = 0;
             for (let i = 0; i < data.length; i += 4) sum += (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-            const avg = sum / (data.length / 4); // 0..255
+            const avg = sum / (data.length / 4);
             const target = 120;
             const dim = avg < 70;
             document.getElementById('lowLightChip').classList.toggle('show', dim);
-            // gently ease toward the ideal boost rather than snapping (avoids flicker)
             const desired = Math.max(1, Math.min(2.4, target / Math.max(20, avg)));
             brightnessBoost = lerp(brightnessBoost, desired, 0.35);
         } catch (e) {}
     }
 
-    // quick self-benchmark during the first couple seconds — drops model complexity & frame
-    // rate automatically on slow devices instead of letting the whole page bog down
     function calibratePerformance() {
         let frames = 0, start = performance.now();
         function tick() {
@@ -1039,8 +985,6 @@
 
         const handFound = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
 
-        // adaptive confidence: relax thresholds after ~3s with no hand (helps dim rooms /
-        // low-quality sensors reacquire tracking), then tighten back up once it's working again
         if (!handFound) {
             framesSinceHandSeen++;
             if (framesSinceHandSeen > 90 && !relaxedConfidence) {
@@ -1134,9 +1078,6 @@
         cursorEl.classList.toggle('pinched', isPinched);
     }
 
-    // ==========================================
-    // ORIENTATION HINT (gesture mode, portrait phones/tablets only)
-    // ==========================================
     function checkOrientationHint() {
         const tip = document.getElementById('rotateTip');
         const isPortraitNarrow = window.innerHeight > window.innerWidth && window.innerWidth < 820;
@@ -1154,14 +1095,6 @@
         }
     }
 
-    // Pause camera + rendering when the tab isn't visible — real battery/CPU savings on mobile
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) { /* physicsLoop() already checks document.hidden each frame */ }
-    });
-
-    // ==========================================
-    // EXIT / IMPLOSION
-    // ==========================================
     let isImploding = false;
     function triggerImplosion() {
         if (isImploding) return;
@@ -1180,9 +1113,6 @@
         setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // ==========================================
-    // BOOT
-    // ==========================================
     if (interactionMode === 'gesture') {
         startGesturePipeline();
     } else {
