@@ -173,10 +173,17 @@
         }
         .filter-group { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
         .filter-group label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; color: var(--text-muted); }
+        
+        /* Исправление читаемости select-фильтров в темной теме */
         .filter-group select, .filter-group input[type="number"] {
-            background: var(--btn-glass); border: 1px solid var(--border-glass); border-radius: 10px;
+            background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 10px;
             padding: 9px 12px; color: var(--text-main); font-size: 0.88rem; font-weight: 600; outline: none;
         }
+        .filter-group select option {
+            background: var(--bg-deep);
+            color: var(--text-main);
+        }
+
         .filter-sectors { display: flex; flex-wrap: wrap; gap: 8px; }
         .filter-sector-chip {
             background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted);
@@ -635,6 +642,20 @@
                 <label data-i18n="filterSector">Направление</label>
                 <div class="filter-sectors" id="filterSectors"></div>
             </div>
+            
+            <!-- НОВЫЙ ФИЛЬТР: СОРТИРОВКА -->
+            <div class="filter-group">
+                <label data-i18n="filterSort">Сортировка</label>
+                <select id="filterSort">
+                    <option value="alpha_asc" data-i18n="sortAlphaAsc">По алфавиту (А-Я)</option>
+                    <option value="alpha_desc" data-i18n="sortAlphaDesc">По алфавиту (Я-А)</option>
+                    <option value="price_asc" data-i18n="sortPriceAsc">Сначала дешевле</option>
+                    <option value="price_desc" data-i18n="sortPriceDesc">Сначала дороже</option>
+                    <option value="hours_asc" data-i18n="sortHoursAsc">Сначала короче</option>
+                    <option value="hours_desc" data-i18n="sortHoursDesc">Сначала длиннее</option>
+                </select>
+            </div>
+
             <div class="filter-group">
                 <label data-i18n="filterMaxPrice">Стоимость до, ₽</label>
                 <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500">
@@ -804,7 +825,7 @@
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
-                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;">📄 Официальные образовательные программы </span>
+                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;">📄 Официальные образовательные программы (Архив)</span>
                 </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center;">
@@ -851,7 +872,7 @@
                 2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>
                 3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.
             </p>
-            <div class="close-modal" onclick="openPolicyModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
+            <div class="close-modal" onclick="closePolicyModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
         </div>
     </div>
 
@@ -868,7 +889,7 @@
         </div>
     </div>
 
-    <!-- ОКНО ПРОГРАММ -->
+    <!-- ОКНО АРХИВА ПРОГРАММ -->
     <div class="modal-overlay" id="docsModal">
         <div class="modal-box" style="text-align: left; max-width: 650px;">
             <h3>Официальные образовательные программы</h3>
@@ -1072,7 +1093,7 @@
                 📅 <span data-i18n="schBtnText">Расписание занятий</span>
             </button>
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
-            <button class="chat-opt-btn" onclick="window.location.href='ai-lecture.html'" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
+            <button class="chat-opt-btn" onclick="window.open('ai-lecture.html', '_blank')" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
                 🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
             </button>
         </div>
@@ -1141,6 +1162,7 @@
             tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
             studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
             filterSector: "Направление", filterMaxPrice: "Стоимость до, ₽", filterDuration: "Длительность",
+            filterSort: "Сортировка", sortAlphaAsc: "По алфавиту (А-Я)", sortAlphaDesc: "По алфавиту (Я-А)", sortPriceAsc: "Сначала дешевле", sortPriceDesc: "Сначала дороже", sortHoursAsc: "Сначала короче", sortHoursDesc: "Сначала длиннее",
             filterDurAny: "Любая", filterDurShort: "до 50 ч.", filterDurMid: "50–200 ч.", filterDurLong: "от 200 ч.", filterReset: "Сбросить",
             faqTitle: "Часто задаваемые вопросы",
             faqQ1: "Какие документы нужны для поступления?", faqA1: "Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).",
@@ -1176,6 +1198,7 @@
             tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
             studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now", faqTitle: "Frequently Asked Questions",
             filterSector: "Sector", filterMaxPrice: "Max price, ₽", filterDuration: "Duration",
+            filterSort: "Sort by", sortAlphaAsc: "Alphabetical (A-Z)", sortAlphaDesc: "Alphabetical (Z-A)", sortPriceAsc: "Price (Low to High)", sortPriceDesc: "Price (High to Low)", sortHoursAsc: "Duration (Short to Long)", sortHoursDesc: "Duration (Long to Short)",
             filterDurAny: "Any", filterDurShort: "up to 50 hrs", filterDurMid: "50–200 hrs", filterDurLong: "200+ hrs", filterReset: "Reset",
             faqQ1: "What documents are required for admission?", faqA1: "You'll need a copy of your passport, SNILS, and proof of prior education (vocational or higher-education diploma).",
             faqQ2: "How is training conducted?", faqA2: "Training is blended (part-time in-person plus remote technologies). Practical sessions take place at the Academy.",
@@ -1295,7 +1318,14 @@
     function buildPrograms(programs) {
         const tabs = ['tab-all', 'tab-kadry', 'tab-pk', 'tab-pp', 'tab-po', 'tab-sem'];
         const htmlMap = {};
-        tabs.forEach(t => htmlMap[t] = {});
+        
+        tabs.forEach(t => {
+            if (t === 'tab-all') htmlMap[t] = [];
+            else htmlMap[t] = {};
+        });
+        
+        // ВАЖНО: Сортируем программы по алфавиту изначально
+        programs.sort((a, b) => String(a.title_ru).trim().localeCompare(String(b.title_ru).trim(), 'ru'));
         globalPrograms = programs;
 
         programs.forEach(prog => {
@@ -1326,9 +1356,10 @@
 
             const priceNum = parseInt(String(prog.price).replace(/[^\d]/g, ''), 10) || 0;
             const hoursNum = parseInt(String(prog.hours).replace(/[^\d]/g, ''), 10) || 0;
+            const safeTitle = String(prog.title_ru).replace(/"/g, '&quot;');
 
             let cardHTML = `
-            <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}">
+            <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
                 <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
@@ -1339,21 +1370,17 @@
                         ${bulletsHTML}
                     </ul>
                     <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; border-left: 2px solid var(--ranepa-red); padding-left: 8px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 0 8px 8px 0;">
-                        📄 Полная официальная программа и аннотация доступны в разделе <span onclick="openDocsModal()" style="color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700;">учебных программ</span> внизу страницы.
+                        📄 Полная официальная программа и аннотация доступны в <span onclick="openDocsModal()" style="color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700;">архиве программ</span> внизу страницы.
                     </div>
                     <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
                 </div>
             </div>`;
 
-            const defaultSec = (prog.sector && htmlMap['tab-all'][prog.sector]) ? prog.sector : Object.keys(htmlMap['tab-all'])[0];
-            if (defaultSec && htmlMap['tab-all'][defaultSec]) {
-                htmlMap['tab-all'][defaultSec].push(cardHTML);
-            } else {
-                if (!htmlMap['tab-all']['gos']) htmlMap['tab-all']['gos'] = [];
-                htmlMap['tab-all']['gos'].push(cardHTML);
-            }
+            // Плоский список для "Все программы"
+            htmlMap['tab-all'].push(cardHTML);
 
-            if (prog.tab && tabs.includes(prog.tab)) {
+            // И добавляем в нужную вкладку по типу с разделами
+            if (prog.tab && tabs.includes(prog.tab) && prog.tab !== 'tab-all') {
                 if (!htmlMap[prog.tab][prog.sector]) htmlMap[prog.tab][prog.sector] = [];
                 htmlMap[prog.tab][prog.sector].push(cardHTML);
             }
@@ -1368,14 +1395,17 @@
 
         tabs.forEach(tabId => {
             let tabHTML = '';
-            sectorOrder.forEach(sector => {
-                if (htmlMap[tabId][sector] && htmlMap[tabId][sector].length > 0) {
-                    tabHTML += `<h3 class="sector-header" data-i18n="sec_${sector}">${SECTOR_NAMES[sector].ru}</h3>`;
-                    tabHTML += htmlMap[tabId][sector].join('');
-                }
-            });
+            if (tabId === 'tab-all') {
+                tabHTML = htmlMap[tabId].join('');
+            } else {
+                sectorOrder.forEach(sector => {
+                    if (htmlMap[tabId][sector] && htmlMap[tabId][sector].length > 0) {
+                        tabHTML += `<h3 class="sector-header" data-i18n="sec_${sector}">${SECTOR_NAMES[sector].ru}</h3>`;
+                        tabHTML += htmlMap[tabId][sector].join('');
+                    }
+                });
+            }
             if(tabHTML === '') tabHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);" data-i18n="noPrograms">Программы в данном разделе скоро появятся.</div>`;
-            
             const container = document.getElementById(tabId);
             if(container) container.innerHTML = tabHTML;
         });
@@ -1405,14 +1435,19 @@
         });
         document.getElementById('filterMaxPrice').oninput = applyFilters;
         document.getElementById('filterDuration').onchange = applyFilters;
+        document.getElementById('filterSort').onchange = applyFilters;
     }
 
     function applyFilters() {
         const activeSectors = Array.from(document.querySelectorAll('.filter-sector-chip.active')).map(c => c.dataset.sector);
         const maxPrice = parseInt(document.getElementById('filterMaxPrice').value, 10);
         const durationMode = document.getElementById('filterDuration').value;
+        const sortMode = document.getElementById('filterSort').value;
 
-        document.querySelectorAll('#tab-all .card').forEach(card => {
+        // Фильтруем только вкладку 'tab-all'
+        const cards = Array.from(document.querySelectorAll('#tab-all .card'));
+
+        cards.forEach(card => {
             let visible = true;
             if (activeSectors.length && !activeSectors.includes(card.dataset.sector)) visible = false;
             if (!isNaN(maxPrice) && maxPrice > 0 && parseInt(card.dataset.price, 10) > maxPrice) visible = false;
@@ -1423,13 +1458,30 @@
             card.classList.toggle('filtered-out', !visible);
         });
 
-        document.querySelectorAll('#tab-all .sector-header').forEach(h => {
-            let sib = h.nextElementSibling, anyVisible = false;
-            while (sib && !sib.classList.contains('sector-header')) {
-                if (sib.classList.contains('card') && !sib.classList.contains('filtered-out')) anyVisible = true;
-                sib = sib.nextElementSibling;
+        // Сортировка с использованием CSS свойства order
+        let sortedCards = cards.filter(c => !c.classList.contains('filtered-out'));
+        
+        sortedCards.sort((a, b) => {
+            let valA, valB;
+            if (sortMode.startsWith('alpha')) {
+                valA = a.dataset.title;
+                valB = b.dataset.title;
+                return sortMode === 'alpha_asc' ? valA.localeCompare(valB, 'ru') : valB.localeCompare(valA, 'ru');
+            } else if (sortMode.startsWith('price')) {
+                valA = parseInt(a.dataset.price, 10) || 0;
+                valB = parseInt(b.dataset.price, 10) || 0;
+                return sortMode === 'price_asc' ? valA - valB : valB - valA;
+            } else if (sortMode.startsWith('hours')) {
+                valA = parseInt(a.dataset.hours, 10) || 0;
+                valB = parseInt(b.dataset.hours, 10) || 0;
+                return sortMode === 'hours_asc' ? valA - valB : valB - valA;
             }
-            h.style.display = anyVisible ? '' : 'none';
+            return 0;
+        });
+
+        // Применяем порядок на экране
+        sortedCards.forEach((card, index) => {
+            card.style.order = index;
         });
     }
 
@@ -1437,6 +1489,7 @@
         document.querySelectorAll('.filter-sector-chip').forEach(c => c.classList.remove('active'));
         document.getElementById('filterMaxPrice').value = '';
         document.getElementById('filterDuration').value = '';
+        document.getElementById('filterSort').value = 'alpha_asc';
         applyFilters();
     }
 
@@ -1925,7 +1978,7 @@
             </button>
 
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
-            <button class="chat-opt-btn" onclick="window.location.href='ai-lecture.html'" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
+            <button class="chat-opt-btn" onclick="window.open('ai-lecture.html', '_blank')" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
                 🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
             </button>
         `);
