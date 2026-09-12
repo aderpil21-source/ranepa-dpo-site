@@ -148,6 +148,7 @@
         .tab-btn:hover { color: var(--text-main); background: var(--btn-glass); border-color: var(--border-glass); transform: translateY(-2px); }
         .tab-btn.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); }
 
+        /* mobile swipe hint: a soft fading edge + a one-time bounce arrow so it's obvious the tab bar scrolls sideways */
         .swipe-hint { display: none; }
         @media (max-width: 768px) {
             .tabs-nav-wrapper::after {
@@ -166,6 +167,7 @@
         .tab-content { display: none; perspective: 1500px; }
         .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: clamp(25px, 3vw, 35px); align-items: start; }
 
+        /* ===== FILTERS (Все программы) ===== */
         .filters-bar {
             display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
             background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border-glass);
@@ -210,13 +212,21 @@
             100% { box-shadow: 0 0 60px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(56, 189, 248, 0.5); transform: translateY(-12px) scale(1.04); }
         }
 
+        /* premium parallax on cards: subtle depth shift as the card sits in the viewport, driven by --py (0..1) set from JS scroll position */
+        /* IMPORTANT PERF FIX: the parallax --py custom property is written on every scroll
+           animation frame (up to 60x/sec). If `transform` itself carries a CSS transition,
+           every one of those frames restarts/retargets a 0.4s easing curve — the browser
+           never lets it settle, which reads as laggy, rubbery motion (or visible jank on
+           slower machines) rather than smooth premium parallax. The fix: the scroll-driven
+           base transform is UNTRANSITIONED (instant per-frame update = naturally smooth at
+           60fps), and only :hover gets its own short transition for a snappy, deliberate lift. */
         .card {
             background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative;
-            transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth);
+            transition: box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth);
             box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style;
             transform: translateY(calc((var(--py, 0.5) - 0.5) * -14px));
         }
-        .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
+        .card:hover { transition: transform 0.3s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth); transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
 
         .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
         .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
@@ -295,6 +305,7 @@
         .vk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(39, 135, 245, 0.15); border: 1px solid rgba(39, 135, 245, 0.4); color: #38bdf8; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; transition: 0.3s; cursor: pointer; margin-top: 10px; }
         .vk-btn:hover { background: rgba(39, 135, 245, 0.3); transform: translateY(-2px); }
 
+        /* ===== MODALS ===== */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.3s ease; padding: 15px; }
         .modal-overlay.active { display: flex; opacity: 1; }
 
@@ -326,6 +337,7 @@
 
         .compliance-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: left; opacity: 0.85; }
 
+        /* ===== OWL ASSISTANT & CHAT INPUT ===== */
         .owl-ecosystem {
             position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999;
             transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.4s var(--bezier-smooth);
@@ -333,8 +345,13 @@
         }
         .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
         .owl-ecosystem.scroll-mini { transform: scale(0.65); }
+        /* used by the JS flight sequence (owlEmbark) — position/scale are driven inline via style.transform */
         .owl-ecosystem.flying { transition: transform 0.05s linear; }
         .owl-ecosystem.flying.visible { bottom: 0; right: -10px; }
+        /* while airborne or sitting on the programs section, the owl's invisible bounding box
+           must never intercept clicks on the cards underneath it */
+        .owl-ecosystem.flying, .owl-ecosystem.sitting,
+        .owl-ecosystem.flying .owl-container, .owl-ecosystem.sitting .owl-container { pointer-events: none; }
 
         .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
@@ -355,10 +372,12 @@
         }
         .owl-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 22px 26px rgba(0,0,0,0.8)); overflow: visible; }
 
+        /* subtle 3D "breathing" perspective sway for extra volume, independent of the walk cycle */
         .owl-body-group { animation: owlBob 1.1s ease-in-out infinite, owlSway 5.4s ease-in-out infinite; transform-origin: 80px 170px; transform-box: fill-box; }
         @keyframes owlBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(-1deg); } }
         @keyframes owlSway { 0%,100% { transform: perspective(400px) rotateY(0deg); } 50% { transform: perspective(400px) rotateY(4deg); } }
 
+        /* independent head-tilt group — an owl's most characteristic, alive-feeling motion */
         .owl-head-group { animation: headTilt 6s ease-in-out infinite; transform-origin: 80px 95px; transform-box: fill-box; }
         @keyframes headTilt {
             0%, 100% { transform: rotate(0deg); }
@@ -386,8 +405,10 @@
         .owl-wing-l { animation-delay: 0s; }
         .owl-wing-r { animation-delay: 0.15s; }
         @keyframes wingFlutter { 0%,100% { transform: rotate(0deg) scaleY(1); } 45% { transform: rotate(6deg) scaleY(1.03); } 50% { transform: rotate(-3deg) scaleY(0.97); } 55% { transform: rotate(6deg) scaleY(1.03); } }
+        /* fast, deep flapping while airborne */
         .owl-ecosystem.flying .owl-wing { animation: wingFlapFast 0.28s ease-in-out infinite; }
         @keyframes wingFlapFast { 0%,100% { transform: rotate(-38deg); } 50% { transform: rotate(30deg); } }
+        /* a shoulder "shrug" gesture used once while sitting */
         .owl-ecosystem.sitting .owl-wing { animation: wingShrug 4s ease-in-out 1; }
         @keyframes wingShrug {
             0%, 55%, 100% { transform: translateY(0) rotate(0deg); }
@@ -428,6 +449,7 @@
 
         .mobile-chat-icon { display: none; }
 
+        /* ===== owl visiting the ticker ===== */
         .owl-ticker-visitor {
             position: fixed; z-index: 10046; width: 70px; height: 85px; pointer-events: none;
             opacity: 0; transition: opacity 0.3s ease;
@@ -504,45 +526,16 @@
 
             .scroll-nav { left: 14px; bottom: 14px; }
             .scroll-nav-btn { width: 40px; height: 40px; }
+
+            /* PERF: backdrop-filter blur is one of the most GPU-expensive effects on mobile
+               (every frame it composites, re-blurs everything behind the element). Halving the
+               blur radius keeps the frosted-glass look while noticeably reducing paint cost
+               on lower-end phones — nothing is removed, it's just lighter. */
+            .card, .tabs-nav, .faq-item, .contact-card, .main-contact-box,
+            .owl-chat-panel, .modal-box, .filters-bar, .contacts-wrapper {
+                backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            }
         }
-
-        /* ===== СТИЛИ ДЛЯ РАСПИСАНИЯ (ТАЙМЛАЙН) ===== */
-        .schedule-overlay {
-            position: fixed; inset: var(--header-h) 0 0 0; z-index: 10000;
-            background: var(--bg-deep); backdrop-filter: blur(15px);
-            display: none; overflow-y: auto; padding: 40px 20px 80px 20px;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .schedule-overlay.active { display: block; opacity: 1; }
-        .schedule-container { max-width: 800px; margin: 0 auto; position: relative; }
-        .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .schedule-title { font-size: 2.2rem; color: var(--text-main); font-weight: 900; }
-        .schedule-title span { color: #38bdf8; }
-        .close-sch-btn { 
-            background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); width: 40px; height: 40px; 
-            border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.2s; 
-        }
-        .close-sch-btn:hover { background: #CA0F3E; color: #fff; transform: rotate(90deg); }
-
-        .timeline { position: relative; border-left: 3px solid rgba(56, 189, 248, 0.3); margin-left: 20px; padding-left: 30px; }
-        .timeline-item { margin-bottom: 40px; position: relative; }
-        .timeline-dot { position: absolute; left: -39px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: #38bdf8; border: 4px solid var(--bg-deep); box-shadow: 0 0 10px #38bdf8; }
-        .timeline-date { font-weight: 900; color: var(--text-main); font-size: 1.3rem; margin-bottom: 15px; letter-spacing: 1px; }
-
-        .timeline-card { 
-            background: var(--bg-card); border: 1px solid var(--border-glass); 
-            border-radius: 15px; padding: 25px; margin-bottom: 15px; 
-            box-shadow: 0 10px 30px var(--shadow-color); transition: transform 0.2s, border-color 0.2s; 
-        }
-        .timeline-card:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.5); }
-
-        .sch-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
-        .sch-program { background: rgba(202, 15, 62, 0.15); color: var(--ranepa-red); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
-        .sch-time { color: #38bdf8; font-weight: 900; font-size: 1.1rem; background: rgba(56, 189, 248, 0.1); padding: 5px 12px; border-radius: 8px; }
-
-        .sch-subject { font-size: 1.2rem; color: var(--text-main); margin-bottom: 15px; font-weight: 700; line-height: 1.4; }
-        .sch-bottom { display: flex; gap: 20px; font-size: 0.9rem; color: var(--text-muted); flex-wrap: wrap; }
-        .sch-bottom span { display: flex; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
@@ -584,7 +577,6 @@
             </div>
 
             <nav class="header-nav">
-                <span class="header-nav-link" onclick="showSchedule()" data-i18n="navSchedule">Расписание</span>
                 <span class="header-nav-link" onclick="document.getElementById('programsSection').scrollIntoView({behavior: 'smooth'});" data-i18n="navProg">Программы</span>
                 <span class="header-nav-link" onclick="openQuickContacts()" data-i18n="navCont">Контакты</span>
                 <button class="header-nav-btn" onclick="openModal()" data-i18n="navBtn">Записаться</button>
@@ -871,20 +863,7 @@
         <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
             <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
             <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
-            <div class="buy-btn" onclick="closeUrgentAlertModal()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);" data-i18n="modClose">Закрыть</div>
-        </div>
-    </div>
-
-    <!-- ОКНО РАСПИСАНИЯ -->
-    <div class="schedule-overlay" id="scheduleOverlay">
-        <div class="schedule-container">
-            <div class="schedule-header">
-                <h2 class="schedule-title"><span data-i18n="schTitleMain">Лента</span> <span data-i18n="schTitleSub">Занятий</span></h2>
-                <button class="close-sch-btn" onclick="closeSchedule()">✕</button>
-            </div>
-            <div class="timeline" id="scheduleTimeline">
-                <!-- Сюда скрипт вставит карточки -->
-            </div>
+            <div class="buy-btn" onclick="closeUrgentAlertModal()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);">Закрыть</div>
         </div>
     </div>
 
@@ -959,6 +938,7 @@
                     <g class="owl-foot owl-foot-r"><ellipse cx="100" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M90 184 q -6 3 -9 8 M100 186 q 0 5 0 9 M110 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
 
                     <g class="owl-body-group">
+                        <!-- wings behind body, deeper shading for volume -->
                         <g class="owl-wing owl-wing-l"><path d="M46 66 Q 14 92 22 140 Q 28 162 48 152 Q 38 112 50 72 Z" fill="url(#wingGrad)"/>
                             <path d="M28 98 Q 22 122 30 144 M34 86 Q 26 114 34 150 M42 78 Q 36 110 42 152" stroke="#150e08" stroke-width="1.4" fill="none" opacity="0.6"/>
                             <path d="M46 66 Q 14 92 22 140" stroke="#c9a875" stroke-width="1.2" fill="none" opacity="0.35"/>
@@ -967,6 +947,7 @@
                             <path d="M132 98 Q 138 122 130 144 M126 86 Q 134 114 126 150 M118 78 Q 124 110 118 152" stroke="#150e08" stroke-width="1.4" fill="none" opacity="0.6"/>
                         </g>
 
+                        <!-- torso with layered gradient + ambient occlusion under wings for real volume -->
                         <ellipse cx="80" cy="112" rx="50" ry="64" fill="url(#owlBodyGrad)"/>
                         <ellipse cx="80" cy="130" rx="46" ry="40" fill="#000" opacity="0.12"/>
                         <ellipse cx="80" cy="122" rx="34" ry="46" fill="url(#owlChestGrad)"/>
@@ -989,6 +970,7 @@
                             <ellipse cx="90" cy="140" rx="3" ry="4" transform="rotate(6 90 140)"/>
                         </g>
 
+                        <!-- independent head group: ear tufts, facial disc, eyes, brow, beak all move together -->
                         <g class="owl-head-group">
                             <path d="M44 42 Q 34 8 52 -4 Q 56 20 58 46 Z" fill="url(#owlBodyGrad)"/>
                             <path d="M116 42 Q 126 8 108 -4 Q 104 20 102 46 Z" fill="url(#owlBodyGrad)"/>
@@ -1055,13 +1037,7 @@
         <div class="chat-options" id="chatOptions">
             <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
             <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
-            <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-                📅 <span data-i18n="schBtnText">Расписание занятий</span>
-            </button>
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
-            <button class="chat-opt-btn" onclick="window.location.href='ai-lecture.html'" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
-                🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
-            </button>
         </div>
     </div>
 
@@ -1079,13 +1055,35 @@
     if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
     window.scrollTo(0, 0);
 
+    /* ============================================================================
+       SECURITY NOTE (please read):
+       No client-side trick can truly hide this URL from a determined visitor —
+       any static HTML/JS file is downloaded in full to the browser, so anyone can
+       open DevTools → Network/Sources and see every request your page makes,
+       decoded or not. Base64/obfuscation below only stops casual copy-pasting
+       from "view source"; it is NOT real security.
+       Real protection has to live on the Google Apps Script side:
+         1. Deploy the script as "Execute as: Me" / "Who has access: Anyone" is
+            required for a public site, but you can check `e.parameter` /
+            request headers server-side and reject unexpected origins.
+         2. Add a simple shared secret query param and verify it in the script
+            (doesn't stop someone reading it from this file, but stops random bots).
+         3. Enable Apps Script's built-in quota/rate limiting, and consider logging
+            request origins to Sheets so abuse is visible.
+         4. Never give the sheet itself public EDIT access — only the script should
+            write to it; the public should only ever hit the deployed Web App URL.
+       If you need this genuinely locked down (e.g. paid content), the correct fix
+       is a small server-side proxy (Cloud Function / Apps Script) that holds the
+       real secret and the browser never sees it at all.
+       ============================================================================ */
     const _p1 = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6bmp2V0RseHh4bEFOa3pUQ0NobnZseUViVzNONzR2cE9FRThwSmFjY0V4aVhRRzdEWlUxU2doUUFwRHNsTU5FT2svZXhlYw==';
     let API_URL;
     try { API_URL = atob(_p1.replace('eHh4','x')); } catch (e) { API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec'; }
+    // Fallback keeps the exact original URL guaranteed correct even if the encoded copy above has a transcription issue.
     API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 
     let globalOwlFiles = [];
-    let globalPrograms = [];
+    let globalPrograms = []; // flat list of every program, used for the smart chat search
     let currentLang = 'ru';
     let globalAlert = null;
 
@@ -1123,7 +1121,7 @@
 
     const translationsHTML = {
         ru: {
-            pageTitle: "Академия Кадров | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
+            pageTitle: "Академия Кадров | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться",
             heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
             tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
             studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
@@ -1153,12 +1151,10 @@
             owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
             owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.",
             owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся.",
-            goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?",
-            schTitleMain: "Лента", schTitleSub: "Занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
-            schLoading: "Загружаем расписание... ⏳", schEmpty: "Расписание пока формируется... Загляните позже! 🦉"
+            goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?"
         },
         en: {
-            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
+            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now",
             heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
             tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
             studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now", faqTitle: "Frequently Asked Questions",
@@ -1187,9 +1183,7 @@
             owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
             owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog? You can also enter a lecture code to get materials.",
             owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon.",
-            goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?",
-            schTitleMain: "Class", schTitleSub: "Schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
-            schLoading: "Loading schedule... ⏳", schEmpty: "Schedule is currently being compiled... Check back later! 🦉"
+            goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?"
         }
     };
 
@@ -1230,6 +1224,8 @@
         updateCardParallax();
     }, { passive: true });
 
+    /* premium parallax: each visible card gets a --py (0..1) based on its vertical
+       position in the viewport, gently lifting cards near the center */
     let parallaxRaf = null;
     function updateCardParallax() {
         if (parallaxRaf) return;
@@ -1237,10 +1233,17 @@
             parallaxRaf = null;
             if (isMobile()) return;
             const vh = window.innerHeight;
-            document.querySelectorAll('.tab-content.active .card').forEach(card => {
+            const cards = document.querySelectorAll('.tab-content.active .card:not(.filtered-out)');
+            // PERF FIX: read every card's position FIRST, then write every --py value —
+            // interleaving getBoundingClientRect() (a layout read) with style writes forces
+            // the browser to recompute layout once per card instead of once per frame.
+            const positions = [];
+            cards.forEach(card => {
                 const r = card.getBoundingClientRect();
-                const center = r.top + r.height / 2;
-                let py = center / vh;
+                positions.push(r.top + r.height / 2);
+            });
+            cards.forEach((card, i) => {
+                let py = positions[i] / vh;
                 py = Math.max(0, Math.min(1, py));
                 card.style.setProperty('--py', py.toFixed(3));
             });
@@ -1254,9 +1257,6 @@
             
             if (data.owlFiles) {
                 globalOwlFiles = data.owlFiles;
-            }
-            if (data.schedules) {
-                window.schedules = data.schedules;
             }
 
             const tickerEl = document.getElementById('globalAlertTicker');
@@ -1367,6 +1367,7 @@
         }
     }
 
+    /* ================= FILTERS (Все программы) ================= */
     function buildFilters() {
         const bar = document.getElementById('filtersBar');
         const sectorsBox = document.getElementById('filterSectors');
@@ -1401,6 +1402,7 @@
         });
 
         document.querySelectorAll('#tab-all .sector-header').forEach(h => {
+            // hide a sector header if every card under it (until the next header) is filtered out
             let sib = h.nextElementSibling, anyVisible = false;
             while (sib && !sib.classList.contains('sector-header')) {
                 if (sib.classList.contains('card') && !sib.classList.contains('filtered-out')) anyVisible = true;
@@ -1432,16 +1434,23 @@
         if (isMobile()) return;
 
         const cards = document.querySelectorAll('#' + tabId + ' .card');
+        // PERF FIX: restarting a CSS animation normally requires a forced reflow per element
+        // (`void card.offsetWidth`). Doing that inside the loop forces one synchronous layout
+        // recalculation PER CARD. A single shared reflow after all classes/vars are removed
+        // achieves exactly the same "animation restart" effect for every card at once.
         cards.forEach((card, index) => {
             const signX = Math.random() > 0.5 ? 1 : -1;
             const signY = Math.random() > 0.5 ? 1 : -1;
             card.style.setProperty('--x-dist', (Math.random() * 400 + 100) * signX + 'px');
             card.style.setProperty('--y-dist', (Math.random() * 400 + 100) * signY + 'px');
             card.classList.remove('puzzle-piece', 'glow-effect');
-            void card.offsetWidth;
             const delay = Math.min(index * 0.15, 3);
             card.style.animationDelay = delay + 's';
             card.style.animationDuration = (4 - delay) + 's';
+        });
+        void document.body.offsetHeight; // one shared forced reflow instead of N
+        cards.forEach((card, index) => {
+            const delay = Math.min(index * 0.15, 3);
             card.classList.add('puzzle-piece');
             setTimeout(() => {
                 card.classList.add('glow-effect');
@@ -1505,6 +1514,13 @@
         }
     }, 5000);
 
+    /* ================= AUDIO =================
+       Browsers (Chrome, Safari, Firefox — NOT ad blockers) start every AudioContext
+       "suspended" until the page receives at least one real user gesture (click,
+       tap, keypress). Creating a brand-new AudioContext on every hoot, before any
+       gesture happened, is why the sound silently never played. We keep ONE shared
+       context and resume() it on the very first interaction — after that every
+       hoot plays normally, blockers or not. */
     let sharedAudioCtx = null;
     function getAudioCtx() {
         if (!sharedAudioCtx) {
@@ -1520,6 +1536,7 @@
         window.addEventListener(evt, unlockAudio, { once: true, passive: true });
     });
 
+    /* one soft, comfortable hoot with a gentle decaying echo — never loud, never sudden */
     function playHoot() {
         const ctx = getAudioCtx();
         if (!ctx) return;
@@ -1542,6 +1559,7 @@
         } catch (e) {}
     }
 
+    /* first hoot 20s after arriving on the site, then no more than once every 5 minutes */
     setTimeout(function scheduleFirstHoot() {
         playHoot();
         setInterval(playHoot, 5 * 60 * 1000);
@@ -1590,6 +1608,9 @@
     }
     window.addEventListener('resize', updateScrollNav, { passive: true });
 
+    /* ================= OWL FLIGHT: visits "Все программы" on a random path, sits, gestures, flies home =================
+       Desktop only. Uses a randomized quadratic-bezier path so no two flights look alike.
+       Does not fight the user's own scrolling — it's purely a fixed-position overlay animation. */
     let owlBusy = false;
     function owlFlyToPrograms() {
         if (isMobile() || owlBusy) return;
@@ -1603,11 +1624,15 @@
         const endX = Math.max(20, targetRect.left + targetRect.width * (0.55 + Math.random() * 0.2));
         const endY = Math.max(80, targetRect.top + 40);
 
+        // randomized control point => a different swooping arc every single time
         const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 400;
         const midY = Math.min(startY, endY) - (120 + Math.random() * 200);
 
         eco.classList.add('flying');
+        // set these ONCE (not every animation frame) — same visual result, far fewer style writes
         eco.style.position = 'fixed';
+        eco.style.right = 'auto';
+        eco.style.bottom = 'auto';
 
         const duration = 1300 + Math.random() * 400;
         const t0 = performance.now();
@@ -1615,10 +1640,9 @@
             const t = Math.min(1, (now - t0) / duration);
             const bx = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
             const by = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
-            const scale = 1 - t * 0.45;
+            const scale = 1 - t * 0.45; // shrink to 55% (a 45% reduction) as it flies
             eco.style.left = bx + 'px';
             eco.style.top = by + 'px';
-            eco.style.right = 'auto'; eco.style.bottom = 'auto';
             eco.style.transform = `scale(${scale})`;
             if (t < 1) requestAnimationFrame(step);
             else owlSitAndReturn(eco, homeRect);
@@ -1631,6 +1655,7 @@
         eco.classList.add('sitting');
         playHoot();
 
+        // sits for 4s doing head-turn + shrug (both are pure CSS animations triggered by .sitting), then flies home
         setTimeout(() => {
             eco.classList.remove('sitting');
             const startRect = eco.getBoundingClientRect();
@@ -1654,7 +1679,12 @@
                 if (t < 1) requestAnimationFrame(step);
                 else {
                     eco.classList.remove('flying');
-                    eco.style.position = ''; eco.style.left = ''; eco.style.top = ''; eco.style.transform = '';
+                    // reset every inline style the flight sequence touched — leaving right/bottom
+                    // as 'auto' here was the bug: it silently overrode the CSS anchor forever,
+                    // so after the very first flight the owl would never return to its true
+                    // bottom-right corner again.
+                    eco.style.position = ''; eco.style.left = ''; eco.style.top = '';
+                    eco.style.right = ''; eco.style.bottom = ''; eco.style.transform = '';
                     owlBusy = false;
                 }
             }
@@ -1662,6 +1692,7 @@
         }, 4000);
     }
 
+    /* ================= OWL VISITS THE TICKER WHEN AN ALERT APPEARS ================= */
     function owlVisitTicker() {
         if (isMobile()) return;
         const visitor = document.getElementById('owlTickerVisitor');
@@ -1697,9 +1728,11 @@
         setTimeout(() => { visitor.classList.remove('show'); }, 5950);
     }
 
+    /* ================= CHAT: LECTURE CODES + SMART PROGRAM NAME SEARCH ================= */
     function normalizeText(s) {
         return (s || '').toLowerCase().replace(/[«»"'.,!?;:()]/g, '').replace(/\s+/g, ' ').trim();
     }
+    // lightweight fuzzy match: word-overlap ratio between the query and a program title
     function matchScore(query, title) {
         const qWords = normalizeText(query).split(' ').filter(w => w.length > 2);
         const tWords = normalizeText(title).split(' ').filter(w => w.length > 2);
@@ -1736,6 +1769,7 @@
             return;
         }
 
+        // try to match a program name from the loaded catalog
         const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
         const scored = globalPrograms
             .map(p => ({ p, score: matchScore(text, p[titleKey]) }))
@@ -1784,6 +1818,9 @@
         `);
     }
 
+    // Presented when the owl couldn't confidently match anything.
+    // Desktop: owl actually flies over to "Все программы" with a random path, sits, gestures, and comes back — never interrupting the visitor's own scrolling.
+    // Mobile: no flight, just a button in the chat that scrolls to "Все программы" and tucks the chat/owl away.
     function offerAllPrograms(autoFly) {
         setOptions(`<button class="chat-opt-btn" onclick="goToAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`);
         if (autoFly && !isMobile()) {
@@ -1874,14 +1911,9 @@
         setOptions(`
             <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
             <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
-            
-            <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-                📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
-            </button>
-
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
             <button class="chat-opt-btn" onclick="window.location.href='ai-lecture.html'" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
-                🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
+                🔮 ${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}
             </button>
         `);
     }
@@ -1897,6 +1929,8 @@
         document.getElementById('urgentAlertModal').classList.remove('active');
     }
 
+    // Shows all 5 catalog sections (including Seminars) and simply navigates on choice —
+    // it never pre-narrates what's inside a section, it just takes you there.
     function showCatalog() {
         addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
         addBotMsg(botTexts[currentLang].catPrompt);
@@ -1965,67 +1999,6 @@
                 revealObserver.observe(el);
             }
         });
-    }
-
-    async function showSchedule() {
-        const overlay = document.getElementById('scheduleOverlay');
-        const container = document.getElementById('scheduleTimeline');
-        
-        overlay.classList.add('active');
-
-        if (!window.schedules || window.schedules.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top: 50px; font-size: 1.2rem;">${translationsHTML[currentLang].schLoading}</div>`;
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                if (data.schedules) {
-                    window.schedules = data.schedules;
-                }
-            } catch (e) {
-                console.error("Ошибка загрузки расписания", e);
-            }
-        }
-
-        if (!window.schedules || window.schedules.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top: 50px; font-size: 1.2rem;">${translationsHTML[currentLang].schEmpty}</div>`;
-            return;
-        }
-
-        const grouped = {};
-        window.schedules.forEach(s => {
-            if (!grouped[s.date]) grouped[s.date] = [];
-            grouped[s.date].push(s);
-        });
-
-        let html = '';
-        for (const [date, lessons] of Object.entries(grouped)) {
-            html += `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">🗓️ ${date}</div>`;
-            
-            lessons.forEach(l => {
-                html += `
-                <div class="timeline-card">
-                    <div class="sch-top">
-                        <div class="sch-program">${l.program}</div>
-                        <div class="sch-time">⏰ ${l.time}</div>
-                    </div>
-                    <div class="sch-subject">${l.subject}</div>
-                    <div class="sch-bottom">
-                        <span>👨‍🏫 <b>${l.teacher}</b></span>
-                        <span>📍 ${l.room}</span>
-                    </div>
-                </div>`;
-            });
-            html += `</div>`;
-        }
-
-        container.innerHTML = html;
-    }
-
-    function closeSchedule() {
-        document.getElementById('scheduleOverlay').classList.remove('active');
     }
 
     window.addEventListener('DOMContentLoaded', () => {
