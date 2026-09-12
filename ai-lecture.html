@@ -3,54 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>AR-Лаборатория | Практика ИИ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>AR-Лаборатория | Иммерсивный ИИ-Театр</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
 
-    <!-- Официальные стабильные скрипты MediaPipe -->
+    <!-- MediaPipe Hands (Стабильная версия) -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 
-    <!-- Three.js (3D depth scene) -->
+    <!-- Three.js (Для иммерсивной 3D сцены) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         :root {
-            --bg: #05080e;
-            --accent: #38bdf8;
-            --ranepa-red: #CA0F3E;
+            --bg: #030508;
+            --accent: #00f0ff;
+            --accent-glow: rgba(0, 240, 255, 0.6);
+            --ranepa-red: #ff0055;
+            --glass: rgba(10, 15, 30, 0.5);
+            --border: rgba(0, 240, 255, 0.2);
             --safe-t: env(safe-area-inset-top, 0px);
             --safe-b: env(safe-area-inset-bottom, 0px);
             --safe-l: env(safe-area-inset-left, 0px);
             --safe-r: env(safe-area-inset-right, 0px);
         }
+        
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--bg); color: #fff;
             overflow: hidden;
-            transition: filter 0.8s ease;
             width: 100vw; height: 100vh;
+            font-weight: 300;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            body.implode { animation: none !important; transition: opacity 0.6s ease; opacity: 0; }
-            .puzzle-area.completed { animation: none !important; }
-            .spark, .confetti-bit { display: none !important; }
-        }
-
-        #webgl-canvas { position: fixed; inset: 0; z-index: -4; pointer-events: none; opacity: 0.85; }
+        /* Глубокий театральный свет и виньетка */
+        #webgl-canvas { position: fixed; inset: 0; z-index: -4; pointer-events: none; opacity: 1; }
         .vignette {
             position: fixed; inset: 0; z-index: 5; pointer-events: none;
-            background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.55) 100%);
+            background: radial-gradient(circle at center, transparent 30%, #030508 120%);
         }
         .scanlines {
-            position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: 0.05; mix-blend-mode: overlay;
+            position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: 0.03; mix-blend-mode: overlay;
             background: repeating-linear-gradient(0deg, #fff 0px, transparent 1px, transparent 3px);
         }
-        @media (prefers-reduced-motion: reduce) { .scanlines { display: none; } }
 
+        /* Имплозия (Выход) */
         body.implode { animation: blackHole 1.5s forwards cubic-bezier(0.5, 0, 0.5, 1); }
         @keyframes blackHole {
             0% { filter: brightness(1); transform: scale(1) rotate(0deg); opacity: 1; }
@@ -59,259 +58,222 @@
             100% { filter: brightness(100); transform: scale(0) rotate(360deg); opacity: 0; }
         }
 
+        /* Загрузочный экран в стиле Sci-Fi */
         #loader {
             position: fixed; inset: 0; z-index: 9999; background: var(--bg);
             display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            padding: 30px; gap: 8px;
+            padding: 30px; gap: 15px;
         }
-        .spinner { width: 60px; height: 60px; border: 4px solid rgba(56, 189, 248, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .spinner { width: 70px; height: 70px; border: 3px solid transparent; border-top-color: var(--accent); border-bottom-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; box-shadow: 0 0 20px var(--accent-glow); }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #loaderError { display: none; max-width: 460px; color: #fca5a5; font-size: 0.95rem; line-height: 1.6; margin-top: 10px; }
-        #loaderTouchFallback {
-            display: none; margin-top: 22px; background: var(--accent); color: #000; border: none;
-            padding: 14px 26px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif;
-        }
+        #loader h2 { font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+        #loaderError { display: none; color: var(--ranepa-red); font-weight: 700; max-width: 500px; }
+        .fallback-btn { display: none; background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 15px 30px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .fallback-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 20px var(--accent-glow); }
 
-        /* Сова в шляпе и бордовом шарфе */
+        /* Сова */
         .companion-owl {
-            position: fixed; bottom: 30px; right: 30px; width: 95px; height: 95px; z-index: 2500;
+            position: fixed; bottom: 40px; right: 40px; width: 100px; height: 100px; z-index: 2500;
             pointer-events: none; animation: owlFloat 4s ease-in-out infinite;
-            filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.4));
+            filter: drop-shadow(0 10px 25px var(--accent-glow));
         }
         @keyframes owlFloat {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(2deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
         }
         .owl-bubble {
-            position: fixed; bottom: 135px; right: 40px; z-index: 2501;
-            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent);
-            padding: 12px 18px; border-radius: 16px; font-size: 0.85rem; max-width: 260px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6); opacity: 0; transform: translateY(10px);
-            transition: opacity 0.3s, transform 0.3s; pointer-events: none; color: #e2e8f0;
+            position: fixed; bottom: 160px; right: 50px; z-index: 2501;
+            background: rgba(5, 10, 20, 0.85); backdrop-filter: blur(15px);
+            border: 1px solid var(--accent); border-left: 4px solid var(--accent);
+            padding: 16px 24px; border-radius: 8px 8px 0 8px; font-size: 0.9rem; font-weight: 400; max-width: 280px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8); opacity: 0; transform: translateY(15px);
+            transition: opacity 0.4s, transform 0.4s; pointer-events: none; color: #fff; line-height: 1.5;
         }
         .owl-bubble.show { opacity: 1; transform: translateY(0); }
 
-        .hud-top {
-            position: fixed; top: calc(20px + var(--safe-t)); right: calc(20px + var(--safe-r)); z-index: 2000;
-            display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 60vw;
-        }
-        .hud-timer {
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
-            border: 1px solid var(--accent); padding: 10px 20px; border-radius: 15px;
-            font-size: 1.3rem; font-weight: 900; color: var(--accent);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-        }
-        .hud-mic {
-            display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; color: #94A3B8;
-            background: rgba(0, 0, 0, 0.6); padding: 9px 14px; border-radius: 15px;
-        }
-        .mic-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; animation: pulseMic 1.5s infinite; flex-shrink: 0; }
-        @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px #ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px #ef4444; } }
-        .hud-mode-badge {
-            font-size: 0.72rem; font-weight: 800; color: #fff; background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 15px; white-space: nowrap;
-        }
-
-        .hud-left {
-            position: fixed; top: calc(20px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 2000;
-            display: flex; gap: 10px; align-items: center;
-        }
-        .hud-btn {
-            width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); color: #fff; font-size: 1.2rem;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
-        }
-        .hud-btn:hover, .hud-btn:active { background: var(--accent); color: #000; transform: scale(1.06); }
-        .hud-btn.exit-btn:hover, .hud-btn.exit-btn:active { background: var(--ranepa-red); color: #fff; }
+        /* HUD Элементы */
+        .hud-top { position: fixed; top: calc(30px + var(--safe-t)); right: calc(30px + var(--safe-r)); z-index: 2000; display: flex; gap: 15px; align-items: center; }
+        .hud-timer { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); padding: 12px 24px; border-radius: 8px; font-size: 1.4rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .hud-mode-badge { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); background: var(--glass); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; }
+        
+        .hud-left { position: fixed; top: calc(30px + var(--safe-t)); left: calc(30px + var(--safe-l)); z-index: 2000; display: flex; gap: 15px; }
+        .hud-btn { width: 50px; height: 50px; border-radius: 8px; border: 1px solid var(--border); background: var(--glass); backdrop-filter: blur(12px); color: #fff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .hud-btn:hover { background: var(--accent); color: #000; transform: scale(1.1); box-shadow: 0 0 20px var(--accent-glow); }
+        .hud-btn.exit-btn:hover { background: var(--ranepa-red); box-shadow: 0 0 20px rgba(255,0,85,0.6); border-color: var(--ranepa-red); color: #fff; }
 
         .hints-panel {
-            position: fixed; top: calc(78px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 1999;
-            width: min(340px, calc(100vw - 40px)); background: rgba(5,8,14,0.92); backdrop-filter: blur(16px);
-            border: 1px solid rgba(56,189,248,0.35); border-radius: 18px; padding: 18px 20px;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.6); opacity: 0; transform: translateY(-12px) scale(0.96);
-            pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
+            position: fixed; top: calc(100px + var(--safe-t)); left: calc(30px + var(--safe-l)); z-index: 1999;
+            width: min(360px, calc(100vw - 60px)); background: var(--glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 12px; padding: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8); opacity: 0; transform: translateX(-20px);
+            pointer-events: none; transition: all 0.4s ease;
         }
-        .hints-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-        .hints-panel h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: 12px; }
-        .hints-panel .hint-row { display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; }
-        .hints-panel .hint-row b { color: #fff; }
-        .hints-panel .hint-icon { flex-shrink: 0; font-size: 1.1rem; }
-        .hints-dont-show { margin-top: 10px; font-size: 0.75rem; color: #94A3B8; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .hints-panel.open { opacity: 1; transform: translateX(0); pointer-events: auto; }
+        .hints-panel h3 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .hints-panel .hint-row { display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.9rem; color: #e2e8f0; line-height: 1.5; align-items: center; }
+        .hints-panel .hint-icon { font-size: 1.5rem; background: rgba(0,240,255,0.1); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        .hints-dont-show { margin-top: 20px; font-size: 0.8rem; color: #94A3B8; display: flex; align-items: center; gap: 10px; cursor: pointer; }
 
-        .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
+        /* Камера и курсоры */
+        .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.08; z-index: -2; pointer-events: none; transform: scaleX(-1); filter: contrast(1.2) grayscale(0.5); }
         .canvas-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; transform: scaleX(-1); }
 
         .hand-cursor {
-            position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
+            position: fixed; width: 34px; height: 34px; border: 2px solid var(--accent);
             border-radius: 50%; pointer-events: none; z-index: 1000;
-            transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s, border-color 0.1s;
-            box-shadow: 0 0 15px var(--accent); opacity: 0;
+            transform: translate(-50%, -50%); transition: background 0.1s, transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px var(--accent-glow); opacity: 0;
         }
-        .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
+        .hand-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #fff; border-radius: 50%; transform: translate(-50%,-50%); }
+        .hand-cursor.pinched { background: rgba(0,240,255,0.3); border-color: #fff; transform: translate(-50%, -50%) scale(0.6); box-shadow: 0 0 30px #fff; }
 
+        /* Контейнер скролла */
         #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
         body.touch-mode #scroll-container { position: static; width: 100%; transform: none !important; }
         body.touch-mode { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
-        .screen-puzzle { min-height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 90px 12px 40px; }
+        /* УРОВЕНЬ 1: ПАЗЛ */
+        .screen-puzzle { min-height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 120px 20px 60px; }
+        .header { position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: calc(40px + var(--safe-t)) 20px 20px; z-index: 10; pointer-events: none; }
+        .header h1 { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 30px var(--accent-glow); color: #fff; }
 
-        .header { position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: calc(20px + var(--safe-t)) 20px 10px; z-index: 10; pointer-events: none; }
-        .header h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); color: #fff; }
-
-        .puzzle-stage { perspective: 1400px; margin-top: 30px; }
+        .puzzle-stage { perspective: 1500px; margin-top: 40px; }
         .puzzle-area {
-            position: relative; width: 600px; height: 400px; max-width: 92vw;
-            border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(15px);
-            transition: box-shadow 0.5s ease, border-color 0.5s ease;
-            transform-style: preserve-3d;
+            position: relative; width: 660px; height: 440px; max-width: 90vw;
+            border: 2px solid var(--border); border-radius: 16px;
+            background: var(--glass); backdrop-filter: blur(24px);
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d; box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,240,255,0.05);
         }
         .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
-        .grid-slot { border: 1px dashed rgba(255,255,255,0.05); }
+        .grid-slot { border: 1px dashed rgba(255,255,255,0.1); }
 
         @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
         @keyframes neonSnake { to { --angle: 360deg; } }
         .puzzle-area.completed {
-            border: 2px solid transparent; border-radius: 20px;
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), conic-gradient(from var(--angle), transparent 70%, var(--accent) 100%);
+            border: 2px solid transparent; border-radius: 16px;
+            background-image: linear-gradient(rgba(10,15,30,0.8), rgba(10,15,30,0.8)), conic-gradient(from var(--angle), transparent 70%, var(--accent) 100%);
             background-origin: border-box; background-clip: padding-box, border-box;
-            animation: neonSnake 2.5s linear infinite; box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
+            animation: neonSnake 2s linear infinite; box-shadow: 0 0 60px var(--accent-glow); transform: scale(1.02);
         }
 
         .puzzle-piece {
-            position: absolute; width: 200px; height: 200px;
+            position: absolute; width: 220px; height: 220px;
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
-            background-size: 600px 400px;
-            cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            transition: box-shadow 0.15s, filter 0.15s;
-            touch-action: none;
-            transform-style: preserve-3d;
+            background-size: 660px 440px;
+            cursor: grab; box-shadow: 0 15px 25px rgba(0,0,0,0.8);
+            transition: filter 0.2s, box-shadow 0.2s; touch-action: none; transform-style: preserve-3d;
         }
-        .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
-        .piece-num { position: absolute; top: 8px; left: 12px; font-size: 16px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
-        .puzzle-piece.dragging { z-index: 50; box-shadow: 0 40px 70px rgba(0,0,0,0.9), 0 0 35px var(--accent); filter: brightness(1.35) saturate(1.2); }
+        .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.3); transition: opacity 0.5s; }
+        .puzzle-piece.dragging { z-index: 50; box-shadow: 0 50px 80px rgba(0,0,0,1), 0 0 40px var(--accent-glow); filter: brightness(1.4) contrast(1.1); }
         .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; transform: none !important; }
         .puzzle-piece.locked::after { opacity: 0; }
-        .puzzle-piece.locked .piece-num { opacity: 0; }
 
-        @keyframes snapPulse { 0% { filter: brightness(2.2) saturate(1.6); } 100% { filter: brightness(1) saturate(1); } }
-        .puzzle-piece.just-locked { animation: snapPulse 0.45s ease-out; }
+        @keyframes snapPulse { 0% { filter: brightness(2.5) drop-shadow(0 0 20px #fff); transform: scale(1.05); } 100% { filter: brightness(1); transform: scale(1); } }
+        .puzzle-piece.just-locked { animation: snapPulse 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .spark {
-            position: fixed; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-            box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); pointer-events: none; z-index: 2500;
-            animation: sparkFly 0.6s ease-out forwards;
-        }
-        @keyframes sparkFly {
-            0% { opacity: 1; transform: translate(0,0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.2); }
-        }
+        .spark { position: fixed; width: 8px; height: 8px; border-radius: 50%; background: #fff; box-shadow: 0 0 15px #fff, 0 0 30px var(--accent); pointer-events: none; z-index: 2500; animation: sparkFly 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes sparkFly { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); } }
 
-        .screen-terms { width: 100vw; min-height: 100vh; padding: 60px clamp(16px, 4vw, 50px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 26px; perspective: 1200px; }
+        /* УРОВЕНЬ 2 & 3: КАРТОЧКИ И ДЕТЕКТИВ (Голографический дизайн) */
+        .screen-terms { width: 100vw; min-height: 100vh; padding: 100px clamp(20px, 5vw, 60px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 35px; perspective: 1500px; }
+        .section-title { width: 100%; text-align: center; margin-bottom: 20px; }
+        .section-title h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+        .section-title p { color: var(--accent); font-size: 1.1rem; margin-top: 10px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+
         .term-card {
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 28px; width: 270px; text-align: center; height: fit-content;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform-style: preserve-3d;
-            transition: box-shadow 0.2s, border-color 0.2s, transform 0.12s ease-out;
-            touch-action: none;
-            transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) scale(var(--cscale, 1));
+            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01)); backdrop-filter: blur(24px);
+            border: 1px solid var(--border); border-top: 1px solid rgba(255,255,255,0.3); border-left: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px; padding: 35px; width: 320px; text-align: left; height: fit-content;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,240,255,0.05); transform-style: preserve-3d;
+            transition: box-shadow 0.3s, border-color 0.3s; touch-action: none;
+            transform: perspective(1000px) scale(var(--cscale, 1));
         }
-        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 45px rgba(56, 189, 248, 0.45); z-index: 10; }
-        .term-card h3 { font-size: 1.15rem; margin-bottom: 14px; color: var(--accent); }
-        .term-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
+        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 60px var(--accent-glow), inset 0 0 30px rgba(0,240,255,0.1); z-index: 10; }
+        .term-card h3 { font-size: 1.3rem; margin-bottom: 15px; color: var(--accent); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .term-card p { font-size: 0.95rem; color: #e2e8f0; line-height: 1.7; }
 
-        /* ИГРА ДЕТЕКТИВ: Карточки подозреваемых */
-        .suspect-card { cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent !important; }
-        .suspect-card:hover, .suspect-card.hovered { border-color: #fde68a !important; box-shadow: 0 0 30px rgba(253, 230, 138, 0.3); transform: scale(1.05); }
+        /* ИГРА ДЕТЕКТИВ */
+        .suspect-card { cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-color: var(--border) !important; }
+        .suspect-card:hover, .suspect-card.hovered { border-color: #fde68a !important; box-shadow: 0 0 50px rgba(253, 230, 138, 0.4); transform: scale(1.05); }
 
-        /* ИНТЕРАКТИВНАЯ АРЕНА КНБ */
+        /* ИГРА КНБ - РЕНТГЕН АРЕНА */
         .rps-arena {
-            width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(20px);
-            border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 24px; padding: 30px; margin-top: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; position: relative;
+            width: 100%; max-width: 850px; background: linear-gradient(to bottom, rgba(5,10,20,0.9), rgba(0,0,0,0.95)); backdrop-filter: blur(30px);
+            border: 2px solid var(--accent); border-radius: 24px; padding: 40px; margin-top: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px rgba(0,240,255,0.15); text-align: center; position: relative;
         }
         .rps-zone-indicator {
-            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-            background: rgba(56, 189, 248, 0.2); border: 1px dashed var(--accent);
-            padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; color: var(--accent); font-weight: 700;
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            background: var(--bg); border: 2px solid var(--accent); box-shadow: 0 0 20px var(--accent-glow);
+            padding: 8px 24px; border-radius: 20px; font-size: 0.85rem; color: #fff; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
         }
-        .rps-scores { display: flex; justify-content: space-around; font-size: 1.2rem; font-weight: 900; margin-top: 30px; margin-bottom: 20px; color: var(--accent); }
-        .rps-display { display: flex; justify-content: center; gap: 40px; margin: 25px 0; font-size: 3rem; align-items: center; }
-        .rps-box { background: rgba(0,0,0,0.6); border: 2px dashed rgba(56,189,248,0.4); border-radius: 16px; width: 130px; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .rps-box span.icon { font-size: 3.5rem; }
-        .rps-box span.label { font-size: 0.75rem; position: absolute; bottom: 6px; color: #94a3b8; }
+        .rps-scores { display: flex; justify-content: space-around; font-size: 1.4rem; font-weight: 900; margin-top: 20px; margin-bottom: 30px; color: #fff; text-transform: uppercase; }
+        .rps-scores b { color: var(--accent); font-size: 2rem; text-shadow: 0 0 15px var(--accent-glow); }
+        .rps-display { display: flex; justify-content: center; gap: 60px; margin: 30px 0; font-size: 3rem; align-items: center; }
+        .rps-box { background: rgba(0,0,0,0.8); border: 2px dashed rgba(0,240,255,0.5); border-radius: 20px; width: 160px; height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; box-shadow: inset 0 0 30px rgba(0,0,0,1); transition: 0.3s; }
+        .rps-box span.icon { font-size: 4.5rem; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); transition: 0.3s; }
+        .rps-box span.label { font-size: 0.8rem; position: absolute; bottom: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
-        .xray-reflection { border-color: var(--ranepa-red) !important; box-shadow: 0 0 30px rgba(202, 15, 62, 0.4); }
+        .xray-reflection { border-color: var(--ranepa-red) !important; box-shadow: 0 0 40px rgba(255,0,85,0.5), inset 0 0 30px rgba(255,0,85,0.2) !important; }
         .xray-reflection::after {
-            content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(202,15,62,0.4), transparent);
-            animation: xrayScan 1s linear infinite; pointer-events: none;
+            content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(255,0,85,0.5), transparent);
+            animation: xrayScan 0.8s linear infinite; pointer-events: none;
         }
         @keyframes xrayScan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
+        /* Модальное окно победы */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.4s; }
         .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
-        .modal-box { position: relative; background: rgba(17, 24, 39, 0.88); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.25); transform: scale(0.9); transition: transform 0.3s; overflow: hidden; }
+        .modal-box { position: relative; background: linear-gradient(135deg, rgba(20,30,50,0.9), rgba(5,10,20,0.9)); border: 2px solid #10b981; border-radius: 24px; padding: 50px; text-align: center; width: 90%; max-width: 500px; box-shadow: 0 0 80px rgba(16,185,129,0.3); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); overflow: hidden; }
         .modal-overlay.active .modal-box { transform: scale(1); }
-        .shockwave {
-            position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; border-radius: 50%;
-            border: 2px solid var(--accent); transform: translate(-50%,-50%); opacity: 0; pointer-events: none;
-        }
-        .shockwave.play { animation: shockwaveExpand 1s ease-out; }
-        @keyframes shockwaveExpand { 0% { opacity: 0.9; width: 20px; height: 20px; } 100% { opacity: 0; width: 700px; height: 700px; } }
-        .save-btn { position: relative; z-index: 2; background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
-        .save-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
-        .confetti-bit { position: fixed; width: 8px; height: 12px; z-index: 10001; pointer-events: none; animation: confettiFall 1.6s ease-in forwards; }
-        @keyframes confettiFall { to { transform: translateY(70vh) rotate(540deg); opacity: 0; } }
+        .save-btn { background: #10b981; border: none; padding: 18px 40px; border-radius: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; width: 100%; font-size: 1.2rem; margin-top: 30px; color: #000; box-shadow: 0 10px 20px rgba(16,185,129,0.4); }
+        .save-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(16,185,129,0.6); background: #34d399; }
 
-        .toast {
-            position: fixed; bottom: calc(-100px - var(--safe-b)); left: 50%; transform: translateX(-50%);
-            background: rgba(202, 15, 62, 0.92); color: #fff; font-weight: 800; padding: 14px 26px;
-            border-radius: 30px; box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5);
-            transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; letter-spacing: 0.5px;
-            max-width: 90vw; text-align: center; font-size: 0.9rem;
-        }
-        .toast.show { bottom: calc(30px + var(--safe-b)); }
-        .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
+        /* Toast уведомления */
+        .toast { position: fixed; bottom: calc(-100px - var(--safe-b)); left: 50%; transform: translateX(-50%); background: var(--ranepa-red); color: #fff; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; padding: 16px 32px; border-radius: 30px; box-shadow: 0 15px 30px rgba(255,0,85,0.5); transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 3000; text-align: center; font-size: 1rem; border: 2px solid rgba(255,255,255,0.2); }
+        .toast.show { bottom: calc(40px + var(--safe-b)); }
+        .toast.success { background: #10b981; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.5); }
     </style>
 </head>
 <body>
 
-    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Я наставник ИИ! Скролль кулаком, меняй масштаб двумя руками и играй!</div>
+    <!-- Сова-помощник -->
+    <div class="owl-bubble" id="owlBodyBubble">Иммерсивный Театр активирован. Включи звук для полного погружения!</div>
     <div class="companion-owl">
         <svg viewBox="0 0 120 120" width="100%" height="100%">
-            <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
-            <path d="M 85 35 Q 95 10 80 25 Z" fill="#654321"/>
-            <ellipse cx="60" cy="70" rx="32" ry="38" fill="#8B5A2B"/>
-            <ellipse cx="60" cy="72" rx="24" ry="30" fill="#D2B48C"/>
-            <circle cx="60" cy="45" r="28" fill="#8B5A2B"/>
-            <circle cx="48" cy="45" r="14" fill="#D2B48C"/>
-            <circle cx="72" cy="45" r="14" fill="#D2B48C"/>
-            <circle cx="48" cy="45" r="10" fill="#FFA500"/>
-            <circle cx="72" cy="45" r="10" fill="#FFA500"/>
+            <path d="M 35 35 Q 25 10 40 25 Z" fill="#2a3b4c"/>
+            <path d="M 85 35 Q 95 10 80 25 Z" fill="#2a3b4c"/>
+            <ellipse cx="60" cy="70" rx="32" ry="38" fill="#1a2530"/>
+            <ellipse cx="60" cy="72" rx="24" ry="30" fill="#e2e8f0"/>
+            <circle cx="60" cy="45" r="28" fill="#1a2530"/>
+            <circle cx="48" cy="45" r="14" fill="#e2e8f0"/>
+            <circle cx="72" cy="45" r="14" fill="#e2e8f0"/>
+            <circle cx="48" cy="45" r="10" fill="#00f0ff"/>
+            <circle cx="72" cy="45" r="10" fill="#00f0ff"/>
             <circle cx="48" cy="45" r="4" fill="#000"/>
             <circle cx="72" cy="45" r="4" fill="#000"/>
-            <polygon points="60,48 55,58 65,58" fill="#333"/>
-            <path d="M 38 90 Q 60 102 82 90 L 85 102 Q 60 112 35 102 Z" fill="#800020"/>
-            <path d="M 72 98 L 78 118 L 68 116 Z" fill="#800020"/>
-            <polygon points="60,10 105,22 60,34 15,22" fill="#1e1e1e"/>
-            <rect x="50" y="26" width="20" height="10" fill="#2d2d2d"/>
-            <line x1="60" y1="22" x2="85" y2="30" stroke="#FFD700" stroke-width="2.5"/>
-            <circle cx="85" cy="30" r="3" fill="#FFD700"/>
+            <polygon points="60,48 55,58 65,58" fill="#000"/>
+            <path d="M 38 90 Q 60 102 82 90 L 85 102 Q 60 112 35 102 Z" fill="#ff0055"/>
+            <polygon points="60,10 105,22 60,34 15,22" fill="#0f172a"/>
+            <line x1="60" y1="22" x2="85" y2="30" stroke="#00f0ff" stroke-width="2.5"/>
         </svg>
     </div>
 
+    <!-- Загрузчик -->
     <div id="loader">
         <div class="spinner" id="loaderSpinner"></div>
-        <h2 id="loaderTitle" style="margin-bottom: 6px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;">Ожидаем загрузки камеры.</p>
+        <h2 id="loaderTitle">Запуск AR-движка</h2>
+        <p style="color: #94A3B8;">Синхронизация потоков камеры и аудио среды...</p>
         <p id="loaderError"></p>
-        <button id="loaderTouchFallback" class="fallback-btn">👆 Перейти на мышь</button>
+        <button id="loaderTouchFallback" class="fallback-btn">Перейти в сенсорный режим</button>
     </div>
 
+    <!-- Фоновые эффекты -->
     <div class="vignette"></div>
     <div class="scanlines" id="scanlines"></div>
 
+    <!-- Интерфейс HUD -->
     <div class="hud-left">
         <button class="hud-btn" id="hintsToggleBtn" title="Подсказки">💡</button>
         <button class="hud-btn" id="modeToggleBtn" title="Режим управления">🖐️</button>
@@ -319,16 +281,16 @@
     </div>
 
     <div class="hints-panel" id="hintsPanel">
-        <h3>Управление (2 руки)</h3>
-        <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — пазлы и карточки (двумя руками - масштаб).</span></div>
-        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Кулак</b> — прокрутка страницы.</span></div>
-        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Резкий тап</b> — выбор в ИИ-Детективе.</span></div>
-        <div class="hint-row"><span class="hint-icon">✌️</span><span><b>Пис вверху экрана</b> — выход.</span></div>
+        <h3>Управление в 3D</h3>
+        <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — перемещение пазлов. Щипок <b>двумя руками</b> — масштаб карточек.</span></div>
+        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Кулак вне арены</b> — плавная прокрутка страницы.</span></div>
+        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Резкий тап</b> — выбор карточки в ИИ-Детективе.</span></div>
+        <div class="hint-row"><span class="hint-icon">✌️</span><span><b>Пис в самом верху</b> — экстренный выход.</span></div>
         <label class="hints-dont-show"><input type="checkbox" id="hintsDontShow"> Больше не показывать</label>
     </div>
 
     <div class="hud-top">
-        <div class="hud-mode-badge" id="modeBadge">Режим: жесты</div>
+        <div class="hud-mode-badge" id="modeBadge">Режим: AR-Жесты</div>
         <div class="hud-timer" id="timerDisplay">00:00</div>
     </div>
 
@@ -339,10 +301,12 @@
     <div id="cursor0" class="hand-cursor"></div>
     <div id="cursor1" class="hand-cursor"></div>
 
+    <!-- Скролл-контейнер с контентом -->
     <div id="scroll-container">
+        
         <!-- УРОВЕНЬ 1: ПАЗЛ -->
         <div class="screen-puzzle">
-            <div class="header"><h1>Практика ИИ: Ядро</h1></div>
+            <div class="header"><h1>Сборка Ядра</h1></div>
             <div class="puzzle-stage">
                 <div class="puzzle-area" id="puzzleArea">
                     <div class="puzzle-grid" id="grid"></div>
@@ -350,64 +314,65 @@
             </div>
         </div>
 
-        <!-- КАРТОЧКИ -->
+        <!-- УРОВЕНЬ 2: КАРТОЧКИ БАЗЫ ДАННЫХ -->
         <div class="screen-terms" id="termsSection">
-            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База данных ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1rem;">Щипните карточку двумя руками, чтобы изменить масштаб!</p>
+            <div class="section-title">
+                <h2>Архив ИИ</h2>
+                <p>Щипните двумя руками, чтобы изменить масштаб голограммы</p>
             </div>
         </div>
 
-        <!-- УРОВЕНЬ 2: ИИ-ДЕТЕКТИВ -->
-        <div class="screen-terms" id="detectiveSection" style="padding-top: 20px; background: transparent;">
-            <div style="width: 100%; text-align: center; margin-bottom: 30px;">
-                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 10px;">Уровень 2: Тест Тьюринга</h2>
-                <p style="color: #94A3B8; font-size: 1rem; max-width: 800px; margin: 0 auto;">Сделайте <b>тап в воздухе</b> на карточке нейросети, чтобы вынести вердикт.</p>
+        <!-- УРОВЕНЬ 3: ИИ-ДЕТЕКТИВ -->
+        <div class="screen-terms" id="detectiveSection">
+            <div class="section-title">
+                <h2 style="color: var(--ranepa-red);">Тест Тьюринга</h2>
+                <p>Наведите курсор и сделайте ТАП по карточке скрытой нейросети</p>
             </div>
             
-            <div class="term-card suspect-card" data-suspect="А" style="border-color: rgba(255,255,255,0.2);">
-                <h3 style="color: #fff;">Подозреваемый А</h3>
-                <p style="text-align: left; font-size: 0.8rem;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>А:</b> Ну, оно хрустящее, кисло-сладкое. Если зеленое, то вяжет немного.</p>
+            <div class="term-card suspect-card" data-suspect="А">
+                <h3>Объект А</h3>
+                <p><b>Следователь:</b> Опиши вкус яблока.<br><br><b>А:</b> Ну, оно хрустящее, кисло-сладкое. Если зеленое, то вяжет немного.</p>
             </div>
-            <div class="term-card suspect-card" data-suspect="Б" data-is-ai="true" style="border-color: rgba(255,255,255,0.2);">
-                <h3 style="color: #fff;">Подозреваемый Б</h3>
-                <p style="text-align: left; font-size: 0.8rem;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>Б:</b> Яблоко — это плод яблони. Оно имеет сбалансированный профиль моносахаридов.</p>
+            <div class="term-card suspect-card" data-suspect="Б" data-is-ai="true">
+                <h3>Объект Б</h3>
+                <p><b>Следователь:</b> Опиши вкус яблока.<br><br><b>Б:</b> Яблоко — это плод яблони. Оно имеет сбалансированный профиль моносахаридов.</p>
             </div>
-            <div class="term-card suspect-card" data-suspect="В" style="border-color: rgba(255,255,255,0.2);">
-                <h3 style="color: #fff;">Подозреваемый В</h3>
-                <p style="text-align: left; font-size: 0.8rem;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>В:</b> Смотря какое! Я люблю Голден, они как мед.</p>
+            <div class="term-card suspect-card" data-suspect="В">
+                <h3>Объект В</h3>
+                <p><b>Следователь:</b> Опиши вкус яблока.<br><br><b>В:</b> Смотря какое! Я люблю Голден, они как мед.</p>
             </div>
         </div>
 
-        <!-- УРОВЕНЬ 3: КНБ И РЕНТГЕН -->
-        <div class="screen-terms" id="gameSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent; display: flex; flex-direction: column; align-items: center;">
-            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 3: Дуэль с ИИ-Рентгеном</h2>
-                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Покажите жест (Камень ✊, Ножницы ✌️, Бумага ✋) <b>строго в рамке сканирования</b>.</p>
+        <!-- УРОВЕНЬ 4: КНБ И РЕНТГЕН -->
+        <div class="screen-terms" id="gameSection" style="padding-bottom: 200px;">
+            <div class="section-title">
+                <h2>Дуэль Сингулярности</h2>
+                <p>Покажите Камень ✊, Ножницы ✌️ или Бумагу ✋ строго в рамках сканера</p>
             </div>
 
             <div class="rps-arena" id="rpsArenaBox">
-                <div class="rps-zone-indicator">🎯 Зона сканирования жеста (Камень, Ножницы, Бумага)</div>
+                <div class="rps-zone-indicator">Зона Активного Сканирования</div>
                 <div class="rps-scores">
-                    <span>Твой счет: <b id="playerScore">0</b></span>
-                    <span>Счет ИИ-Рентгена: <b id="aiScore">0</b></span>
+                    <span>Человек: <b id="playerScore">0</b></span>
+                    <span>Машина: <b id="aiScore">0</b></span>
                 </div>
                 <div class="rps-display">
-                    <div class="rps-box"><span class="icon" id="playerChoice">❔</span><span class="label">Твой жест</span></div>
-                    <div style="font-size: 1.5rem; color: var(--accent);">VS</div>
-                    <div class="rps-box" id="aiBox"><span class="icon" id="aiChoice">🔮</span><span class="label">Рентген-отражение</span></div>
+                    <div class="rps-box" id="playerBox"><span class="icon" id="playerChoice">❔</span><span class="label">Вы</span></div>
+                    <div style="font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent);">VS</div>
+                    <div class="rps-box" id="aiBox"><span class="icon" id="aiChoice">🔮</span><span class="label">Рентген-Бот</span></div>
                 </div>
-                <p id="rpsStatus" style="font-size: 1rem; color: #fde68a; margin-bottom: 15px; min-height: 24px;">Жду жест в рамке арены...</p>
+                <p id="rpsStatus" style="font-size: 1.1rem; color: #00f0ff; font-weight: 700; text-transform: uppercase;">Ожидание биометрических данных...</p>
             </div>
         </div>
     </div>
 
+    <!-- Модальное окно победы -->
     <div class="modal-overlay" id="victoryModal" role="dialog" aria-modal="true">
         <div class="modal-box">
             <div class="shockwave" id="shockwave"></div>
-            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Испытание пройдено!</h2>
-            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Вы успешно завершили задания.<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
-            <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить</button>
+            <h2 style="color: #10b981; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px rgba(16,185,129,0.5);">Тест Пройден</h2>
+            <p style="color: #cbd5e1; font-size: 1.2rem; margin-top: 20px;">Ваши показатели превысили машинный лимит.<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.6rem;">00:00</b></p>
+            <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active'); playSound('hover');">Продолжить</button>
         </div>
     </div>
 
@@ -415,37 +380,89 @@
 
     <script>
     'use strict';
+
+    // ==========================================
+    // АУДИО ДВИЖОК (Web Audio API Synthesizer)
+    // ==========================================
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const audioCtx = new AudioContext();
+
+    function playSound(type) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === 'hover') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+            gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'snap') {
+            osc.type = 'square'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.15);
+            gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.start(now); osc.stop(now + 0.15);
+        } else if (type === 'scan') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, now); osc.frequency.linearRampToValueAtTime(800, now + 0.8);
+            gain.gain.setValueAtTime(0.05, now); gain.gain.linearRampToValueAtTime(0, now + 0.8);
+            osc.start(now); osc.stop(now + 0.8);
+        } else if (type === 'win') {
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(400, now); osc.frequency.setValueAtTime(600, now + 0.1); osc.frequency.setValueAtTime(800, now + 0.2);
+            gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+        } else if (type === 'lose') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.5);
+            gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+        } else if (type === 'click') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(800, now);
+            gain.gain.setValueAtTime(0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+            osc.start(now); osc.stop(now + 0.05);
+        }
+    }
+
+    // ==========================================
+    // ИНИЦИАЛИЗАЦИЯ И СИСТЕМНЫЕ ФУНКЦИИ
+    // ==========================================
     const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const isTouchCapable = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
     const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let hasWebGL = false;
-    try {
-        const testCanvas = document.createElement('canvas');
-        hasWebGL = !!(testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl'));
-    } catch (e) { hasWebGL = false; }
+    try { const testCanvas = document.createElement('canvas'); hasWebGL = !!(testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl')); } catch (e) {}
 
     let interactionMode = (isTouchCapable && !hasFinePointer) || !hasMediaDevices ? 'touch' : 'gesture';
 
     function setModeBadge() {
-        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты' : 'Режим: мышь';
+        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: AR-Жесты' : 'Режим: Мышь / Тач';
         document.getElementById('modeToggleBtn').textContent = interactionMode === 'gesture' ? '🖐️' : '👆';
         document.body.classList.toggle('touch-mode', interactionMode === 'touch');
     }
     setModeBadge();
 
     const owlBubble = document.getElementById('owlBodyBubble');
-    function sayOwl(text, duration = 4000) {
+    function sayOwl(text, duration = 4500) {
         if (!owlBubble) return;
         owlBubble.textContent = text;
         owlBubble.classList.add('show');
+        playSound('hover');
         setTimeout(() => owlBubble.classList.remove('show'), duration);
     }
-    setTimeout(() => sayOwl("Ху-ху! Защита сети и памяти включена!"), 1500);
+    setTimeout(() => sayOwl("Театральный режим активирован. Сборка ядра готова к началу."), 1500);
 
     const hintsPanel = document.getElementById('hintsPanel');
-    document.getElementById('hintsToggleBtn').addEventListener('click', () => hintsPanel.classList.toggle('open'));
-    document.getElementById('exitBtn').addEventListener('click', () => triggerImplosion());
+    document.getElementById('hintsToggleBtn').addEventListener('click', () => { hintsPanel.classList.toggle('open'); playSound('click'); });
+    const hintsDontShow = document.getElementById('hintsDontShow');
+    hintsDontShow.addEventListener('change', () => { try { localStorage.setItem('ar_hints_dismissed', hintsDontShow.checked ? '1' : ''); } catch (e) {} });
+    (function initialHintsState() {
+        let dismissed = false;
+        try { dismissed = localStorage.getItem('ar_hints_dismissed') === '1'; } catch (e) {}
+        hintsDontShow.checked = dismissed;
+        if (!dismissed) hintsPanel.classList.add('open');
+    })();
+
+    document.getElementById('exitBtn').addEventListener('click', () => { playSound('lose'); triggerImplosion(); });
 
     let timerInterval = null, timeElapsed = 0, timerStarted = false;
     function startTimer() {
@@ -464,34 +481,37 @@
         const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
         const s = String(timeElapsed % 60).padStart(2, '0');
         document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
-        if (navigator.vibrate) navigator.vibrate([30, 40, 30, 40, 80]);
+        playSound('win');
         setTimeout(() => {
             document.getElementById('victoryModal').classList.add('active');
             const sw = document.getElementById('shockwave');
             sw.classList.remove('play'); void sw.offsetWidth; sw.classList.add('play');
             if (!prefersReducedMotion) launchConfetti();
-        }, 1200);
+        }, 1000);
     }
 
     function launchConfetti() {
-        const colors = ['#38bdf8', '#CA0F3E', '#10b981', '#fde68a'];
-        for (let i = 0; i < 40; i++) {
+        const colors = ['#00f0ff', '#ff0055', '#10b981', '#fde68a'];
+        for (let i = 0; i < 50; i++) {
             const bit = document.createElement('div');
             bit.className = 'confetti-bit';
-            bit.style.left = (45 + Math.random() * 10) + 'vw';
-            bit.style.top = '30vh';
+            bit.style.left = (40 + Math.random() * 20) + 'vw';
+            bit.style.top = '20vh';
             bit.style.background = colors[i % colors.length];
-            bit.style.animationDelay = (Math.random() * 0.3) + 's';
-            bit.style.transform = `translateX(${(Math.random() - 0.5) * 300}px)`;
+            bit.style.animationDelay = (Math.random() * 0.2) + 's';
+            bit.style.transform = `translateX(${(Math.random() - 0.5) * 400}px)`;
             document.body.appendChild(bit);
-            setTimeout(() => bit.remove(), 2200);
+            setTimeout(() => bit.remove(), 2500);
         }
     }
 
+    // ==========================================
+    // ГЕНЕРАЦИЯ КОНТЕНТА (Пазлы и Карточки)
+    // ==========================================
     const puzzleArea = document.getElementById('puzzleArea');
     const grid = document.getElementById('grid');
     const cols = 3, rows = 2;
-    const boardW = 600, boardH = 400;
+    const boardW = 660, boardH = 440;
     const pW = boardW / cols, pH = boardH / rows;
     let lockedCount = 0;
 
@@ -520,8 +540,7 @@
             piece.style.width = `${pW}px`; piece.style.height = `${pH}px`;
             piece.dataset.correctX = c * pW; piece.dataset.correctY = r * pH;
             piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
-            piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
-
+            
             const tl = pts[r][c], tr = pts[r][c + 1], br = pts[r + 1][c + 1], bl = pts[r + 1][c];
             const px = (p) => `${((p.x - c * pW) / pW) * 100}%`;
             const py = (p) => `${((p.y - r * pH) / pH) * 100}%`;
@@ -529,8 +548,8 @@
 
             const isLeft = (c < cols / 2);
             let startX = isLeft ? -250 : boardW + 50;
-            let startY = isLeft ? leftCount * 120 : rightCount * 120;
-            startX += (Math.random() * 30 - 15); startY += (Math.random() * 30 - 15);
+            let startY = isLeft ? leftCount * 130 : rightCount * 130;
+            startX += (Math.random() * 40 - 20); startY += (Math.random() * 40 - 20);
             if (isLeft) leftCount++; else rightCount++;
 
             piece.style.left = `${startX}px`; piece.style.top = `${startY}px`;
@@ -540,12 +559,12 @@
     }
 
     const termsData = [
-        { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
-        { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
-        { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
-        { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
-        { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
-        { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
+        { t: "Машинное обучение", d: "Метод, при котором алгоритм находит паттерны в массивах данных без явных инструкций кода." },
+        { t: "Нейросеть", d: "Многослойная архитектура, вдохновленная синапсами биологического мозга для распознавания смыслов." },
+        { t: "Промпт Инжиниринг", d: "Точное лингвистическое программирование для извлечения идеального ответа от языковой модели." },
+        { t: "Глубокое обучение", d: "Создание глубоких нейросетей, способных самообучаться на терабайтах неструктурированной информации." },
+        { t: "LLM (Трансформеры)", d: "Массивные нейросети, предсказывающие последовательности токенов для генерации человеческой речи." },
+        { t: "Компьютерное зрение", d: "Интерпретация пиксельных матриц в осмысленные объекты физического мира в реальном времени." }
     ];
     const termsContainer = document.getElementById('termsSection');
     let termCards = [];
@@ -558,7 +577,23 @@
         termCards.push(card);
     });
 
-    let scene, camera3D, renderer, coreMesh, glowMesh, ringMesh, particles;
+    if (hasFinePointer) {
+        termCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const r = card.getBoundingClientRect();
+                const relX = (e.clientX - r.left) / r.width - 0.5;
+                const relY = (e.clientY - r.top) / r.height - 0.5;
+                card.style.setProperty('--tiltY', (relX * 20) + 'deg');
+                card.style.setProperty('--tiltX', (-relY * 20) + 'deg');
+            });
+            card.addEventListener('mouseleave', () => { card.style.setProperty('--tiltY', '0deg'); card.style.setProperty('--tiltX', '0deg'); });
+        });
+    }
+
+    // ==========================================
+    // 3D СЦЕНА (ИММЕРСИВНЫЕ ОБЪЕКТЫ)
+    // ==========================================
+    let scene, camera3D, renderer, coreGroup, particles;
     let targetRotX = 0, targetRotY = 0;
     let sceneReady = false;
 
@@ -566,52 +601,46 @@
         if (!hasWebGL || typeof THREE === 'undefined') return;
         try {
             scene = new THREE.Scene();
-            camera3D = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera3D = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: true });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, isTouchCapable ? 1.5 : 2));
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
 
-            coreMesh = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(12, 1),
-                new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.18 })
-            );
-            scene.add(coreMesh);
+            coreGroup = new THREE.Group();
+            scene.add(coreGroup);
 
-            glowMesh = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(13.5, 1),
-                new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.06, blending: THREE.AdditiveBlending, depthWrite: false })
-            );
-            scene.add(glowMesh);
+            // Стеклянный многогранник в центре
+            const matPhysical = new THREE.MeshPhysicalMaterial({
+                color: 0x00f0ff, metalness: 0.1, roughness: 0.2, transmission: 0.9, thickness: 0.5, wireframe: true, transparent: true, opacity: 0.15
+            });
+            const mesh1 = new THREE.Mesh(new THREE.IcosahedronGeometry(15, 1), matPhysical);
+            coreGroup.add(mesh1);
+            
+            const mesh2 = new THREE.Mesh(new THREE.OctahedronGeometry(22, 0), new THREE.MeshBasicMaterial({ color: 0xff0055, wireframe: true, transparent: true, opacity: 0.05 }));
+            coreGroup.add(mesh2);
 
-            ringMesh = new THREE.Mesh(
-                new THREE.TorusGeometry(20, 0.15, 8, 80),
-                new THREE.MeshBasicMaterial({ color: 0xCA0F3E, transparent: true, opacity: 0.35 })
-            );
-            ringMesh.rotation.x = Math.PI / 2.4;
-            scene.add(ringMesh);
-
-            const particleCount = isTouchCapable ? 250 : 500;
-            const posArr = new Float32Array(particleCount * 3);
-            for (let i = 0; i < particleCount * 3; i += 3) {
-                const radius = 40 + Math.random() * 60;
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                posArr[i] = radius * Math.sin(phi) * Math.cos(theta);
-                posArr[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
-                posArr[i + 2] = radius * Math.cos(phi);
+            // Частицы глубины
+            const pCount = isTouchCapable ? 200 : 600;
+            const pGeo = new THREE.BufferGeometry();
+            const pPos = new Float32Array(pCount * 3);
+            for(let i=0; i<pCount*3; i+=3) {
+                pPos[i] = (Math.random() - 0.5) * 150;
+                pPos[i+1] = (Math.random() - 0.5) * 150;
+                pPos[i+2] = (Math.random() - 0.5) * 100 - 20;
             }
-            const particleGeo = new THREE.BufferGeometry();
-            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-            const particleMat = new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.6, transparent: true, opacity: 0.5 });
-            particles = new THREE.Points(particleGeo, particleMat);
+            pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+            particles = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0x00f0ff, size: 0.8, transparent: true, opacity: 0.6 }));
             scene.add(particles);
 
-            camera3D.position.z = 30;
+            camera3D.position.z = 40;
             sceneReady = true;
         } catch (e) { sceneReady = false; }
     }
     initScene();
 
+    // ==========================================
+    // ФИЗИКА ИНТЕРАКЦИЙ
+    // ==========================================
     const scrollContainer = document.getElementById('scroll-container');
     let draggedPiece = null, dragOffsetX = 0, dragOffsetY = 0, dragStartX = 0, dragStartY = 0;
     let scrollY = 0, targetScrollY = 0, scrollVelocity = 0, lastDragY = null;
@@ -624,12 +653,11 @@
         const el = document.elementFromPoint(x, y);
         if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
             startTimer(); draggedPiece = el;
+            playSound('click');
             const rect = el.getBoundingClientRect();
             dragOffsetX = x - rect.left; dragOffsetY = y - rect.top;
             dragStartX = x; dragStartY = y;
             el.classList.add('dragging');
-        } else if (el && el.closest('.suspect-card')) {
-            checkDetectiveVote(el.closest('.suspect-card'));
         }
     }
 
@@ -638,14 +666,13 @@
             const containerRect = puzzleArea.getBoundingClientRect();
             const newX = x - dragOffsetX - containerRect.left;
             const newY = y - dragOffsetY - containerRect.top;
-            draggedPiece.style.left = `${newX}px`;
-            draggedPiece.style.top = `${newY}px`;
+            draggedPiece.style.left = `${newX}px`; draggedPiece.style.top = `${newY}px`;
             const dx = x - dragStartX, dy = y - dragStartY;
-            draggedPiece.style.transform = `translateZ(30px) rotateX(${Math.max(-10, Math.min(10, -dy * 0.05))}deg) rotateY(${Math.max(-10, Math.min(10, dx * 0.05))}deg)`;
+            draggedPiece.style.transform = `translateZ(40px) rotateX(${Math.max(-15, Math.min(15, -dy * 0.1))}deg) rotateY(${Math.max(-15, Math.min(15, dx * 0.1))}deg)`;
         } else if (lastDragY !== null) {
             const deltaY = y - lastDragY;
-            targetScrollY += deltaY * 3.0;
-            scrollVelocity = deltaY * 0.4;
+            targetScrollY += deltaY * 3.5;
+            scrollVelocity = deltaY * 0.5;
             lastDragY = y;
         }
     }
@@ -657,22 +684,26 @@
             checkSnap(draggedPiece);
             draggedPiece = null;
         }
+        if (zoomedCard) { zoomedCard.classList.remove('hovered'); zoomedCard = null; }
         lastDragY = null;
     }
 
     function checkSnap(piece) {
         const cx = parseInt(piece.style.left), cy = parseInt(piece.style.top);
         const tx = parseInt(piece.dataset.correctX), ty = parseInt(piece.dataset.correctY);
-        if (Math.abs(cx - tx) < 70 && Math.abs(cy - ty) < 70) {
+        if (Math.abs(cx - tx) < 75 && Math.abs(cy - ty) < 75) {
             piece.style.left = `${tx}px`; piece.style.top = `${ty}px`;
             piece.classList.add('locked', 'just-locked');
-            setTimeout(() => piece.classList.remove('just-locked'), 450);
+            playSound('snap');
+            setTimeout(() => piece.classList.remove('just-locked'), 500);
             spawnSparks(piece);
-            if (navigator.vibrate) navigator.vibrate(25);
+            if (navigator.vibrate) navigator.vibrate(40);
             lockedCount++;
             if (lockedCount === cols * rows) {
-                document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
+                document.querySelector('.header h1').innerHTML = "✨ ЯДРО СИНТЕЗИРОВАНО ✨";
+                document.querySelector('.header h1').style.color = "#00f0ff";
                 puzzleArea.classList.add('completed');
+                playSound('win');
                 stopTimerAndShowModal();
             }
         }
@@ -682,79 +713,55 @@
         if (prefersReducedMotion) return;
         const rect = piece.getBoundingClientRect();
         const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 12; i++) {
             const s = document.createElement('div');
             s.className = 'spark';
-            const angle = (i / 10) * Math.PI * 2;
-            s.style.setProperty('--sx', Math.cos(angle) * 70 + 'px');
-            s.style.setProperty('--sy', Math.sin(angle) * 70 + 'px');
+            const angle = (i / 12) * Math.PI * 2;
+            s.style.setProperty('--sx', Math.cos(angle) * 80 + 'px');
+            s.style.setProperty('--sy', Math.sin(angle) * 80 + 'px');
             s.style.left = cx + 'px'; s.style.top = cy + 'px';
             document.body.appendChild(s);
-            setTimeout(() => s.remove(), 650);
+            setTimeout(() => s.remove(), 800);
         }
-    }
-
-    function enableTouchMode() {
-        pieces.forEach(({ el }) => {
-            el.addEventListener('pointerdown', (e) => {
-                if (el.classList.contains('locked')) return;
-                el.setPointerCapture(e.pointerId);
-                startTimer(); draggedPiece = el;
-                const rect = el.getBoundingClientRect();
-                dragOffsetX = e.clientX - rect.left; dragOffsetY = e.clientY - rect.top;
-                el.classList.add('dragging');
-            });
-            el.addEventListener('pointermove', (e) => { if (draggedPiece === el) moveInteractionAt(e.clientX, e.clientY); });
-            el.addEventListener('pointerup', () => endInteraction());
-        });
-
-        document.querySelectorAll('.suspect-card').forEach(card => {
-            card.addEventListener('click', () => checkDetectiveVote(card));
-        });
     }
 
     function physicsLoop() {
         if (interactionMode === 'gesture') {
             if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
-                targetScrollY += scrollVelocity;
-                scrollVelocity *= 0.9;
+                targetScrollY += scrollVelocity; scrollVelocity *= 0.9;
             }
             targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
-            scrollY = lerp(scrollY, targetScrollY, 0.2);
+            scrollY = lerp(scrollY, targetScrollY, 0.15);
             scrollContainer.style.transform = `translateY(${scrollY}px)`;
         }
 
         if (sceneReady && (!document.hidden)) {
-            const scrollProgress = interactionMode === 'gesture'
-                ? Math.min(1, Math.abs(scrollY) / Math.max(1, -maxScroll()))
-                : Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
-            coreMesh.rotation.x += 0.001; coreMesh.rotation.y += 0.002;
-            glowMesh.rotation.copy(coreMesh.rotation);
-            ringMesh.rotation.z += 0.0015;
-            camera3D.position.z = 30 - scrollProgress * 10;
-            ringMesh.rotation.x = Math.PI / 2.4 + scrollProgress * 0.4;
+            const scrollProgress = interactionMode === 'gesture' ? Math.min(1, Math.abs(scrollY) / Math.max(1, -maxScroll())) : Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
+            coreGroup.rotation.x += (targetRotX - coreGroup.rotation.x) * 0.05 + 0.002;
+            coreGroup.rotation.y += (targetRotY - coreGroup.rotation.y) * 0.05 + 0.003;
+            particles.rotation.y += 0.0005;
+            camera3D.position.z = 40 - scrollProgress * 15; // Камера влетает в сцену при скролле
             renderer.render(scene, camera3D);
         }
         requestAnimationFrame(physicsLoop);
     }
     physicsLoop();
-
     function lerp(a, b, t) { return (1 - t) * a + t * b; }
 
+    // ==========================================
+    // РЕШЕНИЕ ПРОБЛЕМЫ УТЕЧКИ ПАМЯТИ (Camera Utils + isProcessing)
+    // ==========================================
     let cameraFeed = null, hands = null;
+    let isProcessingFrame = false; // ЖЕСТКИЙ БЛОКИРАТОР ПОТОКА
 
     document.getElementById('modeToggleBtn').addEventListener('click', () => {
+        playSound('click');
         if (interactionMode === 'gesture') {
             if (cameraFeed) cameraFeed.stop();
-            interactionMode = 'touch';
-            setModeBadge();
-            enableTouchMode();
-            showToast('Сенсорное управление включено', true);
+            interactionMode = 'touch'; setModeBadge(); enableTouchMode();
+            document.getElementById('cursor0').style.opacity = 0; document.getElementById('cursor1').style.opacity = 0;
         } else {
-            interactionMode = 'gesture';
-            setModeBadge();
-            showToast('Запуск камеры…', true);
-            startGesturePipeline();
+            interactionMode = 'gesture'; setModeBadge(); startGesturePipeline();
         }
     });
 
@@ -767,29 +774,26 @@
     let p0 = { x: 0, y: 0 }, p1 = { x: 0, y: 0 };
     let smoothP0 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let smoothP1 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    let peaceFrames = 0;
+    let peaceFrames = 0, tapCooldown = false;
 
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
         document.getElementById('loaderError').style.display = 'none';
 
-        // ВОЗВРАЩАЕМ СТАНДАРТНУЮ РЕАЛИЗАЦИЮ КАМЕРЫ (СИНХРОННУЮ), ЧТОБЫ УБРАТЬ УТЕЧКИ
+        // Инициализация стабильной версии
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        hands.setOptions({ 
-            maxNumHands: 2, 
-            modelComplexity: 1, 
-            minDetectionConfidence: 0.6, 
-            minTrackingConfidence: 0.6 
-        });
+        hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
         hands.onResults(onResults);
 
+        // ИСПОЛЬЗУЕМ ОФИЦИАЛЬНЫЙ CAMERA UTILS (ОН САМ БЕЗОПАСНО ЖДЕТ КАДРЫ)
         cameraFeed = new Camera(videoElement, {
             onFrame: async () => {
-                // Стандартный Camera utils сам дожидается Wasm, никаких утечек!
-                await hands.send({image: videoElement});
+                if(isProcessingFrame || interactionMode !== 'gesture') return;
+                isProcessingFrame = true; // Блокируем новые кадры пока не обработаем текущий
+                try { await hands.send({image: videoElement}); } catch(e){}
+                isProcessingFrame = false; // Открываем шлюз для следующего
             },
-            width: 640,
-            height: 480
+            width: 640, height: 480
         });
 
         cameraFeed.start().then(() => {
@@ -799,59 +803,52 @@
             document.getElementById('loaderError').style.display = 'block';
             document.getElementById('loaderError').textContent = 'Камера недоступна.';
             document.getElementById('loaderTouchFallback').style.display = 'inline-block';
-            document.getElementById('loaderTouchFallback').onclick = () => {
-                document.getElementById('loader').style.display = 'none';
-                interactionMode = 'touch'; setModeBadge(); enableTouchMode();
-            };
+            document.getElementById('loaderTouchFallback').onclick = () => { document.getElementById('loader').style.display = 'none'; interactionMode = 'touch'; setModeBadge(); enableTouchMode(); };
         });
     }
 
     let rpsCooldown = false;
-    let playerScore = 0, aiScore = 0;
 
     function onResults(results) {
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerHeight;
-        canvasCtx.save();
-        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasElement.width = window.innerWidth; canvasElement.height = window.innerHeight;
+        canvasCtx.save(); canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
         cursor0.style.opacity = 0; cursor1.style.opacity = 0;
         let pinch0 = false, pinch1 = false;
         let activeFistY = null;
 
-        const handFound = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            
+            // Вращение 3D сцены от первой руки
+            const h1 = results.multiHandLandmarks[0][0];
+            targetRotX = (h1.y - 0.5) * 3; targetRotY = (h1.x - 0.5) * 3;
 
-        if (handFound) {
+            // Экстренный выход (Пис вверху экрана)
+            const lmExit = results.multiHandLandmarks[0];
+            if (lmExit[8].y < lmExit[6].y && lmExit[12].y < lmExit[10].y && lmExit[16].y > lmExit[14].y && lmExit[20].y > lmExit[18].y && lmExit[0].y < 0.4 && !draggedPiece) {
+                peaceFrames++; if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; }
+            } else { peaceFrames = 0; }
+
             results.multiHandLandmarks.forEach((lm, idx) => {
-                drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
-                drawLandmarks(canvasCtx, lm, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
+                drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, { color: 'rgba(0, 240, 255, 0.6)', lineWidth: 3 });
+                drawLandmarks(canvasCtx, lm, { color: '#ff0055', lineWidth: 1, radius: 3 });
 
                 const px = window.innerWidth - (lm[8].x * window.innerWidth);
                 const py = lm[8].y * window.innerHeight;
+                const isPinched = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y) < 0.06;
 
-                const distPinch = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y);
-                const isPinched = distPinch < 0.06;
-
-                // НАДЕЖНЫЙ АЛГОРИТМ КУЛАКА (дистанция пальцев до запястья)
+                // Детекция кулака
                 const handSize = Math.hypot(lm[9].x - lm[0].x, lm[9].y - lm[0].y);
                 const dIndex = Math.hypot(lm[8].x - lm[0].x, lm[8].y - lm[0].y) / handSize;
-                const dMiddle = Math.hypot(lm[12].x - lm[0].x, lm[12].y - lm[0].y) / handSize;
-                const dRing = Math.hypot(lm[16].x - lm[0].x, lm[16].y - lm[0].y) / handSize;
-                const dPinky = Math.hypot(lm[20].x - lm[0].x, lm[20].y - lm[0].y) / handSize;
-                
-                const isFist = (dIndex < 1.3 && dMiddle < 1.3 && dRing < 1.3 && dPinky < 1.3) && !isPinched;
+                const isFist = (dIndex < 1.3 && (lm[12].y > lm[9].y) && (lm[16].y > lm[13].y)) && !isPinched;
 
                 if (idx === 0) {
                     smoothP0.x = lerp(smoothP0.x, px, 0.5); smoothP0.y = lerp(smoothP0.y, py, 0.5);
-                    p0 = { x: smoothP0.x, y: smoothP0.y };
-                    pinch0 = isPinched;
-                    updateCursor(cursor0, p0, pinch0);
+                    p0 = { x: smoothP0.x, y: smoothP0.y }; pinch0 = isPinched; updateCursor(cursor0, p0, pinch0);
                     if (isFist) activeFistY = lm[9].y * window.innerHeight;
                 } else if (idx === 1) {
                     smoothP1.x = lerp(smoothP1.x, px, 0.5); smoothP1.y = lerp(smoothP1.y, py, 0.5);
-                    p1 = { x: smoothP1.x, y: smoothP1.y };
-                    pinch1 = isPinched;
-                    updateCursor(cursor1, p1, pinch1);
+                    p1 = { x: smoothP1.x, y: smoothP1.y }; pinch1 = isPinched; updateCursor(cursor1, p1, pinch1);
                     if (isFist) activeFistY = lm[9].y * window.innerHeight;
                 }
 
@@ -860,89 +857,64 @@
                 if (arena) {
                     const r = arena.getBoundingClientRect();
                     if (px >= r.left && px <= r.right && py >= r.top && py <= r.bottom) {
-                        const iEx = lm[8].y < lm[6].y;
-                        const mEx = lm[12].y < lm[10].y;
-                        const rEx = lm[16].y < lm[14].y;
-                        const pEx = lm[20].y < lm[18].y;
-                        
+                        const iEx = lm[8].y < lm[6].y; const mEx = lm[12].y < lm[10].y; const rEx = lm[16].y < lm[14].y; const pEx = lm[20].y < lm[18].y;
                         let gesture = null;
                         if (!iEx && !mEx && !rEx && !pEx) gesture = 'камень';
                         else if (iEx && mEx && !rEx && !pEx) gesture = 'ножницы';
                         else if (iEx && mEx && rEx && pEx) gesture = 'бумага';
 
                         if (gesture && !rpsCooldown) {
-                            rpsCooldown = true;
-                            triggerRPSReflection(gesture);
-                            setTimeout(() => rpsCooldown = false, 2500);
+                            rpsCooldown = true; triggerRPSReflection(gesture);
+                            setTimeout(() => rpsCooldown = false, 3000);
                         }
                     }
                 }
             });
 
-            // ЭКСТРЕННЫЙ ВЫХОД ЖЕСТОМ ПИС (ТОЛЬКО ВЕРХ ЭКРАНА)
-            const lm = results.multiHandLandmarks[0];
-            const iEx = lm[8].y < lm[6].y;
-            const mEx = lm[12].y < lm[10].y;
-            const rDown = lm[16].y > lm[14].y;
-            const pDown = lm[20].y > lm[18].y;
-            if (iEx && mEx && rDown && pDown && lm[0].y < 0.4 && !draggedPiece) {
-                peaceFrames++;
-                if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; }
-            } else { peaceFrames = 0; }
-
-            // ДВУХРУЧНОЕ МАСШТАБИРОВАНИЕ КАРТОЧЕК
+            // МАСШТАБИРОВАНИЕ ДВУМЯ РУКАМИ
             if (results.multiHandLandmarks.length === 2 && pinch0 && pinch1 && !draggedPiece) {
                 const el = document.elementFromPoint(p0.x, p0.y) || document.elementFromPoint(p1.x, p1.y);
                 const card = el ? el.closest('.term-card') : null;
                 if (card) {
                     if (!zoomedCard || zoomedCard !== card) {
-                        zoomedCard = card;
-                        card.classList.add('hovered');
+                        zoomedCard = card; card.classList.add('hovered'); playSound('hover');
                         initialCardScale = parseFloat(card.dataset.scale) || 1;
                         zoomStartDist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
                     } else {
                         const dist = Math.hypot(p0.x - p1.x, p0.y - p1.y);
                         let scale = initialCardScale * (dist / zoomStartDist);
-                        scale = Math.max(0.8, Math.min(scale, 3.0));
-                        zoomedCard.style.setProperty('--cscale', scale);
-                        zoomedCard.dataset.scale = scale;
+                        scale = Math.max(0.8, Math.min(scale, 2.5));
+                        zoomedCard.style.setProperty('--cscale', scale); zoomedCard.dataset.scale = scale;
                     }
-                }
-                lastDragY = null;
+                } lastDragY = null;
             }
-            else if (pinch0 && !zoomedCard) {
-                if (!draggedPiece) {
+            // ТАП В ВОЗДУХЕ (ИИ Детектив)
+            else if (!pinch0 && !pinch1 && results.multiHandLandmarks.length === 1 && !tapCooldown) {
+                 // Резкое движение указательным пальцем вперед симулируем по скорости изменения Z
+                 const zIndex = results.multiHandLandmarks[0][8].z;
+                 if(zIndex < -0.15) { // Глубокий Z-тап
                     const el = document.elementFromPoint(p0.x, p0.y);
-                    if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                        startTimer(); draggedPiece = el;
-                        const r = el.getBoundingClientRect();
-                        dragOffsetX = p0.x - r.left; dragOffsetY = p0.y - r.top;
-                        el.classList.add('dragging');
-                    } else if (el && el.closest('.suspect-card')) {
-                        checkDetectiveVote(el.closest('.suspect-card'));
+                    if (el && el.closest('.suspect-card')) {
+                        tapCooldown = true; checkDetectiveVote(el.closest('.suspect-card'));
+                        setTimeout(() => tapCooldown = false, 1500);
                     }
-                }
-                if (draggedPiece) {
-                    const cr = puzzleArea.getBoundingClientRect();
-                    draggedPiece.style.left = `${p0.x - dragOffsetX - cr.left}px`;
-                    draggedPiece.style.top = `${p0.y - dragOffsetY - cr.top}px`;
-                }
+                 }
+            }
+            // ПИНЦЕТ ОДНОЙ РУКОЙ (Пазл)
+            else if (pinch0 && !zoomedCard) {
+                if (!draggedPiece) beginInteractionAt(p0.x, p0.y);
+                if (draggedPiece) moveInteractionAt(p0.x, p0.y);
                 lastDragY = null;
             }
+            // СКРОЛЛ КУЛАКОМ
             else if (activeFistY !== null && !draggedPiece && !zoomedCard) {
                 if (lastDragY !== null) {
                     targetScrollY += (activeFistY - lastDragY) * 3.5;
                     scrollVelocity = (activeFistY - lastDragY) * 0.4;
                 }
                 lastDragY = activeFistY;
-            }
-            else {
-                endInteraction();
-            }
-        } else {
-            endInteraction();
-            peaceFrames = 0;
-        }
+            } else { endInteraction(); }
+        } else { endInteraction(); peaceFrames = 0; targetRotX = 0; targetRotY = 0; }
         canvasCtx.restore();
     }
 
@@ -951,112 +923,89 @@
         cursorEl.classList.toggle('pinched', isPinched);
     }
 
+    // ==========================================
+    // ИГРОВАЯ ЛОГИКА
+    // ==========================================
     function checkDetectiveVote(card) {
+        playSound('click');
         const isAI = card.dataset.isAi === "true";
-        const suspectName = card.dataset.suspect;
-
-        document.querySelectorAll('.suspect-card').forEach(c => {
-            c.style.opacity = "0.3";
-            c.style.pointerEvents = "none";
-        });
+        document.querySelectorAll('.suspect-card').forEach(c => { c.style.opacity = "0.3"; c.style.pointerEvents = "none"; });
         card.style.opacity = "1";
 
         if (isAI) {
-            card.style.borderColor = "#10b981";
-            card.style.boxShadow = "0 0 40px rgba(16, 185, 129, 0.6)";
-            showToast(`✅ ВЕРНО! Подозреваемый ${suspectName} — это нейросеть!`, true);
-            sayOwl("Блестяще! Вы отличный кибер-детектив.");
+            card.style.borderColor = "#10b981"; card.style.boxShadow = "0 0 50px rgba(16, 185, 129, 0.6)";
+            showToast(`✅ ВЕРНО! Объект идентифицирован как ИИ.`, true); playSound('win'); sayOwl("Блестяще! Тьюринг вами гордится.");
         } else {
-            card.style.borderColor = "#CA0F3E";
-            card.style.boxShadow = "0 0 40px rgba(202, 15, 62, 0.6)";
-            showToast(`❌ ОШИБКА! Подозреваемый ${suspectName} — человек.`, false);
-            sayOwl("Осторожнее, вы ошиблись в человеке!");
+            card.style.borderColor = "#CA0F3E"; card.style.boxShadow = "0 0 50px rgba(255, 0, 85, 0.6)";
+            showToast(`❌ ОШИБКА! Объект — человек.`, false); playSound('lose'); sayOwl("Критическая ошибка распознавания!");
         }
     }
 
-    function triggerRPSReflection(playerChoiceStr) {
-        startTimer();
+    let playerScore = 0, aiScore = 0;
+    function playRPS(playerChoiceStr) {
+        startTimer(); playSound('scan');
         const aiBox = document.getElementById('aiBox');
-        aiBox.classList.add('xray-reflection');
-        document.getElementById('rpsStatus').textContent = "Рентген-отражение сканирует ваш жест...";
-        sayOwl("Отражение считывает ваш ход...");
+        const playerBox = document.getElementById('playerBox');
+        aiBox.classList.add('xray-reflection'); playerBox.classList.add('xray-reflection');
+        document.getElementById('rpsStatus').textContent = "Сканирование нейропотоков...";
+        sayOwl("Анализирую ваши микромоторики...");
+
+        const icons = { 'камень': '✊', 'ножницы': '✌️', 'бумага': '✋' };
+        document.getElementById('playerChoice').textContent = icons[playerChoiceStr];
 
         setTimeout(() => {
-            aiBox.classList.remove('xray-reflection');
-            const winningMove = { 'камень': 'бумага', 'ножницы': 'камень', 'бумага': 'ножницы' };
-            const losingMove = { 'камень': 'ножницы', 'ножницы': 'бумага', 'бумага': 'камень' };
-            
-            let aiChoiceStr = '';
-            const rnd = Math.random();
-            if (rnd < 0.65) aiChoiceStr = winningMove[playerChoiceStr];
-            else if (rnd < 0.85) aiChoiceStr = playerChoiceStr;
-            else aiChoiceStr = losingMove[playerChoiceStr];
+            aiBox.classList.remove('xray-reflection'); playerBox.classList.remove('xray-reflection');
+            const winM = { 'камень': 'бумага', 'ножницы': 'камень', 'бумага': 'ножницы' };
+            const loseM = { 'камень': 'ножницы', 'ножницы': 'бумага', 'бумага': 'камень' };
+            let aiChoiceStr = ''; const rnd = Math.random();
+            if (rnd < 0.6) aiChoiceStr = winM[playerChoiceStr]; else if (rnd < 0.8) aiChoiceStr = playerChoiceStr; else aiChoiceStr = loseM[playerChoiceStr];
 
-            const icons = { 'камень': '✊', 'ножницы': '✌️', 'бумага': '✋' };
-            document.getElementById('playerChoice').textContent = icons[playerChoiceStr];
             document.getElementById('aiChoice').textContent = icons[aiChoiceStr];
-
             let resultText = "";
             if (playerChoiceStr === aiChoiceStr) {
-                resultText = "Ничья! Рентген зафиксировал зеркальный выбор.";
-                sayOwl("Ничья! Отражение повторило вас.");
-            } else if (
-                (playerChoiceStr === 'камень' && aiChoiceStr === 'ножницы') ||
-                (playerChoiceStr === 'ножницы' && aiChoiceStr === 'бумага') ||
-                (playerChoiceStr === 'бумага' && aiChoiceStr === 'камень')
-            ) {
-                playerScore++;
-                document.getElementById('playerScore').textContent = playerScore;
-                resultText = `Победа раунда! Достойный ход.`;
-                sayOwl("Невероятно! Ваша интуиция обманула рентген.");
+                resultText = "Синхронизация! Ничья."; playSound('hover'); sayOwl("Мы думаем как единое целое.");
+            } else if (aiChoiceStr === loseM[playerChoiceStr]) {
+                playerScore++; document.getElementById('playerScore').textContent = playerScore; resultText = `Победа человека!`; playSound('win'); sayOwl("Логический сбой. Вы обошли алгоритм.");
             } else {
-                aiScore++;
-                document.getElementById('aiScore').textContent = aiScore;
-                resultText = `Рентген победил. Ваш ход был просчитан.`;
-                sayOwl("Элементарно. Мое отражение всегда на шаг впереди.");
+                aiScore++; document.getElementById('aiScore').textContent = aiScore; resultText = `Победа машины.`; playSound('lose'); sayOwl("Предсказуемо. Сингулярность неизбежна.");
             }
-
             document.getElementById('rpsStatus').textContent = resultText;
 
             if (playerScore === 3 || aiScore === 3) {
-                if (playerScore === 3) {
-                    stopTimerAndShowModal();
-                } else {
-                    showToast("ИИ-Рентген выиграл серию до 3 побед!", false);
-                    sayOwl("Серия за отражением! Кремниевый разум победил.");
-                    playerScore = 0; aiScore = 0;
-                    document.getElementById('playerScore').textContent = '0';
-                    document.getElementById('aiScore').textContent = '0';
-                }
+                if (playerScore === 3) { stopTimerAndShowModal(); } 
+                else { showToast("Система победила! Серия провалена.", false); sayOwl("Машины победили."); playerScore = 0; aiScore = 0; document.getElementById('playerScore').textContent = '0'; document.getElementById('aiScore').textContent = '0'; }
             }
-        }, 1100);
+        }, 1200);
+    }
+
+    function enableTouchMode() {
+        document.body.addEventListener('click', () => { if(audioCtx.state === 'suspended') audioCtx.resume(); }, {once:true});
+        pieces.forEach(({ el }) => {
+            el.addEventListener('pointerdown', (e) => {
+                if (el.classList.contains('locked')) return;
+                el.setPointerCapture(e.pointerId); startTimer(); draggedPiece = el; playSound('click');
+                const rect = el.getBoundingClientRect(); dragOffsetX = e.clientX - rect.left; dragOffsetY = e.clientY - rect.top; dragStartX = e.clientX; dragStartY = e.clientY; el.classList.add('dragging');
+            });
+            el.addEventListener('pointermove', (e) => { if (draggedPiece === el) moveInteractionAt(e.clientX, e.clientY); });
+            el.addEventListener('pointerup', () => endInteraction()); el.addEventListener('pointercancel', () => endInteraction());
+        });
+        document.querySelectorAll('.suspect-card').forEach(card => { card.addEventListener('click', () => checkDetectiveVote(card)); });
     }
 
     let isImploding = false;
     function triggerImplosion() {
-        if (isImploding) return;
-        isImploding = true;
-        showToast('СИНХРОНИЗАЦИЯ... ВОЗВРАТ', true);
-        stopGesturePipeline();
-        document.body.classList.add('implode');
-        setTimeout(() => { window.location.href = 'index.html'; }, prefersReducedMotion ? 650 : 1400);
+        if (isImploding) return; isImploding = true; showToast('СИНХРОНИЗАЦИЯ... ВОЗВРАТ', true);
+        if(cameraFeed) cameraFeed.stop(); document.body.classList.add('implode');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1400);
     }
 
     function showToast(text, isSuccess = false) {
-        const toast = document.getElementById('toast');
-        toast.innerText = text;
-        toast.classList.toggle('success', !!isSuccess);
-        toast.classList.add('show');
+        const toast = document.getElementById('toast'); toast.innerText = text;
+        toast.classList.toggle('success', !!isSuccess); toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    if (interactionMode === 'gesture') {
-        startGesturePipeline();
-    } else {
-        document.getElementById('loader').style.display = 'none';
-        enableTouchMode();
-        showToast('Сенсорное управление активно', true);
-    }
+    if (interactionMode === 'gesture') { startGesturePipeline(); } else { document.getElementById('loader').style.display = 'none'; enableTouchMode(); }
     </script>
 </body>
 </html>
