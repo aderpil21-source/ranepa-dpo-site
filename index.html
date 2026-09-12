@@ -1345,8 +1345,12 @@
                 </div>
             </div>`;
 
-            if (prog.sector && htmlMap['tab-all'][prog.sector]) {
-                htmlMap['tab-all'][prog.sector].push(cardHTML);
+            const defaultSec = (prog.sector && htmlMap['tab-all'][prog.sector]) ? prog.sector : Object.keys(htmlMap['tab-all'])[0];
+            if (defaultSec && htmlMap['tab-all'][defaultSec]) {
+                htmlMap['tab-all'][defaultSec].push(cardHTML);
+            } else {
+                if (!htmlMap['tab-all']['gos']) htmlMap['tab-all']['gos'] = [];
+                htmlMap['tab-all']['gos'].push(cardHTML);
             }
 
             if (prog.tab && tabs.includes(prog.tab)) {
