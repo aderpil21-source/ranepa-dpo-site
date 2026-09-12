@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 
-    <!-- Three.js (3D depth scene) -->
+    <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
@@ -64,7 +64,7 @@
             padding: 14px 26px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif;
         }
 
-        /* ТОЧНАЯ КОПИЯ ВАШЕЙ СОВЫ В ШЛЯПЕ И ШАРФЕ */
+        /* Сова в шляпе и бордовом шарфе */
         .companion-owl {
             position: fixed; bottom: 30px; right: 30px; width: 95px; height: 95px; z-index: 2500;
             pointer-events: none; animation: owlFloat 4s ease-in-out infinite;
@@ -128,7 +128,6 @@
         .hints-panel .hint-row { display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; }
         .hints-panel .hint-row b { color: #fff; }
         .hints-panel .hint-icon { flex-shrink: 0; font-size: 1.1rem; }
-        .hints-dont-show { margin-top: 10px; font-size: 0.75rem; color: #94A3B8; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 
         .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
         .canvas-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; transform: scaleX(-1); }
@@ -140,7 +139,6 @@
             box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
         .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
-        .hand-cursor.clicked { background: #10b981; border-color: #fff; transform: translate(-50%, -50%) scale(0.75); }
 
         #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
         body.touch-mode #scroll-container { position: static; width: 100%; transform: none !important; }
@@ -189,42 +187,36 @@
         .puzzle-piece.locked .piece-num { opacity: 0; }
 
         .screen-terms { width: 100vw; min-height: 100vh; padding: 60px clamp(16px, 4vw, 50px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 26px; perspective: 1200px; }
+        
+        /* КАРТОЧКИ И ИГРА «КАМЕНЬ, НОЖНИЦЫ, БУМАГА (3D РЕНТГЕН)» */
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 28px; width: 270px; text-align: center; height: fit-content;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform-style: preserve-3d;
-            transition: box-shadow 0.2s, border-color 0.2s, transform 0.12s ease-out;
-            touch-action: none;
+            transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s;
             transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) scale(var(--cscale, 1));
         }
-        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 45px rgba(56, 189, 248, 0.45); z-index: 10; }
-        .term-card h3 { font-size: 1.15rem; margin-bottom: 14px; color: var(--accent); }
-        .term-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
+        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 50px rgba(56, 189, 248, 0.6); z-index: 10; }
 
-        /* ИГРА ДЕТЕКТИВ (Открыта и активна) */
-        .suspect-card { cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent !important; position: relative; }
-        .suspect-card:hover, .suspect-card.hovered { border-color: #fde68a !important; box-shadow: 0 0 30px rgba(253, 230, 138, 0.3); transform: scale(1.05); }
-        
-        .suspect-card.eliminated {
-            opacity: 0.3; filter: grayscale(1); pointer-events: none; transform: scale(0.95);
+        /* ИНТЕРАКТИВНЫЙ ТРЕНАЖЕР: КАМЕНЬ, НОЖНИЦЫ, БУМАГА ПРОТИВ ИИ-РЕНТГЕНА */
+        .rps-arena {
+            width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 24px; padding: 30px; margin-top: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center;
         }
-        .suspect-card.eliminated::after {
-            content: 'ОТБРОШЕН'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg);
-            background: var(--ranepa-red); color: #fff; font-weight: 900; padding: 6px 16px; border-radius: 8px;
-            font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.8); letter-spacing: 1px;
-        }
+        .rps-scores { display: flex; justify-content: space-around; font-size: 1.2rem; font-weight: 900; margin-bottom: 20px; color: var(--accent); }
+        .rps-display { display: flex; justify-content: center; gap: 40px; margin: 25px 0; font-size: 3rem; align-items: center; }
+        .rps-box { background: rgba(0,0,0,0.5); border: 2px dashed rgba(255,255,255,0.2); border-radius: 16px; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; position: relative; }
+        .rps-box span { font-size: 0.8rem; position: absolute; bottom: 8px; color: #94a3b8; }
+        .rps-btns { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .rps-btn { background: rgba(56,189,248,0.15); border: 1px solid var(--accent); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .rps-btn:hover { background: var(--accent); color: #000; transform: scale(1.05); }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
         .modal-box { position: relative; background: rgba(17, 24, 39, 0.88); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.25); transform: scale(0.9); transition: transform 0.3s; overflow: hidden; }
         .modal-overlay.active .modal-box { transform: scale(1); }
-        .shockwave {
-            position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; border-radius: 50%;
-            border: 2px solid var(--accent); transform: translate(-50%,-50%); opacity: 0; pointer-events: none;
-        }
-        .shockwave.play { animation: shockwaveExpand 1s ease-out; }
-        @keyframes shockwaveExpand { 0% { opacity: 0.9; width: 20px; height: 20px; } 100% { opacity: 0; width: 700px; height: 700px; } }
-        .save-btn { position: relative; z-index: 2; background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
+        .save-btn { background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
         .save-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
         .confetti-bit { position: fixed; width: 8px; height: 12px; z-index: 10001; pointer-events: none; animation: confettiFall 1.6s ease-in forwards; }
         @keyframes confettiFall { to { transform: translateY(70vh) rotate(540deg); opacity: 0; } }
@@ -242,32 +234,24 @@
 </head>
 <body>
 
-    <!-- ВАША ТОЧНАЯ СОВА В ШЛЯПЕ И БОРДОВОМ ШАРФЕ -->
-    <div class="owl-bubble" id="owlBubble">Ху-ху! Я твой наставник. Скролль кулаком вниз и решай тест Тьюринга!</div>
+    <!-- Сова в шляпе и бордовом шарфе -->
+    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Сыграй со мной в «Камень, ножницы, бумага» против моего 3D-рентгена! Скролль кулаком вниз.</div>
     <div class="companion-owl">
         <svg viewBox="0 0 120 120" width="100%" height="100%">
-            <!-- Перья-ушки (как на втором вашем скрипте) -->
             <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
             <path d="M 85 35 Q 95 10 80 25 Z" fill="#654321"/>
-            <!-- Тело совы -->
             <ellipse cx="60" cy="70" rx="32" ry="38" fill="#8B5A2B"/>
             <ellipse cx="60" cy="72" rx="24" ry="30" fill="#D2B48C"/>
-            <!-- Голова -->
             <circle cx="60" cy="45" r="28" fill="#8B5A2B"/>
-            <!-- Лицевой диск (глаза) -->
             <circle cx="48" cy="45" r="14" fill="#D2B48C"/>
             <circle cx="72" cy="45" r="14" fill="#D2B48C"/>
-            <!-- Большие оранжевые глаза -->
             <circle cx="48" cy="45" r="10" fill="#FFA500"/>
             <circle cx="72" cy="45" r="10" fill="#FFA500"/>
             <circle cx="48" cy="45" r="4" fill="#000"/>
             <circle cx="72" cy="45" r="4" fill="#000"/>
-            <!-- Клюв -->
             <polygon points="60,48 55,58 65,58" fill="#333"/>
-            <!-- БОРДОВЫЙ ШАРФ -->
             <path d="M 38 90 Q 60 102 82 90 L 85 102 Q 60 112 35 102 Z" fill="#800020"/>
             <path d="M 72 98 L 78 118 L 68 116 Z" fill="#800020"/>
-            <!-- АКАДЕМИЧЕСКАЯ ШЛЯПА (КОНФЕДЕРАТКА) -->
             <polygon points="60,10 105,22 60,34 15,22" fill="#1e1e1e"/>
             <rect x="50" y="26" width="20" height="10" fill="#2d2d2d"/>
             <line x1="60" y1="22" x2="85" y2="30" stroke="#FFD700" stroke-width="2.5"/>
@@ -278,9 +262,8 @@
     <div id="loader">
         <div class="spinner" id="loaderSpinner"></div>
         <h2 id="loaderTitle" style="margin-bottom: 6px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;" id="loaderSubtitle">Предоставьте доступ к камере. Включен 3D-движок и Сова-Компаньон.</p>
-        <p id="loaderError"></p>
-        <button id="loaderTouchFallback" class="fallback-btn">👆 Переключиться на сенсор/мышь</button>
+        <p style="color: #94A3B8;">Запуск двухручного трекинга и ИИ-рентгена.</p>
+        <button id="loaderTouchFallback" class="fallback-btn">👆 Режим мыши</button>
     </div>
 
     <div class="vignette"></div>
@@ -288,27 +271,23 @@
 
     <div class="hud-left">
         <button class="hud-btn" id="hintsToggleBtn" title="Подсказки">💡</button>
-        <button class="hud-btn" id="modeToggleBtn" title="Переключить режим управления">🖐️</button>
+        <button class="hud-btn" id="modeToggleBtn" title="Режим управления">🖐️</button>
         <button class="hud-btn exit-btn" id="exitBtn" title="Выйти">✕</button>
     </div>
 
     <div class="hints-panel" id="hintsPanel">
-        <h3>Как управлять</h3>
-        <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — берите осколки пазла и карточки.</span></div>
-        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Плотный кулак</b> + движение вверх/вниз — идеальный скролл.</span></div>
-        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Тап в воздухе</b> — выбрать ответ в игре.</span></div>
-        <div class="hint-row"><span class="hint-icon">✌️</span><span>Жест «Пис» — выход из лаборатории.</span></div>
-        <label class="hints-dont-show"><input type="checkbox" id="hintsDontShow"> Больше не показывать</label>
+        <h3>Управление двумя руками</h3>
+        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Кулак любой рукой</b> — идеальный скролл страницы.</span></div>
+        <div class="hint-row"><span class="hint-icon">✌️</span><span>Жест «Пис» — выход.</span></div>
+        <div class="hint-row"><span class="hint-icon">🖐️</span><span><b>Две руки</b> — активный режим дуэли с ИИ-рентгеном.</span></div>
     </div>
 
     <div class="hud-top">
         <div class="hud-mode-badge" id="modeBadge">Режим: жесты</div>
-        <div class="hud-mic" id="micBadge"><div class="mic-dot"></div> Голосовой ИИ активен</div>
         <div class="hud-timer" id="timerDisplay">00:00</div>
     </div>
 
     <canvas id="webgl-canvas"></canvas>
-
     <video id="webcam" class="video-feed" autoplay playsinline muted></video>
     <canvas id="output_canvas" class="canvas-overlay"></canvas>
 
@@ -316,8 +295,9 @@
     <div id="cursor1" class="hand-cursor"></div>
 
     <div id="scroll-container">
+        <!-- УРОВЕНЬ 1: ПАЗЛ -->
         <div class="screen-puzzle">
-            <div class="header"><h1>Практика ИИ</h1></div>
+            <div class="header"><h1>Практика ИИ: Сборка Ядра</h1></div>
             <div class="puzzle-stage">
                 <div class="puzzle-area" id="puzzleArea">
                     <div class="puzzle-grid" id="grid"></div>
@@ -325,33 +305,37 @@
             </div>
         </div>
 
+        <!-- КАРТОЧКИ -->
         <div class="screen-terms" id="termsSection">
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База данных ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1rem;" id="termsHint">Проскролльте кулаком вниз к игре «ИИ-Детектив»!</p>
+                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База знаний ИИ</h2>
+                <p style="color: #94A3B8; font-size: 1rem;">Скролль кулаком вниз к кибер-дуэли!</p>
             </div>
         </div>
 
-        <!-- УРОВЕНЬ 2: ИИ-ДЕТЕКТИВ (ОТКРЫТ И АКТИВЕН) -->
-        <div class="screen-terms unlocked" id="detectiveSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent;">
-            <div style="width: 100%; text-align: center; margin-bottom: 30px;">
-                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 10px;" id="detectiveTitle">Уровень 2: Тест Тьюринга (Раунд 1)</h2>
-                <p style="color: #94A3B8; font-size: 1rem; max-width: 800px; margin: 0 auto;" id="detectiveSubtitle">Один из подозреваемых — вышедшая из-под контроля нейросеть. Сделайте <b>тап в воздухе</b> на нейросети, чтобы вынести вердикт!</p>
+        <!-- УРОВЕНЬ 2: ИГРА «КАМЕНЬ, НОЖНИЦЫ, БУМАГА» ПРОТИВ 3D-РЕНТГЕНА ИИ -->
+        <div class="screen-terms" id="gameSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent; display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 2: Дуэль с ИИ-Рентгеном</h2>
+                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Сыграй в классическую игру против своего цифрового отражения (до 3 побед). Бот просчитывает твои ходы через 3D-рентген и вежливо издевается при победе!</p>
             </div>
-            
-            <div class="term-card suspect-card" data-suspect="А" style="border-color: rgba(255,255,255,0.2);">
-                <h3 style="color: #fff;">Подозреваемый А</h3>
-                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Что такое любовь?<br><br><b>А:</b> Это химическая реакция в мозге, которая стимулирует выработку дофамина и окситоцина.</p>
-            </div>
-            
-            <div class="term-card suspect-card" data-suspect="Б" data-is-ai="true" style="border-color: rgba(255,255,255,0.2);">
-                <h3 style="color: #fff;">Подозреваемый Б</h3>
-                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Что такое любовь?<br><br><b>Б:</b> Когда готов отдать последнюю печеньку и даже не злиться за это. И тепло внутри.</p>
-            </div>
-            
-            <div class="term-card suspect-card" data-suspect="В" style="border-color: rgba(255,255,255,0.2);">
-                <h3 style="color: #fff;">Подозреваемый В</h3>
-                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Что такое любовь?<br><br><b>В:</b> Беспокойство за другого человека больше, чем за себя. И очень сильная привязанность.</p>
+
+            <div class="rps-arena">
+                <div class="rps-scores">
+                    <span>Твой счет: <b id="playerScore">0</b></span>
+                    <span>Счет ИИ-Рентгена: <b id="aiScore">0</b></span>
+                </div>
+                <div class="rps-display">
+                    <div class="rps-box"><span id="playerChoice">❔</span><span>Ты</span></div>
+                    <div style="font-size: 1.5rem; color: var(--accent);">VS</div>
+                    <div class="rps-box"><span id="aiChoice">🔮</span><span>Рентген ИИ</span></div>
+                </div>
+                <p id="rpsStatus" style="font-size: 1rem; color: #fde68a; margin-bottom: 15px; min-height: 24px;">Сделай свой выбор:</p>
+                <div class="rps-btns">
+                    <button class="rps-btn" onclick="playRPS('камень')">✊ Камень</button>
+                    <button class="rps-btn" onclick="playRPS('ножницы')">✌️ Ножницы</button>
+                    <button class="rps-btn" onclick="playRPS('бумага')">✋ Бумага</button>
+                </div>
             </div>
         </div>
     </div>
@@ -359,8 +343,8 @@
     <div class="modal-overlay" id="victoryModal" role="dialog" aria-modal="true">
         <div class="modal-box">
             <div class="shockwave" id="shockwave"></div>
-            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
-            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Структура успешно восстановлена.<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
+            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Дуэль выиграна!</h2>
+            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Ты превзошел алгоритм рентгена!<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
             <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить</button>
         </div>
     </div>
@@ -382,41 +366,25 @@
     let interactionMode = (isTouchCapable && !hasFinePointer) || !hasMediaDevices ? 'touch' : 'gesture';
 
     function setModeBadge() {
-        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты' : 'Режим: сенсор/мышь';
+        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты (2 руки)' : 'Режим: мышь';
         document.getElementById('modeToggleBtn').textContent = interactionMode === 'gesture' ? '🖐️' : '👆';
-        document.getElementById('micBadge').style.display = interactionMode === 'gesture' ? 'flex' : 'none';
         document.body.classList.toggle('touch-mode', interactionMode === 'touch');
     }
     setModeBadge();
 
-    const owlBubble = document.getElementById('owlBubble');
+    const owlBubble = document.getElementById('owlBodyBubble');
     function sayOwl(text, duration = 4000) {
         owlBubble.textContent = text;
         owlBubble.classList.add('show');
         setTimeout(() => owlBubble.classList.remove('show'), duration);
     }
-    setTimeout(() => sayOwl("Ху-ху! Я твой наставник. Скролль кулаком вниз и решай тест Тьюринга!"), 1500);
+    setTimeout(() => sayOwl("Ху-ху! Скролль кулаком вниз и брось вызов моему 3D-рентгену!"), 1500);
 
     const hintsPanel = document.getElementById('hintsPanel');
-    const hintsToggleBtn = document.getElementById('hintsToggleBtn');
-    const hintsDontShow = document.getElementById('hintsDontShow');
-    hintsToggleBtn.addEventListener('click', () => hintsPanel.classList.toggle('open'));
-    hintsDontShow.addEventListener('change', () => {
-        try { localStorage.setItem('ar_hints_dismissed', hintsDontShow.checked ? '1' : ''); } catch (e) {}
-    });
-    (function initialHintsState() {
-        let dismissed = false;
-        try { dismissed = localStorage.getItem('ar_hints_dismissed') === '1'; } catch (e) {}
-        hintsDontShow.checked = dismissed;
-        if (!dismissed) hintsPanel.classList.add('open');
-    })();
-
+    document.getElementById('hintsToggleBtn').addEventListener('click', () => hintsPanel.classList.toggle('open'));
     document.getElementById('exitBtn').addEventListener('click', () => triggerImplosion());
 
-    let timerInterval = null;
-    let timeElapsed = 0;
-    let timerStarted = false;
-
+    let timerInterval = null, timeElapsed = 0, timerStarted = false;
     function startTimer() {
         if (timerStarted) return;
         timerStarted = true;
@@ -433,7 +401,6 @@
         const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
         const s = String(timeElapsed % 60).padStart(2, '0');
         document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
-        sayOwl("Ядро собрано! Переходим к расследованию.");
         if (navigator.vibrate) navigator.vibrate([30, 40, 30, 40, 80]);
         setTimeout(() => {
             document.getElementById('victoryModal').classList.add('active');
@@ -458,37 +425,19 @@
         }
     }
 
-    function initVoice() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { document.getElementById('micBadge').style.display = 'none'; return; }
-        try {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ru-RU';
-            recognition.continuous = true;
-            recognition.interimResults = false;
-            recognition.onresult = (event) => {
-                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                if (transcript.includes('сова') || transcript.includes('закрой') || transcript.includes('взрыв')) triggerImplosion();
-            };
-            recognition.onerror = () => {};
-            recognition.onend = () => { if (!isImploding) { try { recognition.start(); } catch (e) {} } };
-            recognition.start();
-        } catch (e) { document.getElementById('micBadge').style.display = 'none'; }
-    }
-
+    // Пазлы
     const puzzleArea = document.getElementById('puzzleArea');
     const grid = document.getElementById('grid');
     const cols = 3, rows = 2;
     const boardW = 600, boardH = 400;
-    const pW = boardW / cols;
-    const pH = boardH / rows;
+    const pW = boardW / cols, pH = boardH / rows;
     let lockedCount = 0;
 
     const pts = [];
     for (let r = 0; r <= rows; r++) {
         let rowPts = [];
         for (let c = 0; c <= cols; c++) {
-            let x = c * pW; let y = r * pH;
+            let x = c * pW, y = r * pH;
             if (c > 0 && c < cols) x += (Math.random() - 0.5) * 60;
             if (r > 0 && r < rows) y += (Math.random() - 0.5) * 60;
             rowPts.push({ x, y });
@@ -506,15 +455,12 @@
 
             let piece = document.createElement('div');
             piece.className = 'puzzle-piece';
-            piece.style.width = `${pW}px`;
-            piece.style.height = `${pH}px`;
-            piece.dataset.correctX = c * pW;
-            piece.dataset.correctY = r * pH;
+            piece.style.width = `${pW}px`; piece.style.height = `${pH}px`;
+            piece.dataset.correctX = c * pW; piece.dataset.correctY = r * pH;
             piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
             piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
 
-            const tl = pts[r][c], tr = pts[r][c + 1];
-            const br = pts[r + 1][c + 1], bl = pts[r + 1][c];
+            const tl = pts[r][c], tr = pts[r][c + 1], br = pts[r + 1][c + 1], bl = pts[r + 1][c];
             const px = (p) => `${((p.x - c * pW) / pW) * 100}%`;
             const py = (p) => `${((p.y - r * pH) / pH) * 100}%`;
             piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
@@ -522,24 +468,18 @@
             const isLeft = (c < cols / 2);
             let startX = isLeft ? -250 : boardW + 50;
             let startY = isLeft ? leftCount * 120 : rightCount * 120;
-            startX += (Math.random() * 30 - 15);
-            startY += (Math.random() * 30 - 15);
             if (isLeft) leftCount++; else rightCount++;
 
-            piece.style.left = `${startX}px`;
-            piece.style.top = `${startY}px`;
+            piece.style.left = `${startX}px`; piece.style.top = `${startY}px`;
             puzzleArea.appendChild(piece);
             pieces.push({ el: piece, locked: false });
         }
     }
 
     const termsData = [
-        { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
-        { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
-        { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
-        { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
-        { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
-        { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
+        { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных." },
+        { t: "Нейросеть", d: "Модель, имитирующая синапсы мозга для распознавания образов." },
+        { t: "Промптинг", d: "Инженерное искусство точного диалога с языковыми моделями." }
     ];
     const termsContainer = document.getElementById('termsSection');
     let termCards = [];
@@ -552,25 +492,9 @@
         termCards.push(card);
     });
 
-    if (hasFinePointer) {
-        termCards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const r = card.getBoundingClientRect();
-                const relX = (e.clientX - r.left) / r.width - 0.5;
-                const relY = (e.clientY - r.top) / r.height - 0.5;
-                card.style.setProperty('--tiltY', (relX * 14) + 'deg');
-                card.style.setProperty('--tiltX', (-relY * 14) + 'deg');
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.setProperty('--tiltY', '0deg');
-                card.style.setProperty('--tiltX', '0deg');
-            });
-        });
-    }
-
+    // 3D Scene
     let scene, camera3D, renderer, coreMesh, glowMesh, ringMesh, particles;
-    let targetRotX = 0, targetRotY = 0;
-    let sceneReady = false;
+    let targetRotX = 0, targetRotY = 0, sceneReady = false;
 
     function initScene() {
         if (!hasWebGL || typeof THREE === 'undefined') return;
@@ -578,43 +502,15 @@
             scene = new THREE.Scene();
             camera3D = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: !isTouchCapable });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, isTouchCapable ? 1.5 : 2));
             renderer.setSize(window.innerWidth, window.innerHeight);
 
-            coreMesh = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(12, 1),
-                new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.18 })
-            );
+            coreMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(12, 1), new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.18 }));
             scene.add(coreMesh);
-
-            glowMesh = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(13.5, 1),
-                new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.06, blending: THREE.AdditiveBlending, depthWrite: false })
-            );
+            glowMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(13.5, 1), new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.06, blending: THREE.AdditiveBlending, depthWrite: false }));
             scene.add(glowMesh);
-
-            ringMesh = new THREE.Mesh(
-                new THREE.TorusGeometry(20, 0.15, 8, 80),
-                new THREE.MeshBasicMaterial({ color: 0xCA0F3E, transparent: true, opacity: 0.35 })
-            );
+            ringMesh = new THREE.Mesh(new THREE.TorusGeometry(20, 0.15, 8, 80), new THREE.MeshBasicMaterial({ color: 0xCA0F3E, transparent: true, opacity: 0.35 }));
             ringMesh.rotation.x = Math.PI / 2.4;
             scene.add(ringMesh);
-
-            const particleCount = isTouchCapable ? 250 : 500;
-            const posArr = new Float32Array(particleCount * 3);
-            for (let i = 0; i < particleCount * 3; i += 3) {
-                const radius = 40 + Math.random() * 60;
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                posArr[i] = radius * Math.sin(phi) * Math.cos(theta);
-                posArr[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
-                posArr[i + 2] = radius * Math.cos(phi);
-            }
-            const particleGeo = new THREE.BufferGeometry();
-            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-            const particleMat = new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.6, transparent: true, opacity: 0.5 });
-            particles = new THREE.Points(particleGeo, particleMat);
-            scene.add(particles);
 
             camera3D.position.z = 30;
             sceneReady = true;
@@ -623,32 +519,18 @@
     initScene();
 
     const scrollContainer = document.getElementById('scroll-container');
-    let draggedPiece = null;
-    let dragOffsetX = 0, dragOffsetY = 0;
-    let dragStartX = 0, dragStartY = 0;
-
+    let draggedPiece = null, dragOffsetX = 0, dragOffsetY = 0;
     let scrollY = 0, targetScrollY = 0, scrollVelocity = 0, lastDragY = null;
     const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
 
-    let zoomedCard = null, zoomStartY = 0, initialCardScale = 1;
-
     function moveInteractionAt(x, y) {
-        if (zoomedCard) {
-            const deltaY = zoomStartY - y;
-            let targetScale = initialCardScale + (deltaY * 0.005);
-            targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
-            zoomedCard.style.setProperty('--cscale', targetScale);
-            zoomedCard.dataset.scale = targetScale;
-        } else if (draggedPiece) {
-            const containerRect = puzzleArea.getBoundingClientRect();
-            const newX = x - dragOffsetX - containerRect.left;
-            const newY = y - dragOffsetY - containerRect.top;
-            draggedPiece.style.left = `${newX}px`;
-            draggedPiece.style.top = `${newY}px`;
+        if (draggedPiece) {
+            const cr = puzzleArea.getBoundingClientRect();
+            draggedPiece.style.left = `${x - dragOffsetX - cr.left}px`;
+            draggedPiece.style.top = `${y - dragOffsetY - cr.top}px`;
         } else if (lastDragY !== null) {
-            const deltaY = y - lastDragY;
-            targetScrollY += deltaY * 2.5;
-            scrollVelocity = deltaY * 0.5;
+            targetScrollY += (y - lastDragY) * 3.0;
+            scrollVelocity = (y - lastDragY) * 0.4;
             lastDragY = y;
         }
     }
@@ -660,8 +542,22 @@
             checkSnap(draggedPiece);
             draggedPiece = null;
         }
-        if (zoomedCard) { zoomedCard.classList.remove('hovered'); zoomedCard = null; }
         lastDragY = null;
+    }
+
+    function checkSnap(piece) {
+        const cx = parseInt(piece.style.left), cy = parseInt(piece.style.top);
+        const tx = parseInt(piece.dataset.correctX), ty = parseInt(piece.dataset.correctY);
+        if (Math.abs(cx - tx) < 70 && Math.abs(cy - ty) < 70) {
+            piece.style.left = `${tx}px`; piece.style.top = `${ty}px`;
+            piece.classList.add('locked', 'just-locked');
+            lockedCount++;
+            if (lockedCount === cols * rows) {
+                document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
+                puzzleArea.classList.add('completed');
+                stopTimerAndShowModal();
+            }
+        }
     }
 
     function enableTouchMode() {
@@ -671,44 +567,26 @@
                 el.setPointerCapture(e.pointerId);
                 startTimer();
                 draggedPiece = el;
-                const rect = el.getBoundingClientRect();
-                dragOffsetX = e.clientX - rect.left; dragOffsetY = e.clientY - rect.top;
-                dragStartX = e.clientX; dragStartY = e.clientY;
+                const r = el.getBoundingClientRect();
+                dragOffsetX = e.clientX - r.left; dragOffsetY = e.clientY - r.top;
                 el.classList.add('dragging');
             });
-            el.addEventListener('pointermove', (e) => {
-                if (draggedPiece !== el) return;
-                moveInteractionAt(e.clientX, e.clientY);
-            });
-            const release = (e) => { if (draggedPiece === el) endInteraction(); };
-            el.addEventListener('pointerup', release);
-            el.addEventListener('pointercancel', release);
+            el.addEventListener('pointermove', (e) => { if (draggedPiece === el) moveInteractionAt(e.clientX, e.clientY); });
+            el.addEventListener('pointerup', () => endInteraction());
         });
     }
 
     function physicsLoop() {
         if (interactionMode === 'gesture') {
             if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
-                targetScrollY += scrollVelocity;
-                scrollVelocity *= 0.9;
+                targetScrollY += scrollVelocity; scrollVelocity *= 0.9;
             }
             targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
             scrollY = lerp(scrollY, targetScrollY, 0.2);
             scrollContainer.style.transform = `translateY(${scrollY}px)`;
         }
-
-        if (sceneReady && (!document.hidden)) {
-            const scrollProgress = interactionMode === 'gesture'
-                ? Math.min(1, Math.abs(scrollY) / Math.max(1, -maxScroll()))
-                : Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
-            coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
-            coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
-            coreMesh.rotation.x += 0.0012;
-            coreMesh.rotation.y += 0.002;
-            glowMesh.rotation.copy(coreMesh.rotation);
-            ringMesh.rotation.z += 0.0015;
-            particles.rotation.y += 0.0006;
-            camera3D.position.z = 30 - scrollProgress * 10;
+        if (sceneReady && !document.hidden) {
+            coreMesh.rotation.x += 0.001; coreMesh.rotation.y += 0.002;
             renderer.render(scene, camera3D);
         }
         requestAnimationFrame(physicsLoop);
@@ -717,297 +595,193 @@
 
     function lerp(a, b, t) { return (1 - t) * a + t * b; }
 
-    if (interactionMode === 'gesture') {
-        window.addEventListener('wheel', (e) => {
-            targetScrollY -= e.deltaY;
-            targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
-            scrollVelocity = 0;
-        }, { passive: true });
-    }
-
-    let cameraFeed = null, hands = null;
-    let mediaStream = null;
-
+    let cameraFeed = null, hands = null, mediaStream = null;
     document.getElementById('modeToggleBtn').addEventListener('click', () => {
-        if (interactionMode === 'gesture') { switchToTouch(); }
-        else { switchToGesture(); }
+        if (interactionMode === 'gesture') {
+            if (cameraFeed && cameraFeed.stop) cameraFeed.stop();
+            if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
+            interactionMode = 'touch'; enableTouchMode(); showToast("Режим мыши включен", true);
+        } else {
+            interactionMode = 'gesture'; startGesturePipeline(); showToast("Режим жестов (2 руки) включен", true);
+        }
+        setModeBadge();
     });
-
-    function switchToTouch() {
-        stopGesturePipeline();
-        interactionMode = 'touch';
-        setModeBadge();
-        enableTouchMode();
-        showToast('Мышиное управление включено', true);
-        sayOwl("Перешли на мышь? Кликайте на карточки напрямую!");
-    }
-
-    function switchToGesture() {
-        if (!hasMediaDevices) { showToast('Камера недоступна'); return; }
-        interactionMode = 'gesture';
-        setModeBadge();
-        showToast('Запуск камеры…', true);
-        startGesturePipeline();
-    }
-
-    function stopGesturePipeline() {
-        try { if (cameraFeed && cameraFeed.stop) cameraFeed.stop(); } catch (e) {}
-        try { if (mediaStream) mediaStream.getTracks().forEach(t => t.stop()); } catch (e) {}
-        document.getElementById('cursor0').style.opacity = 0;
-    }
 
     const videoElement = document.getElementById('webcam');
     const canvasElement = document.getElementById('output_canvas');
     const canvasCtx = canvasElement.getContext('2d');
     const cursor0 = document.getElementById('cursor0');
+    const cursor1 = document.getElementById('cursor1');
 
-    let isPinching0 = false;
-    let p0 = { x: 0, y: 0 };
-    let smoothP0 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let peaceFrames = 0;
 
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
+        // Двухручный трекинг с макс 2 руками
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.65, minTrackingConfidence: 0.65 });
+        hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.65, minTrackingConfidence: 0.65 });
         hands.onResults(onResults);
 
         cameraFeed = new Camera(videoElement, {
             onFrame: async () => { await hands.send({image: videoElement}); },
             width: 1280, height: 720
         });
-
         cameraFeed.start().then(() => {
             document.getElementById('loader').style.display = 'none';
-            initVoice();
-            sayOwl("Камера активна! Сожми кулак для скролла страницы.");
-        }).catch(err => {
+            sayOwl("Камера активна! Задействованы обе руки.");
+        }).catch(() => {
             document.getElementById('loaderError').style.display = 'block';
-            document.getElementById('loaderError').textContent = "Ошибка камеры. Переключитесь на мышь.";
+            document.getElementById('loaderError').textContent = "Ошибка камеры. Используйте мышь.";
             document.getElementById('loaderTouchFallback').style.display = "inline-block";
         });
-
-        document.getElementById('loaderTouchFallback').onclick = () => {
-            document.getElementById('loader').style.display = 'none';
-            switchToTouch();
-        };
     }
 
-    let lastPinchState = false;
-    let clickCooldown = false;
-
+    // ИДЕАЛЬНЫЙ СКРОЛЛ КУЛАКОМ И ДВУХРУЧНЫЙ ТРЕКИНГ
     function onResults(results) {
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerHeight;
-        canvasCtx.save();
-        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        canvasElement.width = window.innerWidth; canvasElement.height = window.innerHeight;
+        canvasCtx.save(); canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        cursor0.style.opacity = 0; cursor1.style.opacity = 0;
 
-        cursor0.style.opacity = 0;
-        let pinch = false;
-        let activeFistY = null;
-        let triggerClick = false;
+        const handsFound = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
 
-        const handFound = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
+        if (handsFound) {
+            let activeFistY = null;
 
-        if (handFound) {
-            const landmarks = results.multiHandLandmarks[0];
-            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
-            drawLandmarks(canvasCtx, landmarks, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
+            results.multiHandLandmarks.forEach((lm, idx) => {
+                drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
+                drawLandmarks(canvasCtx, lm, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
 
-            targetRotX = (landmarks[0].y - 0.5) * 2;
-            targetRotY = (landmarks[0].x - 0.5) * 2;
-
-            const indexUp = landmarks[8].y < landmarks[6].y;
-            const middleUp = landmarks[12].y < landmarks[10].y;
-            const ringDown = landmarks[16].y > landmarks[14].y;
-            const pinkyDown = landmarks[20].y > landmarks[18].y;
-            if (indexUp && middleUp && ringDown && pinkyDown && !draggedPiece) {
-                peaceFrames++;
-                if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; }
-            } else { peaceFrames = 0; }
-
-            // НАДЕЖНЫЙ КУЛАК ДЛЯ СКРОЛЛА
-            const isFist = (landmarks[8].y > landmarks[6].y) && 
-                           (landmarks[12].y > landmarks[10].y) && 
-                           (landmarks[16].y > landmarks[14].y) && 
-                           (landmarks[20].y > landmarks[18].y);
-
-            if (isFist) {
-                activeFistY = landmarks[9].y * window.innerHeight;
-            }
-
-            const tip = landmarks[8], thumb = landmarks[4];
-            const px = window.innerWidth - (tip.x * window.innerWidth);
-            const py = tip.y * window.innerHeight;
-            const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
-
-            smoothP0.x = lerp(smoothP0.x, px, 0.5);
-            smoothP0.y = lerp(smoothP0.y, py, 0.5);
-            p0 = { x: smoothP0.x, y: smoothP0.y };
-            
-            pinch = dist2D < 0.055 && !isFist;
-
-            if (pinch && !lastPinchState && !clickCooldown) {
-                triggerClick = true;
-                clickCooldown = true;
-                setTimeout(() => clickCooldown = false, 500);
-            }
-            lastPinchState = pinch;
-
-            updateCursor(cursor0, p0, pinch, triggerClick);
-
-            if (triggerClick && !draggedPiece) {
-                const el = document.elementFromPoint(p0.x, p0.y);
-                const suspectCard = el ? el.closest('.suspect-card') : null;
-                if (suspectCard) {
-                    checkDetectiveVote(suspectCard);
+                // Проверка кулака для скролла
+                const isFist = lm[8].y > lm[6].y && lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
+                if (isFist) {
+                    activeFistY = lm[9].y * window.innerHeight;
                 }
-            }
 
-            if (activeFistY !== null && !draggedPiece && !zoomedCard) {
+                // Курсоры для обеих рук
+                const cursor = idx === 0 ? cursor0 : cursor1;
+                const px = window.innerWidth - (lm[8].x * window.innerWidth), py = lm[8].y * window.innerHeight;
+                cursor.style.opacity = 1; cursor.style.left = `${px}px`; cursor.style.top = `${py}px`;
+
+                const pinch = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y) < 0.05 && !isFist;
+                cursor.classList.toggle('pinched', pinch);
+
+                if (pinch && idx === 0) {
+                    const el = document.elementFromPoint(px, py);
+                    if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked') && !draggedPiece) {
+                        startTimer(); draggedPiece = el;
+                        const r = el.getBoundingClientRect();
+                        dragOffsetX = px - r.left; dragOffsetY = py - r.top;
+                        el.classList.add('dragging');
+                    }
+                }
+            });
+
+            if (draggedPiece && results.multiHandLandmarks[0]) {
+                const lm = results.multiHandLandmarks[0];
+                const px = window.innerWidth - (lm[8].x * window.innerWidth), py = lm[8].y * window.innerHeight;
+                const cr = puzzleArea.getBoundingClientRect();
+                draggedPiece.style.left = `${px - dragOffsetX - cr.left}px`;
+                draggedPiece.style.top = `${py - dragOffsetY - cr.top}px`;
+            } else if (activeFistY !== null && !zoomedCard) {
                 if (lastDragY !== null) {
-                    const deltaY = activeFistY - lastDragY;
-                    targetScrollY += deltaY * 3.0;
-                    scrollVelocity = deltaY * 0.4;
+                    targetScrollY += (activeFistY - lastDragY) * 3.0;
+                    scrollVelocity = (activeFistY - lastDragY) * 0.4;
                 }
                 lastDragY = activeFistY;
             } else {
                 lastDragY = null;
             }
 
-            if (pinch) {
-                if (zoomedCard !== null) {
-                    const deltaY = zoomStartY - p0.y;
-                    let targetScale = initialCardScale + (deltaY * 0.005);
-                    targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
-                    zoomedCard.style.setProperty('--cscale', targetScale);
-                    zoomedCard.dataset.scale = targetScale;
-                } else if (draggedPiece !== null) {
-                    const containerRect = puzzleArea.getBoundingClientRect();
-                    const newX = p0.x - dragOffsetX - containerRect.left;
-                    const newY = p0.y - dragOffsetY - containerRect.top;
-                    draggedPiece.style.left = `${newX}px`;
-                    draggedPiece.style.top = `${newY}px`;
-                } else {
-                    const el = document.elementFromPoint(p0.x, p0.y);
-                    if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                        startTimer();
-                        draggedPiece = el;
-                        const rect = el.getBoundingClientRect();
-                        dragOffsetX = p0.x - rect.left; dragOffsetY = p0.y - rect.top;
-                        dragStartX = p0.x; dragStartY = p0.y;
-                        el.classList.add('dragging');
-                    } else if (el && el.closest('.term-card')) {
-                        zoomedCard = el.closest('.term-card');
-                        zoomedCard.classList.add('hovered');
-                        zoomStartY = p0.y;
-                        initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
-                    }
-                }
-            } else {
+            if (!results.multiHandLandmarks[0].some(l => l[8].y < l[6].y)) {
                 endInteraction();
             }
         } else {
             endInteraction();
-            peaceFrames = 0;
-            targetRotX = 0; targetRotY = 0;
+            lastDragY = null;
         }
         canvasCtx.restore();
     }
 
-    function updateCursor(cursorEl, p, isPinched, isClicked) {
-        cursorEl.style.opacity = 1; cursorEl.style.left = `${p.x}px`; cursorEl.style.top = `${p.y}px`;
-        cursorEl.classList.toggle('pinched', isPinched);
-        cursorEl.classList.toggle('clicked', isClicked);
-        const el = document.elementFromPoint(p.x, p.y);
-        if (el && el.closest('.suspect-card')) {
-            cursorEl.style.borderColor = '#fde68a';
-            cursorEl.style.boxShadow = '0 0 15px #fde68a';
+    // МЕХАНИКА ИГРЫ «КАМЕНЬ, НОЖНИЦЫ, БУМАГА» ПРОТИВ 3D-РЕНТГЕНА ИИ
+    let playerScore = 0;
+    let aiScore = 0;
+
+    const arrogantTaunts = [
+        "Ваш выбор просчитан моим рентгеном еще до того, как вы подняли руку.",
+        "Примитивно, мой друг. Нейросети обыгрывали людей в шахматы еще в прошлом веке.",
+        "Это было статистически неизбежно. Не расстраивайтесь.",
+        "Интеллектуальное превосходство кремния снова доказано."
+    ];
+
+    const respectfulCompliments = [
+        "Невероятно! Ваша интуиция обошла квантовый рандом.",
+        "Признаю поражение в этом раунде. Достойный ход.",
+        "Углеродный мозг приятно удивляет."
+    ];
+
+    function playRPS(playerChoiceStr) {
+        startTimer();
+        const choices = ['камень', 'ножницы', 'бумага'];
+        // ИИ играет с псевдорандомом, «сканируя» намерения игрока (рентген)
+        const aiChoiceStr = choices[Math.floor(Math.random() * choices.length)];
+
+        const icons = { 'камень': '✊', 'ножницы': '✌️', 'бумага': '✋' };
+
+        document.getElementById('playerChoice').textContent = icons[playerChoiceStr];
+        document.getElementById('aiChoice').textContent = icons[aiChoiceStr];
+
+        let resultText = "";
+        if (playerChoiceStr === aiChoiceStr) {
+            resultText = "Ничья! 3D-рентген синхронизировал наши частоты.";
+            sayOwl("Ничья! Мой рентген зафиксировал зеркальный выбор.");
+        } else if (
+            (playerChoiceStr === 'камень' && aiChoiceStr === 'ножницы') ||
+            (playerChoiceStr === 'ножницы' && aiChoiceStr === 'бумага') ||
+            (playerChoiceStr === 'бумага' && aiChoiceStr === 'камень')
+        ) {
+            playerScore++;
+            document.getElementById('playerScore').textContent = playerScore;
+            const comp = respectfulCompliments[Math.floor(Math.random() * respectfulCompliments.length)];
+            resultText = `Победа раунда за тобой! ${comp}`;
+            sayOwl(comp);
         } else {
-            cursorEl.style.borderColor = 'var(--accent)';
-            cursorEl.style.boxShadow = '0 0 15px var(--accent)';
+            aiScore++;
+            document.getElementById('aiScore').textContent = aiScore;
+            const taunt = arrogantTaunts[Math.floor(Math.random() * arrogantTaunts.length)];
+            resultText = `ИИ победил в раунде. ${taunt}`;
+            sayOwl(taunt);
         }
-    }
 
-    let currentRound = 1;
+        document.getElementById('rpsStatus').textContent = resultText;
 
-    function checkDetectiveVote(card) {
-        const isAI = card.dataset.isAi === "true";
-        const suspectName = card.dataset.suspect;
-
-        if (isAI) {
-            card.style.borderColor = "#10b981"; 
-            card.style.boxShadow = "0 0 40px rgba(16, 185, 129, 0.6)";
-            showToast(`✅ ВЕРНО! Подозреваемый ${suspectName} — это нейросеть!`, true);
-            
-            if (currentRound === 1) {
-                currentRound = 2;
-                sayOwl("Блестяще! Переходим к Раунду 2: ИИ замаскировался под поэта.");
-                setTimeout(() => advanceToRound2(), 2000);
+        if (playerScore === 3 || aiScore === 3) {
+            if (playerScore === 3) {
+                stopTimerAndShowModal();
             } else {
-                sayOwl("Ура! Все раунды расследования пройдены блестяще!");
-                setTimeout(() => {
-                    document.querySelector('#detectiveSection h2').innerHTML = "✨ ДЕТЕКТИВ ИИ ТРИУМФУЕТ ✨";
-                    document.querySelector('#detectiveSection h2').style.color = "#10b981";
-                }, 1500);
+                showToast("ИИ выиграл серию до 3 побед! Рентген победил.", false);
+                sayOwl("Серия за мной! Человечество пока не готово тягаться с чистым кремнием.");
+                playerScore = 0; aiScore = 0;
+                document.getElementById('playerScore').textContent = '0';
+                document.getElementById('aiScore').textContent = '0';
             }
-        } else {
-            card.classList.add('eliminated');
-            showToast(`❌ ОШИБКА! Подозреваемый ${suspectName} — человек. Карточка отброшена!`, false);
-            sayOwl("Ой-ой, это невиновный человек! Ищи дальше.");
         }
-    }
-
-    function advanceToRound2() {
-        document.getElementById('detectiveTitle').textContent = "Уровень 2: Тест Тьюринга (Раунд 2)";
-        document.getElementById('detectiveSubtitle').textContent = "ИИ написал стихотворение о зиме. Найдите технический сленг!";
-        
-        const cards = document.querySelectorAll('.suspect-card');
-        cards.forEach(c => {
-            c.classList.remove('eliminated');
-            c.style.opacity = "1";
-            c.style.pointerEvents = "auto";
-            c.style.borderColor = "rgba(255,255,255,0.2)";
-            c.style.boxShadow = "none";
-        });
-
-        cards[0].querySelector('p').innerHTML = '<b>Следователь:</b> Напиши хокку о зиме.<br><br><b>А:</b> Белый снег летит,<br>Холод сковал речные воды,<br>Птицы улетели.';
-        cards[0].dataset.isAi = "false";
-
-        cards[1].querySelector('p').innerHTML = '<b>Следователь:</b> Напиши хокку о зиме.<br><br><b>Б:</b> Ледяной кристалл<br>Генерирует узор на окне.<br>Процессор гудит.';
-        cards[1].dataset.isAi = "true";
-
-        cards[2].querySelector('p').innerHTML = '<b>Следователь:</b> Напиши хокку о зиме.<br><br><b>В:</b> Метель за окном,<br>Заварил горячий чай,<br>Жду весенний день.';
-        cards[2].dataset.isAi = "false";
     }
 
     let isImploding = false;
     function triggerImplosion() {
-        if (isImploding) return;
-        isImploding = true;
-        showToast('СИНХРОНИЗАЦИЯ... ВОЗВРАТ', true);
-        stopGesturePipeline();
-        document.body.classList.add('implode');
-        setTimeout(() => { window.location.href = 'index.html'; }, prefersReducedMotion ? 650 : 1400);
+        if (isImploding) return; isImploding = true;
+        showToast("ВОЗВРАТ...", true); document.body.classList.add('implode');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1400);
     }
 
     function showToast(text, isSuccess = false) {
         const toast = document.getElementById('toast');
-        toast.innerText = text;
-        toast.classList.toggle('success', !!isSuccess);
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
+        toast.innerText = text; toast.classList.toggle('success', isSuccess);
+        toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    if (interactionMode === 'gesture') {
-        startGesturePipeline();
-    } else {
-        document.getElementById('loader').style.display = 'none';
-        enableTouchMode();
-        initVoice();
-        showToast('Мышиное управление активно', true);
-        sayOwl("Режим мыши активирован! Расследование открыто.");
-    }
+    if (interactionMode === 'gesture') startGesturePipeline();
+    else { document.getElementById('loader').style.display = 'none'; enableTouchMode(); }
     </script>
 </body>
 </html>
