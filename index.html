@@ -643,7 +643,6 @@
                 <div class="filter-sectors" id="filterSectors"></div>
             </div>
             
-            <!-- НОВЫЙ ФИЛЬТР: СОРТИРОВКА -->
             <div class="filter-group">
                 <label data-i18n="filterSort">Сортировка</label>
                 <select id="filterSort">
@@ -1093,9 +1092,11 @@
                 📅 <span data-i18n="schBtnText">Расписание занятий</span>
             </button>
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
-            <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; box-sizing: border-box;">
-    🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
-</a>
+            
+            <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
+            <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+                🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
+            </a>
         </div>
     </div>
 
@@ -1978,9 +1979,10 @@
             </button>
 
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
-          <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; box-sizing: border-box;">
-    🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
-</a>
+            
+            <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+                🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
+            </a>
         `);
     }
 
