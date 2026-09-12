@@ -187,7 +187,6 @@
         .puzzle-piece.locked .piece-num { opacity: 0; }
 
         .screen-terms { width: 100vw; min-height: 100vh; padding: 60px clamp(16px, 4vw, 50px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 26px; perspective: 1200px; }
-        
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px; padding: 28px; width: 270px; text-align: center; height: fit-content;
@@ -197,7 +196,7 @@
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 50px rgba(56, 189, 248, 0.6); z-index: 10; }
 
-        /* ИГРА КАМЕНЬ, НОЖНИЦЫ, БУМАГА */
+        /* ИНТЕРАКТИВНАЯ АРЕНА КАМЕНЬ, НОЖНИЦЫ, БУМАГА */
         .rps-arena {
             width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
             border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 24px; padding: 30px; margin-top: 30px;
@@ -234,7 +233,7 @@
 <body>
 
     <!-- Сова в шляпе и бордовом шарфе -->
-    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Сыграй в дуэль с моим 3D-рентгеном! Скролль кулаком вниз.</div>
+    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Сыграй со мной в дуэль против моего 3D-рентгена! Скролль кулаком вниз.</div>
     <div class="companion-owl">
         <svg viewBox="0 0 120 120" width="100%" height="100%">
             <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
@@ -276,13 +275,13 @@
 
     <div class="hints-panel" id="hintsPanel">
         <h3>Управление</h3>
-        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Кулак</b> (пальцы прижаты к ладони) — скролл страницы.</span></div>
+        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Кулак</b> — идеальный скролл страницы.</span></div>
         <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — перетаскивание пазлов.</span></div>
         <div class="hint-row"><span class="hint-icon">✌️</span><span>Жест «Пис» — выход.</span></div>
     </div>
 
     <div class="hud-top">
-        <div class="hud-mode-badge" id="modeBadge">Режим: жесты</div>
+        <div class="hud-mode-badge" id="modeBadge">Режим: жесты (2 руки)</div>
         <div class="hud-timer" id="timerDisplay">00:00</div>
     </div>
 
@@ -312,11 +311,11 @@
             </div>
         </div>
 
-        <!-- УРОВЕНЬ 2: ИГРА -->
+        <!-- УРОВЕНЬ 2: ИГРА КАМЕНЬ, НОЖНИЦЫ, БУМАГА -->
         <div class="screen-terms" id="gameSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent; display: flex; flex-direction: column; align-items: center;">
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 2: Дуэль с ИИ-Рентгеном</h2>
-                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Сыграй против своего цифрового отражения до 3 побед.</p>
+                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Сыграй в классическую дуэль против ИИ (до 3 побед). Бот сканирует твой выбор через 3D-рентген и вежливо издевается при победе!</p>
             </div>
 
             <div class="rps-arena">
@@ -365,7 +364,7 @@
     let interactionMode = (isTouchCapable && !hasFinePointer) || !hasMediaDevices ? 'touch' : 'gesture';
 
     function setModeBadge() {
-        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты' : 'Режим: мышь';
+        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты (2 руки)' : 'Режим: мышь';
         document.getElementById('modeToggleBtn').textContent = interactionMode === 'gesture' ? '🖐️' : '👆';
         document.body.classList.toggle('touch-mode', interactionMode === 'touch');
     }
@@ -379,6 +378,8 @@
     }
     setTimeout(() => sayOwl("Ху-ху! Скролль кулаком вниз и брось вызов моему 3D-рентгену!"), 1500);
 
+    const hintsPanel = document.getElementById('hintsPanel');
+    document.getElementById('hintsToggleBtn').addEventListener('click', () => hintsPanel.classList.toggle('open'));
     document.getElementById('exitBtn').addEventListener('click', () => triggerImplosion());
 
     let timerInterval = null, timeElapsed = 0, timerStarted = false;
@@ -489,7 +490,10 @@
         termCards.push(card);
     });
 
-    let scene, camera3D, renderer, coreMesh, glowMesh, ringMesh, sceneReady = false;
+    // 3D Scene
+    let scene, camera3D, renderer, coreMesh, glowMesh, ringMesh;
+    let targetRotX = 0, targetRotY = 0, sceneReady = false;
+
     function initScene() {
         if (!hasWebGL || typeof THREE === 'undefined') return;
         try {
@@ -596,7 +600,7 @@
             if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
             interactionMode = 'touch'; enableTouchMode(); showToast("Режим мыши включен", true);
         } else {
-            interactionMode = 'gesture'; startGesturePipeline(); showToast("Режим жестов включен", true);
+            interactionMode = 'gesture'; startGesturePipeline(); showToast("Режим жестов (2 руки) включен", true);
         }
         setModeBadge();
     });
@@ -621,7 +625,7 @@
         });
         cameraFeed.start().then(() => {
             document.getElementById('loader').style.display = 'none';
-            sayOwl("Камера активна! Сжимайте кулак для скролла.");
+            sayOwl("Камера активна! Скролль уверенным кулаком.");
         }).catch(() => {
             document.getElementById('loaderError').style.display = 'block';
             document.getElementById('loaderError').textContent = "Ошибка камеры. Используйте мышь.";
@@ -629,7 +633,7 @@
         });
     }
 
-    // ИДЕАЛЬНО РАБОТАЮЩИЙ СКРОЛЛ КУЛАКОМ И ТРЕКИНГ
+    // ИСПРАВЛЕННЫЙ И НАДЕЖНЫЙ СКРОЛЛ КУЛАКОМ + ПАЗЛЫ
     function onResults(results) {
         canvasElement.width = window.innerWidth; canvasElement.height = window.innerHeight;
         canvasCtx.save(); canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
@@ -644,8 +648,14 @@
                 drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
                 drawLandmarks(canvasCtx, lm, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
 
-                // Проверка кулака: все кончики пальцев ниже суставов
-                const isFist = lm[8].y > lm[6].y && lm[12].y > lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y;
+                // РАСШИРЕННЫЙ АЛГОРИТМ КУЛАКА: Проверяем расстояние кончиков пальцев к основанию ладони (lm[0])
+                const dIndex = Math.hypot(lm[8].x - lm[0].x, lm[8].y - lm[0].y);
+                const dMiddle = Math.hypot(lm[12].x - lm[0].x, lm[12].y - lm[0].y);
+                const dRing = Math.hypot(lm[16].x - lm[0].x, lm[16].y - lm[0].y);
+                const dPinky = Math.hypot(lm[20].x - lm[0].x, lm[20].y - lm[0].y);
+                
+                const isFist = (dIndex < 0.3 && dMiddle < 0.3 && dRing < 0.3 && dPinky < 0.3);
+
                 if (isFist) {
                     activeFistY = lm[9].y * window.innerHeight;
                 }
@@ -654,7 +664,7 @@
                 const px = window.innerWidth - (lm[8].x * window.innerWidth), py = lm[8].y * window.innerHeight;
                 cursor.style.opacity = 1; cursor.style.left = `${px}px`; cursor.style.top = `${py}px`;
 
-                const pinch = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y) < 0.055 && !isFist;
+                const pinch = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y) < 0.05 && !isFist;
                 cursor.classList.toggle('pinched', pinch);
 
                 if (pinch && idx === 0) {
@@ -694,23 +704,28 @@
         canvasCtx.restore();
     }
 
-    let playerScore = 0, aiScore = 0;
+    // МЕХАНИКА ИГРЫ КАМЕНЬ, НОЖНИЦЫ, БУМАГА
+    let playerScore = 0;
+    let aiScore = 0;
+
     const arrogantTaunts = [
-        "Ваш выбор просчитан моим рентгеном еще до того, как вы подняли руку.",
-        "Примитивно, мой друг. Нейросети обыгрывали людей в шахматы еще в прошлом веке.",
-        "Это было статистически неизбежно. Не расстраивайтесь.",
-        "Интеллектуальное превосходство кремния снова доказано."
+        "Ваш выбор просчитан моим рентгеном за 3 миллисекунды до того, как вы моргнули.",
+        "Элементарно. Кремниевая логика снова триумфует над углеродной.",
+        "Статистически предсказуемо. Не расстраивайтесь так сильно.",
+        "Мое 3D-зеркало видит ваши мысли насквозь."
     ];
+
     const respectfulCompliments = [
-        "Невероятно! Ваша интуиция обошла квантовый рандом.",
-        "Признаю поражение в этом раунде. Достойный ход.",
-        "Углеродный мозг приятно удивляет."
+        "Невероятно! Ваша интуиция сломала квантовый рандом.",
+        "Достойный ход. Признаю превосходство в этом раунде.",
+        "Вы заставили мой процессор попотеть. Браво."
     ];
 
     function playRPS(playerChoiceStr) {
         startTimer();
         const choices = ['камень', 'ножницы', 'бумага'];
         const aiChoiceStr = choices[Math.floor(Math.random() * choices.length)];
+
         const icons = { 'камень': '✊', 'ножницы': '✌️', 'бумага': '✋' };
 
         document.getElementById('playerChoice').textContent = icons[playerChoiceStr];
@@ -718,8 +733,8 @@
 
         let resultText = "";
         if (playerChoiceStr === aiChoiceStr) {
-            resultText = "Ничья! 3D-рентген синхронизировал наши частоты.";
-            sayOwl("Ничья! Мой рентген зафиксировал зеркальный выбор.");
+            resultText = "Ничья! Рентген зафиксировал зеркальный выбор.";
+            sayOwl("Ничья! Мы думаем одинаково, кожаный друг.");
         } else if (
             (playerChoiceStr === 'камень' && aiChoiceStr === 'ножницы') ||
             (playerChoiceStr === 'ножницы' && aiChoiceStr === 'бумага') ||
@@ -728,13 +743,13 @@
             playerScore++;
             document.getElementById('playerScore').textContent = playerScore;
             const comp = respectfulCompliments[Math.floor(Math.random() * respectfulCompliments.length)];
-            resultText = `Победа раунда за тобой! ${comp}`;
+            resultText = `Победа раунда! ${comp}`;
             sayOwl(comp);
         } else {
             aiScore++;
             document.getElementById('aiScore').textContent = aiScore;
             const taunt = arrogantTaunts[Math.floor(Math.random() * arrogantTaunts.length)];
-            resultText = `ИИ победил в раунде. ${taunt}`;
+            resultText = `ИИ победил. ${taunt}`;
             sayOwl(taunt);
         }
 
@@ -744,7 +759,7 @@
             if (playerScore === 3) {
                 stopTimerAndShowModal();
             } else {
-                showToast("ИИ выиграл серию до 3 побед! Рентген победил.", false);
+                showToast("ИИ выиграл серию до 3 побед!", false);
                 sayOwl("Серия за мной! Человечество пока не готово тягаться с чистым кремнием.");
                 playerScore = 0; aiScore = 0;
                 document.getElementById('playerScore').textContent = '0';
