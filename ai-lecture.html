@@ -1,2122 +1,670 @@
 <!DOCTYPE html>
-<html lang="ru" id="htmlRoot" data-theme="dark">
+<html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title data-i18n="pageTitle">Академия Кадров | Западный филиал РАНХиГС</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="./favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR-Лаборатория | Практика ИИ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Библиотеки Google MediaPipe (AR Жесты) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- Библиотека Three.js (3D Графика) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <style>
         :root {
+            --bg: #05080e;
+            --accent: #38bdf8;
             --ranepa-red: #CA0F3E;
-            --ranepa-burgundy: #881337;
-            --ranepa-rich-blue: #1e3a8a;
-            --transition-speed: 0.3s;
-            --bezier-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --bezier-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
-            --font-scale: 1rem;
-            --header-h: 160px;
         }
-
-        [data-theme="dark"] {
-            --bg-deep: #05080e;
-            --bg-card: rgba(17, 24, 39, 0.55);
-            --bg-glass: rgba(17, 24, 39, 0.75);
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --header-bg: rgba(5, 8, 14, 0.95);
-            --btn-glass: rgba(255, 255, 255, 0.05);
-            --shadow-color: rgba(0, 0, 0, 0.6);
-            --tag-color: rgba(255, 255, 255, 0.04);
-            --tag-shadow: rgba(255, 255, 255, 0.1);
-            --card-hover-border: rgba(56, 189, 248, 0.4);
-            --select-bg: #111827; /* Фон для опций select в темной теме */
-        }
-
-        [data-theme="light"] {
-            --bg-deep: #F1F5F9;
-            --bg-card: rgba(255, 255, 255, 0.9);
-            --bg-glass: rgba(255, 255, 255, 0.95);
-            --text-main: #0F172A;
-            --text-muted: #475569;
-            --border-glass: rgba(0, 0, 0, 0.1);
-            --header-bg: rgba(5, 8, 14, 0.95);
-            --btn-glass: rgba(0, 0, 0, 0.05);
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --tag-color: rgba(0, 0, 0, 0.04);
-            --tag-shadow: rgba(0, 0, 0, 0.05);
-            --card-hover-border: var(--ranepa-red);
-            --select-bg: #ffffff; /* Фон для опций select в светлой теме */
-        }
-
-        html, body { width: 100%; max-width: 100vw; font-size: 16px; overflow-x: hidden; scroll-behavior: smooth; }
-        html { transition: font-size var(--transition-speed) var(--bezier-smooth); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body {
-            background-color: var(--bg-deep); color: var(--text-main); position: relative;
-            font-size: var(--font-scale);
-            transition: background-color var(--transition-speed), color var(--transition-speed);
-            z-index: 0;
-        }
-        header, header * { color: #F8FAFC; }
-
-        .system-cite { display: none !important; }
-
-        .global-alert-ticker {
-            position: sticky; top: var(--header-h); z-index: 10045;
-            background: linear-gradient(90deg, #881337, var(--ranepa-red), #881337);
-            color: #fff; padding: 12px 20px; font-weight: 800; font-family: 'Montserrat', sans-serif;
-            display: none; overflow: hidden; white-space: nowrap; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(202, 15, 62, 0.5); border-bottom: 1px solid rgba(255,255,255,0.2);
-            transition: background 0.3s;
-        }
-        .global-alert-ticker:hover { background: linear-gradient(90deg, var(--ranepa-red), #e11d48, var(--ranepa-red)); }
-        .ticker-inner {
-            display: inline-block; padding-left: 100%;
-            animation: marquee 17.5s linear infinite;
-        }
-        .global-alert-ticker:hover .ticker-inner { animation-play-state: paused; }
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
-
-        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #FF5F61, var(--ranepa-red), #FF5F61); background-size: 200% 100%; width: 0%; z-index: 10000; transition: width 0.1s linear; box-shadow: 0 0 20px var(--ranepa-red); animation: gradientMove 2s infinite linear; pointer-events: none; }
-        @keyframes gradientMove { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
-
-        .bg-tags-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; contain: strict; }
-        .bg-tag { position: absolute; font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--tag-color); text-shadow: 0 0 20px var(--tag-shadow); white-space: nowrap; user-select: none; pointer-events: none; animation: heartbeat 6s infinite alternate ease-in-out; will-change: transform, opacity; transition: color var(--transition-speed); }
-        .bg-tag:nth-child(1) { top: 40vh; left: 5%; font-size: 4vw; }
-        .bg-tag:nth-child(2) { top: 60vh; right: 5%; font-size: 5vw; animation-delay: -1.5s; }
-        .bg-tag:nth-child(3) { top: 80vh; left: 10%; font-size: 3.5vw; animation-delay: -3s; }
-        .bg-tag:nth-child(4) { top: 95vh; right: 15%; font-size: 4vw; animation-delay: -4.5s; }
-        @keyframes heartbeat { 0% { transform: scale(1) translateY(0); opacity: 0.6; } 100% { transform: scale(1.03) translateY(-10px); opacity: 1; } }
-
-        .ambient-3d-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden; pointer-events: none; contain: strict; }
-        .shape { position: absolute; filter: blur(140px); opacity: 0.45; animation: float 22s infinite alternate ease-in-out; will-change: transform; transform: translateZ(0); }
-        .shape-1 { background: var(--ranepa-burgundy); width: 45vw; height: 45vw; border-radius: 50%; top: -10%; left: -10%; animation-duration: 25s; }
-        .shape-2 { background: var(--ranepa-rich-blue); width: 55vw; height: 55vw; border-radius: 40% 60% 70% 30%; bottom: -20%; right: -10%; animation-duration: 35s; animation-direction: alternate-reverse; }
-        @media (max-width: 768px) { .shape { filter: blur(70px); opacity: 0.3; } }
-
-        header {
-            background: var(--header-bg) !important;
-            backdrop-filter: blur(25px) saturate(180%); -webkit-backdrop-filter: blur(25px) saturate(180%);
-            padding: 14px max(32px, env(safe-area-inset-right)) 14px max(32px, env(safe-area-inset-left));
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-            position: sticky; top: 0; z-index: 10050;
-            flex-wrap: nowrap; gap: 20px;
-            min-height: var(--header-h);
-        }
-
-        .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; flex-shrink: 0; }
-        .logo-group img { height: 136px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8)); transition: transform 0.2s; }
-        .logo-group:hover img { transform: scale(1.03); }
-        .logo-subtitle { font-size: 0.7rem; color: #94A3B8 !important; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-top: 6px; text-align: left; white-space: nowrap; }
-
-        .header-right-panel { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-left: auto; z-index: 10051; min-width: 0; }
-
-        .header-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-        .control-group { display: flex; gap: 4px; background: rgba(255, 255, 255, 0.08); padding: 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); }
-        .control-panel-btn { background: transparent; border: none; color: #94A3B8; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
-        .control-panel-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.15); }
-        .lang-active, .active-font { background: var(--ranepa-red) !important; color: #fff !important; box-shadow: 0 4px 12px rgba(202, 15, 62, 0.6); }
-        .theme-btn { font-size: 1.1rem; display: flex; align-items: center; justify-content: center; width: 32px; padding: 0; }
-
-        .header-nav { display: flex; gap: 18px; align-items: center; flex-wrap: nowrap; }
-        .header-nav-link { color: #94A3B8 !important; text-decoration: none; font-family: 'Montserrat', sans-serif; font-size: 0.82rem; font-weight: 800; text-transform: uppercase; transition: color 0.2s; cursor: pointer; touch-action: manipulation; white-space: nowrap; }
-        .header-nav-link:hover { color: #fff !important; }
-
-        .header-nav-btn { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 10px 22px; border-radius: 10px; border: none; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.82rem; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); box-shadow: 0 5px 15px rgba(202, 15, 62, 0.4); cursor: pointer; touch-action: manipulation; white-space: nowrap; }
-        .header-nav-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6); }
-
-        .header-kadry { flex-shrink: 0; display: flex; align-items: center; justify-content: flex-end; z-index: 10051; max-width: 300px; }
-        .header-kadry img { height: 124px; width: 100%; object-fit: contain; display: block; filter: drop-shadow(0 5px 15px rgba(202, 15, 62, 0.4)); background: transparent !important; }
-
-        .footer-kadry-mobile { display: none; }
-
-        .hero { padding: calc(var(--header-h) + 40px) max(20px, env(safe-area-inset-right)) 70px max(20px, env(safe-area-inset-left)); text-align: center; position: relative; z-index: 5; }
-        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 5vw, 4rem); font-weight: 900; margin-bottom: 20px; line-height: 1.2; letter-spacing: -1px; text-shadow: 0 10px 25px var(--shadow-color); animation: fadeUp 0.8s var(--bezier-smooth) forwards; }
-        .hero p { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--text-muted); max-width: 850px; margin: 0 auto; font-weight: 500; line-height: 1.6; animation: fadeUp 0.8s var(--bezier-smooth) 0.1s forwards; opacity: 0; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        .container { max-width: 1350px; margin: 0 auto; padding: 40px max(15px, env(safe-area-inset-right)) 60px max(15px, env(safe-area-inset-left)); position: relative; z-index: 5; }
-
-        .tabs-nav-wrapper { position: relative; }
-        .tabs-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 50px; background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 14px; border-radius: 18px; border: 1px solid var(--border-glass); box-shadow: 0 15px 30px var(--shadow-color); animation: fadeUp 0.8s var(--bezier-smooth) 0.2s forwards; opacity: 0; scroll-margin-top: calc(var(--header-h) + 20px); }
-        .tab-btn { background: transparent; border: 1px solid transparent; padding: 12px 24px; border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--text-muted); transition: all 0.3s var(--bezier-bounce); cursor: pointer; touch-action: manipulation; }
-        .tab-btn:hover { color: var(--text-main); background: var(--btn-glass); border-color: var(--border-glass); transform: translateY(-2px); }
-        .tab-btn.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); }
-
-        .swipe-hint { display: none; }
-        @media (max-width: 768px) {
-            .tabs-nav-wrapper::after {
-                content: ''; position: absolute; top: 0; right: 0; bottom: 12px; width: 34px; pointer-events: none;
-                background: linear-gradient(90deg, transparent, var(--bg-deep) 85%);
-                opacity: 0.9; border-radius: 0 18px 18px 0; z-index: 2;
-            }
-            .swipe-hint {
-                display: flex; align-items: center; justify-content: center; gap: 4px;
-                font-size: 0.72rem; color: var(--text-muted); margin: -38px 0 20px; position: relative; z-index: 3;
-                animation: swipeNudge 1.8s ease-in-out 3;
-            }
-            @keyframes swipeNudge { 0%,100% { transform: translateX(0); opacity: 0.6; } 50% { transform: translateX(6px); opacity: 1; } }
-        }
-
-        .tab-content { display: none; perspective: 1500px; }
-        /* Теперь элементы внутри грида могут сортироваться через order */
-        .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: clamp(25px, 3vw, 35px); align-items: start; }
-
-        .filters-bar {
-            display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
-            background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border-glass);
-            border-radius: 18px; padding: 18px 20px; margin-bottom: 30px; box-shadow: 0 12px 25px var(--shadow-color);
-        }
-        .filter-group { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
-        .filter-group label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; color: var(--text-muted); }
-        .filter-group select, .filter-group input[type="number"] {
-            background: var(--btn-glass); border: 1px solid var(--border-glass); border-radius: 10px;
-            padding: 9px 12px; color: var(--text-main); font-size: 0.88rem; font-weight: 600; outline: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
         
-        /* Исправление проблемы белого текста на белом фоне в Select */
-        select option {
-            background-color: var(--select-bg);
-            color: var(--text-main);
+        body {
+            background-color: var(--bg); color: #fff;
+            overflow: hidden; 
+            transition: all 0.8s ease;
         }
 
-        .filter-sectors { display: flex; flex-wrap: wrap; gap: 8px; }
-        .filter-sector-chip {
-            background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted);
-            padding: 8px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
-            transition: all 0.25s var(--bezier-bounce); user-select: none;
+        /* 3D Фон */
+        #webgl-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -3; pointer-events: none; opacity: 0.8;
         }
-        .filter-sector-chip.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 6px 15px rgba(202,15,62,0.35); }
-        .filter-reset-btn { background: transparent; border: 1px solid var(--border-glass); color: var(--text-muted); padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: 0.2s; }
-        .filter-reset-btn:hover { border-color: var(--ranepa-red); color: var(--ranepa-red); }
-        .card.filtered-out { display: none !important; }
 
-        .loader-box { grid-column: 1 / -1; width: 100%; text-align: center; padding: 50px; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
-        .loader-spinner { width: 40px; height: 40px; border: 4px solid rgba(202, 15, 62, 0.2); border-top-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; }
+        /* АНИМАЦИЯ ВЗРЫВА (Схлопывание) */
+        body.implode { animation: blackHole 1.5s forwards cubic-bezier(0.5, 0, 0.5, 1); }
+        @keyframes blackHole {
+            0% { filter: brightness(1); transform: scale(1) rotate(0deg); opacity: 1; }
+            40% { filter: brightness(2) contrast(1.5); transform: scale(0.8) rotate(5deg); }
+            80% { filter: brightness(10) contrast(3); transform: scale(0.01) rotate(180deg); opacity: 0.5; }
+            100% { filter: brightness(100); transform: scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        #loader {
+            position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        }
+        .spinner { width: 60px; height: 60px; border: 4px solid rgba(56, 189, 248, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .puzzle-piece { animation: assemblePuzzle 1s var(--bezier-bounce) forwards; }
-        @keyframes assemblePuzzle {
-            0% { opacity: 0; transform: translate3d(var(--x-dist, 200px), var(--y-dist, 200px), -400px) rotateX(40deg) rotateY(-40deg) scale(0.6); }
-            100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1); }
+        /* HUD: Таймер и Голос */
+        .hud-top {
+            position: fixed; top: 20px; right: 30px; z-index: 2000;
+            display: flex; gap: 20px; align-items: center;
         }
-
-        .glow-effect { animation: neonPulse 2s infinite alternate; z-index: 15 !important; border-color: #38bdf8 !important; }
-        @keyframes neonPulse {
-            0% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), inset 0 0 12px rgba(56, 189, 248, 0.3); transform: translateY(-6px) scale(1.02); }
-            100% { box-shadow: 0 0 60px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(56, 189, 248, 0.5); transform: translateY(-12px) scale(1.04); }
+        .hud-timer {
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+            border: 1px solid var(--accent); padding: 10px 20px; border-radius: 15px;
+            font-size: 1.5rem; font-weight: 900; color: var(--accent);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
-
-        .card {
-            background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative;
-            transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth);
-            box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style;
-            transform: translateY(calc((var(--py, 0.5) - 0.5) * -14px));
+        .hud-mic {
+            display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 700; color: #94A3B8;
+            background: rgba(0, 0, 0, 0.6); padding: 10px 15px; border-radius: 15px;
         }
-        .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
+        .mic-dot { width: 12px; height: 12px; border-radius: 50%; background: #ef4444; animation: pulseMic 1.5s infinite; }
+        @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px #ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px #ef4444; } }
 
-        .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
-        .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
-        @media (max-width: 768px) {
-            .reveal-3d { transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
-            .reveal-3d.in-view { transform: translateY(0); }
-            .card { transform: none !important; }
+        /* Камера и Канвас */
+        .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
+        .canvas-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; transform: scaleX(-1); }
+
+        /* Указатели рук (щипок) */
+        .hand-cursor {
+            position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
+            border-radius: 50%; pointer-events: none; z-index: 1000;
+            transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s, border-color 0.1s;
+            box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
+        .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
 
-        .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; flex-wrap: wrap; }
-        .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.7rem; color: var(--text-main); text-shadow: 0 2px 4px var(--shadow-color); }
-        .hours { font-size: 0.85rem; background: rgba(202, 15, 62, 0.15); border: 1px solid rgba(202, 15, 62, 0.3); color: var(--ranepa-red); padding: 7px 14px; border-radius: 9px; font-weight: 800; white-space: nowrap; }
+        /* КОНТЕЙНЕР ДЛЯ СКРОЛЛА */
+        #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
+
+        /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
+        .screen-puzzle { height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.35rem; font-weight: 800; margin-bottom: 14px; color: var(--text-main); line-height: 1.3; }
-        .card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 22px; line-height: 1.6; text-align: left; }
-
-        .accordion-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); width: 100%; padding: 15px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; margin-top: auto; transition: all 0.3s var(--bezier-bounce); text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; touch-action: manipulation; }
-        .accordion-btn:hover { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); transform: translateY(-2px); }
-
-        .accordion-content { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.5s var(--bezier-smooth), opacity 0.3s ease; }
-        .card.active { border-color: var(--ranepa-red); box-shadow: 0 0 45px rgba(202, 15, 62, 0.25); }
-        .card.active .accordion-content { max-height: 1000px; opacity: 1; margin-top: 22px; }
-
-        .buy-btn { display: inline-block; width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 18px; text-align: center; border-radius: 14px; font-weight: 900; text-decoration: none; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; font-size: 1rem; box-shadow: 0 8px 20px rgba(202, 15, 62, 0.3); }
-        .buy-btn:hover { background: linear-gradient(135deg, #f43f5e, var(--ranepa-red)); box-shadow: 0 12px 25px rgba(202, 15, 62, 0.5); transform: translateY(-3px) scale(1.02); }
-
-        .section-header { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 900; color: var(--text-main); margin: 70px 0 35px; text-align: center; z-index: 5; position: relative; text-shadow: 0 4px 12px var(--shadow-color); scroll-margin-top: calc(var(--header-h) + 20px); }
-
-        .faq-container { max-width: 950px; margin: 0 auto 70px; display: flex; flex-direction: column; gap: 16px; z-index: 5; position: relative; }
-        .faq-item { background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border-glass); border-radius: 18px; transition: border-color 0.3s ease, box-shadow 0.3s ease; overflow: hidden; box-shadow: 0 12px 30px var(--shadow-color); }
-        .faq-item summary { padding: 22px 28px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; list-style: none; outline: none; touch-action: manipulation; }
-        .faq-item summary::-webkit-details-marker { display: none; }
-        .faq-item summary::after { content: '+'; font-size: 1.6rem; color: var(--ranepa-red); transition: transform 0.3s ease; flex-shrink: 0; }
-        .faq-item[open] summary::after { transform: rotate(45deg); }
-        .faq-item[open] { border-color: var(--ranepa-red); box-shadow: 0 18px 35px rgba(202, 15, 62, 0.2); }
-        .faq-answer { padding: 0 28px 22px; color: var(--text-muted); font-size: 1rem; line-height: 1.7; animation: slideDown 0.3s ease-out; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .contacts-wrapper { background: var(--bg-glass); border-top: 1px solid var(--border-glass); backdrop-filter: blur(30px); padding: 70px max(15px, env(safe-area-inset-right)) 70px max(15px, env(safe-area-inset-left)); z-index: 10; position: relative; width: 100%; clear: both; box-shadow: 0 -15px 40px var(--shadow-color); scroll-margin-top: calc(var(--header-h) + 20px); }
-        .contacts-container { max-width: 1350px; margin: 0 auto; display: block; }
-
-        .main-contact-box { background: var(--btn-glass); border: 1px solid var(--border-glass); border-left: 4px solid var(--ranepa-red); border-radius: 18px; padding: 28px; margin-bottom: 35px; box-shadow: 0 12px 25px var(--shadow-color); }
-        .main-contact-box h3 { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; color: var(--text-main); margin-bottom: 15px; font-weight: 800; line-height: 1.5; }
-        .main-contact-box p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.8; margin-bottom: 10px; }
-        .contact-link { color: var(--ranepa-red); text-decoration: none; font-weight: 800; transition: color 0.2s; }
-        .contact-link:hover { color: #f43f5e; text-decoration: underline; }
-
-        .department-title { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 20px; }
-
-        .contacts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); gap: 24px; }
-        .contact-card { background: var(--bg-card); border: 1px solid var(--border-glass); padding: 28px; border-radius: 18px; transition: transform 0.3s ease, border-color 0.3s ease; box-shadow: 0 10px 20px var(--shadow-color); display: flex; flex-direction: column; }
-        .contact-card:hover { transform: translateY(-5px); border-color: var(--ranepa-red); }
-        .contact-card h4 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; margin-bottom: 6px; color: var(--text-main); font-weight: 800; }
-        .contact-card .position { font-size: 0.85rem; color: var(--ranepa-red); margin-bottom: 16px; font-weight: 700; text-transform: uppercase; }
-        .contact-card .details { font-size: 0.92rem; color: var(--text-muted); line-height: 1.9; }
-        .contact-card .details p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; white-space: normal; }
-        .contact-card .details a { color: var(--text-main); text-decoration: none; font-weight: 600; transition: 0.2s; word-break: break-word; }
-        .contact-card .details a:hover { color: var(--ranepa-red); }
-
-        .contact-card, .main-contact-box {
-            position: relative; overflow: hidden;
-            background: linear-gradient(160deg, var(--bg-card) 0%, rgba(255,255,255,0.02) 100%);
+        .header { 
+            position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: 30px 20px; z-index: 10;
+            background: linear-gradient(to bottom, rgba(5,8,14,0.95), transparent);
         }
-        .contact-card::before, .main-contact-box::before {
-            content: ''; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
-            background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.12) 45%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.12) 55%, transparent 100%);
-            transform: skewX(-18deg); pointer-events: none; transition: left 1.1s var(--bezier-smooth);
+        .header h1 { font-size: 2.2rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 15px; color: #fff; }
+        .header .instructions { 
+            display: flex; gap: 30px; justify-content: center; max-width: 1000px; margin: 0 auto;
         }
-        .contact-card:hover::before, .main-contact-box:hover::before { left: 130%; }
-
-        .legal-footer { margin-top: 60px; padding-top: 35px; border-top: 1px solid var(--border-glass); font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; text-align: center; }
-        .legal-footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 15px; margin-bottom: 25px; }
-        .legal-footer-links span { text-decoration: underline; cursor: pointer; transition: color 0.2s; touch-action: manipulation; }
-        .legal-footer-links span:hover { color: var(--ranepa-red); }
-
-        .vk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(39, 135, 245, 0.15); border: 1px solid rgba(39, 135, 245, 0.4); color: #38bdf8; padding: 12px 24px; border-radius: 12px; font-weight: 800; text-decoration: none; transition: 0.3s; cursor: pointer; margin-top: 10px; }
-        .vk-btn:hover { background: rgba(39, 135, 245, 0.3); transform: translateY(-2px); }
-
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 20000; opacity: 0; transition: opacity 0.3s ease; padding: 15px; }
-        .modal-overlay.active { display: flex; opacity: 1; }
-
-        .modal-box { background: var(--bg-glass); backdrop-filter: blur(35px) saturate(200%); border-radius: 30px; max-width: 580px; width: 100%; text-align: center; border: 1px solid var(--border-glass); box-shadow: 0 45px 90px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.2); max-height: 88vh; overflow-y: auto; overscroll-behavior: contain; transform: scale(0.8) translateY(30px); opacity: 0; transition: transform 0.4s var(--bezier-bounce), opacity 0.3s ease; will-change: transform, opacity; padding: clamp(28px, 5vw, 50px); color: var(--text-main); }
-        .modal-overlay.active .modal-box { transform: scale(1) translateY(0); opacity: 1; }
-
-        .chrome-glass {
-            background: linear-gradient(165deg, rgba(255,255,255,0.14) 0%, var(--bg-glass) 35%, var(--bg-glass) 100%) !important;
-            border: 1px solid rgba(255,255,255,0.35) !important;
-            box-shadow: 0 55px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.2), 0 0 60px rgba(202,15,62,0.12) !important;
-            position: relative; overflow: hidden;
+        .header .instr-block {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px 20px;
+            border-radius: 15px; backdrop-filter: blur(10px); color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; flex: 1;
         }
-        .chrome-glass::after {
-            content: ''; position: absolute; inset: 0; pointer-events: none;
-            background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, transparent 18%, transparent 82%, rgba(255,255,255,0.12) 100%);
+        .header .instr-block b { color: var(--accent); }
+
+        .puzzle-area {
+            position: relative; width: 600px; height: 400px; margin-top: 80px;
+            border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(15px);
+            transition: all 0.5s ease;
         }
-        #quickContactsModal .modal-box { transform: translateY(-60px) scale(0.92); }
-        #quickContactsModal.active .modal-box { transform: translateY(0) scale(1); }
+        .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
+        .grid-slot { border: 1px dashed rgba(255,255,255,0.05); }
 
-        .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.4rem, 5vw, 2rem); color: var(--text-main); margin-bottom: 18px; font-weight: 900; line-height: 1.3; }
-        .modal-box p { color: var(--text-muted); margin-bottom: 30px; font-size: 1.05rem; text-align: left; line-height: 1.6; }
-
-        .modal-btn { display: block; padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 800; margin-bottom: 14px; font-family: 'Montserrat', sans-serif; font-size: 1rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.15); color: #fff; cursor: pointer; touch-action: manipulation; box-shadow: 0 8px 18px rgba(0,0,0,0.3); }
-        .modal-btn-trudvsem { background: #2962ff; } .modal-btn-trudvsem:hover { background: #1e4bd8; transform: translateY(-2px); box-shadow: 0 12px 25px rgba(41, 98, 255, 0.5); }
-        .modal-btn-yandex { background: #FFCC00; color: #000; } .modal-btn-yandex:hover { background: #e6b800; transform: translateY(-2px); box-shadow: 0 12px 25px rgba(255, 204, 0, 0.5); }
-
-        .close-modal { margin-top: 25px; cursor: pointer; color: var(--text-muted); font-size: 1rem; font-weight: 800; text-decoration: underline; transition: color 0.2s; padding: 12px; }
-        .close-modal:hover { color: var(--ranepa-red); }
-
-        .compliance-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: left; opacity: 0.85; }
-
-        .owl-ecosystem {
-            position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999;
-            transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.4s var(--bezier-smooth);
-            pointer-events: none; transform-origin: bottom right; perspective: 900px;
-        }
-        .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
-        .owl-ecosystem.scroll-mini { transform: scale(0.65); }
-        .owl-ecosystem.flying { transition: transform 0.05s linear; }
-        .owl-ecosystem.flying.visible { bottom: 0; right: -10px; }
-
-        .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
-        .owl-ecosystem.visible .oak-branch { opacity: 1; }
-
-        .owl-container { position: absolute; bottom: 46px; left: 0; width: 100%; height: 210px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; overflow: visible; transform-style: preserve-3d; }
-
-        .owl-walker { position: absolute; bottom: 0; left: 10%; width: 130px; height: 190px; animation: owlPace 16s ease-in-out infinite; will-change: transform; transform-style: preserve-3d; }
-        .owl-ecosystem.flying .owl-walker,
-        .owl-ecosystem.sitting .owl-walker { animation: none; left: 50%; margin-left: -65px; }
-        @keyframes owlPace {
-            0%   { transform: translateX(0) scaleX(1) rotateY(0deg); }
-            22%  { transform: translateX(0) scaleX(1) rotateY(0deg); }
-            45%  { transform: translateX(190px) scaleX(1) rotateY(-6deg); }
-            50%  { transform: translateX(190px) scaleX(-1) rotateY(6deg); }
-            72%  { transform: translateX(190px) scaleX(-1) rotateY(-6deg); }
-            95%  { transform: translateX(0) scaleX(-1) rotateY(6deg); }
-            100% { transform: translateX(0) scaleX(1) rotateY(0deg); }
-        }
-        .owl-svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 22px 26px rgba(0,0,0,0.8)); overflow: visible; }
-
-        .owl-body-group { animation: owlBob 1.1s ease-in-out infinite, owlSway 5.4s ease-in-out infinite; transform-origin: 80px 170px; transform-box: fill-box; }
-        @keyframes owlBob { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(-1deg); } }
-        @keyframes owlSway { 0%,100% { transform: perspective(400px) rotateY(0deg); } 50% { transform: perspective(400px) rotateY(4deg); } }
-
-        .owl-head-group { animation: headTilt 6s ease-in-out infinite; transform-origin: 80px 95px; transform-box: fill-box; }
-        @keyframes headTilt {
-            0%, 100% { transform: rotate(0deg); }
-            30% { transform: rotate(-6deg); }
-            55% { transform: rotate(5deg); }
-            80% { transform: rotate(-2deg); }
-        }
-        .owl-ecosystem.sitting .owl-head-group { animation: headLookLR 4s ease-in-out 1; }
-        @keyframes headLookLR {
-            0%, 100% { transform: rotate(0deg) scaleX(1); }
-            20% { transform: rotate(0deg) scaleX(1); }
-            40% { transform: rotate(-4deg) scaleX(-1); }
-            60% { transform: rotate(-4deg) scaleX(-1); }
-            80% { transform: rotate(4deg) scaleX(1); }
+        /* НЕОНОВАЯ ЗМЕЯ */
+        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @keyframes neonSnake { to { --angle: 360deg; } }
+        .puzzle-area.completed {
+            border: 2px solid transparent; border-radius: 20px;
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), conic-gradient(from var(--angle), transparent 70%, var(--accent) 100%);
+            background-origin: border-box; background-clip: padding-box, border-box;
+            animation: neonSnake 2.5s linear infinite; box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
         }
 
-        .owl-leg-l { animation: stepL 1.1s ease-in-out infinite; transform-origin: 66px 158px; }
-        .owl-leg-r { animation: stepR 1.1s ease-in-out infinite; transform-origin: 93px 158px; }
-        .owl-ecosystem.flying .owl-leg-l, .owl-ecosystem.flying .owl-leg-r,
-        .owl-ecosystem.sitting .owl-leg-l, .owl-ecosystem.sitting .owl-leg-r { animation: none; }
-        @keyframes stepL { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-14deg); } 50% { transform: rotate(0deg); } }
-        @keyframes stepR { 0%,100% { transform: rotate(0deg); } 75% { transform: rotate(14deg); } 50% { transform: rotate(0deg); } }
-
-        .owl-wing { transform-origin: 80px 78px; animation: wingFlutter 3.4s ease-in-out infinite; transform-box: fill-box; }
-        .owl-wing-l { animation-delay: 0s; }
-        .owl-wing-r { animation-delay: 0.15s; }
-        @keyframes wingFlutter { 0%,100% { transform: rotate(0deg) scaleY(1); } 45% { transform: rotate(6deg) scaleY(1.03); } 50% { transform: rotate(-3deg) scaleY(0.97); } 55% { transform: rotate(6deg) scaleY(1.03); } }
-        .owl-ecosystem.flying .owl-wing { animation: wingFlapFast 0.28s ease-in-out infinite; }
-        @keyframes wingFlapFast { 0%,100% { transform: rotate(-38deg); } 50% { transform: rotate(30deg); } }
-        .owl-ecosystem.sitting .owl-wing { animation: wingShrug 4s ease-in-out 1; }
-        @keyframes wingShrug {
-            0%, 55%, 100% { transform: translateY(0) rotate(0deg); }
-            65% { transform: translateY(-6px) rotate(-10deg); }
-            72% { transform: translateY(-6px) rotate(-10deg); }
-            80% { transform: translateY(0) rotate(0deg); }
+        /* КУСОЧКИ ПАЗЛА */
+        .puzzle-piece {
+            position: absolute; width: 200px; height: 200px;
+            background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
+            background-size: 600px 400px;
+            cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            transition: box-shadow 0.1s, filter 0.1s; 
         }
+        .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
+        .piece-num { position: absolute; top: 8px; left: 12px; font-size: 16px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        .eyelid { transform-origin: center; animation: blink 4.6s ease-in-out infinite; }
-        .owl-eye-r .eyelid { animation-delay: 0.06s; }
-        @keyframes blink {
-            0%, 92%, 100% { transform: scaleY(0.02); opacity: 0; }
-            94% { transform: scaleY(1); opacity: 1; }
-            97% { transform: scaleY(0.02); opacity: 0; }
+        .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
+        .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; }
+        .puzzle-piece.locked::after { opacity: 0; }
+        .puzzle-piece.locked .piece-num { opacity: 0; }
+
+        /* ЭКРАН 2: ТЕРМИНЫ */
+        .screen-terms { width: 100vw; min-height: 100vh; padding: 100px 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 30px; background: linear-gradient(to bottom, transparent, rgba(5,8,14,0.95) 20%); }
+        .term-card {
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
+            transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s ease-out; 
         }
+        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); z-index: 10; }
+        .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
+        .term-card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
 
-        .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
-        .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
-        .chat-opened .owl-bubble { opacity: 0 !important; pointer-events: none; }
+        /* МОДАЛКА УСПЕХА */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
+        .modal-box { background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.2); transform: scale(0.9); transition: transform 0.3s; }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        .save-btn { background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
+        .save-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
 
-        .owl-chat-panel { position: fixed; bottom: 100px; right: 32px; width: 390px; max-width: calc(100vw - 30px); background: var(--bg-glass); backdrop-filter: blur(30px); border-radius: 26px; box-shadow: 0 35px 70px rgba(0,0,0,0.7); border: 1px solid var(--border-glass); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translate3d(0, 40px, 0) scale(0.9); transition: all 0.4s var(--bezier-bounce); will-change: transform, opacity; }
-        .owl-chat-panel.active { display: flex; opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-        .owl-chat-header { background: rgba(5, 8, 14, 0.85); color: #fff; padding: 18px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-radius: 26px 26px 0 0; border-bottom: 2px solid var(--ranepa-red); }
-        .owl-chat-body { padding: 20px; height: 270px; overflow-y: auto; background: transparent; font-size: 0.92rem; display: flex; flex-direction: column; gap: 14px; color: var(--text-main); }
-        .msg-bot { background: var(--btn-glass); padding: 14px; border-radius: 14px; border-bottom-left-radius: 0; color: var(--text-main); align-self: flex-start; max-width: 92%; border: 1px solid var(--border-glass); line-height: 1.5; }
-        .msg-bot b { color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 6px; }
-        .msg-user { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 14px; border-radius: 14px; border-bottom-right-radius: 0; align-self: flex-end; max-width: 92%; font-weight: 600; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.3); }
-        
-        .chat-input-box { display: flex; padding: 10px 14px; background: rgba(5, 8, 14, 0.9); border-top: 1px solid var(--border-glass); gap: 8px; align-items: center; }
-        .chat-text-input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
-        .chat-text-input:focus { border-color: var(--ranepa-red); }
-        .chat-send-btn { background: var(--ranepa-red); border: none; color: #fff; padding: 10px 16px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
-        .chat-send-btn:hover { transform: scale(1.05); }
-
-        .chat-options { padding: 12px 14px; background: rgba(5, 8, 14, 0.85); display: flex; flex-direction: column; gap: 8px; border-radius: 0 0 26px 26px; max-height: 35vh; overflow-y: auto; }
-        .chat-opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-align: left; transition: background 0.25s ease, padding-left 0.25s ease; touch-action: manipulation; }
-        .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 16px; }
-
-        .mobile-chat-icon { display: none; }
-
-        .owl-ticker-visitor {
-            position: fixed; z-index: 10046; width: 70px; height: 85px; pointer-events: none;
-            opacity: 0; transition: opacity 0.3s ease;
+        /* Уведомления */
+        .toast {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background: rgba(202, 15, 62, 0.9); color: #fff; font-weight: 800; padding: 15px 30px;
+            border-radius: 30px; box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5);
+            transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; letter-spacing: 1px;
         }
-        .owl-ticker-visitor.show { opacity: 1; }
-        .owl-ticker-visitor .owl-mini-svg { width: 100%; height: 100%; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.6)); }
-        .owl-ticker-shout {
-            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-            background: #fff; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 900;
-            padding: 4px 10px; border-radius: 10px 10px 10px 0; font-size: 0.72rem; white-space: nowrap;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.25s ease;
-        }
-        .owl-ticker-shout.show { opacity: 1; }
+        .toast.show { bottom: 40px; }
+        .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
 
-        .scroll-nav { position: fixed; left: 22px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
-        .scroll-nav-btn {
-            width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-glass);
-            background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            color: var(--text-main); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 10px 25px var(--shadow-color); transition: all 0.3s var(--bezier-bounce);
-            opacity: 0; pointer-events: none; transform: translateY(10px);
-        }
-        .scroll-nav-btn.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
-        .scroll-nav-btn:hover { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); transform: translateY(-3px); }
-        .scroll-nav-btn svg { width: 20px; height: 20px; fill: currentColor; }
-
-        @media (max-width: 768px) {
-            :root { --header-h: 200px; }
-            html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; }
-            header { padding: 12px 16px; flex-direction: column; gap: 10px; align-items: stretch; background: rgba(5, 8, 14, 0.97) !important; min-height: 0; }
-            .logo-group { align-items: center; width: 100%; text-align: center; }
-            .logo-group img { height: 108px !important; width: auto; max-width: 90%; object-position: center; }
-            .logo-subtitle { text-align: center; white-space: normal; }
-            .header-right-panel { width: 100%; align-items: center; margin: 0; gap: 10px; }
-            .header-controls { justify-content: center; flex-wrap: wrap; width: 100%; }
-            .header-nav { justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap; }
-            .header-kadry { display: none !important; }
-
-            .hero { padding: 30px 16px 50px; }
-
-            .tabs-nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px; gap: 8px; width: 100%; }
-            .tabs-nav::-webkit-scrollbar { display: none; }
-            .tab-btn { flex-shrink: 0; padding: 10px 18px; font-size: 0.88rem; }
-
-            .filters-bar { padding: 14px 16px; gap: 10px; }
-            .filter-group { min-width: 130px; }
-
-            .container { padding: 30px 15px 40px; }
-            .contacts-wrapper { padding: 40px 15px; }
-            .contact-card { display: flex; white-space: normal; word-wrap: break-word; }
-
-            .footer-kadry-mobile { display: block !important; margin: 40px auto 0; text-align: center; }
-            .footer-kadry-mobile img { height: 90px; max-width: 100%; object-fit: contain; }
-
-            .owl-ecosystem { right: 0; bottom: 0; width: auto; height: auto; pointer-events: none; }
-            .oak-branch { display: none !important; }
-            .owl-container {
-                position: fixed; bottom: max(18px, env(safe-area-inset-bottom)); right: max(18px, env(safe-area-inset-right));
-                left: auto; width: 62px; height: 62px; border-radius: 50%; overflow: hidden;
-                background: linear-gradient(135deg, #f43f5e, var(--ranepa-red));
-                box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5), inset 0 2px 4px rgba(255,255,255,0.3);
-                display: flex; justify-content: center; align-items: center;
-                pointer-events: auto; z-index: 10000;
-            }
-            .owl-walker { display: none; }
-            .mobile-chat-icon { display: block; width: 30px; height: 30px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-            .owl-bubble { right: 0; left: auto; bottom: 72px; transform: translateX(0) scale(0.5); }
-            .owl-bubble.show { transform: translateX(0) scale(1); }
-            .owl-chat-panel { width: calc(100vw - 24px); left: 12px; right: 12px; bottom: max(90px, calc(env(safe-area-inset-bottom) + 90px)); height: min(70vh, 520px); max-width: 100vw; }
-            .owl-chat-body { height: auto; flex: 1 1 auto; }
-            .owl-ticker-visitor { display: none; }
-
-            .modal-box { padding: 26px 22px; border-radius: 24px; }
-
-            .scroll-nav { left: 14px; bottom: 14px; }
-            .scroll-nav-btn { width: 40px; height: 40px; }
-        }
-
-        /* ===== СТИЛИ ДЛЯ РАСПИСАНИЯ (ТАЙМЛАЙН) ===== */
-        .schedule-overlay {
-            position: fixed; inset: var(--header-h) 0 0 0; z-index: 10000;
-            background: var(--bg-deep); backdrop-filter: blur(15px);
-            display: none; overflow-y: auto; padding: 40px 20px 80px 20px;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .schedule-overlay.active { display: block; opacity: 1; }
-        .schedule-container { max-width: 800px; margin: 0 auto; position: relative; }
-        .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .schedule-title { font-size: 2.2rem; color: var(--text-main); font-weight: 900; }
-        .schedule-title span { color: #38bdf8; }
-        .close-sch-btn { 
-            background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); width: 40px; height: 40px; 
-            border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.2s; 
-        }
-        .close-sch-btn:hover { background: #CA0F3E; color: #fff; transform: rotate(90deg); }
-
-        .timeline { position: relative; border-left: 3px solid rgba(56, 189, 248, 0.3); margin-left: 20px; padding-left: 30px; }
-        .timeline-item { margin-bottom: 40px; position: relative; }
-        .timeline-dot { position: absolute; left: -39px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: #38bdf8; border: 4px solid var(--bg-deep); box-shadow: 0 0 10px #38bdf8; }
-        .timeline-date { font-weight: 900; color: var(--text-main); font-size: 1.3rem; margin-bottom: 15px; letter-spacing: 1px; }
-
-        .timeline-card { 
-            background: var(--bg-card); border: 1px solid var(--border-glass); 
-            border-radius: 15px; padding: 25px; margin-bottom: 15px; 
-            box-shadow: 0 10px 30px var(--shadow-color); transition: transform 0.2s, border-color 0.2s; 
-        }
-        .timeline-card:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.5); }
-
-        .sch-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
-        .sch-program { background: rgba(202, 15, 62, 0.15); color: var(--ranepa-red); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
-        .sch-time { color: #38bdf8; font-weight: 900; font-size: 1.1rem; background: rgba(56, 189, 248, 0.1); padding: 5px 12px; border-radius: 8px; }
-
-        .sch-subject { font-size: 1.2rem; color: var(--text-main); margin-bottom: 15px; font-weight: 700; line-height: 1.4; }
-        .sch-bottom { display: flex; gap: 20px; font-size: 0.9rem; color: var(--text-muted); flex-wrap: wrap; }
-        .sch-bottom span { display: flex; align-items: center; gap: 6px; }
     </style>
 </head>
 <body>
 
-    <div id="progress-bar"></div>
-
-    <div class="bg-tags-container" id="bgTags">
-        <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
-        <div class="bg-tag">#БЫСТРЫЙ_СТАРТ</div>
-        <div class="bg-tag">#СИСТЕМНЫЙ_БИЗНЕС</div>
-        <div class="bg-tag">#ПРОФЕССИОНАЛИЗМ</div>
+    <div id="loader">
+        <div class="spinner"></div>
+        <h2 style="margin-bottom: 10px;">Инициализация AR-ядра...</h2>
+        <p style="color: #94A3B8;">Предоставьте доступ к камере. Включен 3D-движок и Распознавание речи.</p>
     </div>
 
-    <div class="ambient-3d-bg">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-    </div>
-
-    <header>
-        <a href="#" class="logo-group" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
-            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия">
-            <div class="logo-subtitle" data-i18n="logoSub">Западный филиал • Центр дополнительного образования</div>
-        </a>
-
-        <div class="header-right-panel">
-            <div class="header-controls">
-                <div class="control-group font-controls">
-                    <button class="control-panel-btn" onclick="changeFontSize('small', this)">A-</button>
-                    <button class="control-panel-btn active-font" onclick="changeFontSize('normal', this)">A</button>
-                    <button class="control-panel-btn" onclick="changeFontSize('large', this)">A+</button>
-                </div>
-                <div class="control-group">
-                    <button class="control-panel-btn lang-active" onclick="setLanguage('ru')" id="langRuBtn">RU</button>
-                    <button class="control-panel-btn" onclick="setLanguage('en')" id="langEnBtn">EN</button>
-                </div>
-                <div class="control-group">
-                    <button class="control-panel-btn theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
-                </div>
-            </div>
-
-            <nav class="header-nav">
-                <span class="header-nav-link" onclick="showSchedule()" data-i18n="navSchedule">Расписание</span>
-                <span class="header-nav-link" onclick="document.getElementById('programsSection').scrollIntoView({behavior: 'smooth'});" data-i18n="navProg">Программы</span>
-                <span class="header-nav-link" onclick="openQuickContacts()" data-i18n="navCont">Контакты</span>
-                <button class="header-nav-btn" onclick="openModal()" data-i18n="navBtn">Записаться</button>
-            </nav>
+    <!-- HUD: Таймер и Голосовой статус -->
+    <div class="hud-top">
+        <div class="hud-mic">
+            <div class="mic-dot"></div> Голосовой ИИ активен
         </div>
-
-        <div class="header-kadry">
-            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
-        </div>
-    </header>
-
-    <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()">
-        <div class="ticker-inner" id="tickerText">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
+        <div class="hud-timer" id="timerDisplay">00:00</div>
     </div>
 
-    <div class="owl-ticker-visitor" id="owlTickerVisitor">
-        <div class="owl-ticker-shout" id="owlTickerShout">ВНИМАНИЕ!</div>
-        <svg class="owl-mini-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="80" cy="112" rx="50" ry="64" fill="#7a5c3a"/>
-            <ellipse cx="80" cy="122" rx="34" ry="46" fill="#d9bf95"/>
-            <circle cx="61" cy="86" r="14" fill="#ffcf40"/><circle cx="99" cy="86" r="14" fill="#ffcf40"/>
-            <circle cx="61" cy="86" r="6" fill="#1a1008"/><circle cx="99" cy="86" r="6" fill="#1a1008"/>
-            <path d="M73 96 Q 80 92 87 96 L83 116 Q 80 122 77 116 Z" fill="#0f0d0c"/>
-        </svg>
-    </div>
+    <!-- 3D Фон -->
+    <canvas id="webgl-canvas"></canvas>
 
-    <section class="hero">
-        <h1 data-i18n="heroTitle">Академия управления<br>и профессионального роста</h1>
-        <p data-i18n="heroDesc">Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.</p>
-    </section>
+    <video id="webcam" class="video-feed" autoplay playsinline></video>
+    <canvas id="output_canvas" class="canvas-overlay"></canvas>
 
-    <div class="container" id="programsSection">
+    <div id="cursor0" class="hand-cursor"></div>
+    <div id="cursor1" class="hand-cursor"></div>
 
-        <div class="tabs-nav-wrapper">
-            <div class="tabs-nav">
-                <button class="tab-btn active" onclick="filterPrograms(event,'tab-all')" data-i18n="tabAll">Все программы</button>
-                <button class="tab-btn" onclick="filterPrograms(event,'tab-kadry')" data-i18n="tabKadry">🎓 Нацпроект «Кадры»</button>
-                <button class="tab-btn" onclick="filterPrograms(event,'tab-pk')" data-i18n="tabPk">📈 Повышение квалификации</button>
-                <button class="tab-btn" onclick="filterPrograms(event,'tab-pp')" data-i18n="tabPp">🔄 Переподготовка</button>
-                <button class="tab-btn" onclick="filterPrograms(event,'tab-po')" data-i18n="tabPo">🛠️ Проф. обучение</button>
-                <button class="tab-btn" onclick="filterPrograms(event,'tab-sem')" data-i18n="tabSem">🗣️ Семинары</button>
-            </div>
-        </div>
-        <div class="swipe-hint" id="swipeHint">← 👉 листайте вкладки вправо →</div>
-
-        <div class="filters-bar" id="filtersBar" style="display:none;">
-            <div class="filter-group">
-                <label data-i18n="filterSector">Направление</label>
-                <div class="filter-sectors" id="filterSectors"></div>
+    <div id="scroll-container">
+        <!-- СТОЛ С ПАЗЛАМИ -->
+        <div class="screen-puzzle">
+            <div class="header">
+                <h1>Практика ИИ</h1>
+                <div class="instructions">
+                    <div class="instr-block"><b>1.</b> Берите осколки <b>щипком</b> руки и ставьте на сетку.</div>
+                    <div class="instr-block"><b>2.</b> <b>Зажмите воздух</b> щипком и тяните руку вверх (или крутите мышку) для скролла.</div>
+                    <div class="instr-block"><b>3.</b> Покажите жест ✌️ <b>«Пис»</b> (или скажите "Взрыв") для выхода.</div>
+                </div>
             </div>
             
-            <!-- НОВЫЙ ФИЛЬТР: СОРТИРОВКА -->
-            <div class="filter-group">
-                <label data-i18n="filterSort">Сортировка</label>
-                <select id="filterSort">
-                    <option value="alpha_asc" data-i18n="sortAlphaAsc">По алфавиту (А-Я)</option>
-                    <option value="alpha_desc" data-i18n="sortAlphaDesc">По алфавиту (Я-А)</option>
-                    <option value="price_asc" data-i18n="sortPriceAsc">Сначала дешевле</option>
-                    <option value="price_desc" data-i18n="sortPriceDesc">Сначала дороже</option>
-                    <option value="hours_asc" data-i18n="sortHoursAsc">Сначала короче</option>
-                    <option value="hours_desc" data-i18n="sortHoursDesc">Сначала длиннее</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label data-i18n="filterMaxPrice">Стоимость до, ₽</label>
-                <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500">
-            </div>
-            <div class="filter-group">
-                <label data-i18n="filterDuration">Длительность</label>
-                <select id="filterDuration">
-                    <option value="" data-i18n="filterDurAny">Любая</option>
-                    <option value="short" data-i18n="filterDurShort">до 50 ч.</option>
-                    <option value="mid" data-i18n="filterDurMid">50–200 ч.</option>
-                    <option value="long" data-i18n="filterDurLong">от 200 ч.</option>
-                </select>
-            </div>
-            <button class="filter-reset-btn" onclick="resetFilters()" data-i18n="filterReset">Сбросить</button>
-        </div>
-
-        <div id="tab-all" class="tab-content active">
-            <div class="loader-box">
-                <div class="loader-spinner"></div>
-                <span data-i18n="loading">Связываемся с базой данных...</span>
+            <div class="puzzle-area" id="puzzleArea">
+                <div class="puzzle-grid" id="grid"></div>
             </div>
         </div>
-        <div id="tab-kadry" class="tab-content"></div>
-        <div id="tab-pk" class="tab-content"></div>
-        <div id="tab-pp" class="tab-content"></div>
-        <div id="tab-po" class="tab-content"></div>
-        <div id="tab-sem" class="tab-content"></div>
 
-        <h2 class="section-header" data-i18n="faqTitle">Часто задаваемые вопросы</h2>
-        <div class="faq-container">
-            <details class="faq-item">
-                <summary data-i18n="faqQ1">Какие документы нужны для поступления?</summary>
-                <div class="faq-answer" data-i18n="faqA1">Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).</div>
-            </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ2">Как проходит обучение?</summary>
-                <div class="faq-answer" data-i18n="faqA2">Обучение проходит в очно-заочном формате с применением дистанционных технологий. Практические занятия проводятся на базе Академии.</div>
-            </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ3">Выдается ли диплом государственного образца?</summary>
-                <div class="faq-answer" data-i18n="faqA3">Да, после успешной сдачи итоговой аттестации выдается диплом РАНХиГС о профессиональной переподготовке с правом ведения новой деятельности.</div>
-            </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ4">Можно ли совмещать обучение с работой?</summary>
-                <div class="faq-answer" data-i18n="faqA4">График занятий специально адаптирован для работающих специалистов. Лекции проходят в вечернее время или по выходным.</div>
-            </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ5">Как осуществляется доступ к учебным материалам?</summary>
-                <div class="faq-answer" data-i18n="faqA5">Все материалы доступны 24/7 на закрытой образовательной платформе РАНХиГС. Вы можете изучать их с любого устройства.</div>
-            </details>
-        </div>
-
-    </div>
-
-    <div id="contactsSection" class="contacts-wrapper">
-        <div class="contacts-container">
-            <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 900; margin-bottom: 10px;" data-i18n="contactsTitle">Контактная информация</h2>
-            <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 1rem;" data-i18n="contactsSub">Официальные данные сотрудников Центров и Отделов Западного филиала</p>
-
-            <div class="main-contact-box">
-                <h3 data-i18n="mainContactTitle">Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:</h3>
-                <p><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
-                <p><b style="color: var(--ranepa-red);">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
-            </div>
-
-            <div class="main-contact-box">
-                <h3 data-i18n="addressLabel">Адрес:</h3>
-                <p><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" style="text-decoration: underline;" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
-            </div>
-
-            <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
-            <div class="contacts-grid">
-                <div class="contact-card">
-                    <h4>Канаш Ирина Степановна</h4>
-                    <div class="position" data-i18n="dirCenter">Директор центра</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 304</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972376">+7 (4012) 97-23-76</a> (<span data-i18n="extText">доб.</span> 2002)</p>
-                        <p>E-mail: <a href="mailto:kanash-is@ranepa.ru">kanash-is@ranepa.ru</a></p>
-                    </div>
-                </div>
-                <div class="contact-card">
-                    <h4>Крупин Артур Леонидович</h4>
-                    <div class="position" data-i18n="depDir">Заместитель директора центра</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
-                        <p>E-mail: <a href="mailto:krupin-al@ranepa.ru">krupin-al@ranepa.ru</a></p>
-                    </div>
-                </div>
-                <div class="contact-card">
-                    <h4>Перетяка Нина Петровна</h4>
-                    <div class="position" data-i18n="projDir">Директор проекта</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</p>
-                        <p>E-mail: <a href="mailto:peretyaka-np@ranepa.ru">peretyaka-np@ranepa.ru</a></p>
-                    </div>
-                </div>
-                <div class="contact-card">
-                    <h4>Лощилова М.А.</h4>
-                    <div class="position" data-i18n="spec">Специалист</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</p>
-                        <p>E-mail: <a href="mailto:loshchilova-ma@ranepa.ru">loshchilova-ma@ranepa.ru</a></p>
-                    </div>
-                </div>
-            </div>
-
-            <h3 class="department-title" data-i18n="dept2" style="margin-top:40px;">Отдел ПК и переподготовки государственных служащих</h3>
-            <div class="contacts-grid">
-                <div class="contact-card">
-                    <h4>Михина Елена Владимировна</h4>
-                    <div class="position" data-i18n="headDep">Начальник отдела</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
-                        <p>E-mail: <a href="mailto:mikhina-ev@ranepa.ru">mikhina-ev@ranepa.ru</a></p>
-                    </div>
-                </div>
-                <div class="contact-card">
-                    <h4>Беспалова Валерия Вадимовна</h4>
-                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
-                        <p>E-mail: <a href="mailto:bespalova-vv@ranepa.ru">bespalova-vv@ranepa.ru</a></p>
-                    </div>
-                </div>
-            </div>
-
-            <h3 class="department-title" data-i18n="dept3" style="margin-top:40px;">Отдел дополнительного образования</h3>
-            <div class="contacts-grid">
-                <div class="contact-card">
-                    <h4>Дацун Татьяна Григорьевна</h4>
-                    <div class="position" data-i18n="headDep">Начальник отдела</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2130)</p>
-                        <p>E-mail: <a href="mailto:datsun-tg@ranepa.ru">datsun-tg@ranepa.ru</a></p>
-                    </div>
-                </div>
-                <div class="contact-card">
-                    <h4>Чижекова Наталья Владимировна</h4>
-                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
-                        <p>E-mail: <a href="mailto:chizhekova-nv@ranepa.ru">chizhekova-nv@ranepa.ru</a></p>
-                    </div>
-                </div>
-                <div class="contact-card">
-                    <h4>Хамзина Ирина Александровна</h4>
-                    <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
-                    <div class="details">
-                        <p><span data-i18n="cabText">Каб.</span> 312</p>
-                        <p><span data-i18n="telText">Тел:</span> <a href="tel:+74012972379">+7 (4012) 97-23-79</a> (<span data-i18n="extText">доб.</span> 2129)</p>
-                        <p>E-mail: <a href="mailto:khamzina-ia@ranepa.ru">khamzina-ia@ranepa.ru</a></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="legal-footer">
-                <div data-i18n="footerRights" style="font-weight: 700; font-size: 0.95rem;">© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.</div>
-
-                <div class="legal-footer-links">
-                    <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
-                    <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
-                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;">📄 Официальные образовательные программы (Архив)</span>
-                </div>
-
-                <div style="margin-top: 20px; display: flex; justify-content: center;">
-                    <a href="#" class="vk-btn" onclick="showVkAlert(); return false;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15.071 2H8.929C4.55 2 2 4.55 2 8.929v6.142C2 19.45 4.55 22 8.929 22h6.142C19.45 22 22 19.45 22 15.071V8.929C22 4.55 19.45 2 15.071 2zm1.666 14.838h-1.428c-.687 0-.895-.55-.2.55-1.92 0-3.664-1.378-5.06-3.834-1.573-2.735-2.023-4.996-2.023-5.263 0-.158.067-.323.23-.323h1.427c.18 0 .285.062.355.226.756 1.83 1.776 3.493 2.502 3.493.262 0 .378-.113.378-.718V8.125c0-.44-.134-.637-.464-.637-.184 0-.16-.277.013-.385.27-.168.805-.226 1.34-.226.7 0 .914.07 1.01.21.137.2.106.945.106 1.84v2.54c0 .367.16.505.284.505.262 0 .584-.256 1.306-1.026.786-.84 1.34-2.1 1.34-2.1.066-.135.205-.226.39-.226h1.428c.328 0 .422.164.354.384-.22.684-1.488 2.45-1.94 2.977-.285.334-.356.452 0 .915.65.856 1.545 1.947 1.745 2.55.127.38-.113.568-.48.568z"/></svg>
-                        <span data-i18n="vkText">ВКонтакте (Скоро)</span>
-                    </a>
-                </div>
-            </div>
-            <div class="footer-kadry-mobile">
-                <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
+        <!-- ТЕРМИНЫ -->
+        <div class="screen-terms" id="termsSection">
+            <div style="width: 100%; text-align: center; margin-bottom: 20px;">
+                <h2 style="font-size: 2.2rem; color: var(--accent); margin-bottom: 10px;">База данных ИИ</h2>
+                <p style="color: #94A3B8; font-size: 1.1rem;">Масштабируйте карточки щипком <b>ОДНОЙ РУКИ (тяните вверх/вниз)</b></p>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="quickContactsModal">
-        <div class="modal-box chrome-glass" style="text-align: left; max-width: 560px;">
-            <h3 data-i18n="qcTitle">Быстрый контакт</h3>
-            <p style="margin-bottom: 18px;"><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
-            <p style="margin-bottom: 18px;"><b style="color: var(--ranepa-red);">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
-            <p style="margin-bottom: 28px;"><b style="color: var(--ranepa-red);" data-i18n="addressLabel">Адрес:</b> <span data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span></p>
-            <div class="modal-btn modal-btn-trudvsem" style="background: linear-gradient(135deg, var(--ranepa-red), #e11d48);" onclick="closeQuickContacts(); document.getElementById('contactsSection').scrollIntoView({behavior:'smooth'});" data-i18n="qcAll">Все контакты и сотрудники</div>
-            <div class="close-modal" onclick="closeQuickContacts()" data-i18n="modClose">Закрыть окно</div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="enrollModal">
+    <div class="modal-overlay" id="victoryModal">
         <div class="modal-box">
-            <h3 data-i18n="modTitle">Оформление заявки</h3>
-            <p data-i18n="modDesc">Выберите удобный способ регистрации на программу обучения:</p>
-            <a href="https://trudvsem.ru/?region=3900000000000" target="_blank" class="modal-btn modal-btn-trudvsem" data-i18n="modTrud">Записаться через «Работа России» (Калининград)</a>
-            <a href="https://forms.yandex.ru" target="_blank" class="modal-btn modal-btn-yandex" data-i18n="modYan">Записаться через Яндекс.Форму</a>
-            <div class="compliance-text" data-i18n="complianceText">Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.</div>
-            <div class="close-modal" onclick="closeModal()" data-i18n="modClose">Закрыть окно</div>
+            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
+            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Вы успешно восстановили структуру.<br>Затраченное время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
+            <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить изучение</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="policyModal">
-        <div class="modal-box" style="text-align: left; max-width: 650px;">
-            <h3 data-i18n="polModTitle">Политика обработки персональных данных</h3>
-            <p style="font-size: 0.85rem; line-height: 1.6; max-height: 50vh; overflow-y: auto;" data-i18n="polModText">
-                В соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных» в редакции 2026 года и актуальными нормативными актами Роскомнадзора, Западный филиал РАНХиГС осуществляет сбор, хранение и обработку информации о Пользователе исключительно в образовательных целях.<br><br>
-                1. Пользователь выражает прямое информированное согласие на обработку ПДн, использование файлов cookie и метрических систем при использовании сайта.<br>
-                2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>
-                3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.
-            </p>
-            <div class="close-modal" onclick="closePolicyModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="termsModal">
-        <div class="modal-box" style="text-align: left; max-width: 650px;">
-            <h3 data-i18n="termModTitle">Пользовательское соглашение и оферта</h3>
-            <p style="font-size: 0.85rem; line-height: 1.6; max-height: 50vh; overflow-y: auto;" data-i18n="termModText">
-                Использование цифровых сервисов регулируется актуальным законодательством РФ.<br><br>
-                1. Материалы сайта носят информационный характер и не являются публичной офертой, если иное не указано явно.<br>
-                2. Все интеллектуальные права на дизайн, графические элементы и тексты принадлежат Западному филиалу РАНХиГС.<br>
-                3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.
-            </p>
-            <div class="close-modal" onclick="closeTermsModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
-        </div>
-    </div>
-
-    <!-- ОКНО АРХИВА ПРОГРАММ -->
-    <div class="modal-overlay" id="docsModal">
-        <div class="modal-box" style="text-align: left; max-width: 650px;">
-            <h3>Официальные образовательные программы</h3>
-            <p style="font-size: 0.95rem; line-height: 1.8;">
-                В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:<br><br>
-                📄 <a href="./docs/6.1. DPP_PK_Voprosy_funkcionirovaniya_kontraktnoi_sistemy_v_sfere_zakupok_TRU_dlya_obespecheniya_GMN_2026_108_chasov_.pdf" target="_blank" class="contact-link">Программа повышения квалификации «Вопросы функционирования контрактной системы в сфере закупок...» (108 часов)</a>
-            </p>
-            <div class="close-modal" onclick="closeDocsModal()" style="text-align: center;">Закрыть</div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="urgentAlertModal" style="z-index: 25000;">
-        <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
-            <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
-            <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
-            <div class="buy-btn" onclick="closeUrgentAlertModal()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);" data-i18n="modClose">Закрыть</div>
-        </div>
-    </div>
-
-    <!-- ОКНО РАСПИСАНИЯ -->
-    <div class="schedule-overlay" id="scheduleOverlay">
-        <div class="schedule-container">
-            <div class="schedule-header">
-                <h2 class="schedule-title"><span data-i18n="schTitleMain">Лента</span> <span data-i18n="schTitleSub">Занятий</span></h2>
-                <button class="close-sch-btn" onclick="closeSchedule()">✕</button>
-            </div>
-            <div class="timeline" id="scheduleTimeline">
-                <!-- Сюда скрипт вставит карточки -->
-            </div>
-        </div>
-    </div>
-
-    <div class="owl-ecosystem" id="owlContainer">
-        <svg class="oak-branch" viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-            <defs>
-                <linearGradient id="barkGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#5c4028"/>
-                    <stop offset="55%" stop-color="#3c2a18"/>
-                    <stop offset="100%" stop-color="#241708"/>
-                </linearGradient>
-            </defs>
-            <ellipse cx="260" cy="98" rx="230" ry="10" fill="#000" opacity="0.45"/>
-            <path d="M0 62 Q 100 34 200 48 T 400 40 T 520 52 L520 78 Q 400 66 200 74 T 0 88 Z" fill="url(#barkGrad)"/>
-            <path d="M0 62 Q 100 34 200 48 T 400 40 T 520 52" stroke="#2a1c0e" stroke-width="2" fill="none" opacity="0.7"/>
-            <path d="M10 74 Q 110 50 210 62 T 410 56" stroke="#6b4a2c" stroke-width="1.5" fill="none" opacity="0.5"/>
-            <path d="M15 80 Q 120 58 230 68 T 430 64" stroke="#2a1c0e" stroke-width="1.5" fill="none" opacity="0.5"/>
-            <ellipse cx="140" cy="66" rx="6" ry="4" fill="#241708" opacity="0.6"/>
-            <ellipse cx="360" cy="52" rx="5" ry="3.5" fill="#241708" opacity="0.6"/>
-            <path d="M135 55 q 8 -26 24 -36 q -4 20 -10 40 Z" fill="url(#barkGrad)"/>
-            <path d="M345 46 q -8 -22 -22 -30 q 4 18 10 34 Z" fill="url(#barkGrad)"/>
-        </svg>
-        <div class="owl-container" id="owlSprite" onclick="toggleChat()">
-            <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
-
-            <div class="owl-walker" id="owlWalker">
-                <svg class="owl-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <radialGradient id="owlBodyGrad" cx="42%" cy="32%" r="78%">
-                            <stop offset="0%" stop-color="#b08f61"/>
-                            <stop offset="45%" stop-color="#8a6a42"/>
-                            <stop offset="80%" stop-color="#5c4327"/>
-                            <stop offset="100%" stop-color="#382613"/>
-                        </radialGradient>
-                        <radialGradient id="owlChestGrad" cx="48%" cy="24%" r="75%">
-                            <stop offset="0%" stop-color="#fdf3de"/>
-                            <stop offset="55%" stop-color="#e3c99a"/>
-                            <stop offset="85%" stop-color="#c1a06a"/>
-                            <stop offset="100%" stop-color="#a3814f"/>
-                        </radialGradient>
-                        <radialGradient id="owlEyeGrad" cx="40%" cy="35%" r="68%">
-                            <stop offset="0%" stop-color="#fff8dc"/>
-                            <stop offset="30%" stop-color="#ffd75e"/>
-                            <stop offset="70%" stop-color="#f08a1e"/>
-                            <stop offset="100%" stop-color="#8f4c0a"/>
-                        </radialGradient>
-                        <linearGradient id="beakGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#2b2523"/>
-                            <stop offset="55%" stop-color="#171412"/>
-                            <stop offset="100%" stop-color="#050403"/>
-                        </linearGradient>
-                        <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1">
-                            <stop offset="0%" stop-color="#8a6a42"/>
-                            <stop offset="50%" stop-color="#5c4327"/>
-                            <stop offset="100%" stop-color="#2c1e10"/>
-                        </linearGradient>
-                        <radialGradient id="groundShadow" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stop-color="#000" stop-opacity="0.55"/>
-                            <stop offset="100%" stop-color="#000" stop-opacity="0"/>
-                        </radialGradient>
-                        <radialGradient id="rimLight" cx="30%" cy="20%" r="60%">
-                            <stop offset="0%" stop-color="#fff" stop-opacity="0.5"/>
-                            <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
-                        </radialGradient>
-                    </defs>
-
-                    <ellipse cx="80" cy="192" rx="34" ry="7" fill="url(#groundShadow)"/>
-
-                    <g class="owl-leg owl-leg-l"><rect x="62" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/><rect x="62" y="158" width="3" height="24" rx="1.5" fill="#e9d3a8" opacity="0.6"/></g>
-                    <g class="owl-leg owl-leg-r"><rect x="90" y="158" width="8" height="24" rx="3" fill="#c9ab7c"/><rect x="90" y="158" width="3" height="24" rx="1.5" fill="#e9d3a8" opacity="0.6"/></g>
-                    <g class="owl-foot owl-foot-l"><ellipse cx="60" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M50 184 q -6 3 -9 8 M60 186 q 0 5 0 9 M70 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
-                    <g class="owl-foot owl-foot-r"><ellipse cx="100" cy="184" rx="12" ry="4.5" fill="#7a6a52"/><path d="M90 184 q -6 3 -9 8 M100 186 q 0 5 0 9 M110 184 q 6 3 9 8" stroke="#2a221a" stroke-width="2" fill="none" stroke-linecap="round"/></g>
-
-                    <g class="owl-body-group">
-                        <g class="owl-wing owl-wing-l"><path d="M46 66 Q 14 92 22 140 Q 28 162 48 152 Q 38 112 50 72 Z" fill="url(#wingGrad)"/>
-                            <path d="M28 98 Q 22 122 30 144 M34 86 Q 26 114 34 150 M42 78 Q 36 110 42 152" stroke="#150e08" stroke-width="1.4" fill="none" opacity="0.6"/>
-                            <path d="M46 66 Q 14 92 22 140" stroke="#c9a875" stroke-width="1.2" fill="none" opacity="0.35"/>
-                        </g>
-                        <g class="owl-wing owl-wing-r"><path d="M114 66 Q 146 92 138 140 Q 132 162 112 152 Q 122 112 110 72 Z" fill="url(#wingGrad)"/>
-                            <path d="M132 98 Q 138 122 130 144 M126 86 Q 134 114 126 150 M118 78 Q 124 110 118 152" stroke="#150e08" stroke-width="1.4" fill="none" opacity="0.6"/>
-                        </g>
-
-                        <ellipse cx="80" cy="112" rx="50" ry="64" fill="url(#owlBodyGrad)"/>
-                        <ellipse cx="80" cy="130" rx="46" ry="40" fill="#000" opacity="0.12"/>
-                        <ellipse cx="80" cy="122" rx="34" ry="46" fill="url(#owlChestGrad)"/>
-                        <ellipse cx="66" cy="90" rx="22" ry="26" fill="url(#rimLight)"/>
-
-                        <g opacity="0.55" stroke="#8a6a42" stroke-width="1.4" fill="none">
-                            <path d="M64 96 Q 62 118 66 148"/>
-                            <path d="M74 92 Q 72 122 76 156"/>
-                            <path d="M86 92 Q 88 122 84 156"/>
-                            <path d="M96 96 Q 98 118 94 148"/>
-                        </g>
-                        <g opacity="0.7" fill="#3a2a18">
-                            <ellipse cx="52" cy="76" rx="4" ry="6" transform="rotate(-18 52 76)"/>
-                            <ellipse cx="108" cy="76" rx="4" ry="6" transform="rotate(18 108 76)"/>
-                            <ellipse cx="46" cy="98" rx="3.5" ry="5" transform="rotate(-10 46 98)"/>
-                            <ellipse cx="114" cy="98" rx="3.5" ry="5" transform="rotate(10 114 98)"/>
-                            <ellipse cx="58" cy="60" rx="3" ry="4.5" transform="rotate(-14 58 60)"/>
-                            <ellipse cx="102" cy="60" rx="3" ry="4.5" transform="rotate(14 102 60)"/>
-                            <ellipse cx="70" cy="140" rx="3" ry="4" transform="rotate(-6 70 140)"/>
-                            <ellipse cx="90" cy="140" rx="3" ry="4" transform="rotate(6 90 140)"/>
-                        </g>
-
-                        <g class="owl-head-group">
-                            <path d="M44 42 Q 34 8 52 -4 Q 56 20 58 46 Z" fill="url(#owlBodyGrad)"/>
-                            <path d="M116 42 Q 126 8 108 -4 Q 104 20 102 46 Z" fill="url(#owlBodyGrad)"/>
-                            <path d="M46 40 Q 40 16 52 4" stroke="#1c1409" stroke-width="1.4" fill="none" opacity="0.6"/>
-                            <path d="M114 40 Q 120 16 108 4" stroke="#1c1409" stroke-width="1.4" fill="none" opacity="0.6"/>
-
-                            <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="#efdcb2" opacity="0.95"/>
-                            <path d="M80 52 Q 40 54 34 90 Q 32 108 46 116 Q 80 128 114 116 Q 128 108 126 90 Q 120 54 80 52 Z" fill="none" stroke="#4a3620" stroke-width="1.4" opacity="0.55"/>
-                            <path d="M80 54 Q 48 56 40 86" stroke="#fff" stroke-width="1.5" fill="none" opacity="0.35"/>
-
-                            <circle cx="61" cy="86" r="20" fill="#efdcb2"/>
-                            <circle cx="99" cy="86" r="20" fill="#efdcb2"/>
-                            <circle cx="61" cy="86" r="20" fill="none" stroke="#4a3620" stroke-width="1.3" opacity="0.6"/>
-                            <circle cx="99" cy="86" r="20" fill="none" stroke="#4a3620" stroke-width="1.3" opacity="0.6"/>
-
-                            <g class="owl-eye owl-eye-l">
-                                <circle cx="61" cy="86" r="14" fill="url(#owlEyeGrad)"/>
-                                <circle cx="61" cy="86" r="14" fill="none" stroke="#6b3505" stroke-width="0.9"/>
-                                <circle cx="61" cy="86" r="6.2" fill="#160d05"/>
-                                <circle cx="58" cy="82" r="3.2" fill="#fff" opacity="0.9"/>
-                                <circle cx="63" cy="90" r="1.2" fill="#fff" opacity="0.45"/>
-                                <path d="M52 78 L70 78 M53 74 L69 74 M54 82 L68 82" stroke="#c8791c" stroke-width="0.55" opacity="0.4"/>
-                                <rect class="eyelid" x="47" y="72" width="28" height="28" rx="14" fill="#5c4327"/>
-                            </g>
-                            <g class="owl-eye owl-eye-r">
-                                <circle cx="99" cy="86" r="14" fill="url(#owlEyeGrad)"/>
-                                <circle cx="99" cy="86" r="14" fill="none" stroke="#6b3505" stroke-width="0.9"/>
-                                <circle cx="99" cy="86" r="6.2" fill="#160d05"/>
-                                <circle cx="96" cy="82" r="3.2" fill="#fff" opacity="0.9"/>
-                                <circle cx="101" cy="90" r="1.2" fill="#fff" opacity="0.45"/>
-                                <path d="M90 78 L108 78 M91 74 L107 74 M92 82 L106 82" stroke="#c8791c" stroke-width="0.55" opacity="0.4"/>
-                                <rect class="eyelid" x="85" y="72" width="28" height="28" rx="14" fill="#5c4327"/>
-                            </g>
-
-                            <path d="M45 70 Q 61 60 77 70" stroke="#2c1e10" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75"/>
-                            <path d="M83 70 Q 99 60 115 70" stroke="#2c1e10" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75"/>
-
-                            <path d="M73 96 Q 80 91 87 96 L84 118 Q 80 125 76 118 Z" fill="url(#beakGrad)"/>
-                            <path d="M76 98 L84 98" stroke="#000" stroke-width="1" opacity="0.5"/>
-                            <path d="M75 94 Q 80 91 85 94" stroke="#4a423e" stroke-width="0.8" fill="none" opacity="0.5"/>
-                        </g>
-                    </g>
-                </svg>
-            </div>
-
-            <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-                <path d="M7 9h10v2H7zm0-3h10v2H7zm0 6h7v2H7z"/>
-            </svg>
-        </div>
-    </div>
-
-    <div class="owl-chat-panel" id="owlChat">
-        <div class="owl-chat-header"><span data-i18n="owlHeader">Цифровой ассистент</span> <span style="cursor:pointer; font-size:1.1rem;" onclick="toggleChat()">✖</span></div>
-        <div class="owl-chat-body" id="chatBody">
-            <div class="msg-bot"><b data-i18n="owlName">Сова:</b> <span data-i18n="owlWelcome">Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.</span></div>
-        </div>
-        
-        <div class="chat-input-box">
-            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции, название программы или вопрос..." onkeydown="if(event.key === 'Enter') handleUserMessage()">
-            <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
-        </div>
-
-        <div class="chat-options" id="chatOptions">
-            <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
-            <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
-            <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-                📅 <span data-i18n="schBtnText">Расписание занятий</span>
-            </button>
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
-            <button class="chat-opt-btn" onclick="window.location.href='ai-lecture.html'" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
-                🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
-            </button>
-        </div>
-    </div>
-
-    <div class="scroll-nav" id="scrollNav">
-        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
-            <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
-        </button>
-        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
-            <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
-        </button>
-    </div>
+    <div class="toast" id="toast">ПОКАЖИТЕ ЖЕСТ ✌️ (ПИС) ДЛЯ ВЫХОДА</div>
 
     <script>
-    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-    if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
-    window.scrollTo(0, 0);
+        // ==========================================
+        // 0. ТАЙМЕР
+        // ==========================================
+        let timerInterval = null;
+        let timeElapsed = 0;
+        let timerStarted = false;
 
-    const _p1 = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6bmp2V0RseHh4bEFOa3pUQ0NobnZseUViVzNONzR2cE9FRThwSmFjY0V4aVhRRzdEWlUxU2doUUFwRHNsTU5FT2svZXhlYw==';
-    let API_URL;
-    try { API_URL = atob(_p1.replace('eHh4','x')); } catch (e) { API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec'; }
-    API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
-
-    let globalOwlFiles = [];
-    let globalPrograms = [];
-    let currentLang = 'ru';
-    let globalAlert = null;
-
-    const SECTOR_NAMES = {
-        'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
-        'biz': { ru: '🚀 Цифровой бизнес, ИИ и управление', en: '🚀 Digital Business, AI & Management' },
-        'horeca': { ru: '🏨 HoReCa, туризм и сервис', en: '🏨 HoReCa, Tourism & Service' },
-        'prof': { ru: '⚡ Прикладные профессии и навыки', en: '⚡ Applied Professions & Skills' }
-    };
-
-    function isMobile() { return window.innerWidth <= 768; }
-
-    function toggleTheme() {
-        const root = document.documentElement;
-        const newTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        root.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.getElementById('themeBtn').textContent = newTheme === 'dark' ? '🌙' : '☀️';
-    }
-
-    function changeFontSize(size, btnElement) {
-        const root = document.documentElement;
-        if (size === 'small') root.style.fontSize = '14px';
-        if (size === 'normal') root.style.fontSize = '16px';
-        if (size === 'large') root.style.fontSize = '18px';
-        document.querySelectorAll('.font-controls .control-panel-btn').forEach(btn => btn.classList.remove('active-font'));
-        if (btnElement) btnElement.classList.add('active-font');
-    }
-
-    function showVkAlert() {
-        alert(currentLang === 'ru'
-            ? 'Официальное сообщество VK находится на стадии оформления и интеграции. Скоро здесь появится ссылка!'
-            : 'The official VK community is under development. A link will appear here soon!');
-    }
-
-    const translationsHTML = {
-        ru: {
-            pageTitle: "Академия Кадров | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
-            heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
-            tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
-            studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
-            filterSector: "Направление", filterMaxPrice: "Стоимость до, ₽", filterDuration: "Длительность",
-            filterSort: "Сортировка", sortAlphaAsc: "По алфавиту (А-Я)", sortAlphaDesc: "По алфавиту (Я-А)", sortPriceAsc: "Сначала дешевле", sortPriceDesc: "Сначала дороже", sortHoursAsc: "Сначала короче", sortHoursDesc: "Сначала длиннее",
-            filterDurAny: "Любая", filterDurShort: "до 50 ч.", filterDurMid: "50–200 ч.", filterDurLong: "от 200 ч.", filterReset: "Сбросить",
-            faqTitle: "Часто задаваемые вопросы",
-            faqQ1: "Какие документы нужны для поступления?", faqA1: "Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).",
-            faqQ2: "Как проходит обучение?", faqA2: "Обучение проходит в очно-заочном формате с применением дистанционных технологий. Практические занятия проводятся на базе Академии.",
-            faqQ3: "Выдается ли диплом государственного образца?", faqA3: "Да, после успешной сдачи итоговой аттестации выдается диплом РАНХиГС о профессиональной переподготовке с правом ведения новой деятельности.",
-            faqQ4: "Можно ли совмещать обучение с работой?", faqA4: "График занятий специально адаптирован для работающих специалистов. Лекции проходят в вечернее время или по выходным.",
-            faqQ5: "Как осуществляется доступ к учебным материалам?", faqA5: "Все материалы доступны 24/7 на закрытой образовательной платформе РАНХиГС. Вы можете изучать их с любого устройства.",
-            contactsTitle: "Контактная информация", contactsSub: "Официальные данные сотрудников Центров и Отделов Западного филиала",
-            mainContactTitle: "Контакты Центра дополнительного профессионального образования Западного филиала Президентской академии:",
-            telLabel: "Телефоны:", addressLabel: "Адрес:", addressText: "236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62",
-            dept1: "Центр дополнительного образования", dept2: "Отдел ПК и переподготовки государственных служащих", dept3: "Отдел дополнительного образования",
-            dirCenter: "Директор центра", depDir: "Заместитель директора центра", projDir: "Директор проекта", spec: "Специалист", headDep: "Начальник отдела", leadSpec: "Ведущий специалист",
-            cabText: "Каб.", telText: "Тел:", extText: "доб.", footerRights: "© 2026 Западный филиал РАНХиГС. Центр Дополнительного Образования. Все права защищены. Образовательная деятельность ведется на основании бессрочной лицензии.",
-            polLink: "Политика конфиденциальности и обработки персональных данных (ФЗ-152)", termLink: "Пользовательское соглашение и оферта", vkText: "ВКонтакте (Скоро)",
-            modTitle: "Оформление заявки", modDesc: "Выберите удобный способ регистрации на программу обучения:",
-            modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму",
-            complianceText: "Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.",
-            modClose: "Закрыть окно", modOk: "Понятно", qcTitle: "Быстрый контакт", qcAll: "Все контакты и сотрудники",
-            polModTitle: "Политика обработки персональных данных",
-            polModText: "В соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных» в редакции 2026 года и актуальными нормативными актами Роскомнадзора, Западный филиал РАНХиГС осуществляет сбор, хранение и обработку информации о Пользователе исключительно в образовательных целях.<br><br>1. Пользователь выражает прямое информированное согласие на обработку ПДн, использование файлов cookie и метрических систем при использовании сайта.<br>2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.",
-            termModTitle: "Пользовательское соглашение и оферта",
-            termModText: "Использование цифровых сервисов регулируется актуальным законодательством РФ.<br><br>1. Материалы сайта носят информационный характер и не являются публичной офертой, если иное не указано явно.<br>2. Все интеллектуальные права на дизайн, графические элементы и тексты принадлежат Западному филиалу РАНХиГС.<br>3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.",
-            owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
-            owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.",
-            owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся.",
-            goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?",
-            schTitleMain: "Лента", schTitleSub: "Занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
-            schLoading: "Загружаем расписание... ⏳", schEmpty: "Расписание пока формируется... Загляните позже! 🦉"
-        },
-        en: {
-            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
-            heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
-            tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
-            studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now", faqTitle: "Frequently Asked Questions",
-            filterSector: "Sector", filterMaxPrice: "Max price, ₽", filterDuration: "Duration",
-            filterSort: "Sort by", sortAlphaAsc: "Alphabetical (A-Z)", sortAlphaDesc: "Alphabetical (Z-A)", sortPriceAsc: "Price (Low to High)", sortPriceDesc: "Price (High to Low)", sortHoursAsc: "Duration (Short to Long)", sortHoursDesc: "Duration (Long to Short)",
-            filterDurAny: "Any", filterDurShort: "up to 50 hrs", filterDurMid: "50–200 hrs", filterDurLong: "200+ hrs", filterReset: "Reset",
-            faqQ1: "What documents are required for admission?", faqA1: "You'll need a copy of your passport, SNILS, and proof of prior education (vocational or higher-education diploma).",
-            faqQ2: "How is training conducted?", faqA2: "Training is blended (part-time in-person plus remote technologies). Practical sessions take place at the Academy.",
-            faqQ3: "Is a state-recognized diploma issued?", faqA3: "Yes — after passing the final assessment you receive a RANEPA professional retraining diploma granting the right to a new field of practice.",
-            faqQ4: "Can I combine studying with work?", faqA4: "The schedule is specifically adapted for working professionals, with evening or weekend classes.",
-            faqQ5: "How do I access learning materials?", faqA5: "All materials are available 24/7 on RANEPA's private educational platform, from any device.",
-            contactsTitle: "Contact Information", contactsSub: "Official contacts of the Western Branch centers and departments",
-            mainContactTitle: "Contacts of the Center for Continuing Professional Education, RANEPA Western Branch:",
-            telLabel: "Phone:", addressLabel: "Address:", addressText: "62 Artilleriyskaya St., Kaliningrad, Kaliningrad Region, Russia, 236038",
-            dept1: "Center for Continuing Education", dept2: "Department for Civil Servant Training & Retraining", dept3: "Department of Continuing Education",
-            dirCenter: "Center Director", depDir: "Deputy Center Director", projDir: "Project Director", spec: "Specialist", headDep: "Head of Department", leadSpec: "Lead Specialist",
-            cabText: "Office", telText: "Tel:", extText: "ext.", footerRights: "© 2026 RANEPA Western Branch. Center for Continuing Education. All rights reserved. Educational activities are conducted under a perpetual license.",
-            polLink: "Privacy Policy & Personal Data Processing (Federal Law 152-FZ)", termLink: "Terms of Use & Offer", vkText: "VKontakte (Coming Soon)",
-            modTitle: "Application", modDesc: "Choose a convenient way to register for the program:",
-            modTrud: "Apply via \"Work of Russia\" (Kaliningrad)", modYan: "Apply via Yandex Form",
-            complianceText: "By clicking the button, you give direct informed consent to the processing of personal data in accordance with Federal Law 152-FZ and current Roskomnadzor requirements (2026), and accept the Terms of Use.",
-            modClose: "Close", modOk: "Got it", qcTitle: "Quick Contact", qcAll: "All contacts and staff",
-            polModTitle: "Personal Data Processing Policy",
-            polModText: "In accordance with Federal Law No. 152-FZ \"On Personal Data\" (2026 edition) and current Roskomnadzor regulations, RANEPA Western Branch collects, stores and processes User information solely for educational purposes.<br><br>1. The User gives direct informed consent to the processing of personal data and the use of cookies and analytics on the site.<br>2. Operator uses certified cryptographic protection protocols. Covert collection of biometric data is strictly prohibited.<br>3. No cross-border data transfer takes place. Data is stored on servers physically located in the Russian Federation.",
-            termModTitle: "Terms of Use & Public Offer",
-            termModText: "Use of digital services is governed by applicable Russian law.<br><br>1. Site materials are informational and do not constitute a public offer unless explicitly stated.<br>2. All intellectual property rights to the design, graphics and text belong to RANEPA Western Branch.<br>3. By submitting an application, the User confirms full awareness of the admission and enrollment rules for continuing-education programs.",
-            owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
-            owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog? You can also enter a lecture code to get materials.",
-            owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon.",
-            goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?",
-            schTitleMain: "Class", schTitleSub: "Schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
-            schLoading: "Loading schedule... ⏳", schEmpty: "Schedule is currently being compiled... Check back later! 🦉"
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
+                const s = String(timeElapsed % 60).padStart(2, '0');
+                document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+            }, 1000);
         }
-    };
 
-    function setLanguage(lang) {
-        currentLang = lang;
-        document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
-        document.getElementById('langEnBtn').classList.toggle('lang-active', lang === 'en');
-        document.documentElement.lang = lang;
-
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            const dict = translationsHTML[lang];
-            if (dict && dict[key] !== undefined) {
-                if (el.tagName === 'TITLE') {
-                    document.title = dict[key];
-                } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    el.placeholder = dict[key];
-                } else {
-                    el.innerHTML = dict[key];
-                }
-            }
-        });
-
-        document.querySelectorAll('.accordion-btn').forEach(btn => {
-            const card = btn.closest('.card');
-            btn.textContent = card.classList.contains('active')
-                ? (lang === 'ru' ? 'Свернуть учебный план' : 'Collapse Curriculum')
-                : (lang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum');
-        });
-
-        resetMenu();
-    }
-
-    window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        document.getElementById('progress-bar').style.width = (height > 0 ? (winScroll / height) * 100 : 0) + "%";
-        updateCardParallax();
-    }, { passive: true });
-
-    let parallaxRaf = null;
-    function updateCardParallax() {
-        if (parallaxRaf) return;
-        parallaxRaf = requestAnimationFrame(() => {
-            parallaxRaf = null;
-            if (isMobile()) return;
-            const vh = window.innerHeight;
-            document.querySelectorAll('.tab-content.active .card').forEach(card => {
-                const r = card.getBoundingClientRect();
-                const center = r.top + r.height / 2;
-                let py = center / vh;
-                py = Math.max(0, Math.min(1, py));
-                card.style.setProperty('--py', py.toFixed(3));
-            });
-        });
-    }
-
-    async function fetchPrograms() {
-        try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            
-            if (data.owlFiles) {
-                globalOwlFiles = data.owlFiles;
-            }
-            if (data.schedules) {
-                window.schedules = data.schedules;
-            }
-
-            const tickerEl = document.getElementById('globalAlertTicker');
-            const tickerTextEl = document.getElementById('tickerText');
-
-            if (data.currentAlert && data.currentAlert.text) {
-                globalAlert = data.currentAlert;
-                tickerTextEl.innerHTML = `⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ${globalAlert.text} &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 🖱️ Нажмите сюда, чтобы прочитать полностью`;
-                tickerEl.style.display = 'block';
-                setTimeout(owlVisitTicker, 600);
-            } else {
-                globalAlert = null;
-                tickerEl.style.display = 'none';
-            }
-
-            buildPrograms(data.programs || data);
-        } catch (error) {
-            console.error("Ошибка API:", error);
-            document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Не удалось загрузить программы. Пожалуйста, обновите страницу.</div>`;
+        function stopTimerAndShowModal() {
+            clearInterval(timerInterval);
+            const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
+            const s = String(timeElapsed % 60).padStart(2, '0');
+            document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
+            setTimeout(() => { document.getElementById('victoryModal').classList.add('active'); }, 1500); 
         }
-    }
 
-    function buildPrograms(programs) {
-        const tabs = ['tab-all', 'tab-kadry', 'tab-pk', 'tab-pp', 'tab-po', 'tab-sem'];
-        const htmlMap = {};
-        tabs.forEach(t => htmlMap[t] = []); // Теперь это просто массив карточек, без деления на сектора
-        
-        // ВАЖНО: Сортируем программы по алфавиту изначально
-        programs.sort((a, b) => String(a.title_ru).trim().localeCompare(String(b.title_ru).trim(), 'ru'));
-        globalPrograms = programs;
-
-        programs.forEach(prog => {
-            translationsHTML.ru[`${prog.id}_title`] = prog.title_ru;
-            translationsHTML.ru[`${prog.id}_desc`] = prog.desc_ru;
-            translationsHTML.en[`${prog.id}_title`] = prog.title_en;
-            translationsHTML.en[`${prog.id}_desc`] = prog.desc_en;
-
-            let bulletsHTML = '';
-            if (prog.bullets_ru && Array.isArray(prog.bullets_ru)) {
-                prog.bullets_ru.forEach((b_ru, i) => {
-                    if(!b_ru.trim()) return;
-                    let bulletKey = `${prog.id}_b${i}`;
-                    translationsHTML.ru[bulletKey] = `✔️ ${b_ru.trim()}`;
-                    translationsHTML.en[bulletKey] = (prog.bullets_en && prog.bullets_en[i]) ? `✔️ ${prog.bullets_en[i].trim()}` : `✔️ ${b_ru.trim()}`;
-                    bulletsHTML += `<li data-i18n="${bulletKey}">✔️ ${b_ru.trim()}</li>`;
-                });
-            }
-
-            let extraInfoHTML = '';
-            if (prog.type || prog.format || prog.dates) {
-                extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
-                if (prog.type) extraInfoHTML += `<div><b>Тип:</b> ${prog.type}</div>`;
-                if (prog.format) extraInfoHTML += `<div><b>Форма:</b> ${prog.format}</div>`;
-                if (prog.dates) extraInfoHTML += `<div><b>Сроки:</b> ${prog.dates}</div>`;
-                extraInfoHTML += `</div>`;
-            }
-
-            const priceNum = parseInt(String(prog.price).replace(/[^\d]/g, ''), 10) || 0;
-            const hoursNum = parseInt(String(prog.hours).replace(/[^\d]/g, ''), 10) || 0;
-            const safeTitle = String(prog.title_ru).replace(/"/g, '&quot;');
-
-            let cardHTML = `
-            <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
-                <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
-                ${extraInfoHTML}
-                <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
-                <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        ${bulletsHTML}
-                    </ul>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; border-left: 2px solid var(--ranepa-red); padding-left: 8px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 0 8px 8px 0;">
-                        📄 Полная официальная программа и аннотация доступны в <span onclick="openDocsModal()" style="color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700;">архиве программ</span> внизу страницы.
-                    </div>
-                    <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
-                </div>
-            </div>`;
-
-            // Добавляем карточку во вкладку "Все программы"
-            htmlMap['tab-all'].push(cardHTML);
-
-            // И добавляем в нужную вкладку по типу
-            if (prog.tab && tabs.includes(prog.tab)) {
-                htmlMap[prog.tab].push(cardHTML);
-            }
-        });
-
-        Object.keys(SECTOR_NAMES).forEach(sec => {
-            translationsHTML.ru[`sec_${sec}`] = SECTOR_NAMES[sec].ru;
-            translationsHTML.en[`sec_${sec}`] = SECTOR_NAMES[sec].en;
-        });
-
-        tabs.forEach(tabId => {
-            let tabHTML = htmlMap[tabId].join('');
-            if(tabHTML === '') tabHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);" data-i18n="noPrograms">Программы в данном разделе скоро появятся.</div>`;
-            const container = document.getElementById(tabId);
-            if(container) container.innerHTML = tabHTML;
-        });
-
-        setLanguage(currentLang);
-        armRevealTargets();
-        buildFilters();
-        updateCardParallax();
-        if (isMobile()) {
-            document.getElementById('swipeHint').style.display = 'flex';
-            setTimeout(() => { const h = document.getElementById('swipeHint'); if (h) h.style.display = 'none'; }, 6000);
-        }
-    }
-
-    function buildFilters() {
-        const bar = document.getElementById('filtersBar');
-        const sectorsBox = document.getElementById('filterSectors');
-        bar.style.display = 'flex';
-        sectorsBox.innerHTML = '';
-        Object.keys(SECTOR_NAMES).forEach(sec => {
-            const chip = document.createElement('div');
-            chip.className = 'filter-sector-chip';
-            chip.dataset.sector = sec;
-            chip.textContent = SECTOR_NAMES[sec][currentLang];
-            chip.onclick = () => { chip.classList.toggle('active'); applyFilters(); };
-            sectorsBox.appendChild(chip);
-        });
-        document.getElementById('filterMaxPrice').oninput = applyFilters;
-        document.getElementById('filterDuration').onchange = applyFilters;
-        document.getElementById('filterSort').onchange = applyFilters;
-    }
-
-    function applyFilters() {
-        const activeSectors = Array.from(document.querySelectorAll('.filter-sector-chip.active')).map(c => c.dataset.sector);
-        const maxPrice = parseInt(document.getElementById('filterMaxPrice').value, 10);
-        const durationMode = document.getElementById('filterDuration').value;
-        const sortMode = document.getElementById('filterSort').value;
-
-        // Фильтруем только вкладку 'tab-all'
-        const cards = Array.from(document.querySelectorAll('#tab-all .card'));
-
-        cards.forEach(card => {
-            let visible = true;
-            if (activeSectors.length && !activeSectors.includes(card.dataset.sector)) visible = false;
-            if (!isNaN(maxPrice) && maxPrice > 0 && parseInt(card.dataset.price, 10) > maxPrice) visible = false;
-            const h = parseInt(card.dataset.hours, 10) || 0;
-            if (durationMode === 'short' && h > 50) visible = false;
-            if (durationMode === 'mid' && (h < 50 || h > 200)) visible = false;
-            if (durationMode === 'long' && h < 200) visible = false;
-            card.classList.toggle('filtered-out', !visible);
-        });
-
-        // Сортировка с использованием CSS свойства order
-        let sortedCards = cards.filter(c => !c.classList.contains('filtered-out'));
-        
-        sortedCards.sort((a, b) => {
-            let valA, valB;
-            if (sortMode.startsWith('alpha')) {
-                valA = a.dataset.title;
-                valB = b.dataset.title;
-                return sortMode === 'alpha_asc' ? valA.localeCompare(valB, 'ru') : valB.localeCompare(valA, 'ru');
-            } else if (sortMode.startsWith('price')) {
-                valA = parseInt(a.dataset.price, 10) || 0;
-                valB = parseInt(b.dataset.price, 10) || 0;
-                return sortMode === 'price_asc' ? valA - valB : valB - valA;
-            } else if (sortMode.startsWith('hours')) {
-                valA = parseInt(a.dataset.hours, 10) || 0;
-                valB = parseInt(b.dataset.hours, 10) || 0;
-                return sortMode === 'hours_asc' ? valA - valB : valB - valA;
-            }
-            return 0;
-        });
-
-        // Применяем порядок на экране
-        sortedCards.forEach((card, index) => {
-            card.style.order = index;
-        });
-    }
-
-    function resetFilters() {
-        document.querySelectorAll('.filter-sector-chip').forEach(c => c.classList.remove('active'));
-        document.getElementById('filterMaxPrice').value = '';
-        document.getElementById('filterDuration').value = '';
-        document.getElementById('filterSort').value = 'alpha_asc';
-        applyFilters();
-    }
-
-    function filterPrograms(evt, tabName) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-        if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
-        document.getElementById('filtersBar').style.display = (tabName === 'tab-all') ? 'flex' : 'none';
-        armRevealTargets();
-        animateAssembly(tabName);
-        updateCardParallax();
-    }
-
-    function animateAssembly(tabId) {
-        if (isMobile()) return;
-
-        const cards = document.querySelectorAll('#' + tabId + ' .card');
-        cards.forEach((card, index) => {
-            const signX = Math.random() > 0.5 ? 1 : -1;
-            const signY = Math.random() > 0.5 ? 1 : -1;
-            card.style.setProperty('--x-dist', (Math.random() * 400 + 100) * signX + 'px');
-            card.style.setProperty('--y-dist', (Math.random() * 400 + 100) * signY + 'px');
-            card.classList.remove('puzzle-piece', 'glow-effect');
-            void card.offsetWidth;
-            const delay = Math.min(index * 0.15, 3);
-            card.style.animationDelay = delay + 's';
-            card.style.animationDuration = (4 - delay) + 's';
-            card.classList.add('puzzle-piece');
-            setTimeout(() => {
-                card.classList.add('glow-effect');
-                setTimeout(() => card.classList.remove('glow-effect'), 1800);
-            }, (delay + (4 - delay)) * 1000 * 0.3);
-        });
-    }
-
-    function focusTab(tabId) {
-        const section = document.getElementById('programsSection');
-        const y = section.getBoundingClientRect().top + window.pageYOffset - (document.querySelector('header').offsetHeight + 20);
-        window.scrollTo({ top: y, behavior: 'smooth' });
-
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        document.getElementById('filtersBar').style.display = (tabId === 'tab-all') ? 'flex' : 'none';
-        
-        const tabsMap = { 'tab-kadry': 1, 'tab-pk': 2, 'tab-pp': 3, 'tab-po': 4, 'tab-sem': 5 };
-        const buttons = document.querySelectorAll('.tab-btn');
-        if (buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add('active');
-
-        armRevealTargets();
-        animateAssembly(tabId);
-        updateCardParallax();
-        if (!isMobile()) playHoot();
-    }
-
-    function toggleCard(btn) {
-        const card = btn.closest('.card');
-        card.classList.toggle('active');
-        btn.textContent = card.classList.contains('active')
-            ? (currentLang === 'ru' ? 'Свернуть учебный план' : 'Collapse Curriculum')
-            : (currentLang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum');
-    }
-
-    function openQuickContacts() { document.getElementById('quickContactsModal').classList.add('active'); }
-    function closeQuickContacts() { document.getElementById('quickContactsModal').classList.remove('active'); }
-    function openModal() { document.getElementById('enrollModal').classList.add('active'); }
-    function closeModal() { document.getElementById('enrollModal').classList.remove('active'); }
-    function openPolicyModal() { document.getElementById('policyModal').classList.add('active'); }
-    function closePolicyModal() { document.getElementById('policyModal').classList.remove('active'); }
-    function openTermsModal() { document.getElementById('termsModal').classList.add('active'); }
-    function closeTermsModal() { document.getElementById('termsModal').classList.remove('active'); }
-    
-    // Функции для архива программ
-    function openDocsModal() { document.getElementById('docsModal').classList.add('active'); }
-    function closeDocsModal() { document.getElementById('docsModal').classList.remove('active'); }
-
-    const OWL_DELAY_MS = 5 * 1000;
-    let owlIntroduced = false;
-    setTimeout(() => {
-        document.getElementById('owlContainer').classList.add('visible');
-        owlIntroduced = true;
-    }, OWL_DELAY_MS);
-
-    setInterval(() => {
-        const container = document.getElementById('owlContainer');
-        const bubble = document.getElementById('owlBubble');
-        if (!container.classList.contains('visible')) return;
-        if (!document.getElementById('owlChat').classList.contains('active')) {
-            bubble.classList.toggle('show');
-        } else {
-            bubble.classList.remove('show');
-        }
-    }, 5000);
-
-    let sharedAudioCtx = null;
-    function getAudioCtx() {
-        if (!sharedAudioCtx) {
-            try { sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
-        }
-        return sharedAudioCtx;
-    }
-    function unlockAudio() {
-        const ctx = getAudioCtx();
-        if (ctx && ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
-    }
-    ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
-        window.addEventListener(evt, unlockAudio, { once: true, passive: true });
-    });
-
-    function playHoot() {
-        const ctx = getAudioCtx();
-        if (!ctx) return;
-        if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
-        try {
-            const repeats = [{ t: 0, g: 0.045 }, { t: 0.45, g: 0.022 }, { t: 0.9, g: 0.010 }];
-            repeats.forEach(r => {
-                const start = ctx.currentTime + r.t;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(155, start);
-                osc.frequency.exponentialRampToValueAtTime(92, start + 0.5);
-                gain.gain.setValueAtTime(0.0001, start);
-                gain.gain.exponentialRampToValueAtTime(r.g, start + 0.08);
-                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.7);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(start); osc.stop(start + 0.75);
-            });
-        } catch (e) {}
-    }
-
-    setTimeout(function scheduleFirstHoot() {
-        playHoot();
-        setInterval(playHoot, 5 * 60 * 1000);
-    }, 20 * 1000);
-
-    let scrollMiniTimeout;
-    window.addEventListener('scroll', () => {
-        const container = document.getElementById('owlContainer');
-        const bubble = document.getElementById('owlBubble');
-        if (container.classList.contains('flying') || container.classList.contains('sitting')) { updateScrollNav(); return; }
-
-        if (!container.classList.contains('scroll-mini')) {
-            container.classList.add('scroll-mini');
-            bubble.classList.remove('show');
-        }
-        clearTimeout(scrollMiniTimeout);
-        scrollMiniTimeout = setTimeout(() => {
-            container.classList.remove('scroll-mini');
-        }, 450);
-
-        updateScrollNav();
-    }, { passive: true });
-
-    function toggleChat() {
-        playHoot();
-        const chat = document.getElementById('owlChat');
-        const ecosystem = document.getElementById('owlContainer');
-        if (chat.classList.contains('active')) {
-            chat.classList.remove('active');
-            ecosystem.classList.remove('chat-opened');
-        } else {
-            chat.classList.add('active');
-            ecosystem.classList.add('chat-opened');
-        }
-    }
-
-    function updateScrollNav() {
-        const scrollY = window.scrollY || document.documentElement.scrollTop;
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        const topBtn = document.getElementById('scrollTopBtn');
-        const bottomBtn = document.getElementById('scrollBottomBtn');
-        if (!topBtn || !bottomBtn) return;
-
-        topBtn.classList.toggle('show', scrollY > 300);
-        bottomBtn.classList.toggle('show', maxScroll - scrollY > 300);
-    }
-    window.addEventListener('resize', updateScrollNav, { passive: true });
-
-    let owlBusy = false;
-    function owlFlyToPrograms() {
-        if (isMobile() || owlBusy) return;
-        owlBusy = true;
-        const eco = document.getElementById('owlContainer');
-        const homeRect = eco.getBoundingClientRect();
-        const target = document.getElementById('programsSection');
-        const targetRect = target.getBoundingClientRect();
-
-        const startX = homeRect.left, startY = homeRect.top;
-        const endX = Math.max(20, targetRect.left + targetRect.width * (0.55 + Math.random() * 0.2));
-        const endY = Math.max(80, targetRect.top + 40);
-
-        const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 400;
-        const midY = Math.min(startY, endY) - (120 + Math.random() * 200);
-
-        eco.classList.add('flying');
-        eco.style.position = 'fixed';
-
-        const duration = 1300 + Math.random() * 400;
-        const t0 = performance.now();
-        function step(now) {
-            const t = Math.min(1, (now - t0) / duration);
-            const bx = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
-            const by = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
-            const scale = 1 - t * 0.45;
-            eco.style.left = bx + 'px';
-            eco.style.top = by + 'px';
-            eco.style.right = 'auto'; eco.style.bottom = 'auto';
-            eco.style.transform = `scale(${scale})`;
-            if (t < 1) requestAnimationFrame(step);
-            else owlSitAndReturn(eco, homeRect);
-        }
-        requestAnimationFrame(step);
-    }
-
-    function owlSitAndReturn(eco, homeRect) {
-        eco.classList.remove('flying');
-        eco.classList.add('sitting');
-        playHoot();
-
-        setTimeout(() => {
-            eco.classList.remove('sitting');
-            const startRect = eco.getBoundingClientRect();
-            const startX = startRect.left, startY = startRect.top;
-            const endX = homeRect.left, endY = homeRect.top;
-            const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 350;
-            const midY = Math.min(startY, endY) - (100 + Math.random() * 180);
-
-            eco.classList.add('flying');
-            const duration = 1100 + Math.random() * 400;
-            const t0 = performance.now();
-            let startScale = 0.55;
-            function step(now) {
-                const t = Math.min(1, (now - t0) / duration);
-                const bx = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
-                const by = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
-                const scale = startScale + t * (1 - startScale);
-                eco.style.left = bx + 'px';
-                eco.style.top = by + 'px';
-                eco.style.transform = `scale(${scale})`;
-                if (t < 1) requestAnimationFrame(step);
-                else {
-                    eco.classList.remove('flying');
-                    eco.style.position = ''; eco.style.left = ''; eco.style.top = ''; eco.style.transform = '';
-                    owlBusy = false;
-                }
-            }
-            requestAnimationFrame(step);
-        }, 4000);
-    }
-
-    function owlVisitTicker() {
-        if (isMobile()) return;
-        const visitor = document.getElementById('owlTickerVisitor');
-        const shout = document.getElementById('owlTickerShout');
-        const ticker = document.getElementById('globalAlertTicker');
-        if (!ticker || ticker.style.display === 'none') return;
-
-        const tRect = ticker.getBoundingClientRect();
-        const targetX = tRect.left + 60 + Math.random() * 120;
-        const targetY = tRect.top - 10;
-
-        visitor.style.left = (window.innerWidth + 80) + 'px';
-        visitor.style.top = (targetY - 100 - Math.random() * 80) + 'px';
-        visitor.classList.add('show');
-
-        requestAnimationFrame(() => {
-            visitor.style.transition = 'left 0.9s cubic-bezier(0.3,0.6,0.3,1), top 0.9s cubic-bezier(0.3,0.6,0.3,1)';
-            visitor.style.left = targetX + 'px';
-            visitor.style.top = targetY + 'px';
-        });
-
-        setTimeout(() => {
-            playHoot();
-            shout.classList.add('show');
-        }, 950);
-
-        setTimeout(() => {
-            shout.classList.remove('show');
-            visitor.style.left = (window.innerWidth + 80) + 'px';
-            visitor.style.top = (targetY - 60 - Math.random() * 100) + 'px';
-        }, 5000);
-
-        setTimeout(() => { visitor.classList.remove('show'); }, 5950);
-    }
-
-    function normalizeText(s) {
-        return (s || '').toLowerCase().replace(/[«»"'.,!?;:()]/g, '').replace(/\s+/g, ' ').trim();
-    }
-    function matchScore(query, title) {
-        const qWords = normalizeText(query).split(' ').filter(w => w.length > 2);
-        const tWords = normalizeText(title).split(' ').filter(w => w.length > 2);
-        if (!qWords.length || !tWords.length) return 0;
-        let hits = 0;
-        qWords.forEach(qw => { if (tWords.some(tw => tw.includes(qw) || qw.includes(tw))) hits++; });
-        return hits / qWords.length;
-    }
-
-    function handleUserMessage() {
-        const input = document.getElementById('chatUserInput');
-        const text = input.value.trim();
-        if (!text) return;
-
-        addUserMsg(text);
-        input.value = '';
-
-        // --- СЕКРЕТНЫЙ ВХОД ДЛЯ ПРЕПОДАВАТЕЛЕЙ ---
-        if (text.toLowerCase().includes('служебный вход')) {
-            setTimeout(() => {
-                const portalUrl = API_URL + "?page=upload";
-                addBotMsg(currentLang === 'ru'
-                    ? "🔒 <b>Служебный портал.</b> Для загрузки учебных планов перейдите по ссылке ниже. Вам потребуется ввести ПИН-код сотрудника."
-                    : "🔒 <b>Staff Portal.</b> Click the link below to access the curriculum upload portal. A staff PIN code will be required.");
-                setOptions(`
-                    <button class="chat-opt-btn" onclick="window.open('${portalUrl}', '_blank')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; font-size: 1rem; border: none; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);">
-                        📂 Открыть портал загрузки
-                    </button>
-                    <button class="chat-opt-btn" onclick="resetMenu()">⬅️ Вернуться в меню</button>
-                `);
-            }, 400);
-            return;
-        }
-        // --- КОНЕЦ СЕКРЕТНОГО ВХОДА ---
-
-        const cleanCode = text.toUpperCase();
-        const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
-
-        if (foundFile) {
-            setTimeout(() => {
-                if (foundFile.isPublished) {
-                    let responseMsg = `📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`;
-                    if (foundFile.comment && foundFile.comment.trim() !== "") {
-                        responseMsg += `<br><br>💬 <b>Комментарий преподавателя:</b><br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
+        // ==========================================
+        // 0.5 WEB SPEECH API (ГОЛОСОВЫЕ КОМАНДЫ)
+        // ==========================================
+        function initVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ru-RU';
+                recognition.continuous = true;
+                recognition.interimResults = false;
+                recognition.onresult = (event) => {
+                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+                    if (transcript.includes('сова') || transcript.includes('закрой') || transcript.includes('взрыв')) {
+                        triggerImplosion();
                     }
-                    responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Загружено / обновлено: ${foundFile.date}</span>`;
-                    addBotMsg(responseMsg);
-                } else {
-                    addBotMsg(`⚠️ Материал по коду <b>«${foundFile.title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Статус изменен: ${foundFile.date}</span>`);
-                }
-            }, 500);
-            return;
-        }
-
-        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
-        const scored = globalPrograms
-            .map(p => ({ p, score: matchScore(text, p[titleKey]) }))
-            .filter(x => x.score > 0.4)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, 4);
-
-        setTimeout(() => {
-            if (scored.length === 1 && scored[0].score >= 0.95) {
-                showProgramDetails(scored[0].p);
-            } else if (scored.length > 0) {
-                addBotMsg(translationsHTML[currentLang].maybeYouMean);
-                let html = '';
-                scored.forEach(({ p }) => {
-                    html += `<button class="chat-opt-btn" onclick="showProgramDetailsById('${p.id}')">${p[titleKey]}</button>`;
-                });
-                html += `<button class="chat-opt-btn" onclick="offerAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`;
-                setOptions(html);
+                };
+                recognition.onend = () => { if(!isImploding) recognition.start(); };
+                try { recognition.start(); } catch(e){}
             } else {
-                addBotMsg(translationsHTML[currentLang].notSure);
-                offerAllPrograms(true);
+                document.querySelector('.hud-mic').innerHTML = "Голос не поддерживается";
             }
-        }, 450);
-    }
-
-    function showProgramDetailsById(id) {
-        const p = globalPrograms.find(x => x.id === id);
-        if (p) showProgramDetails(p);
-    }
-
-    function showProgramDetails(p) {
-        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
-        const descKey = currentLang === 'ru' ? 'desc_ru' : 'desc_en';
-        const bulletsKey = currentLang === 'ru' ? 'bullets_ru' : 'bullets_en';
-        addUserMsg(p[titleKey]);
-        let html = `<b>${p[titleKey]}</b><br>${p[descKey] || ''}<br><br>💰 ${p.price} · ⏱ ${p.hours}`;
-        if (p[bulletsKey] && p[bulletsKey].length) {
-            html += '<ul style="margin:10px 0 0 18px; padding:0;">';
-            p[bulletsKey].forEach(b => { if (b && b.trim()) html += `<li>${b.trim()}</li>`; });
-            html += '</ul>';
         }
-        addBotMsg(html);
-        setOptions(`
-            <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
-            <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-        `);
-    }
 
-    function offerAllPrograms(autoFly) {
-        setOptions(`<button class="chat-opt-btn" onclick="goToAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`);
-        if (autoFly && !isMobile()) {
-            setTimeout(owlFlyToPrograms, 400);
-        }
-    }
+        // ==========================================
+        // 1. ГЕНЕРАЦИЯ ПАЗЛОВ (6 штук)
+        // ==========================================
+        const puzzleArea = document.getElementById('puzzleArea');
+        const grid = document.getElementById('grid');
+        const cols = 3, rows = 2;
+        const boardW = 600, boardH = 400; 
+        const pW = boardW / cols; 
+        const pH = boardH / rows; 
+        let lockedCount = 0;
 
-    function goToAllPrograms() {
-        if (isMobile()) {
-            document.getElementById('owlChat').classList.remove('active');
-            document.getElementById('owlContainer').classList.remove('chat-opened');
-        }
-        focusTab('tab-all');
-    }
-
-    const botTexts = {
-        ru: {
-            catPrompt: "Мы реализуем обучение по 5 направлениям каталога. Какое вас интересует?",
-            optKadry: "🎓 Нацпроект «Кадры»", optPk: "📈 Повышение квалификации", optPp: "🔄 Переподготовка", optPo: "🛠️ Проф. обучение", optSem: "🗣️ Семинары",
-            optBack: "⬅️ Назад в меню",
-            optEnroll: "✍️ Инициировать заявку", optOther: "🔄 Анализировать другие направления",
-            testStart: "Анализ запущен. Ответьте на 12 вопросов, чтобы алгоритм вычислил оптимальный вектор вашего профессионального развития.",
-            resGos: "Вердикт системы: <b>«Госслужба и закупки»</b>. Ваш профиль демонстрирует системное мышление и предрасположенность к высокому уровню ответственности.",
-            resBiz: "Вердикт системы: <b>«Цифровой бизнес и ИИ»</b>. Вы ориентированы на стратегическое масштабирование и интеграцию инноваций.",
-            resHoreca: "Вердикт системы: <b>«HoReCa и Туризм»</b>. Ваши сильные стороны — коммуникация и обеспечение премиального сервиса.",
-            resProf: "Вердикт системы: <b>«Быстрые профессии»</b>. Вы цените применимый на практике результат и стремитесь к быстрой монетизации навыков.",
-            resEnroll: "✍️ Зафиксировать заявку на это направление", resCat: "🔄 Отклонить. Показать весь каталог"
-        },
-        en: {
-            catPrompt: "We provide training across all 5 catalog sections. Which one interests you?",
-            optKadry: "🎓 National Project «Kadry»", optPk: "📈 Upgrading Qualifications", optPp: "🔄 Retraining", optPo: "🛠️ Vocational Training", optSem: "🗣️ Seminars",
-            optBack: "⬅️ Back to main menu",
-            optEnroll: "✍️ Initiate application", optOther: "🔄 Analyze other tracks",
-            testStart: "Analysis launched. Please answer 12 questions so the algorithm can determine your optimal professional development vector.",
-            resGos: "System Verdict: <b>«Public Administration & Procurement»</b>. Your profile demonstrates systematic thinking and a strong predisposition for high-level responsibility.",
-            resBiz: "System Verdict: <b>«Digital Business & AI»</b>. You are highly focused on strategic scaling and the integration of cutting-edge innovations.",
-            resHoreca: "System Verdict: <b>«HoReCa & Tourism»</b>. Your core strengths lie in effective communication and delivering premium customer service.",
-            resProf: "System Verdict: <b>«Fast-Track Professions»</b>. You deeply value practical results and strive for the rapid monetization of your skills.",
-            resEnroll: "✍️ Lock in an application for this track", resCat: "🔄 Reject. View the full catalog"
-        }
-    };
-
-    const testQuestionsData = {
-        ru: [
-            { q: "1/12. Какова главная цель инвестиций в ваше образование?", answers: [{t:"Карьера на государственной службе",v:"gos"},{t:"Масштабирование бизнес-показателей",v:"biz"},{t:"Управление сервисом (HoReCa)",v:"horeca"},{t:"Освоение новой прикладной профессии",v:"prof"}] },
-            { q: "2/12. С каким типом задач вы предпочитаете работать?", answers: [{t:"Нормативно-правовая документация",v:"gos"},{t:"Стратегии и ИТ-инструментарий",v:"biz"},{t:"Команда и качество услуг",v:"horeca"},{t:"Работа руками или точный учет в 1С",v:"prof"}] },
-            { q: "3/12. Ваше отношение к нейросетям?", answers: [{t:"Использую для оптимизации отчетов",v:"gos"},{t:"Критически важно для автоматизации",v:"biz"},{t:"Полезно для маркетинга и туризма",v:"horeca"},{t:"Предпочитаю традиционные подходы",v:"prof"}] },
-            { q: "4/12. Каков приемлемый для вас объем образовательной программы?", answers: [{t:"Глубокая переподготовка (>500 часов)",v:"gos"},{t:"Управленческий интенсив (<250 часов)",v:"biz"},{t:"Сбалансированный курс (100-150 часов)",v:"horeca"},{t:"Быстрый старт (<100 часов)",v:"prof"}] },
-            { q: "5/12. Какая зона ответственности для вас наиболее комфортна?", answers: [{t:"Ответственность за государственные контракты",v:"gos"},{t:"Ответственность за финансовые потоки",v:"biz"},{t:"Ответственность за репутацию заведения",v:"horeca"},{t:"Точное выполнение прикладной задачи",v:"prof"}] },
-            { q: "6/12. Какую сферу вы считаете наиболее стабильной?", answers: [{t:"Органы исполнительной власти",v:"gos"},{t:"Собственное дело / Корпоративный сектор",v:"biz"},{t:"Внутренний туризм",v:"horeca"},{t:"Профессии, требующие работы руками",v:"prof"}] },
-            { q: "7/12. Ваш подход к решению нестандартных ситуаций?", answers: [{t:"Опираюсь на действующие законы и регламенты",v:"gos"},{t:"Ищу инновационные технологичные решения",v:"biz"},{t:"Выстраиваю диалог и устраняю конфликт",v:"horeca"},{t:"Действую по проверенным инструкциям",v:"prof"}] },
-            { q: "8/12. Ваш карьерный горизонт через 3 года?", answers: [{t:"Руководитель государственного ведомства",v:"gos"},{t:"Топ-менеджер / Успешный предприниматель",v:"biz"},{t:"Управляющий премиальным отелем",v:"horeca"},{t:"Востребованный профильный специалист",v:"prof"}] },
-            { q: "9/12. Отношение к государственным стандартам (ФГОС, ГОСТ)?", answers: [{t:"Неукоснительное соблюдение",v:"gos"},{t:"Адаптация под бизнес-реалии",v:"biz"},{t:"Соблюдение ради безопасности клиента",v:"horeca"},{t:"Работа строго по заданному стандарту",v:"prof"}] },
-            { q: "10/12. Главный KPI вашей успешной работы?", answers: [{t:"Отсутствие санкций от надзорных органов",v:"gos"},{t:"Увеличение доли рынка и маржинальности",v:"biz"},{t:"Высокий показатель возврата гостей",v:"horeca"},{t:"Сдача задачи точно в срок",v:"prof"}] },
-            { q: "11/12. Какая дисциплина кажется вам наиболее приоритетной?", answers: [{t:"Правоприменительная практика по ФЗ",v:"gos"},{t:"Промптинг нейросетей",v:"biz"},{t:"Маркетинг впечатлений",v:"horeca"},{t:"Бухгалтерский учет",v:"prof"}] },
-            { q: "12/12. Ваш текущий профессиональный статус?", answers: [{t:"Служащий / Специалист по закупкам",v:"gos"},{t:"Предприниматель / Аналитик",v:"biz"},{t:"Работаю в сфере услуг",v:"horeca"},{t:"Нахожусь в поиске новой профессии",v:"prof"}] }
-        ],
-        en: [
-            { q: "1/12. What is the primary goal of investing in your education?", answers: [{t:"A career in public service",v:"gos"},{t:"Scaling business metrics",v:"biz"},{t:"Service management (HoReCa)",v:"horeca"},{t:"Mastering a new applied profession",v:"prof"}] },
-            { q: "2/12. What kind of tasks do you prefer working with?", answers: [{t:"Regulatory and legal documentation",v:"gos"},{t:"Strategies and IT tools",v:"biz"},{t:"People and service quality",v:"horeca"},{t:"Manual work or precise 1C accounting",v:"prof"}] },
-            { q: "3/12. What is your attitude towards AI?", answers: [{t:"I use it to optimize reports",v:"gos"},{t:"Critically important for automation",v:"biz"},{t:"Useful for marketing and tourism",v:"horeca"},{t:"I prefer traditional approaches",v:"prof"}] },
-            { q: "4/12. What is an acceptable program duration for you?", answers: [{t:"Deep retraining (>500 hours)",v:"gos"},{t:"Management intensive (<250 hours)",v:"biz"},{t:"Balanced course (100-150 hours)",v:"horeca"},{t:"Fast start (<100 hours)",v:"prof"}] },
-            { q: "5/12. Which area of responsibility are you most comfortable with?", answers: [{t:"Responsibility for state contracts",v:"gos"},{t:"Responsibility for financial flows",v:"biz"},{t:"Responsibility for reputation",v:"horeca"},{t:"Precise execution of an applied task",v:"prof"}] },
-            { q: "6/12. Which sector do you consider the most stable?", answers: [{t:"Executive authorities",v:"gos"},{t:"Own business / Corporate sector",v:"biz"},{t:"Domestic tourism",v:"horeca"},{t:"Professions requiring manual work",v:"prof"}] },
-            { q: "7/12. How do you approach solving non-standard situations?", answers: [{t:"I rely on applicable laws and regulations",v:"gos"},{t:"I seek innovative tech solutions",v:"biz"},{t:"I build dialogue and resolve conflicts",v:"horeca"},{t:"I act according to proven instructions",v:"prof"}] },
-            { q: "8/12. What is your career horizon in 3 years?", answers: [{t:"Head of a state department",v:"gos"},{t:"Top executive / Entrepreneur",v:"biz"},{t:"Manager of a premium hotel",v:"horeca"},{t:"In-demand specialized professional",v:"prof"}] },
-            { q: "9/12. What is your attitude towards state standards?", answers: [{t:"Strict compliance",v:"gos"},{t:"Adaptation to business realities",v:"biz"},{t:"Compliance for client safety",v:"horeca"},{t:"Working strictly by the standard",v:"prof"}] },
-            { q: "10/12. What is the main KPI of your successful work?", answers: [{t:"No sanctions from supervisory bodies",v:"gos"},{t:"Increased market share and margins",v:"biz"},{t:"High rate of guest returns",v:"horeca"},{t:"Task completion exactly on time",v:"prof"}] },
-            { q: "11/12. What is the highest priority discipline to you?", answers: [{t:"Law enforcement practice",v:"gos"},{t:"Neural network prompting",v:"biz"},{t:"Experience marketing",v:"horeca"},{t:"Accounting",v:"prof"}] },
-            { q: "12/12. What is your current professional status?", answers: [{t:"Civil servant / Procurement specialist",v:"gos"},{t:"Entrepreneur / Analyst",v:"biz"},{t:"Working in services",v:"horeca"},{t:"Looking for a new profession",v:"prof"}] }
-        ]
-    };
-
-    const chatBody = document.getElementById('chatBody');
-    const chatOptions = document.getElementById('chatOptions');
-
-    function addUserMsg(text) { chatBody.innerHTML += `<div class="msg-user">${text}</div>`; scrollToBottom(); }
-    function addBotMsg(text) {
-        const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
-        chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`;
-        scrollToBottom();
-    }
-    function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
-    function setOptions(html) { chatOptions.innerHTML = html; }
-
-    function resetMenu() {
-        chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
-        setOptions(`
-            <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
-            <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
-            
-            <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-                📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
-            </button>
-
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
-            <button class="chat-opt-btn" onclick="window.location.href='ai-lecture.html'" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem;">
-                🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
-            </button>
-        `);
-    }
-
-    function showUrgentAlert() {
-        if (globalAlert && globalAlert.text) {
-            document.getElementById('urgentAlertText').innerHTML = globalAlert.text.replace(/\n/g, '<br>');
-            document.getElementById('urgentAlertModal').classList.add('active');
-        }
-    }
-
-    function closeUrgentAlertModal() {
-        document.getElementById('urgentAlertModal').classList.remove('active');
-    }
-
-    function showCatalog() {
-        addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
-        addBotMsg(botTexts[currentLang].catPrompt);
-        setOptions(`
-            <button class="chat-opt-btn" onclick="focusTab('tab-kadry')">${botTexts[currentLang].optKadry}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-pk')">${botTexts[currentLang].optPk}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-pp')">${botTexts[currentLang].optPp}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-po')">${botTexts[currentLang].optPo}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-sem')">${botTexts[currentLang].optSem}</button>
-            <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-        `);
-    }
-
-    let currentQ = 0;
-    let scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
-
-    function startTest() {
-        addUserMsg(currentLang === 'ru' ? "Инициировать профильное тестирование." : "Initiate career profiling test.");
-        addBotMsg(botTexts[currentLang].testStart);
-        currentQ = 0;
-        scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
-        setTimeout(askQuestion, 700);
-    }
-
-    function askQuestion() {
-        if (currentQ >= testQuestionsData[currentLang].length) { showTestResult(); return; }
-        const q = testQuestionsData[currentLang][currentQ];
-        addBotMsg(q.q);
-        let html = '';
-        q.answers.forEach(a => { html += `<button class="chat-opt-btn" onclick="answerTest('${a.t.replace(/'/g, "\\'")}', '${a.v}')">${a.t}</button>`; });
-        setOptions(html);
-    }
-
-    function answerTest(text, value) {
-        addUserMsg(text);
-        scores[value]++;
-        currentQ++;
-        setTimeout(askQuestion, 350);
-    }
-
-    function showTestResult() {
-        let maxScore = -1, bestCategory = 'gos';
-        for (const key in scores) { if (scores[key] > maxScore) { maxScore = scores[key]; bestCategory = key; } }
-        const resultKey = { gos: 'resGos', biz: 'resBiz', horeca: 'resHoreca', prof: 'resProf' }[bestCategory];
-        addBotMsg((currentLang === 'ru' ? "Анализ завершен. " : "Analysis completed. ") + botTexts[currentLang][resultKey]);
-        setOptions(`
-            <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
-            <button class="chat-opt-btn" onclick="focusTab('tab-all');">${botTexts[currentLang].resCat}</button>
-            <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-        `);
-    }
-
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('in-view');
-                revealObserver.unobserve(entry.target);
+        const pts = [];
+        for(let r = 0; r <= rows; r++) {
+            let rowPts = [];
+            for(let c = 0; c <= cols; c++) {
+                let x = c * pW; let y = r * pH;
+                if (c > 0 && c < cols) x += (Math.random() - 0.5) * 60;
+                if (r > 0 && r < rows) y += (Math.random() - 0.5) * 60;
+                rowPts.push({x, y});
             }
+            pts.push(rowPts);
+        }
+
+        let leftCount = 0;
+        let rightCount = 0;
+
+        let pieces = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let slot = document.createElement('div');
+                slot.className = 'grid-slot';
+                grid.appendChild(slot);
+
+                let piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                piece.style.width = `${pW}px`;
+                piece.style.height = `${pH}px`;
+
+                piece.dataset.correctX = c * pW;
+                piece.dataset.correctY = r * pH;
+                piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
+                piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
+
+                const tl = pts[r][c], tr = pts[r][c+1];
+                const br = pts[r+1][c+1], bl = pts[r+1][c];
+                
+                const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
+                const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
+                piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
+
+                const isLeft = (c < cols / 2);
+                let startX = isLeft ? -250 : boardW + 50; 
+                let startY = isLeft ? leftCount * 120 : rightCount * 120;
+                startX += (Math.random() * 30 - 15);
+                startY += (Math.random() * 30 - 15);
+
+                if (isLeft) leftCount++; else rightCount++;
+
+                piece.style.left = `${startX}px`;
+                piece.style.top = `${startY}px`;
+
+                puzzleArea.appendChild(piece);
+                pieces.push({ el: piece, locked: false });
+            }
+        }
+
+        const termsData = [
+            { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
+            { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
+            { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
+            { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
+            { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
+            { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
+        ];
+        const termsContainer = document.getElementById('termsSection');
+        let termCards = [];
+        termsData.forEach((term) => {
+            let card = document.createElement('div');
+            card.className = 'term-card';
+            card.innerHTML = `<h3>${term.t}</h3><p>${term.d}</p>`;
+            card.dataset.scale = 1;
+            termsContainer.appendChild(card);
+            termCards.push(card);
         });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-    function armRevealTargets(root = document) {
-        root.querySelectorAll('.card, .faq-item, .contact-card, .main-contact-box, .sector-header').forEach(el => {
-            if (!el.classList.contains('reveal-3d')) {
-                el.classList.add('reveal-3d');
-                revealObserver.observe(el);
-            }
-        });
-    }
+        // ==========================================
+        // 2. ИНТЕГРАЦИЯ THREE.JS (Настоящее 3D)
+        // ==========================================
+        const scene = new THREE.Scene();
+        const camera3D = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-    async function showSchedule() {
-        const overlay = document.getElementById('scheduleOverlay');
-        const container = document.getElementById('scheduleTimeline');
+        const geometry = new THREE.IcosahedronGeometry(12, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.15 });
+        const coreMesh = new THREE.Mesh(geometry, material);
+        scene.add(coreMesh);
+        camera3D.position.z = 30;
+
+        let targetRotX = 0; let targetRotY = 0;
+
+        // ==========================================
+        // 3. ДВИЖОК ЖЕСТОВ И ФИЗИКИ (Gesture Engine)
+        // ==========================================
+        const videoElement = document.getElementById('webcam');
+        const canvasElement = document.getElementById('output_canvas');
+        const canvasCtx = canvasElement.getContext('2d');
+        const scrollContainer = document.getElementById('scroll-container');
+        const cursor0 = document.getElementById('cursor0');
+        const cursor1 = document.getElementById('cursor1');
+
+        let isPinching0 = false, isPinching1 = false;
+        let p0 = {x:0, y:0}, p1 = {x:0, y:0};
         
-        overlay.classList.add('active');
+        let draggedPiece = null;
+        let dragOffsetX = 0, dragOffsetY = 0;
 
-        if (!window.schedules || window.schedules.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top: 50px; font-size: 1.2rem;">${translationsHTML[currentLang].schLoading}</div>`;
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                if (data.schedules) {
-                    window.schedules = data.schedules;
+        let scrollY = 0;
+        let targetScrollY = 0;
+        let scrollVelocity = 0;
+        let lastDragY = null; 
+        const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
+
+        let zoomedCard = null;
+        let zoomStartY = 0;
+        let initialCardScale = 1;
+
+        let peaceFrames = 0;
+        let thumbsUpCooldown = false;
+
+        function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
+        let smoothP0 = {x: window.innerWidth/2, y: window.innerHeight/2};
+        let smoothP1 = {x: window.innerWidth/2, y: window.innerHeight/2};
+
+        function physicsLoop() {
+            if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
+                targetScrollY += scrollVelocity;
+                scrollVelocity *= 0.9;
+            }
+            targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
+            scrollY = lerp(scrollY, targetScrollY, 0.2);
+            scrollContainer.style.transform = `translateY(${scrollY}px)`;
+
+            coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
+            coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
+            coreMesh.rotation.x += 0.001; 
+            coreMesh.rotation.y += 0.002;
+            renderer.render(scene, camera3D);
+
+            requestAnimationFrame(physicsLoop);
+        }
+        physicsLoop();
+
+        window.addEventListener('wheel', (e) => {
+            targetScrollY -= e.deltaY;
+            targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
+            scrollVelocity = 0; 
+        });
+
+        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+        hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
+        hands.onResults(onResults);
+
+        const cameraFeed = new Camera(videoElement, {
+            onFrame: async () => { await hands.send({image: videoElement}); },
+            width: 1280, height: 720
+        });
+        cameraFeed.start().then(() => { 
+            document.getElementById('loader').style.display = 'none'; 
+            initVoice(); 
+        });
+
+        function onResults(results) {
+            canvasElement.width = window.innerWidth;
+            canvasElement.height = window.innerHeight;
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+            cursor0.style.opacity = 0; cursor1.style.opacity = 0;
+            let pinch0 = false, pinch1 = false;
+
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                
+                for (const landmarks of results.multiHandLandmarks) {
+                    drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3});
+                    drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
-            } catch (e) {
-                console.error("Ошибка загрузки расписания", e);
+
+                const h1 = results.multiHandLandmarks[0][0];
+                targetRotX = (h1.y - 0.5) * 2;
+                targetRotY = (h1.x - 0.5) * 2;
+
+                // 1. НОВЫЙ ЖЕСТ: PEACE (ВИКТОРИЯ ✌️) ДЛЯ ВЫХОДА
+                let isPeace = false;
+                if (!draggedPiece && zoomedCard === null && lastDragY === null) {
+                    for (const lm of results.multiHandLandmarks) {
+                        // Проверяем анатомию: указательный и средний подняты, остальные прижаты
+                        const indexUp = lm[8].y < lm[6].y;
+                        const middleUp = lm[12].y < lm[10].y;
+                        const ringDown = lm[16].y > lm[14].y;
+                        const pinkyDown = lm[20].y > lm[18].y;
+
+                        if (indexUp && middleUp && ringDown && pinkyDown) {
+                            isPeace = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (isPeace) {
+                    peaceFrames++;
+                    // Требуем удерживать жест ~15 кадров (полсекунды) для защиты от случайного маха
+                    if (peaceFrames > 15) {
+                        triggerImplosion();
+                        return;
+                    }
+                } else {
+                    peaceFrames = 0;
+                }
+
+                // 2. ЖЕСТ "ЛАЙК"
+                if (results.multiHandLandmarks.length === 1 && !draggedPiece && !zoomedCard) {
+                    const lm = results.multiHandLandmarks[0];
+                    const thumbUp = lm[4].y < lm[3].y;
+                    const indexDown = lm[8].y > lm[6].y;
+                    const middleDown = lm[12].y > lm[10].y;
+                    const ringDown = lm[16].y > lm[14].y;
+                    const pinkyDown = lm[20].y > lm[18].y;
+
+                    if (thumbUp && indexDown && middleDown && ringDown && pinkyDown) {
+                        if (!thumbsUpCooldown) {
+                            thumbsUpCooldown = true;
+                            showToast("👍 ОТЛИЧНАЯ РАБОТА!", true);
+                            setTimeout(() => thumbsUpCooldown = false, 3000);
+                        }
+                    }
+                }
+
+                // ВЫЧИСЛЕНИЕ ЩИПКОВ
+                results.multiHandLandmarks.forEach((landmarks, index) => {
+                    const tip = landmarks[8];   
+                    const thumb = landmarks[4]; 
+
+                    const px = window.innerWidth - (tip.x * window.innerWidth);
+                    const py = tip.y * window.innerHeight;
+                    const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
+
+                    if (index === 0) { 
+                        smoothP0.x = lerp(smoothP0.x, px, 0.5);
+                        smoothP0.y = lerp(smoothP0.y, py, 0.5);
+                        p0 = {x: smoothP0.x, y: smoothP0.y}; 
+                        isPinching0 = dist2D < (isPinching0 ? 0.09 : 0.05);
+                        pinch0 = isPinching0;
+                        updateCursor(cursor0, p0, pinch0); 
+                    }
+                    if (index === 1) { 
+                        smoothP1.x = lerp(smoothP1.x, px, 0.5);
+                        smoothP1.y = lerp(smoothP1.y, py, 0.5);
+                        p1 = {x: smoothP1.x, y: smoothP1.y}; 
+                        isPinching1 = dist2D < (isPinching1 ? 0.09 : 0.05);
+                        pinch1 = isPinching1;
+                        updateCursor(cursor1, p1, pinch1); 
+                    }
+                });
+
+                // МУЛЬТИ-ИНСТРУМЕНТ (Одной рукой)
+                const activePinch = pinch0 ? p0 : (pinch1 ? p1 : null);
+                
+                if (activePinch) {
+                    if (zoomedCard !== null) {
+                        const deltaY = zoomStartY - activePinch.y; 
+                        let targetScale = initialCardScale + (deltaY * 0.005); 
+                        targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
+                        zoomedCard.style.transform = `scale(${targetScale})`;
+                        zoomedCard.dataset.scale = targetScale;
+                    } 
+                    else if (draggedPiece !== null) {
+                        const containerRect = puzzleArea.getBoundingClientRect();
+                        let newX = activePinch.x - dragOffsetX - containerRect.left;
+                        let newY = activePinch.y - dragOffsetY - containerRect.top;
+                        draggedPiece.style.left = `${newX}px`;
+                        draggedPiece.style.top = `${newY}px`;
+                    } 
+                    else if (lastDragY !== null) {
+                        const deltaY = activePinch.y - lastDragY;
+                        targetScrollY += deltaY * 2.5; 
+                        scrollVelocity = deltaY * 0.5; 
+                        lastDragY = activePinch.y;
+                    } 
+                    else {
+                        const el = document.elementFromPoint(activePinch.x, activePinch.y);
+                        
+                        if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
+                            startTimer(); 
+                            draggedPiece = el;
+                            const rect = el.getBoundingClientRect();
+                            dragOffsetX = activePinch.x - rect.left;
+                            dragOffsetY = activePinch.y - rect.top;
+                            el.classList.add('dragging');
+                        } 
+                        else if (el && el.closest('.term-card')) {
+                            zoomedCard = el.closest('.term-card');
+                            zoomedCard.classList.add('hovered');
+                            zoomStartY = activePinch.y;
+                            initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
+                        } 
+                        else {
+                            lastDragY = activePinch.y;
+                            scrollVelocity = 0;
+                        }
+                    }
+                } else {
+                    if (draggedPiece) {
+                        draggedPiece.classList.remove('dragging');
+                        checkSnap(draggedPiece);
+                        draggedPiece = null;
+                    }
+                    if (zoomedCard) {
+                        zoomedCard.classList.remove('hovered');
+                        zoomedCard = null;
+                    }
+                    lastDragY = null;
+                }
+
+            } else {
+                lastDragY = null;
+                peaceFrames = 0;
+                targetRotX = 0; targetRotY = 0; 
+            }
+
+            canvasCtx.restore();
+        }
+
+        function updateCursor(cursorEl, p, isPinched) {
+            cursorEl.style.opacity = 1; cursorEl.style.left = `${p.x}px`; cursorEl.style.top = `${p.y}px`;
+            if (isPinched) cursorEl.classList.add('pinched'); else cursorEl.classList.remove('pinched');
+        }
+
+        function checkSnap(piece) {
+            const currentX = parseInt(piece.style.left);
+            const currentY = parseInt(piece.style.top);
+            const targetX = parseInt(piece.dataset.correctX);
+            const targetY = parseInt(piece.dataset.correctY);
+
+            if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
+                piece.style.left = `${targetX}px`;
+                piece.style.top = `${targetY}px`;
+                piece.classList.add('locked');
+                lockedCount++;
+
+                if (lockedCount === cols * rows) {
+                    document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
+                    document.querySelector('.header h1').style.color = "#10b981";
+                    puzzleArea.classList.add('completed');
+                    stopTimerAndShowModal();
+                }
             }
         }
 
-        if (!window.schedules || window.schedules.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top: 50px; font-size: 1.2rem;">${translationsHTML[currentLang].schEmpty}</div>`;
-            return;
+        let isImploding = false;
+        function triggerImplosion() {
+            if (isImploding) return;
+            isImploding = true;
+            
+            showToast("СИНХРОНИЗАЦИЯ... ВОЗВРАТ", true);
+            document.body.classList.add('implode');
+            setTimeout(() => { window.location.href = 'index.html'; }, 1400);
         }
 
-        const grouped = {};
-        window.schedules.forEach(s => {
-            if (!grouped[s.date]) grouped[s.date] = [];
-            grouped[s.date].push(s);
+        function showToast(text, isSuccess = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            if (isSuccess) toast.classList.add('success');
+            else toast.classList.remove('success');
+            
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        window.addEventListener('resize', () => {
+            camera3D.aspect = window.innerWidth / window.innerHeight;
+            camera3D.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        let html = '';
-        for (const [date, lessons] of Object.entries(grouped)) {
-            html += `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">🗓️ ${date}</div>`;
-            
-            lessons.forEach(l => {
-                html += `
-                <div class="timeline-card">
-                    <div class="sch-top">
-                        <div class="sch-program">${l.program}</div>
-                        <div class="sch-time">⏰ ${l.time}</div>
-                    </div>
-                    <div class="sch-subject">${l.subject}</div>
-                    <div class="sch-bottom">
-                        <span>👨‍🏫 <b>${l.teacher}</b></span>
-                        <span>📍 ${l.room}</span>
-                    </div>
-                </div>`;
-            });
-            html += `</div>`;
-        }
-
-        container.innerHTML = html;
-    }
-
-    function closeSchedule() {
-        document.getElementById('scheduleOverlay').classList.remove('active');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-
-        window.scrollTo(0, 0);
-
-        fetchPrograms();
-        armRevealTargets();
-        updateScrollNav();
-    });
     </script>
 </body>
 </html>
