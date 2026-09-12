@@ -6,7 +6,7 @@
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
-    <!-- MediaPipe (used only when Gesture Mode is active — never loaded/run in Touch Mode) -->
+    <!-- MediaPipe -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
@@ -34,14 +34,12 @@
             width: 100vw; height: 100vh;
         }
 
-        /* respect users who asked the OS for less motion — the vestibular-safe path */
         @media (prefers-reduced-motion: reduce) {
             body.implode { animation: none !important; transition: opacity 0.6s ease; opacity: 0; }
             .puzzle-area.completed { animation: none !important; }
             .spark, .confetti-bit { display: none !important; }
         }
 
-        /* ============ DEPTH LAYERS (video-game style framing) ============ */
         #webgl-canvas { position: fixed; inset: 0; z-index: -4; pointer-events: none; opacity: 0.85; }
         .vignette {
             position: fixed; inset: 0; z-index: 5; pointer-events: none;
@@ -74,7 +72,6 @@
             padding: 14px 26px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif;
         }
 
-        /* ============ HUD ============ */
         .hud-top {
             position: fixed; top: calc(20px + var(--safe-t)); right: calc(20px + var(--safe-r)); z-index: 2000;
             display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 60vw;
@@ -96,7 +93,6 @@
             border: 1px solid rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 15px; white-space: nowrap;
         }
 
-        /* Fixed top-left: mode switch + hints toggle + light-boost indicator */
         .hud-left {
             position: fixed; top: calc(20px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 2000;
             display: flex; gap: 10px; align-items: center;
@@ -108,14 +104,7 @@
         }
         .hud-btn:hover, .hud-btn:active { background: var(--accent); color: #000; transform: scale(1.06); }
         .hud-btn.exit-btn:hover, .hud-btn.exit-btn:active { background: var(--ranepa-red); color: #fff; }
-        .low-light-chip {
-            display: none; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 800; color: #fde68a;
-            background: rgba(120, 90, 0, 0.45); border: 1px solid rgba(253, 230, 138, 0.5);
-            padding: 8px 12px; border-radius: 15px; white-space: nowrap;
-        }
-        .low-light-chip.show { display: flex; }
 
-        /* ============ HINTS PANEL (dismissible, remembers state) ============ */
         .hints-panel {
             position: fixed; top: calc(78px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 1999;
             width: min(340px, calc(100vw - 40px)); background: rgba(5,8,14,0.92); backdrop-filter: blur(16px);
@@ -130,7 +119,6 @@
         .hints-panel .hint-icon { flex-shrink: 0; font-size: 1.1rem; }
         .hints-dont-show { margin-top: 10px; font-size: 0.75rem; color: #94A3B8; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 
-        /* ============ Camera & canvases ============ */
         .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
         .canvas-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; transform: scaleX(-1); }
 
@@ -142,12 +130,10 @@
         }
         .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
 
-        /* ============ Scroll container ============ */
         #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
         body.touch-mode #scroll-container { position: static; width: 100%; transform: none !important; }
         body.touch-mode { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
-        /* ============ Screen 1: puzzle ============ */
         .screen-puzzle { min-height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 90px 12px 40px; }
 
         .header { position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: calc(20px + var(--safe-t)) 20px 10px; z-index: 10; pointer-events: none; }
@@ -179,7 +165,7 @@
             background-size: 600px 400px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
             transition: box-shadow 0.15s, filter 0.15s;
-            touch-action: none; /* we own all touch gestures on pieces — the page itself still scrolls/zooms normally elsewhere */
+            touch-action: none;
             transform-style: preserve-3d;
         }
         .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
@@ -190,7 +176,6 @@
         .puzzle-piece.locked::after { opacity: 0; }
         .puzzle-piece.locked .piece-num { opacity: 0; }
 
-        /* satisfying "snap" pulse the instant a piece locks */
         @keyframes snapPulse { 0% { filter: brightness(2.2) saturate(1.6); } 100% { filter: brightness(1) saturate(1); } }
         .puzzle-piece.just-locked { animation: snapPulse 0.45s ease-out; }
 
@@ -204,7 +189,6 @@
             100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.2); }
         }
 
-        /* ============ Screen 2: terms ============ */
         .screen-terms { width: 100vw; min-height: 100vh; padding: 60px clamp(16px, 4vw, 50px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 26px; perspective: 1200px; }
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
@@ -218,7 +202,6 @@
         .term-card h3 { font-size: 1.15rem; margin-bottom: 14px; color: var(--accent); }
         .term-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
 
-        /* ============ Modal ============ */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
         .modal-box { position: relative; background: rgba(17, 24, 39, 0.88); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.25); transform: scale(0.9); transition: transform 0.3s; overflow: hidden; }
@@ -234,7 +217,6 @@
         .confetti-bit { position: fixed; width: 8px; height: 12px; z-index: 10001; pointer-events: none; animation: confettiFall 1.6s ease-in forwards; }
         @keyframes confettiFall { to { transform: translateY(70vh) rotate(540deg); opacity: 0; } }
 
-        /* ============ Toast ============ */
         .toast {
             position: fixed; bottom: calc(-100px - var(--safe-b)); left: 50%; transform: translateX(-50%);
             background: rgba(202, 15, 62, 0.92); color: #fff; font-weight: 800; padding: 14px 26px;
@@ -245,7 +227,6 @@
         .toast.show { bottom: calc(30px + var(--safe-b)); }
         .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
 
-        /* ============ Rotate-device tip (gesture mode, portrait phones only) ============ */
         .rotate-tip {
             position: fixed; left: 50%; bottom: calc(20px + var(--safe-b)); transform: translateX(-50%) translateY(120%);
             background: rgba(0,0,0,0.75); color: #fde68a; border: 1px solid rgba(253,230,138,0.4);
@@ -254,7 +235,6 @@
         }
         .rotate-tip.show { transform: translateX(-50%) translateY(0); }
 
-        /* ============ Mobile & tablet tuning ============ */
         @media (max-width: 900px) {
             .puzzle-piece { width: 33vw; height: 22vw; max-width: 200px; max-height: 133px; }
             .puzzle-area { transform: scale(1); }
@@ -298,7 +278,6 @@
     </div>
 
     <div class="hud-top">
-        <div class="low-light-chip" id="lowLightChip">🔦 Мало света — яркость усилена</div>
         <div class="hud-mode-badge" id="modeBadge">Режим: жесты</div>
         <div class="hud-mic" id="micBadge"><div class="mic-dot"></div> Голосовой ИИ активен</div>
         <div class="hud-timer" id="timerDisplay">00:00</div>
@@ -795,7 +774,6 @@
     }
 
     let cameraFeed = null, hands = null;
-    let mediaStream = null;
 
     document.getElementById('modeToggleBtn').addEventListener('click', () => {
         if (interactionMode === 'gesture') { switchToTouch(); }
@@ -820,7 +798,6 @@
 
     function stopGesturePipeline() {
         try { if (cameraFeed && cameraFeed.stop) cameraFeed.stop(); } catch (e) {}
-        try { if (mediaStream) mediaStream.getTracks().forEach(t => t.stop()); } catch (e) {}
         document.getElementById('cursor0').style.opacity = 0;
         document.getElementById('cursor1').style.opacity = 0;
     }
@@ -831,22 +808,14 @@
     const cursor0 = document.getElementById('cursor0');
     const cursor1 = document.getElementById('cursor1');
 
-    const preCanvas = document.createElement('canvas');
-    const preCtx = preCanvas.getContext('2d', { willReadFrequently: true });
-    let brightnessBoost = 1.0;
-    let lastLumaCheck = 0;
-
     let isPinching0 = false, isPinching1 = false;
     let p0 = { x: 0, y: 0 }, p1 = { x: 0, y: 0 };
     let smoothP0 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let smoothP1 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let peaceFrames = 0;
     let thumbsUpCooldown = false;
-    let framesSinceHandSeen = 9999;
-    let relaxedConfidence = false;
-    let frameSkipCounter = 0;
-    let frameSkip = 1;
 
+    // ВОТ ОН - ВАШ СТАРЫЙ ЗОЛОТОЙ ДВИЖОК МЕДИАПАЙП
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
         document.getElementById('loaderTitle').textContent = 'Запуск камеры...';
@@ -854,105 +823,21 @@
         document.getElementById('loaderTouchFallback').style.display = 'none';
         document.getElementById('loaderSpinner').style.display = 'block';
 
-        hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        hands.setOptions({ maxNumHands: 2, modelComplexity: isTouchCapable ? 0 : 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
+        hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+        hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
-        const attempts = [
-            { width: 1280, height: 720 },
-            { width: 640, height: 480 },
-            { width: 320, height: 240 }
-        ];
-
-        (async function tryNext(i) {
-            if (i >= attempts.length) { showCameraError({ name: 'NotFoundError' }); return; }
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: attempts[i].width, height: attempts[i].height }
-                });
-                videoElement.srcObject = mediaStream;
-                await videoElement.play();
-                cameraFeed = {
-                    stop: () => {},
-                    _raf: null
-                };
-                
-                // ВАЖНО: Добавлена блокировка isMediaPipeProcessing, чтобы избежать перегрузки WebAssembly
-                let isMediaPipeProcessing = false;
-                function loop() {
-                    if (interactionMode !== 'gesture' || document.hidden) { cameraFeed._raf = requestAnimationFrame(loop); return; }
-                    frameSkipCounter++;
-                    if (frameSkipCounter % frameSkip === 0 && videoElement.readyState >= 2 && !isMediaPipeProcessing) {
-                        isMediaPipeProcessing = true;
-                        processFrame().then(() => {
-                            isMediaPipeProcessing = false;
-                        }).catch((err) => {
-                            console.error('MediaPipe error:', err);
-                            isMediaPipeProcessing = false;
-                        });
-                    }
-                    cameraFeed._raf = requestAnimationFrame(loop);
-                }
-                cameraFeed.stop = () => { if (cameraFeed._raf) cancelAnimationFrame(cameraFeed._raf); };
-                loop();
-
-                document.getElementById('loader').style.display = 'none';
-                initVoice();
-                calibratePerformance();
-            } catch (err) {
-                if (i < attempts.length - 1) { tryNext(i + 1); }
-                else { showCameraError(err); }
-            }
-        })(0);
-    }
-
-    async function processFrame() {
-        const vw = videoElement.videoWidth, vh = videoElement.videoHeight;
-        if (!vw || !vh) return;
-        if (preCanvas.width !== vw) { preCanvas.width = vw; preCanvas.height = vh; }
-
-        const now = performance.now();
-        if (now - lastLumaCheck > 1000) {
-            lastLumaCheck = now;
-            measureLuminanceAndAdapt();
-        }
-
-        preCtx.filter = `brightness(${brightnessBoost}) contrast(1.08)`;
-        preCtx.drawImage(videoElement, 0, 0, vw, vh);
-        await hands.send({ image: preCanvas });
-    }
-
-    function measureLuminanceAndAdapt() {
-        try {
-            const sampleSize = 24;
-            const sctx = document.createElement('canvas').getContext('2d');
-            sctx.canvas.width = sampleSize; sctx.canvas.height = sampleSize;
-            sctx.drawImage(videoElement, 0, 0, sampleSize, sampleSize);
-            const data = sctx.getImageData(0, 0, sampleSize, sampleSize).data;
-            let sum = 0;
-            for (let i = 0; i < data.length; i += 4) sum += (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-            const avg = sum / (data.length / 4);
-            const target = 120;
-            const dim = avg < 70;
-            document.getElementById('lowLightChip').classList.toggle('show', dim);
-            const desired = Math.max(1, Math.min(2.4, target / Math.max(20, avg)));
-            brightnessBoost = lerp(brightnessBoost, desired, 0.35);
-        } catch (e) {}
-    }
-
-    function calibratePerformance() {
-        let frames = 0, start = performance.now();
-        function tick() {
-            frames++;
-            if (performance.now() - start < 1500) { requestAnimationFrame(tick); return; }
-            const fps = frames / 1.5;
-            if (fps < 20) {
-                frameSkip = 2;
-                try { hands.setOptions({ modelComplexity: 0 }); } catch (e) {}
-                showToast('Слабое устройство — снижена нагрузка для стабильности', true);
-            }
-        }
-        requestAnimationFrame(tick);
+        cameraFeed = new Camera(videoElement, {
+            onFrame: async () => { await hands.send({image: videoElement}); },
+            width: 1280, height: 720
+        });
+        
+        cameraFeed.start().then(() => { 
+            document.getElementById('loader').style.display = 'none'; 
+            initVoice(); 
+        }).catch(err => {
+            showCameraError(err);
+        });
     }
 
     function showCameraError(err) {
@@ -983,26 +868,11 @@
         cursor0.style.opacity = 0; cursor1.style.opacity = 0;
         let pinch0 = false, pinch1 = false;
 
-        const handFound = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
-
-        if (!handFound) {
-            framesSinceHandSeen++;
-            if (framesSinceHandSeen > 90 && !relaxedConfidence) {
-                relaxedConfidence = true;
-                try { hands.setOptions({ minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 }); } catch (e) {}
-            }
-        } else {
-            framesSinceHandSeen = 0;
-            if (relaxedConfidence) {
-                relaxedConfidence = false;
-                try { hands.setOptions({ minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 }); } catch (e) {}
-            }
-        }
-
-        if (handFound) {
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            
             for (const landmarks of results.multiHandLandmarks) {
-                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
-                drawLandmarks(canvasCtx, landmarks, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
+                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3});
+                drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
             }
 
             const h1 = results.multiHandLandmarks[0][0];
@@ -1016,11 +886,24 @@
                     const middleUp = lm[12].y < lm[10].y;
                     const ringDown = lm[16].y > lm[14].y;
                     const pinkyDown = lm[20].y > lm[18].y;
-                    if (indexUp && middleUp && ringDown && pinkyDown) { isPeace = true; break; }
+
+                    if (indexUp && middleUp && ringDown && pinkyDown) {
+                        isPeace = true;
+                        break;
+                    }
                 }
             }
-            if (isPeace) { peaceFrames++; if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; } }
-            else { peaceFrames = 0; }
+
+            if (isPeace) {
+                peaceFrames++;
+                if (peaceFrames > 15) {
+                    triggerImplosion();
+                    canvasCtx.restore();
+                    return;
+                }
+            } else {
+                peaceFrames = 0;
+            }
 
             if (results.multiHandLandmarks.length === 1 && !draggedPiece && !zoomedCard) {
                 const lm = results.multiHandLandmarks[0];
@@ -1029,53 +912,117 @@
                 const middleDown = lm[12].y > lm[10].y;
                 const ringDown = lm[16].y > lm[14].y;
                 const pinkyDown = lm[20].y > lm[18].y;
-                if (thumbUp && indexDown && middleDown && ringDown && pinkyDown && !thumbsUpCooldown) {
-                    thumbsUpCooldown = true;
-                    showToast('👍 ОТЛИЧНАЯ РАБОТА!', true);
-                    setTimeout(() => thumbsUpCooldown = false, 3000);
+
+                if (thumbUp && indexDown && middleDown && ringDown && pinkyDown) {
+                    if (!thumbsUpCooldown) {
+                        thumbsUpCooldown = true;
+                        showToast("👍 ОТЛИЧНАЯ РАБОТА!", true);
+                        setTimeout(() => thumbsUpCooldown = false, 3000);
+                    }
                 }
             }
 
             results.multiHandLandmarks.forEach((landmarks, index) => {
-                const tip = landmarks[8], thumb = landmarks[4];
+                const tip = landmarks[8];   
+                const thumb = landmarks[4]; 
+
                 const px = window.innerWidth - (tip.x * window.innerWidth);
                 const py = tip.y * window.innerHeight;
                 const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
 
-                if (index === 0) {
-                    smoothP0.x = lerp(smoothP0.x, px, 0.5); smoothP0.y = lerp(smoothP0.y, py, 0.5);
-                    p0 = { x: smoothP0.x, y: smoothP0.y };
+                if (index === 0) { 
+                    smoothP0.x = lerp(smoothP0.x, px, 0.5);
+                    smoothP0.y = lerp(smoothP0.y, py, 0.5);
+                    p0 = {x: smoothP0.x, y: smoothP0.y}; 
                     isPinching0 = dist2D < (isPinching0 ? 0.09 : 0.05);
                     pinch0 = isPinching0;
-                    updateCursor(cursor0, p0, pinch0);
+                    updateCursor(cursor0, p0, pinch0); 
                 }
-                if (index === 1) {
-                    smoothP1.x = lerp(smoothP1.x, px, 0.5); smoothP1.y = lerp(smoothP1.y, py, 0.5);
-                    p1 = { x: smoothP1.x, y: smoothP1.y };
+                if (index === 1) { 
+                    smoothP1.x = lerp(smoothP1.x, px, 0.5);
+                    smoothP1.y = lerp(smoothP1.y, py, 0.5);
+                    p1 = {x: smoothP1.x, y: smoothP1.y}; 
                     isPinching1 = dist2D < (isPinching1 ? 0.09 : 0.05);
                     pinch1 = isPinching1;
-                    updateCursor(cursor1, p1, pinch1);
+                    updateCursor(cursor1, p1, pinch1); 
                 }
             });
 
             const activePinch = pinch0 ? p0 : (pinch1 ? p1 : null);
+            
             if (activePinch) {
-                if (!draggedPiece && !zoomedCard && lastDragY === null) beginInteractionAt(activePinch.x, activePinch.y);
-                else moveInteractionAt(activePinch.x, activePinch.y);
+                if (zoomedCard !== null) {
+                    const deltaY = zoomStartY - activePinch.y; 
+                    let targetScale = initialCardScale + (deltaY * 0.005); 
+                    targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
+                    zoomedCard.style.transform = `scale(${targetScale})`;
+                    zoomedCard.dataset.scale = targetScale;
+                } 
+                else if (draggedPiece !== null) {
+                    const containerRect = puzzleArea.getBoundingClientRect();
+                    let newX = activePinch.x - dragOffsetX - containerRect.left;
+                    let newY = activePinch.y - dragOffsetY - containerRect.top;
+                    draggedPiece.style.left = `${newX}px`;
+                    draggedPiece.style.top = `${newY}px`;
+                    
+                    const dx = activePinch.x - dragStartX, dy = activePinch.y - dragStartY;
+                    draggedPiece.style.transform = `translateZ(30px) rotateX(${Math.max(-10, Math.min(10, -dy * 0.05))}deg) rotateY(${Math.max(-10, Math.min(10, dx * 0.05))}deg)`;
+                } 
+                else if (lastDragY !== null) {
+                    const deltaY = activePinch.y - lastDragY;
+                    targetScrollY += deltaY * 2.5; 
+                    scrollVelocity = deltaY * 0.5; 
+                    lastDragY = activePinch.y;
+                } 
+                else {
+                    const el = document.elementFromPoint(activePinch.x, activePinch.y);
+                    
+                    if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
+                        startTimer(); 
+                        draggedPiece = el;
+                        const rect = el.getBoundingClientRect();
+                        dragOffsetX = activePinch.x - rect.left;
+                        dragOffsetY = activePinch.y - rect.top;
+                        dragStartX = activePinch.x; dragStartY = activePinch.y;
+                        el.classList.add('dragging');
+                    } 
+                    else if (el && el.closest('.term-card')) {
+                        zoomedCard = el.closest('.term-card');
+                        zoomedCard.classList.add('hovered');
+                        zoomStartY = activePinch.y;
+                        initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
+                    } 
+                    else {
+                        lastDragY = activePinch.y;
+                        scrollVelocity = 0;
+                    }
+                }
             } else {
-                endInteraction();
+                if (draggedPiece) {
+                    draggedPiece.classList.remove('dragging');
+                    draggedPiece.style.transform = '';
+                    checkSnap(draggedPiece);
+                    draggedPiece = null;
+                }
+                if (zoomedCard) {
+                    zoomedCard.classList.remove('hovered');
+                    zoomedCard = null;
+                }
+                lastDragY = null;
             }
+
         } else {
-            endInteraction();
+            lastDragY = null;
             peaceFrames = 0;
-            targetRotX = 0; targetRotY = 0;
+            targetRotX = 0; targetRotY = 0; 
         }
+
         canvasCtx.restore();
     }
 
     function updateCursor(cursorEl, p, isPinched) {
         cursorEl.style.opacity = 1; cursorEl.style.left = `${p.x}px`; cursorEl.style.top = `${p.y}px`;
-        cursorEl.classList.toggle('pinched', isPinched);
+        if (isPinched) cursorEl.classList.add('pinched'); else cursorEl.classList.remove('pinched');
     }
 
     function checkOrientationHint() {
