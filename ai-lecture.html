@@ -486,7 +486,7 @@
     });
     (function initialHintsState() {
         let dismissed = false;
-        try { dismissed = localStorage.getItem('ar_hints_dismissed'] === '1'; } catch (e) {}
+        try { dismissed = localStorage.getItem('ar_hints_dismissed') === '1'; } catch (e) {}
         hintsDontShow.checked = dismissed;
         if (!dismissed) hintsPanel.classList.add('open');
     })();
@@ -971,7 +971,6 @@
         document.getElementById('loaderSpinner').style.display = 'block';
 
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        // Используем modelComplexity: 0 для максимальной совместимости и отсутствия wasm ошибок на сервере
         hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
         hands.onResults(onResults);
 
@@ -1171,7 +1170,6 @@
         cursorEl.classList.toggle('pinched', isPinched);
     }
 
-    // МЕХАНИКА ИИ-ДЕТЕКТИВА (ТЕСТ ТЬЮРИНГА)
     function checkDetectiveVote(card) {
         const isAI = card.dataset.isAi === "true";
         const suspectName = card.dataset.suspect;
@@ -1195,7 +1193,6 @@
         }
     }
 
-    // МЕХАНИКА ИГРЫ КАМЕНЬ, НОЖНИЦЫ, БУМАГА ПРОТИВ ИИ-РЕНТГЕНА
     let playerScore = 0, aiScore = 0;
     const arrogantTaunts = [
         "Ваш выбор просчитан моим рентгеном за 3 миллисекунды.",
@@ -1266,6 +1263,25 @@
                 }
             }
         }, 1100);
+    }
+
+    function checkOrientationHint() {
+        const tip = document.getElementById('rotateTip');
+        const isPortraitNarrow = window.innerHeight > window.innerWidth && window.innerWidth < js-window-width; // safe guard
+        // Let's use clean portrait check
+        const isPortrait = window.innerHeight > window.innerWidth && window.innerWidth < 820;
+        tip.classList.toggle('show', interactionMode === 'gesture' && isPortrait);
+    }
+    window.addEventListener('resize', () => { checkOrientationHint(); resizeAll(); }, { passive: true });
+    window.addEventListener('orientationchange', () => setTimeout(() => { checkOrientationHint(); resizeAll(); }, 300));
+    checkOrientationHint();
+
+    function resizeAll() {
+        if (sceneReady) {
+            camera3D.aspect = window.innerWidth / window.innerHeight;
+            camera3D.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
     }
 
     let isImploding = false;
