@@ -34,12 +34,6 @@
             width: 100vw; height: 100vh;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            body.implode { animation: none !important; transition: opacity 0.6s ease; opacity: 0; }
-            .puzzle-area.completed { animation: none !important; }
-            .spark, .confetti-bit { display: none !important; }
-        }
-
         #webgl-canvas { position: fixed; inset: 0; z-index: -4; pointer-events: none; opacity: 0.85; }
         .vignette {
             position: fixed; inset: 0; z-index: 5; pointer-events: none;
@@ -70,21 +64,21 @@
             padding: 14px 26px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif;
         }
 
-        /* ЛЕТАЮЩАЯ СОВА В ШЛЯПЕ И ШАРФЕ */
+        /* ТОЧНАЯ КОПИЯ ВАШЕЙ СОВЫ В ШЛЯПЕ И ШАРФЕ */
         .companion-owl {
-            position: fixed; bottom: 30px; right: 30px; width: 90px; height: 90px; z-index: 2500;
+            position: fixed; bottom: 30px; right: 30px; width: 95px; height: 95px; z-index: 2500;
             pointer-events: none; animation: owlFloat 4s ease-in-out infinite;
-            filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.3));
+            filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.4));
         }
         @keyframes owlFloat {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(3deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
         }
         .owl-bubble {
-            position: fixed; bottom: 130px; right: 40px; z-index: 2501;
-            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--accent);
+            position: fixed; bottom: 135px; right: 40px; z-index: 2501;
+            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent);
             padding: 12px 18px; border-radius: 16px; font-size: 0.85rem; max-width: 260px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); opacity: 0; transform: translateY(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6); opacity: 0; transform: translateY(10px);
             transition: opacity 0.3s, transform 0.3s; pointer-events: none; color: #e2e8f0;
         }
         .owl-bubble.show { opacity: 1; transform: translateY(0); }
@@ -207,18 +201,10 @@
         .term-card h3 { font-size: 1.15rem; margin-bottom: 14px; color: var(--accent); }
         .term-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
 
-        /* ИГРА ДЕТЕКТИВ (Уровни и зачеркивание) */
-        #detectiveSection {
-            opacity: 0.2; pointer-events: none; filter: blur(5px);
-            transition: opacity 0.8s ease, filter 0.8s ease;
-        }
-        #detectiveSection.unlocked {
-            opacity: 1; pointer-events: auto; filter: none;
-        }
+        /* ИГРА ДЕТЕКТИВ (Открыта и активна) */
         .suspect-card { cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent !important; position: relative; }
         .suspect-card:hover, .suspect-card.hovered { border-color: #fde68a !important; box-shadow: 0 0 30px rgba(253, 230, 138, 0.3); transform: scale(1.05); }
         
-        /* Эффект зачеркивания карточки жестом */
         .suspect-card.eliminated {
             opacity: 0.3; filter: grayscale(1); pointer-events: none; transform: scale(0.95);
         }
@@ -256,33 +242,36 @@
 </head>
 <body>
 
-    <!-- ЛЕТАЮЩАЯ СОВА-КОМПАНЬОН (В ШЛЯПЕ И БОРДОВОМ ШАРФЕ) -->
-    <div class="owl-bubble" id="owlBubble">Привет! Собери ядро вверху или проскролль кулаком вниз, чтобы начать расследование!</div>
+    <!-- ВАША ТОЧНАЯ СОВА В ШЛЯПЕ И БОРДОВОМ ШАРФЕ -->
+    <div class="owl-bubble" id="owlBubble">Ху-ху! Я твой наставник. Скролль кулаком вниз и решай тест Тьюринга!</div>
     <div class="companion-owl">
-        <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <svg viewBox="0 0 120 120" width="100%" height="100%">
+            <!-- Перья-ушки (как на втором вашем скрипте) -->
+            <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
+            <path d="M 85 35 Q 95 10 80 25 Z" fill="#654321"/>
             <!-- Тело совы -->
-            <ellipse cx="50" cy="60" rx="25" ry="30" fill="#475569"/>
-            <path d="M 30 50 Q 50 35 70 50 Q 75 75 50 85 Q 25 75 30 50 Z" fill="#64748b"/>
-            <!-- Ушки -->
-            <polygon points="30,35 25,20 40,30" fill="#475569"/>
-            <polygon points="70,35 75,20 60,30" fill="#475569"/>
-            <!-- Глаза (умные) -->
-            <circle cx="40" cy="50" r="10" fill="#f8fafc"/>
-            <circle cx="60" cy="50" r="10" fill="#f8fafc"/>
-            <circle cx="42" cy="50" r="4" fill="#0f172a"/>
-            <circle cx="58" cy="50" r="4" fill="#0f172a"/>
+            <ellipse cx="60" cy="70" rx="32" ry="38" fill="#8B5A2B"/>
+            <ellipse cx="60" cy="72" rx="24" ry="30" fill="#D2B48C"/>
+            <!-- Голова -->
+            <circle cx="60" cy="45" r="28" fill="#8B5A2B"/>
+            <!-- Лицевой диск (глаза) -->
+            <circle cx="48" cy="45" r="14" fill="#D2B48C"/>
+            <circle cx="72" cy="45" r="14" fill="#D2B48C"/>
+            <!-- Большие оранжевые глаза -->
+            <circle cx="48" cy="45" r="10" fill="#FFA500"/>
+            <circle cx="72" cy="45" r="10" fill="#FFA500"/>
+            <circle cx="48" cy="45" r="4" fill="#000"/>
+            <circle cx="72" cy="45" r="4" fill="#000"/>
             <!-- Клюв -->
-            <polygon points="50,56 46,62 54,62" fill="#fbbf24"/>
+            <polygon points="60,48 55,58 65,58" fill="#333"/>
             <!-- БОРДОВЫЙ ШАРФ -->
-            <path d="M 32 72 Q 50 80 68 72 L 65 82 Q 50 88 35 82 Z" fill="#881337"/>
-            <path d="M 58 78 L 62 98 L 52 96 Z" fill="#881337"/>
+            <path d="M 38 90 Q 60 102 82 90 L 85 102 Q 60 112 35 102 Z" fill="#800020"/>
+            <path d="M 72 98 L 78 118 L 68 116 Z" fill="#800020"/>
             <!-- АКАДЕМИЧЕСКАЯ ШЛЯПА (КОНФЕДЕРАТКА) -->
-            <polygon points="50,12 85,22 50,32 15,22" fill="#0f172a"/>
-            <polygon points="50,14 80,23 50,30 20,23" fill="#1e293b"/>
-            <rect x="42" y="26" width="16" height="8" fill="#0f172a"/>
-            <!-- Кисточка на шляпе -->
-            <line x1="50" y1="22" x2="68" y2="28" stroke="#fbbf24" stroke-width="2"/>
-            <circle cx="68" cy="28" r="2.5" fill="#fbbf24"/>
+            <polygon points="60,10 105,22 60,34 15,22" fill="#1e1e1e"/>
+            <rect x="50" y="26" width="20" height="10" fill="#2d2d2d"/>
+            <line x1="60" y1="22" x2="85" y2="30" stroke="#FFD700" stroke-width="2.5"/>
+            <circle cx="85" cy="30" r="3" fill="#FFD700"/>
         </svg>
     </div>
 
@@ -306,9 +295,9 @@
     <div class="hints-panel" id="hintsPanel">
         <h3>Как управлять</h3>
         <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — берите осколки пазла и карточки.</span></div>
-        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Устойчивый кулак</b> + движение вверх/вниз — идеальный скролл.</span></div>
-        <div class="hint-row"><span class="hint-icon">✋</span><span><b>Смахнуть ребром ладони</b> — зачеркнуть (отбросить) карточку в игре.</span></div>
-        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Тап в воздухе</b> — выбрать правильный ответ.</span></div>
+        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Плотный кулак</b> + движение вверх/вниз — идеальный скролл.</span></div>
+        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Тап в воздухе</b> — выбрать ответ в игре.</span></div>
+        <div class="hint-row"><span class="hint-icon">✌️</span><span>Жест «Пис» — выход из лаборатории.</span></div>
         <label class="hints-dont-show"><input type="checkbox" id="hintsDontShow"> Больше не показывать</label>
     </div>
 
@@ -339,15 +328,15 @@
         <div class="screen-terms" id="termsSection">
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База данных ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1rem;" id="termsHint">Соберите ядро выше или проскролльте кулаком вниз!</p>
+                <p style="color: #94A3B8; font-size: 1rem;" id="termsHint">Проскролльте кулаком вниз к игре «ИИ-Детектив»!</p>
             </div>
         </div>
 
-        <!-- УРОВЕНЬ 2: ИИ-ДЕТЕКТИВ (С ЗАЧЕРКИВАНИЕМ И УРОВНЯМИ) -->
-        <div class="screen-terms" id="detectiveSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent;">
+        <!-- УРОВЕНЬ 2: ИИ-ДЕТЕКТИВ (ОТКРЫТ И АКТИВЕН) -->
+        <div class="screen-terms unlocked" id="detectiveSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent;">
             <div style="width: 100%; text-align: center; margin-bottom: 30px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 10px;" id="detectiveTitle">Уровень 2: Тест Тьюринга (Раунд 1)</h2>
-                <p style="color: #94A3B8; font-size: 1rem; max-width: 800px; margin: 0 auto;" id="detectiveSubtitle">🔒 Соберите пазл выше, чтобы разблокировать расследование!</p>
+                <p style="color: #94A3B8; font-size: 1rem; max-width: 800px; margin: 0 auto;" id="detectiveSubtitle">Один из подозреваемых — вышедшая из-под контроля нейросеть. Сделайте <b>тап в воздухе</b> на нейросети, чтобы вынести вердикт!</p>
             </div>
             
             <div class="term-card suspect-card" data-suspect="А" style="border-color: rgba(255,255,255,0.2);">
@@ -371,8 +360,8 @@
         <div class="modal-box">
             <div class="shockwave" id="shockwave"></div>
             <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
-            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Структура восстановлена.<br>Уровень 2 (ИИ-Детектив) разблокирован!<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
-            <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Начать расследование</button>
+            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Структура успешно восстановлена.<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
+            <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить</button>
         </div>
     </div>
 
@@ -400,14 +389,13 @@
     }
     setModeBadge();
 
-    // Диалоги Совы-Компаньона
     const owlBubble = document.getElementById('owlBubble');
     function sayOwl(text, duration = 4000) {
         owlBubble.textContent = text;
         owlBubble.classList.add('show');
         setTimeout(() => owlBubble.classList.remove('show'), duration);
     }
-    setTimeout(() => sayOwl("Ху-ху! Я твоя Сова-наставник. Собери пазл вверху или скролль кулаком вниз!"), 1500);
+    setTimeout(() => sayOwl("Ху-ху! Я твой наставник. Скролль кулаком вниз и решай тест Тьюринга!"), 1500);
 
     const hintsPanel = document.getElementById('hintsPanel');
     const hintsToggleBtn = document.getElementById('hintsToggleBtn');
@@ -445,12 +433,7 @@
         const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
         const s = String(timeElapsed % 60).padStart(2, '0');
         document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
-        
-        const detectiveSec = document.getElementById('detectiveSection');
-        detectiveSec.classList.add('unlocked');
-        document.getElementById('detectiveSubtitle').innerHTML = "ИИ выдал себя сухой терминологией! Сделай <b>тап в воздухе</b> на нейросети или смахни человека.";
-        sayOwl("Отлично! Уровень 2 открыт. Найди, кто из подозреваемых мыслит как робот!");
-
+        sayOwl("Ядро собрано! Переходим к расследованию.");
         if (navigator.vibrate) navigator.vibrate([30, 40, 30, 40, 80]);
         setTimeout(() => {
             document.getElementById('victoryModal').classList.add('active');
@@ -681,43 +664,6 @@
         lastDragY = null;
     }
 
-    function checkSnap(piece) {
-        const currentX = parseInt(piece.style.left);
-        const currentY = parseInt(piece.style.top);
-        const targetX = parseInt(piece.dataset.correctX);
-        const targetY = parseInt(piece.dataset.correctY);
-        if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
-            piece.style.left = `${targetX}px`;
-            piece.style.top = `${targetY}px`;
-            piece.classList.add('locked', 'just-locked');
-            setTimeout(() => piece.classList.remove('just-locked'), 450);
-            spawnSparks(piece);
-            if (navigator.vibrate) navigator.vibrate(25);
-            lockedCount++;
-            if (lockedCount === cols * rows) {
-                document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
-                puzzleArea.classList.add('completed');
-                stopTimerAndShowModal();
-            }
-        }
-    }
-
-    function spawnSparks(piece) {
-        if (prefersReducedMotion) return;
-        const rect = piece.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-        for (let i = 0; i < 10; i++) {
-            const s = document.createElement('div');
-            s.className = 'spark';
-            const angle = (i / 10) * Math.PI * 2;
-            s.style.setProperty('--sx', Math.cos(angle) * 70 + 'px');
-            s.style.setProperty('--sy', Math.sin(angle) * 70 + 'px');
-            s.style.left = cx + 'px'; s.style.top = cy + 'px';
-            document.body.appendChild(s);
-            setTimeout(() => s.remove(), 650);
-        }
-    }
-
     function enableTouchMode() {
         pieces.forEach(({ el }) => {
             el.addEventListener('pointerdown', (e) => {
@@ -793,7 +739,7 @@
         setModeBadge();
         enableTouchMode();
         showToast('Мышиное управление включено', true);
-        sayOwl("Перешли на мышь? Тоже отличный способ!");
+        sayOwl("Перешли на мышь? Кликайте на карточки напрямую!");
     }
 
     function switchToGesture() {
@@ -823,7 +769,7 @@
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.75, minTrackingConfidence: 0.75 });
+        hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.65, minTrackingConfidence: 0.65 });
         hands.onResults(onResults);
 
         cameraFeed = new Camera(videoElement, {
@@ -834,10 +780,10 @@
         cameraFeed.start().then(() => {
             document.getElementById('loader').style.display = 'none';
             initVoice();
-            sayOwl("Камера активна! Сжимайте кулак для скролла.");
+            sayOwl("Камера активна! Сожми кулак для скролла страницы.");
         }).catch(err => {
             document.getElementById('loaderError').style.display = 'block';
-            document.getElementById('loaderError').textContent = "Ошибка камеры. Нажмите кнопку ниже.";
+            document.getElementById('loaderError').textContent = "Ошибка камеры. Переключитесь на мышь.";
             document.getElementById('loaderTouchFallback').style.display = "inline-block";
         });
 
@@ -849,7 +795,6 @@
 
     let lastPinchState = false;
     let clickCooldown = false;
-    let fistCounter = 0;
 
     function onResults(results) {
         canvasElement.width = window.innerWidth;
@@ -872,7 +817,6 @@
             targetRotX = (landmarks[0].y - 0.5) * 2;
             targetRotY = (landmarks[0].x - 0.5) * 2;
 
-            // Жест Пис
             const indexUp = landmarks[8].y < landmarks[6].y;
             const middleUp = landmarks[12].y < landmarks[10].y;
             const ringDown = landmarks[16].y > landmarks[14].y;
@@ -882,22 +826,16 @@
                 if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; }
             } else { peaceFrames = 0; }
 
-            // Плотный кулак (скролл с защитой от случайных подбородков)
-            const isFist = (landmarks[8].y > landmarks[5].y) && 
-                           (landmarks[12].y > landmarks[9].y) && 
-                           (landmarks[16].y > landmarks[13].y) && 
-                           (landmarks[20].y > landmarks[17].y);
+            // НАДЕЖНЫЙ КУЛАК ДЛЯ СКРОЛЛА
+            const isFist = (landmarks[8].y > landmarks[6].y) && 
+                           (landmarks[12].y > landmarks[10].y) && 
+                           (landmarks[16].y > landmarks[14].y) && 
+                           (landmarks[20].y > landmarks[18].y);
 
             if (isFist) {
-                fistCounter++;
-                if (fistCounter >= 4) { // Удерживается больше 4 кадров — точный уверенный кулак
-                    activeFistY = landmarks[9].y * window.innerHeight;
-                }
-            } else {
-                fistCounter = 0;
+                activeFistY = landmarks[9].y * window.innerHeight;
             }
 
-            // Щипок
             const tip = landmarks[8], thumb = landmarks[4];
             const px = window.innerWidth - (tip.x * window.innerWidth);
             const py = tip.y * window.innerHeight;
@@ -907,7 +845,7 @@
             smoothP0.y = lerp(smoothP0.y, py, 0.5);
             p0 = { x: smoothP0.x, y: smoothP0.y };
             
-            pinch = dist2D < 0.05 && !isFist;
+            pinch = dist2D < 0.055 && !isFist;
 
             if (pinch && !lastPinchState && !clickCooldown) {
                 triggerClick = true;
@@ -918,16 +856,14 @@
 
             updateCursor(cursor0, p0, pinch, triggerClick);
 
-            // Тап (клик) в игре
             if (triggerClick && !draggedPiece) {
                 const el = document.elementFromPoint(p0.x, p0.y);
                 const suspectCard = el ? el.closest('.suspect-card') : null;
-                if (suspectCard && document.getElementById('detectiveSection').classList.contains('unlocked')) {
+                if (suspectCard) {
                     checkDetectiveVote(suspectCard);
                 }
             }
 
-            // Скролл кулаком
             if (activeFistY !== null && !draggedPiece && !zoomedCard) {
                 if (lastDragY !== null) {
                     const deltaY = activeFistY - lastDragY;
@@ -974,7 +910,6 @@
         } else {
             endInteraction();
             peaceFrames = 0;
-            fistCounter = 0;
             targetRotX = 0; targetRotY = 0;
         }
         canvasCtx.restore();
@@ -985,7 +920,7 @@
         cursorEl.classList.toggle('pinched', isPinched);
         cursorEl.classList.toggle('clicked', isClicked);
         const el = document.elementFromPoint(p.x, p.y);
-        if (el && el.closest('.suspect-card') && document.getElementById('detectiveSection').classList.contains('unlocked')) {
+        if (el && el.closest('.suspect-card')) {
             cursorEl.style.borderColor = '#fde68a';
             cursorEl.style.boxShadow = '0 0 15px #fde68a';
         } else {
@@ -994,7 +929,6 @@
         }
     }
 
-    // МЕХАНИКА ИГРЫ С УРОВНЯМИ И ЗАЧЕРКИВАНИЕМ
     let currentRound = 1;
 
     function checkDetectiveVote(card) {
@@ -1008,26 +942,25 @@
             
             if (currentRound === 1) {
                 currentRound = 2;
-                sayOwl("Блестяще! Переходим к Раунду 2: ИИ стал умнее.");
+                sayOwl("Блестяще! Переходим к Раунду 2: ИИ замаскировался под поэта.");
                 setTimeout(() => advanceToRound2(), 2000);
             } else {
-                sayOwl("Ура! Все раунды расследования пройдены идеально!");
+                sayOwl("Ура! Все раунды расследования пройдены блестяще!");
                 setTimeout(() => {
-                    document.querySelector('#detectiveSection h2').innerHTML = "✨ ДЕТЕКТИВ ИИ НАЧИНАЕТ УЧИТЬСЯ ✨";
+                    document.querySelector('#detectiveSection h2').innerHTML = "✨ ДЕТЕКТИВ ИИ ТРИУМФУЕТ ✨";
                     document.querySelector('#detectiveSection h2').style.color = "#10b981";
                 }, 1500);
             }
         } else {
-            // Зачеркиваем карточку при ошибке
             card.classList.add('eliminated');
             showToast(`❌ ОШИБКА! Подозреваемый ${suspectName} — человек. Карточка отброшена!`, false);
-            sayOwl("Ой-ой, это невиновный человек! Попробуй другую карточку.");
+            sayOwl("Ой-ой, это невиновный человек! Ищи дальше.");
         }
     }
 
     function advanceToRound2() {
         document.getElementById('detectiveTitle').textContent = "Уровень 2: Тест Тьюринга (Раунд 2)";
-        document.getElementById('detectiveSubtitle').textContent = "ИИ замаскировался под поэта. Найдите логическую ошибку в стихах!";
+        document.getElementById('detectiveSubtitle').textContent = "ИИ написал стихотворение о зиме. Найдите технический сленг!";
         
         const cards = document.querySelectorAll('.suspect-card');
         cards.forEach(c => {
@@ -1038,12 +971,11 @@
             c.style.boxShadow = "none";
         });
 
-        // Меняем логи на более сложные для раунда 2
         cards[0].querySelector('p').innerHTML = '<b>Следователь:</b> Напиши хокку о зиме.<br><br><b>А:</b> Белый снег летит,<br>Холод сковал речные воды,<br>Птицы улетели.';
         cards[0].dataset.isAi = "false";
 
         cards[1].querySelector('p').innerHTML = '<b>Следователь:</b> Напиши хокку о зиме.<br><br><b>Б:</b> Ледяной кристалл<br>Генерирует узор на окне.<br>Процессор гудит.';
-        cards[1].dataset.isAi = "true"; // Нейросеть спалилась на процессоре
+        cards[1].dataset.isAi = "true";
 
         cards[2].querySelector('p').innerHTML = '<b>Следователь:</b> Напиши хокку о зиме.<br><br><b>В:</b> Метель за окном,<br>Заварил горячий чай,<br>Жду весенний день.';
         cards[2].dataset.isAi = "false";
@@ -1074,9 +1006,7 @@
         enableTouchMode();
         initVoice();
         showToast('Мышиное управление активно', true);
-        document.getElementById('detectiveSection').classList.add('unlocked');
-        document.getElementById('detectiveSubtitle').textContent = "Режим мыши: кликайте на карточки для проверки.";
-        sayOwl("Режим мыши активирован! Уровень расследования открыт.");
+        sayOwl("Режим мыши активирован! Расследование открыто.");
     }
     </script>
 </body>
