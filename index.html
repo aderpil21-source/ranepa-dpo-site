@@ -893,10 +893,14 @@
         <div class="modal-box" style="text-align: left; max-width: 650px;">
             <h3>Официальные образовательные программы</h3>
             <p style="font-size: 0.95rem; line-height: 1.8;">
-                В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:<br><br>
-                📄 <a href="./docs/6.1. DPP_PK_Voprosy_funkcionirovaniya_kontraktnoi_sistemy_v_sfere_zakupok_TRU_dlya_obespecheniya_GMN_2026_108_chasov_.pdf" target="_blank" class="contact-link">Программа повышения квалификации «Вопросы функционирования контрактной системы в сфере закупок...» (108 часов)</a>
+                В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:
             </p>
-            <div class="close-modal" onclick="closeDocsModal()" style="text-align: center;">Закрыть</div>
+            
+            <!-- Сюда скрипт теперь будет автоматически выводить ссылки из таблицы -->
+            <div id="docsList" style="margin-top: 20px; display: flex; flex-direction: column; gap: 14px; font-size: 0.95rem;">
+            </div>
+
+            <div class="close-modal" onclick="closeDocsModal()" style="text-align: center;" data-i18n="modClose">Закрыть</div>
         </div>
     </div>
 
