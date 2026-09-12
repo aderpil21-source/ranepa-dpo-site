@@ -6,7 +6,7 @@
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
-    <!-- MediaPipe (used only when Gesture Mode is active — never loaded/run in Touch Mode) -->
+    <!-- MediaPipe -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
@@ -34,14 +34,12 @@
             width: 100vw; height: 100vh;
         }
 
-        /* respect users who asked the OS for less motion — the vestibular-safe path */
         @media (prefers-reduced-motion: reduce) {
             body.implode { animation: none !important; transition: opacity 0.6s ease; opacity: 0; }
             .puzzle-area.completed { animation: none !important; }
             .spark, .confetti-bit { display: none !important; }
         }
 
-        /* ============ DEPTH LAYERS (video-game style framing) ============ */
         #webgl-canvas { position: fixed; inset: 0; z-index: -4; pointer-events: none; opacity: 0.85; }
         .vignette {
             position: fixed; inset: 0; z-index: 5; pointer-events: none;
@@ -74,7 +72,25 @@
             padding: 14px 26px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif;
         }
 
-        /* ============ HUD ============ */
+        /* Сова в шляпе и бордовом шарфе */
+        .companion-owl {
+            position: fixed; bottom: 30px; right: 30px; width: 95px; height: 95px; z-index: 2500;
+            pointer-events: none; animation: owlFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 10px 20px rgba(56, 189, 248, 0.4));
+        }
+        @keyframes owlFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        .owl-bubble {
+            position: fixed; bottom: 135px; right: 40px; z-index: 2501;
+            background: rgba(15, 23, 42, 0.95); border: 1px solid var(--accent);
+            padding: 12px 18px; border-radius: 16px; font-size: 0.85rem; max-width: 260px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6); opacity: 0; transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s; pointer-events: none; color: #e2e8f0;
+        }
+        .owl-bubble.show { opacity: 1; transform: translateY(0); }
+
         .hud-top {
             position: fixed; top: calc(20px + var(--safe-t)); right: calc(20px + var(--safe-r)); z-index: 2000;
             display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 60vw;
@@ -96,7 +112,6 @@
             border: 1px solid rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 15px; white-space: nowrap;
         }
 
-        /* Fixed top-left: mode switch + hints toggle + light-boost indicator */
         .hud-left {
             position: fixed; top: calc(20px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 2000;
             display: flex; gap: 10px; align-items: center;
@@ -115,13 +130,12 @@
         }
         .low-light-chip.show { display: flex; }
 
-        /* ============ HINTS PANEL (dismissible, remembers state) ============ */
         .hints-panel {
             position: fixed; top: calc(78px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 1999;
             width: min(340px, calc(100vw - 40px)); background: rgba(5,8,14,0.92); backdrop-filter: blur(16px);
             border: 1px solid rgba(56,189,248,0.35); border-radius: 18px; padding: 18px 20px;
             box-shadow: 0 20px 45px rgba(0,0,0,0.6); opacity: 0; transform: translateY(-12px) scale(0.96);
-            pointer-events: none; transition: opacity 0.25s ease, transform 0.25s var(--bezier, ease);
+            pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
         }
         .hints-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
         .hints-panel h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: 12px; }
@@ -130,7 +144,6 @@
         .hints-panel .hint-icon { flex-shrink: 0; font-size: 1.1rem; }
         .hints-dont-show { margin-top: 10px; font-size: 0.75rem; color: #94A3B8; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 
-        /* ============ Camera & canvases ============ */
         .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
         .canvas-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; transform: scaleX(-1); }
 
@@ -141,13 +154,12 @@
             box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
         .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
+        .hand-cursor.clicked { background: #10b981; border-color: #fff; transform: translate(-50%, -50%) scale(0.8); }
 
-        /* ============ Scroll container ============ */
         #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
         body.touch-mode #scroll-container { position: static; width: 100%; transform: none !important; }
         body.touch-mode { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
-        /* ============ Screen 1: puzzle ============ */
         .screen-puzzle { min-height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 90px 12px 40px; }
 
         .header { position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: calc(20px + var(--safe-t)) 20px 10px; z-index: 10; pointer-events: none; }
@@ -203,7 +215,6 @@
             100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.2); }
         }
 
-        /* ============ Screen 2: terms ============ */
         .screen-terms { width: 100vw; min-height: 100vh; padding: 60px clamp(16px, 4vw, 50px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 26px; perspective: 1200px; }
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
@@ -217,7 +228,30 @@
         .term-card h3 { font-size: 1.15rem; margin-bottom: 14px; color: var(--accent); }
         .term-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
 
-        /* ============ Modal ============ */
+        /* ИГРА ДЕТЕКТИВ: Карточки подозреваемых */
+        .suspect-card { cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent !important; }
+        .suspect-card:hover, .suspect-card.hovered { border-color: #fde68a !important; box-shadow: 0 0 30px rgba(253, 230, 138, 0.3); transform: scale(1.05); }
+
+        /* ИНТЕРАКТИВНАЯ АРЕНА КНБ */
+        .rps-arena {
+            width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 24px; padding: 30px; margin-top: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center;
+        }
+        .rps-scores { display: flex; justify-content: space-around; font-size: 1.2rem; font-weight: 900; margin-bottom: 20px; color: var(--accent); }
+        .rps-display { display: flex; justify-content: center; gap: 40px; margin: 25px 0; font-size: 3rem; align-items: center; }
+        .rps-box { background: rgba(0,0,0,0.6); border: 2px dashed rgba(56,189,248,0.4); border-radius: 16px; width: 130px; height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .rps-box span.icon { font-size: 3.5rem; }
+        .rps-box span.label { font-size: 0.75rem; position: absolute; bottom: 6px; color: #94a3b8; }
+        .xray-reflection::after {
+            content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(56,189,248,0.4), transparent);
+            animation: xrayScan 1s linear infinite; pointer-events: none;
+        }
+        @keyframes xrayScan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+        .rps-btns { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .rps-btn { background: rgba(56,189,248,0.15); border: 1px solid var(--accent); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .rps-btn:hover { background: var(--accent); color: #000; transform: scale(1.05); }
+
         .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
         .modal-box { position: relative; background: rgba(17, 24, 39, 0.88); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.25); transform: scale(0.9); transition: transform 0.3s; overflow: hidden; }
@@ -233,7 +267,6 @@
         .confetti-bit { position: fixed; width: 8px; height: 12px; z-index: 10001; pointer-events: none; animation: confettiFall 1.6s ease-in forwards; }
         @keyframes confettiFall { to { transform: translateY(70vh) rotate(540deg); opacity: 0; } }
 
-        /* ============ Toast ============ */
         .toast {
             position: fixed; bottom: calc(-100px - var(--safe-b)); left: 50%; transform: translateX(-50%);
             background: rgba(202, 15, 62, 0.92); color: #fff; font-weight: 800; padding: 14px 26px;
@@ -244,7 +277,6 @@
         .toast.show { bottom: calc(30px + var(--safe-b)); }
         .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
 
-        /* ============ Rotate-device tip (gesture mode, portrait phones only) ============ */
         .rotate-tip {
             position: fixed; left: 50%; bottom: calc(20px + var(--safe-b)); transform: translateX(-50%) translateY(120%);
             background: rgba(0,0,0,0.75); color: #fde68a; border: 1px solid rgba(253,230,138,0.4);
@@ -253,7 +285,6 @@
         }
         .rotate-tip.show { transform: translateX(-50%) translateY(0); }
 
-        /* ============ Mobile & tablet tuning ============ */
         @media (max-width: 900px) {
             .puzzle-piece { width: 33vw; height: 22vw; max-width: 200px; max-height: 133px; }
             .puzzle-area { transform: scale(1); }
@@ -268,6 +299,31 @@
     </style>
 </head>
 <body>
+
+    <!-- Сова в шляпе и бордовом шарфе -->
+    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Я твой наставник. Собирай пазл, масштабируй карточки и играй в детектива!</div>
+    <div class="companion-owl">
+        <svg viewBox="0 0 120 120" width="100%" height="100%">
+            <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
+            <path d="M 85 35 Q 95 10 80 25 Z" fill="#654321"/>
+            <ellipse cx="60" cy="70" rx="32" ry="38" fill="#8B5A2B"/>
+            <ellipse cx="60" cy="72" rx="24" ry="30" fill="#D2B48C"/>
+            <circle cx="60" cy="45" r="28" fill="#8B5A2B"/>
+            <circle cx="48" cy="45" r="14" fill="#D2B48C"/>
+            <circle cx="72" cy="45" r="14" fill="#D2B48C"/>
+            <circle cx="48" cy="45" r="10" fill="#FFA500"/>
+            <circle cx="72" cy="45" r="10" fill="#FFA500"/>
+            <circle cx="48" cy="45" r="4" fill="#000"/>
+            <circle cx="72" cy="45" r="4" fill="#000"/>
+            <polygon points="60,48 55,58 65,58" fill="#333"/>
+            <path d="M 38 90 Q 60 102 82 90 L 85 102 Q 60 112 35 102 Z" fill="#800020"/>
+            <path d="M 72 98 L 78 118 L 68 116 Z" fill="#800020"/>
+            <polygon points="60,10 105,22 60,34 15,22" fill="#1e1e1e"/>
+            <rect x="50" y="26" width="20" height="10" fill="#2d2d2d"/>
+            <line x1="60" y1="22" x2="85" y2="30" stroke="#FFD700" stroke-width="2.5"/>
+            <circle cx="85" cy="30" r="3" fill="#FFD700"/>
+        </svg>
+    </div>
 
     <div id="loader">
         <div class="spinner" id="loaderSpinner"></div>
@@ -288,11 +344,10 @@
 
     <div class="hints-panel" id="hintsPanel">
         <h3>Как управлять</h3>
-        <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> пальцами — берите осколки пазла и переносите на сетку.</span></div>
-        <div class="hint-row"><span class="hint-icon">✋</span><span><b>Щипок в воздухе</b> + движение руки — прокрутка страницы.</span></div>
-        <div class="hint-row"><span class="hint-icon">🔍</span><span>Щипните карточку термина и <b>тяните вверх/вниз</b> — масштаб.</span></div>
+        <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — берите осколки пазла и карточки.</span></div>
+        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Сожмите кулак</b> и двигайте рукой вверх/вниз — прокрутка страницы.</span></div>
+        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Резкий тап в воздухе</b> — клик по кнопке/карточке.</span></div>
         <div class="hint-row"><span class="hint-icon">✌️</span><span>Жест «Пис» (или скажите «взрыв») — выход.</span></div>
-        <div class="hint-row"><span class="hint-icon">👍</span><span>Жест «Класс» — получите похвалу от системы.</span></div>
         <label class="hints-dont-show"><input type="checkbox" id="hintsDontShow"> Больше не показывать при входе</label>
     </div>
 
@@ -327,6 +382,55 @@
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База данных ИИ</h2>
                 <p style="color: #94A3B8; font-size: 1rem;" id="termsHint">Щипните карточку и потяните — масштаб. Наведите — лёгкий 3D-наклон.</p>
+            </div>
+        </div>
+
+        <!-- УРОВЕНЬ 2: ИИ-ДЕТЕКТИВ -->
+        <div class="screen-terms" id="detectiveSection" style="padding-top: 20px; background: transparent;">
+            <div style="width: 100%; text-align: center; margin-bottom: 30px;">
+                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 10px;">Уровень 2: Тест Тьюринга</h2>
+                <p style="color: #94A3B8; font-size: 1rem; max-width: 800px; margin: 0 auto;">Один из подозреваемых — вышедшая из-под контроля нейросеть. Прочитайте логи. Сделайте <b>тап в воздухе</b> на карточке нейросети, чтобы вынести вердикт.</p>
+            </div>
+            
+            <div class="term-card suspect-card" data-suspect="А" style="border-color: rgba(255,255,255,0.2);">
+                <h3 style="color: #fff;">Подозреваемый А</h3>
+                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>А:</b> Ну, оно хрустящее, кисло-сладкое. Если зеленое, то вяжет немного.</p>
+            </div>
+            
+            <div class="term-card suspect-card" data-suspect="Б" data-is-ai="true" style="border-color: rgba(255,255,255,0.2);">
+                <h3 style="color: #fff;">Подозреваемый Б</h3>
+                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>Б:</b> Яблоко — это плод яблони. Оно имеет сбалансированный профиль моносахаридов и фруктовых кислот.</p>
+            </div>
+            
+            <div class="term-card suspect-card" data-suspect="В" style="border-color: rgba(255,255,255,0.2);">
+                <h3 style="color: #fff;">Подозреваемый В</h3>
+                <p style="text-align: left; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;"><b>Следователь:</b> Опиши вкус яблока.<br><br><b>В:</b> Смотря какое! Я люблю Голден, они как мед. А вообще яблоки лучше в пирог пускать.</p>
+            </div>
+        </div>
+
+        <!-- УРОВЕНЬ 3: КАМЕНЬ, НОЖНИЦЫ, БУМАГА ПРОТИВ ИИ-РЕНТГЕНА -->
+        <div class="screen-terms" id="gameSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent; display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
+                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 3: Дуэль с ИИ-Рентгеном</h2>
+                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Сыграй в классическую дуэль против ИИ (до 3 побед). Бот просчитывает твои ходы через 3D-рентген и издевается при победе!</p>
+            </div>
+
+            <div class="rps-arena">
+                <div class="rps-scores">
+                    <span>Твой счет: <b id="playerScore">0</b></span>
+                    <span>Счет ИИ-Рентгена: <b id="aiScore">0</b></span>
+                </div>
+                <div class="rps-display">
+                    <div class="rps-box"><span class="icon" id="playerChoice">❔</span><span class="label">Ты</span></div>
+                    <div style="font-size: 1.5rem; color: var(--accent);">VS</div>
+                    <div class="rps-box" id="aiBox"><span class="icon" id="aiChoice">🔮</span><span class="label">Рентген ИИ</span></div>
+                </div>
+                <p id="rpsStatus" style="font-size: 1rem; color: #fde68a; margin-bottom: 15px; min-height: 24px;">Сделай свой выбор:</p>
+                <div class="rps-btns">
+                    <button class="rps-btn" onclick="playRPS('камень')">✊ Камень</button>
+                    <button class="rps-btn" onclick="playRPS('ножницы')">✌️ Ножницы</button>
+                    <button class="rps-btn" onclick="playRPS('бумага')">✋ Бумага</button>
+                </div>
             </div>
         </div>
     </div>
@@ -364,20 +468,27 @@
     }
     setModeBadge();
 
+    const owlBubble = document.getElementById('owlBodyBubble');
+    function sayOwl(text, duration = 4000) {
+        if (!owlBubble) return;
+        owlBubble.textContent = text;
+        owlBubble.classList.add('show');
+        setTimeout(() => owlBubble.classList.remove('show'), duration);
+    }
+    setTimeout(() => sayOwl("Ху-ху! Собери пазл, масштабируй карточки и найди ИИ в тесте Тьюринга!"), 1500);
+
     const hintsPanel = document.getElementById('hintsPanel');
     const hintsToggleBtn = document.getElementById('hintsToggleBtn');
     const hintsDontShow = document.getElementById('hintsDontShow');
-    function openHints() { hintsPanel.classList.add('open'); }
-    function closeHints() { hintsPanel.classList.remove('open'); }
     hintsToggleBtn.addEventListener('click', () => hintsPanel.classList.toggle('open'));
     hintsDontShow.addEventListener('change', () => {
         try { localStorage.setItem('ar_hints_dismissed', hintsDontShow.checked ? '1' : ''); } catch (e) {}
     });
     (function initialHintsState() {
         let dismissed = false;
-        try { dismissed = localStorage.getItem('ar_hints_dismissed') === '1'; } catch (e) {}
+        try { dismissed = localStorage.getItem('ar_hints_dismissed'] === '1'; } catch (e) {}
         hintsDontShow.checked = dismissed;
-        if (!dismissed) openHints();
+        if (!dismissed) hintsPanel.classList.add('open');
     })();
 
     document.getElementById('exitBtn').addEventListener('click', () => triggerImplosion());
@@ -622,6 +733,8 @@
             zoomedCard.classList.add('hovered');
             zoomStartY = y;
             initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
+        } else if (el && el.closest('.suspect-card')) {
+            checkDetectiveVote(el.closest('.suspect-card'));
         } else {
             lastDragY = y; scrollVelocity = 0;
         }
@@ -749,6 +862,10 @@
             card.addEventListener('pointerup', release);
             card.addEventListener('pointercancel', release);
         });
+
+        document.querySelectorAll('.suspect-card').forEach(card => {
+            card.addEventListener('click', () => checkDetectiveVote(card));
+        });
     }
 
     function physicsLoop() {
@@ -854,7 +971,8 @@
         document.getElementById('loaderSpinner').style.display = 'block';
 
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        hands.setOptions({ maxNumHands: 2, modelComplexity: isTouchCapable ? 0 : 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
+        // Используем modelComplexity: 0 для максимальной совместимости и отсутствия wasm ошибок на сервере
+        hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
         hands.onResults(onResults);
 
         const attempts = [
@@ -938,7 +1056,6 @@
             const fps = frames / 1.5;
             if (fps < 20) {
                 frameSkip = 2;
-                try { hands.setOptions({ modelComplexity: 0 }); } catch (e) {}
                 showToast('Слабое устройство — снижена нагрузка для стабильности', true);
             }
         }
@@ -979,13 +1096,13 @@
             framesSinceHandSeen++;
             if (framesSinceHandSeen > 90 && !relaxedConfidence) {
                 relaxedConfidence = true;
-                try { hands.setOptions({ minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 }); } catch (e) {}
+                try { hands.setOptions({ minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 }); } catch (e) {}
             }
         } else {
             framesSinceHandSeen = 0;
             if (relaxedConfidence) {
                 relaxedConfidence = false;
-                try { hands.setOptions({ minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 }); } catch (e) {}
+                try { hands.setOptions({ minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 }); } catch (e) {}
             }
         }
 
@@ -1011,20 +1128,6 @@
             }
             if (isPeace) { peaceFrames++; if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; } }
             else { peaceFrames = 0; }
-
-            if (results.multiHandLandmarks.length === 1 && !draggedPiece && !zoomedCard) {
-                const lm = results.multiHandLandmarks[0];
-                const thumbUp = lm[4].y < lm[3].y;
-                const indexDown = lm[8].y > lm[6].y;
-                const middleDown = lm[12].y > lm[10].y;
-                const ringDown = lm[16].y > lm[14].y;
-                const pinkyDown = lm[20].y > lm[18].y;
-                if (thumbUp && indexDown && middleDown && ringDown && pinkyDown && !thumbsUpCooldown) {
-                    thumbsUpCooldown = true;
-                    showToast('👍 ОТЛИЧНАЯ РАБОТА!', true);
-                    setTimeout(() => thumbsUpCooldown = false, 3000);
-                }
-            }
 
             results.multiHandLandmarks.forEach((landmarks, index) => {
                 const tip = landmarks[8], thumb = landmarks[4];
@@ -1068,21 +1171,101 @@
         cursorEl.classList.toggle('pinched', isPinched);
     }
 
-    function checkOrientationHint() {
-        const tip = document.getElementById('rotateTip');
-        const isPortraitNarrow = window.innerHeight > window.innerWidth && window.innerWidth < 820;
-        tip.classList.toggle('show', interactionMode === 'gesture' && isPortraitNarrow);
-    }
-    window.addEventListener('resize', () => { checkOrientationHint(); resizeAll(); }, { passive: true });
-    window.addEventListener('orientationchange', () => setTimeout(() => { checkOrientationHint(); resizeAll(); }, 300));
-    checkOrientationHint();
+    // МЕХАНИКА ИИ-ДЕТЕКТИВА (ТЕСТ ТЬЮРИНГА)
+    function checkDetectiveVote(card) {
+        const isAI = card.dataset.isAi === "true";
+        const suspectName = card.dataset.suspect;
 
-    function resizeAll() {
-        if (sceneReady) {
-            camera3D.aspect = window.innerWidth / window.innerHeight;
-            camera3D.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        document.querySelectorAll('.suspect-card').forEach(c => {
+            c.style.opacity = "0.3";
+            c.style.pointerEvents = "none";
+        });
+        card.style.opacity = "1";
+
+        if (isAI) {
+            card.style.borderColor = "#10b981";
+            card.style.boxShadow = "0 0 40px rgba(16, 185, 129, 0.6)";
+            showToast(`✅ ВЕРНО! Подозреваемый ${suspectName} — это нейросеть!`, true);
+            sayOwl("Блестяще! Тьюринг был бы доволен вашим расследованием.");
+        } else {
+            card.style.borderColor = "#CA0F3E";
+            card.style.boxShadow = "0 0 40px rgba(202, 15, 62, 0.6)";
+            showToast(`❌ ОШИБКА! Подозреваемый ${suspectName} — человек.`, false);
+            sayOwl("Осторожнее, вы ошиблись в человеке!");
         }
+    }
+
+    // МЕХАНИКА ИГРЫ КАМЕНЬ, НОЖНИЦЫ, БУМАГА ПРОТИВ ИИ-РЕНТГЕНА
+    let playerScore = 0, aiScore = 0;
+    const arrogantTaunts = [
+        "Ваш выбор просчитан моим рентгеном за 3 миллисекунды.",
+        "Элементарно. Кремниевая логика триумфует.",
+        "Мое 3D-зеркало видит ваши намерения насквозь."
+    ];
+    const respectfulCompliments = [
+        "Невероятно! Ваша интуиция обманула рентген.",
+        "Достойный ход. Признаю превосходство."
+    ];
+
+    function playRPS(playerChoiceStr) {
+        startTimer();
+        const choices = ['камень', 'ножницы', 'бумага'];
+        const aiBox = document.getElementById('aiBox');
+        aiBox.classList.add('xray-reflection');
+        document.getElementById('rpsStatus').textContent = "Рентген-отражение сканирует ваш выбор...";
+        sayOwl("Отражение считывает ваш ход...");
+
+        setTimeout(() => {
+            aiBox.classList.remove('xray-reflection');
+            const winningMove = { 'камень': 'бумага', 'ножницы': 'камень', 'бумага': 'ножницы' };
+            const losingMove = { 'камень': 'ножницы', 'ножницы': 'бумага', 'бумага': 'камень' };
+            
+            let aiChoiceStr = '';
+            const rnd = Math.random();
+            if (rnd < 0.65) aiChoiceStr = winningMove[playerChoiceStr];
+            else if (rnd < 0.85) aiChoiceStr = playerChoiceStr;
+            else aiChoiceStr = losingMove[playerChoiceStr];
+
+            const icons = { 'камень': '✊', 'ножницы': '✌️', 'бумага': '✋' };
+            document.getElementById('playerChoice').textContent = icons[playerChoiceStr];
+            document.getElementById('aiChoice').textContent = icons[aiChoiceStr];
+
+            let resultText = "";
+            if (playerChoiceStr === aiChoiceStr) {
+                resultText = "Ничья! Рентген зафиксировал зеркальный выбор.";
+                sayOwl("Ничья! Отражение повторило вас.");
+            } else if (
+                (playerChoiceStr === 'камень' && aiChoiceStr === 'ножницы') ||
+                (playerChoiceStr === 'ножницы' && aiChoiceStr === 'бумага') ||
+                (playerChoiceStr === 'бумага' && aiChoiceStr === 'камень')
+            ) {
+                playerScore++;
+                document.getElementById('playerScore').textContent = playerScore;
+                const comp = respectfulCompliments[Math.floor(Math.random() * respectfulCompliments.length)];
+                resultText = `Победа раунда! ${comp}`;
+                sayOwl(comp);
+            } else {
+                aiScore++;
+                document.getElementById('aiScore').textContent = aiScore;
+                const taunt = arrogantTaunts[Math.floor(Math.random() * arrogantTaunts.length)];
+                resultText = `Рентген победил. ${taunt}`;
+                sayOwl(taunt);
+            }
+
+            document.getElementById('rpsStatus').textContent = resultText;
+
+            if (playerScore === 3 || aiScore === 3) {
+                if (playerScore === 3) {
+                    stopTimerAndShowModal();
+                } else {
+                    showToast("ИИ-Рентген выиграл серию до 3 побед!", false);
+                    sayOwl("Серия за отражением!");
+                    playerScore = 0; aiScore = 0;
+                    document.getElementById('playerScore').textContent = '0';
+                    document.getElementById('aiScore').textContent = '0';
+                }
+            }
+        }, 1100);
     }
 
     let isImploding = false;
