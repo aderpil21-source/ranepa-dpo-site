@@ -2,17 +2,17 @@
 <html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-
-    <!-- MediaPipe (used only when Gesture Mode is active) -->
+    
+    <!-- Библиотеки Google MediaPipe (AR Жесты) -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 
-    <!-- Three.js (3D depth scene) -->
+    <!-- Библиотека Three.js (3D Графика) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
@@ -20,37 +20,22 @@
             --bg: #05080e;
             --accent: #38bdf8;
             --ranepa-red: #CA0F3E;
-            --safe-t: env(safe-area-inset-top, 0px);
-            --safe-b: env(safe-area-inset-bottom, 0px);
-            --safe-l: env(safe-area-inset-left, 0px);
-            --safe-r: env(safe-area-inset-right, 0px);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
+        
         body {
             background-color: var(--bg); color: #fff;
-            overflow: hidden;
-            transition: filter 0.8s ease;
-            width: 100vw; height: 100vh;
+            overflow: hidden; 
+            transition: all 0.8s ease;
         }
 
-        @media (prefers-reduced-motion: reduce) {
-            body.implode { animation: none !important; transition: opacity 0.6s ease; opacity: 0; }
-            .puzzle-area.completed { animation: none !important; }
-            .spark, .confetti-bit { display: none !important; }
+        /* 3D Фон */
+        #webgl-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -3; pointer-events: none; opacity: 0.8;
         }
 
-        #webgl-canvas { position: fixed; inset: 0; z-index: -4; pointer-events: none; opacity: 0.85; }
-        .vignette {
-            position: fixed; inset: 0; z-index: 5; pointer-events: none;
-            background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.55) 100%);
-        }
-        .scanlines {
-            position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: 0.05; mix-blend-mode: overlay;
-            background: repeating-linear-gradient(0deg, #fff 0px, transparent 1px, transparent 3px);
-        }
-        @media (prefers-reduced-motion: reduce) { .scanlines { display: none; } }
-
+        /* АНИМАЦИЯ ВЗРЫВА (Схлопывание) */
         body.implode { animation: blackHole 1.5s forwards cubic-bezier(0.5, 0, 0.5, 1); }
         @keyframes blackHole {
             0% { filter: brightness(1); transform: scale(1) rotate(0deg); opacity: 1; }
@@ -61,73 +46,39 @@
 
         #loader {
             position: fixed; inset: 0; z-index: 9999; background: var(--bg);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            padding: 30px; gap: 8px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
         }
         .spinner { width: 60px; height: 60px; border: 4px solid rgba(56, 189, 248, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #loaderError { display: none; max-width: 460px; color: #fca5a5; font-size: 0.95rem; line-height: 1.6; margin-top: 10px; }
-        #loaderTouchFallback {
-            display: none; margin-top: 22px; background: var(--accent); color: #000; border: none;
-            padding: 14px 26px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif;
+        
+        .fallback-btn {
+            margin-top: 20px; background: var(--accent); color: #000; border: none;
+            padding: 12px 24px; border-radius: 10px; font-weight: 900; cursor: pointer; font-size: 1rem;
         }
 
+        /* HUD: Таймер и Голос */
         .hud-top {
-            position: fixed; top: calc(20px + var(--safe-t)); right: calc(20px + var(--safe-r)); z-index: 2000;
-            display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: flex-end; max-width: 60vw;
+            position: fixed; top: 20px; right: 30px; z-index: 2000;
+            display: flex; gap: 20px; align-items: center;
         }
         .hud-timer {
             background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
             border: 1px solid var(--accent); padding: 10px 20px; border-radius: 15px;
-            font-size: 1.3rem; font-weight: 900; color: var(--accent);
+            font-size: 1.5rem; font-weight: 900; color: var(--accent);
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
         .hud-mic {
-            display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; color: #94A3B8;
-            background: rgba(0, 0, 0, 0.6); padding: 9px 14px; border-radius: 15px;
+            display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 700; color: #94A3B8;
+            background: rgba(0, 0, 0, 0.6); padding: 10px 15px; border-radius: 15px;
         }
-        .mic-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; animation: pulseMic 1.5s infinite; flex-shrink: 0; }
+        .mic-dot { width: 12px; height: 12px; border-radius: 50%; background: #ef4444; animation: pulseMic 1.5s infinite; }
         @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px #ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px #ef4444; } }
-        .hud-mode-badge {
-            font-size: 0.72rem; font-weight: 800; color: #fff; background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 15px; white-space: nowrap;
-        }
 
-        .hud-left {
-            position: fixed; top: calc(20px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 2000;
-            display: flex; gap: 10px; align-items: center;
-        }
-        .hud-btn {
-            width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); color: #fff; font-size: 1.2rem;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
-        }
-        .hud-btn:hover, .hud-btn:active { background: var(--accent); color: #000; transform: scale(1.06); }
-        .hud-btn.exit-btn:hover, .hud-btn.exit-btn:active { background: var(--ranepa-red); color: #fff; }
-        .low-light-chip {
-            display: none; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 800; color: #fde68a;
-            background: rgba(120, 90, 0, 0.45); border: 1px solid rgba(253, 230, 138, 0.5);
-            padding: 8px 12px; border-radius: 15px; white-space: nowrap;
-        }
-        .low-light-chip.show { display: flex; }
-
-        .hints-panel {
-            position: fixed; top: calc(78px + var(--safe-t)); left: calc(20px + var(--safe-l)); z-index: 1999;
-            width: min(340px, calc(100vw - 40px)); background: rgba(5,8,14,0.92); backdrop-filter: blur(16px);
-            border: 1px solid rgba(56,189,248,0.35); border-radius: 18px; padding: 18px 20px;
-            box-shadow: 0 20px 45px rgba(0,0,0,0.6); opacity: 0; transform: translateY(-12px) scale(0.96);
-            pointer-events: none; transition: opacity 0.25s ease, transform 0.25s var(--bezier, ease);
-        }
-        .hints-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-        .hints-panel h3 { font-size: 1.05rem; color: var(--accent); margin-bottom: 12px; }
-        .hints-panel .hint-row { display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; }
-        .hints-panel .hint-row b { color: #fff; }
-        .hints-panel .hint-icon { flex-shrink: 0; font-size: 1.1rem; }
-        .hints-dont-show { margin-top: 10px; font-size: 0.75rem; color: #94A3B8; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-
+        /* Камера и Канвас */
         .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
         .canvas-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; transform: scaleX(-1); }
 
+        /* Указатели рук (щипок) */
         .hand-cursor {
             position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
             border-radius: 50%; pointer-events: none; z-index: 1000;
@@ -137,26 +88,36 @@
         .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
         .hand-cursor.clicked { background: #10b981; border-color: #fff; transform: translate(-50%, -50%) scale(0.8); }
 
+        /* КОНТЕЙНЕР ДЛЯ СКРОЛЛА */
         #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
-        body.touch-mode #scroll-container { position: static; width: 100%; transform: none !important; }
-        body.touch-mode { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
-        .screen-puzzle { min-height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 90px 12px 40px; }
+        /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
+        .screen-puzzle { height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .header { 
+            position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: 30px 20px; z-index: 10;
+            background: linear-gradient(to bottom, rgba(5,8,14,0.95), transparent);
+        }
+        .header h1 { font-size: 2.2rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 15px; color: #fff; }
+        .header .instructions { 
+            display: flex; gap: 30px; justify-content: center; max-width: 1000px; margin: 0 auto;
+        }
+        .header .instr-block {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px 20px;
+            border-radius: 15px; backdrop-filter: blur(10px); color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; flex: 1;
+        }
+        .header .instr-block b { color: var(--accent); }
 
-        .header { position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: calc(20px + var(--safe-t)) 20px 10px; z-index: 10; pointer-events: none; }
-        .header h1 { font-size: clamp(1.5rem, 5vw, 2.2rem); text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); color: #fff; }
-
-        .puzzle-stage { perspective: 1400px; margin-top: 30px; }
         .puzzle-area {
-            position: relative; width: 600px; height: 400px; max-width: 92vw;
+            position: relative; width: 600px; height: 400px; margin-top: 80px;
             border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px;
             background: rgba(0,0,0,0.5); backdrop-filter: blur(15px);
-            transition: box-shadow 0.5s ease, border-color 0.5s ease;
-            transform-style: preserve-3d;
+            transition: all 0.5s ease;
         }
         .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
         .grid-slot { border: 1px dashed rgba(255,255,255,0.05); }
 
+        /* НЕОНОВАЯ ЗМЕЯ */
         @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
         @keyframes neonSnake { to { --angle: 360deg; } }
         .puzzle-area.completed {
@@ -166,158 +127,105 @@
             animation: neonSnake 2.5s linear infinite; box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
         }
 
+        /* КУСОЧКИ ПАЗЛА */
         .puzzle-piece {
             position: absolute; width: 200px; height: 200px;
             background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
             background-size: 600px 400px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            transition: box-shadow 0.15s, filter 0.15s;
-            touch-action: none;
-            transform-style: preserve-3d;
+            transition: box-shadow 0.1s, filter 0.1s; 
         }
         .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
         .piece-num { position: absolute; top: 8px; left: 12px; font-size: 16px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
-        .puzzle-piece.dragging { z-index: 50; box-shadow: 0 40px 70px rgba(0,0,0,0.9), 0 0 35px var(--accent); filter: brightness(1.35) saturate(1.2); }
-        .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; transform: none !important; }
+        .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
+        .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; }
         .puzzle-piece.locked::after { opacity: 0; }
         .puzzle-piece.locked .piece-num { opacity: 0; }
 
-        @keyframes snapPulse { 0% { filter: brightness(2.2) saturate(1.6); } 100% { filter: brightness(1) saturate(1); } }
-        .puzzle-piece.just-locked { animation: snapPulse 0.45s ease-out; }
-
-        .spark {
-            position: fixed; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-            box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent); pointer-events: none; z-index: 2500;
-            animation: sparkFly 0.6s ease-out forwards;
-        }
-        @keyframes sparkFly {
-            0% { opacity: 1; transform: translate(0,0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0.2); }
-        }
-
-        .screen-terms { width: 100vw; min-height: 100vh; padding: 60px clamp(16px, 4vw, 50px) 100px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 26px; perspective: 1200px; }
+        /* ЭКРАН 2: ТЕРМИНЫ */
+        .screen-terms { width: 100vw; min-height: 100vh; padding: 100px 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 30px; background: linear-gradient(to bottom, transparent, rgba(5,8,14,0.95) 20%); }
         .term-card {
             background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 28px; width: 270px; text-align: center; height: fit-content;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); transform-style: preserve-3d;
-            transition: box-shadow 0.2s, border-color 0.2s, transform 0.12s ease-out;
-            touch-action: none;
-            transform: perspective(900px) rotateX(var(--tiltX, 0deg)) rotateY(var(--tiltY, 0deg)) scale(var(--cscale, 1));
+            border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
+            transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s ease-out; 
         }
-        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 45px rgba(56, 189, 248, 0.45); z-index: 10; }
-        .term-card h3 { font-size: 1.15rem; margin-bottom: 14px; color: var(--accent); }
-        .term-card p { font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; }
+        .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); z-index: 10; }
+        .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
+        .term-card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
 
         /* ИГРА ДЕТЕКТИВ: Карточки подозреваемых */
         .suspect-card { cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent !important; }
         .suspect-card:hover, .suspect-card.hovered { border-color: #fde68a !important; box-shadow: 0 0 30px rgba(253, 230, 138, 0.3); transform: scale(1.05); }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
+        /* МОДАЛКА УСПЕХА */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
-        .modal-box { position: relative; background: rgba(17, 24, 39, 0.88); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.25); transform: scale(0.9); transition: transform 0.3s; overflow: hidden; }
+        .modal-box { background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.2); transform: scale(0.9); transition: transform 0.3s; }
         .modal-overlay.active .modal-box { transform: scale(1); }
-        .shockwave {
-            position: absolute; left: 50%; top: 50%; width: 20px; height: 20px; border-radius: 50%;
-            border: 2px solid var(--accent); transform: translate(-50%,-50%); opacity: 0; pointer-events: none;
-        }
-        .shockwave.play { animation: shockwaveExpand 1s ease-out; }
-        @keyframes shockwaveExpand { 0% { opacity: 0.9; width: 20px; height: 20px; } 100% { opacity: 0; width: 700px; height: 700px; } }
-        .save-btn { position: relative; z-index: 2; background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
+        .save-btn { background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
         .save-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
-        .confetti-bit { position: fixed; width: 8px; height: 12px; z-index: 10001; pointer-events: none; animation: confettiFall 1.6s ease-in forwards; }
-        @keyframes confettiFall { to { transform: translateY(70vh) rotate(540deg); opacity: 0; } }
 
+        /* Уведомления */
         .toast {
-            position: fixed; bottom: calc(-100px - var(--safe-b)); left: 50%; transform: translateX(-50%);
-            background: rgba(202, 15, 62, 0.92); color: #fff; font-weight: 800; padding: 14px 26px;
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background: rgba(202, 15, 62, 0.9); color: #fff; font-weight: 800; padding: 15px 30px;
             border-radius: 30px; box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5);
-            transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; letter-spacing: 0.5px;
-            max-width: 90vw; text-align: center; font-size: 0.9rem;
+            transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; letter-spacing: 1px; text-align: center;
         }
-        .toast.show { bottom: calc(30px + var(--safe-b)); }
+        .toast.show { bottom: 40px; }
         .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
-
-        .rotate-tip {
-            position: fixed; left: 50%; bottom: calc(20px + var(--safe-b)); transform: translateX(-50%) translateY(120%);
-            background: rgba(0,0,0,0.75); color: #fde68a; border: 1px solid rgba(253,230,138,0.4);
-            padding: 10px 18px; border-radius: 14px; font-size: 0.78rem; font-weight: 700; z-index: 2200;
-            transition: transform 0.4s var(--bezier-bounce, ease); pointer-events: none; text-align: center;
-        }
-        .rotate-tip.show { transform: translateX(-50%) translateY(0); }
-
-        @media (max-width: 900px) {
-            .puzzle-piece { width: 33vw; height: 22vw; max-width: 200px; max-height: 133px; }
-            .puzzle-area { transform: scale(1); }
-            .header h1 { margin-bottom: 4px; }
-            .hud-top { max-width: 70vw; }
-            .hud-timer { font-size: 1.05rem; padding: 8px 14px; }
-        }
-        @media (max-width: 600px) {
-            .hints-panel { width: calc(100vw - 32px); left: 16px; }
-            .term-card { width: 100%; max-width: 360px; }
-        }
     </style>
 </head>
 <body>
 
     <div id="loader">
-        <div class="spinner" id="loaderSpinner"></div>
-        <h2 id="loaderTitle" style="margin-bottom: 6px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;" id="loaderSubtitle">Предоставьте доступ к камере. Включен 3D-движок и распознавание речи.</p>
-        <p id="loaderError"></p>
-        <button id="loaderTouchFallback">👆 Использовать сенсорное управление вместо камеры</button>
+        <div class="spinner"></div>
+        <h2 style="margin-bottom: 10px;" id="loaderTitle">Инициализация AR-ядра...</h2>
+        <p style="color: #94A3B8;" id="loaderText">Предоставьте доступ к камере. Включен 3D-движок и Распознавание речи.</p>
+        <button class="fallback-btn" id="skipLoaderBtn" style="display:none;" onclick="forceHideLoader()">Пропустить камеру и играть мышей</button>
     </div>
 
-    <div class="vignette"></div>
-    <div class="scanlines" id="scanlines"></div>
-
-    <div class="hud-left">
-        <button class="hud-btn" id="hintsToggleBtn" title="Подсказки" aria-label="Показать или скрыть подсказки">💡</button>
-        <button class="hud-btn" id="modeToggleBtn" title="Переключить режим управления" aria-label="Переключить режим управления">🖐️</button>
-        <button class="hud-btn exit-btn" id="exitBtn" title="Выйти" aria-label="Выйти">✕</button>
-    </div>
-
-    <div class="hints-panel" id="hintsPanel">
-        <h3>Как управлять</h3>
-        <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок двумя пальцами</b> — берите осколки пазла и масштабируйте карточки.</span></div>
-        <div class="hint-row"><span class="hint-icon">✊</span><span><b>Сожмите кулак</b> и двигайте рукой вверх/вниз — прокрутка страницы.</span></div>
-        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Резкий тап в воздухе</b> (сведение пальца) — клик по кнопке/карточке.</span></div>
-        <div class="hint-row"><span class="hint-icon">✌️</span><span>Жест «Пис» (или скажите «взрыв») — выход.</span></div>
-        <label class="hints-dont-show"><input type="checkbox" id="hintsDontShow"> Больше не показывать при входе</label>
-    </div>
-
+    <!-- HUD: Таймер и Голосовой статус -->
     <div class="hud-top">
-        <div class="low-light-chip" id="lowLightChip">🔦 Мало света — яркость усилена</div>
-        <div class="hud-mode-badge" id="modeBadge">Режим: жесты</div>
-        <div class="hud-mic" id="micBadge"><div class="mic-dot"></div> Голосовой ИИ активен</div>
+        <div class="hud-mic">
+            <div class="mic-dot"></div> Голосовой ИИ активен
+        </div>
         <div class="hud-timer" id="timerDisplay">00:00</div>
     </div>
 
+    <!-- 3D Фон -->
     <canvas id="webgl-canvas"></canvas>
 
-    <video id="webcam" class="video-feed" autoplay playsinline muted></video>
+    <video id="webcam" class="video-feed" autoplay playsinline></video>
     <canvas id="output_canvas" class="canvas-overlay"></canvas>
 
     <div id="cursor0" class="hand-cursor"></div>
     <div id="cursor1" class="hand-cursor"></div>
 
-    <div class="rotate-tip" id="rotateTip">📱 Переверните телефон горизонтально — так удобнее играть жестами</div>
-
     <div id="scroll-container">
+        <!-- СТОЛ С ПАЗЛАМИ -->
         <div class="screen-puzzle">
-            <div class="header"><h1>Практика ИИ</h1></div>
-            <div class="puzzle-stage">
-                <div class="puzzle-area" id="puzzleArea">
-                    <div class="puzzle-grid" id="grid"></div>
+            <div class="header">
+                <h1>Практика ИИ</h1>
+                <div class="instructions">
+                    <div class="instr-block"><b>1.</b> Берите осколки <b>щипком двух пальцев</b>.</div>
+                    <div class="instr-block"><b>2.</b> <b>Сожмите кулак</b> и двигайте рукой вверх/вниз для скролла страницы.</div>
+                    <div class="instr-block"><b>3.</b> Быстрый <b>тап в воздухе</b> — клик/выбор в игре.</div>
                 </div>
+            </div>
+            
+            <div class="puzzle-area" id="puzzleArea">
+                <div class="puzzle-grid" id="grid"></div>
             </div>
         </div>
 
+        <!-- ТЕРМИНЫ -->
         <div class="screen-terms" id="termsSection">
-            <div style="width: 100%; text-align: center; margin-bottom: 10px;">
-                <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База данных ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1rem;" id="termsHint">Щипните карточку и потяните — масштаб. Наведите — лёгкий 3D-наклон.</p>
+            <div style="width: 100%; text-align: center; margin-bottom: 20px;">
+                <h2 style="font-size: 2.2rem; color: var(--accent); margin-bottom: 10px;">База данных ИИ</h2>
+                <p style="color: #94A3B8; font-size: 1.1rem;">Масштабируйте карточки щипком <b>ДВУХ ПАЛЬЦЕВ (тяните вверх/вниз)</b></p>
             </div>
         </div>
 
@@ -325,7 +233,7 @@
         <div class="screen-terms" id="detectiveSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent;">
             <div style="width: 100%; text-align: center; margin-bottom: 40px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 10px;">Уровень 2: Тест Тьюринга</h2>
-                <p style="color: #94A3B8; font-size: 1rem; max-width: 800px; margin: 0 auto;">Один из подозреваемых — вышедшая из-под контроля нейросеть. Прочитайте логи чатов. Наведите курсор и сделайте <b>тап в воздухе</b> на карточке человека, чтобы вынести вердикт.</p>
+                <p style="color: #94A3B8; font-size: 1rem; max-width: 800px; margin: 0 auto;">Один из подозреваемых — вышедшая из-под контроля нейросеть. Прочитайте логи. Сделайте <b>тап в воздухе</b> на карточке нейросети, чтобы вынести вердикт.</p>
             </div>
             
             <div class="term-card suspect-card" data-suspect="А" style="border-color: rgba(255,255,255,0.2);">
@@ -345,428 +253,174 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="victoryModal" role="dialog" aria-modal="true">
+    <div class="modal-overlay" id="victoryModal">
         <div class="modal-box">
-            <div class="shockwave" id="shockwave"></div>
             <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
             <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Вы успешно восстановили структуру.<br>Затраченное время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
             <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить изучение</button>
         </div>
     </div>
 
-    <div class="toast" id="toast" role="status" aria-live="polite">ПОКАЖИТЕ ЖЕСТ ✌️ (ПИС) ДЛЯ ВЫХОДА</div>
+    <div class="toast" id="toast">ПОКАЖИТЕ ЖЕСТ ✌️ (ПИС) ДЛЯ ВЫХОДА</div>
 
     <script>
-    'use strict';
-    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const isTouchCapable = navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
-    const hasMediaDevices = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let hasWebGL = false;
-    try {
-        const testCanvas = document.createElement('canvas');
-        hasWebGL = !!(testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl'));
-    } catch (e) { hasWebGL = false; }
+        let timerInterval = null;
+        let timeElapsed = 0;
+        let timerStarted = false;
 
-    let interactionMode = (isTouchCapable && !hasFinePointer) || !hasMediaDevices ? 'touch' : 'gesture';
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
+                const s = String(timeElapsed % 60).padStart(2, '0');
+                document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+            }, 1000);
+        }
 
-    function setModeBadge() {
-        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты' : 'Режим: сенсор/мышь';
-        document.getElementById('modeToggleBtn').textContent = interactionMode === 'gesture' ? '🖐️' : '👆';
-        document.getElementById('micBadge').style.display = interactionMode === 'gesture' ? 'flex' : 'none';
-        document.body.classList.toggle('touch-mode', interactionMode === 'touch');
-    }
-    setModeBadge();
-
-    const hintsPanel = document.getElementById('hintsPanel');
-    const hintsToggleBtn = document.getElementById('hintsToggleBtn');
-    const hintsDontShow = document.getElementById('hintsDontShow');
-    function openHints() { hintsPanel.classList.add('open'); }
-    function closeHints() { hintsPanel.classList.remove('open'); }
-    hintsToggleBtn.addEventListener('click', () => hintsPanel.classList.toggle('open'));
-    hintsDontShow.addEventListener('change', () => {
-        try { localStorage.setItem('ar_hints_dismissed', hintsDontShow.checked ? '1' : ''); } catch (e) {}
-    });
-    (function initialHintsState() {
-        let dismissed = false;
-        try { dismissed = localStorage.getItem('ar_hints_dismissed') === '1'; } catch (e) {}
-        hintsDontShow.checked = dismissed;
-        if (!dismissed) openHints();
-    })();
-
-    document.getElementById('exitBtn').addEventListener('click', () => triggerImplosion());
-
-    let timerInterval = null;
-    let timeElapsed = 0;
-    let timerStarted = false;
-
-    function startTimer() {
-        if (timerStarted) return;
-        timerStarted = true;
-        timerInterval = setInterval(() => {
-            timeElapsed++;
+        function stopTimerAndShowModal() {
+            clearInterval(timerInterval);
             const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
             const s = String(timeElapsed % 60).padStart(2, '0');
-            document.getElementById('timerDisplay').innerText = `${m}:${s}`;
-        }, 1000);
-    }
-
-    function stopTimerAndShowModal() {
-        clearInterval(timerInterval);
-        const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
-        const s = String(timeElapsed % 60).padStart(2, '0');
-        document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
-        if (navigator.vibrate) navigator.vibrate([30, 40, 30, 40, 80]);
-        setTimeout(() => {
-            document.getElementById('victoryModal').classList.add('active');
-            const sw = document.getElementById('shockwave');
-            sw.classList.remove('play'); void sw.offsetWidth; sw.classList.add('play');
-            if (!prefersReducedMotion) launchConfetti();
-        }, 1200);
-    }
-
-    function launchConfetti() {
-        const colors = ['#38bdf8', '#CA0F3E', '#10b981', '#fde68a'];
-        for (let i = 0; i < 40; i++) {
-            const bit = document.createElement('div');
-            bit.className = 'confetti-bit';
-            bit.style.left = (45 + Math.random() * 10) + 'vw';
-            bit.style.top = '30vh';
-            bit.style.background = colors[i % colors.length];
-            bit.style.animationDelay = (Math.random() * 0.3) + 's';
-            bit.style.transform = `translateX(${(Math.random() - 0.5) * 300}px)`;
-            document.body.appendChild(bit);
-            setTimeout(() => bit.remove(), 2200);
+            document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
+            setTimeout(() => { document.getElementById('victoryModal').classList.add('active'); }, 1500); 
         }
-    }
 
-    function initVoice() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) { document.getElementById('micBadge').style.display = 'none'; return; }
-        try {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ru-RU';
-            recognition.continuous = true;
-            recognition.interimResults = false;
-            recognition.onresult = (event) => {
-                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                if (transcript.includes('сова') || transcript.includes('закрой') || transcript.includes('взрыв')) triggerImplosion();
-            };
-            recognition.onerror = () => {};
-            recognition.onend = () => { if (!isImploding) { try { recognition.start(); } catch (e) {} } };
-            recognition.start();
-        } catch (e) { document.getElementById('micBadge').style.display = 'none'; }
-    }
-
-    const puzzleArea = document.getElementById('puzzleArea');
-    const grid = document.getElementById('grid');
-    const cols = 3, rows = 2;
-    const boardW = 600, boardH = 400;
-    const pW = boardW / cols;
-    const pH = boardH / rows;
-    let lockedCount = 0;
-
-    const pts = [];
-    for (let r = 0; r <= rows; r++) {
-        let rowPts = [];
-        for (let c = 0; c <= cols; c++) {
-            let x = c * pW; let y = r * pH;
-            if (c > 0 && c < cols) x += (Math.random() - 0.5) * 60;
-            if (r > 0 && r < rows) y += (Math.random() - 0.5) * 60;
-            rowPts.push({ x, y });
-        }
-        pts.push(rowPts);
-    }
-
-    let leftCount = 0, rightCount = 0;
-    let pieces = [];
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            let slot = document.createElement('div');
-            slot.className = 'grid-slot';
-            grid.appendChild(slot);
-
-            let piece = document.createElement('div');
-            piece.className = 'puzzle-piece';
-            piece.style.width = `${pW}px`;
-            piece.style.height = `${pH}px`;
-            piece.dataset.correctX = c * pW;
-            piece.dataset.correctY = r * pH;
-            piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
-            piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
-
-            const tl = pts[r][c], tr = pts[r][c + 1];
-            const br = pts[r + 1][c + 1], bl = pts[r + 1][c];
-            const px = (p) => `${((p.x - c * pW) / pW) * 100}%`;
-            const py = (p) => `${((p.y - r * pH) / pH) * 100}%`;
-            piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
-
-            const isLeft = (c < cols / 2);
-            let startX = isLeft ? -250 : boardW + 50;
-            let startY = isLeft ? leftCount * 120 : rightCount * 120;
-            startX += (Math.random() * 30 - 15);
-            startY += (Math.random() * 30 - 15);
-            if (isLeft) leftCount++; else rightCount++;
-
-            piece.style.left = `${startX}px`;
-            piece.style.top = `${startY}px`;
-            puzzleArea.appendChild(piece);
-            pieces.push({ el: piece, locked: false });
-        }
-    }
-
-    const termsData = [
-        { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
-        { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
-        { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
-        { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
-        { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
-        { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
-    ];
-    const termsContainer = document.getElementById('termsSection');
-    let termCards = [];
-    termsData.forEach((term) => {
-        let card = document.createElement('div');
-        card.className = 'term-card';
-        card.innerHTML = `<h3>${term.t}</h3><p>${term.d}</p>`;
-        card.dataset.scale = 1;
-        termsContainer.appendChild(card);
-        termCards.push(card);
-    });
-
-    if (hasFinePointer) {
-        termCards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const r = card.getBoundingClientRect();
-                const relX = (e.clientX - r.left) / r.width - 0.5;
-                const relY = (e.clientY - r.top) / r.height - 0.5;
-                card.style.setProperty('--tiltY', (relX * 14) + 'deg');
-                card.style.setProperty('--tiltX', (-relY * 14) + 'deg');
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.setProperty('--tiltY', '0deg');
-                card.style.setProperty('--tiltX', '0deg');
-            });
-        });
-    }
-
-    let scene, camera3D, renderer, coreMesh, glowMesh, ringMesh, particles;
-    let targetRotX = 0, targetRotY = 0;
-    let sceneReady = false;
-
-    function initScene() {
-        if (!hasWebGL || typeof THREE === 'undefined') {
-            document.getElementById('webgl-canvas').style.background =
-                'radial-gradient(circle at 50% 40%, rgba(56,189,248,0.15), transparent 60%)';
-            return;
-        }
-        try {
-            scene = new THREE.Scene();
-            camera3D = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: !isTouchCapable });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, isTouchCapable ? 1.5 : 2));
-            renderer.setSize(window.innerWidth, window.innerHeight);
-
-            coreMesh = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(12, 1),
-                new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.18 })
-            );
-            scene.add(coreMesh);
-
-            glowMesh = new THREE.Mesh(
-                new THREE.IcosahedronGeometry(13.5, 1),
-                new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.06, blending: THREE.AdditiveBlending, depthWrite: false })
-            );
-            scene.add(glowMesh);
-
-            ringMesh = new THREE.Mesh(
-                new THREE.TorusGeometry(20, 0.15, 8, 80),
-                new THREE.MeshBasicMaterial({ color: 0xCA0F3E, transparent: true, opacity: 0.35 })
-            );
-            ringMesh.rotation.x = Math.PI / 2.4;
-            scene.add(ringMesh);
-
-            const particleCount = isTouchCapable ? 250 : 500;
-            const posArr = new Float32Array(particleCount * 3);
-            for (let i = 0; i < particleCount * 3; i += 3) {
-                const radius = 40 + Math.random() * 60;
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                posArr[i] = radius * Math.sin(phi) * Math.cos(theta);
-                posArr[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
-                posArr[i + 2] = radius * Math.cos(phi);
-            }
-            const particleGeo = new THREE.BufferGeometry();
-            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-            const particleMat = new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.6, transparent: true, opacity: 0.5 });
-            particles = new THREE.Points(particleGeo, particleMat);
-            scene.add(particles);
-
-            camera3D.position.z = 30;
-            sceneReady = true;
-        } catch (e) {
-            sceneReady = false;
-            console.warn('3D scene disabled:', e);
-        }
-    }
-    initScene();
-
-    const scrollContainer = document.getElementById('scroll-container');
-    let draggedPiece = null;
-    let dragOffsetX = 0, dragOffsetY = 0;
-    let dragStartX = 0, dragStartY = 0;
-
-    let scrollY = 0, targetScrollY = 0, scrollVelocity = 0, lastDragY = null;
-    const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
-
-    let zoomedCard = null, zoomStartY = 0, initialCardScale = 1;
-
-    function beginInteractionAt(x, y) {
-        if (interactionMode === 'touch') return;
-        const el = document.elementFromPoint(x, y);
-        if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-            startTimer();
-            draggedPiece = el;
-            const rect = el.getBoundingClientRect();
-            dragOffsetX = x - rect.left; dragOffsetY = y - rect.top;
-            dragStartX = x; dragStartY = y;
-            el.classList.add('dragging');
-        } else if (el && el.closest('.term-card')) {
-            zoomedCard = el.closest('.term-card');
-            zoomedCard.classList.add('hovered');
-            zoomStartY = y;
-            initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
-        } else {
-            lastDragY = y; scrollVelocity = 0;
-        }
-    }
-
-    function moveInteractionAt(x, y) {
-        if (zoomedCard) {
-            const deltaY = zoomStartY - y;
-            let targetScale = initialCardScale + (deltaY * 0.005);
-            targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
-            zoomedCard.style.setProperty('--cscale', targetScale);
-            zoomedCard.dataset.scale = targetScale;
-        } else if (draggedPiece) {
-            const containerRect = puzzleArea.getBoundingClientRect();
-            const newX = x - dragOffsetX - containerRect.left;
-            const newY = y - dragOffsetY - containerRect.top;
-            draggedPiece.style.left = `${newX}px`;
-            draggedPiece.style.top = `${newY}px`;
-            const dx = x - dragStartX, dy = y - dragStartY;
-            draggedPiece.style.transform = `translateZ(30px) rotateX(${Math.max(-10, Math.min(10, -dy * 0.05))}deg) rotateY(${Math.max(-10, Math.min(10, dx * 0.05))}deg)`;
-        } else if (lastDragY !== null) {
-            const deltaY = y - lastDragY;
-            targetScrollY += deltaY * 2.5;
-            scrollVelocity = deltaY * 0.5;
-            lastDragY = y;
-        }
-    }
-
-    function endInteraction() {
-        if (draggedPiece) {
-            draggedPiece.classList.remove('dragging');
-            draggedPiece.style.transform = '';
-            checkSnap(draggedPiece);
-            draggedPiece = null;
-        }
-        if (zoomedCard) { zoomedCard.classList.remove('hovered'); zoomedCard = null; }
-        lastDragY = null;
-    }
-
-    function checkSnap(piece) {
-        const currentX = parseInt(piece.style.left);
-        const currentY = parseInt(piece.style.top);
-        const targetX = parseInt(piece.dataset.correctX);
-        const targetY = parseInt(piece.dataset.correctY);
-        if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
-            piece.style.left = `${targetX}px`;
-            piece.style.top = `${targetY}px`;
-            piece.classList.add('locked', 'just-locked');
-            setTimeout(() => piece.classList.remove('just-locked'), 450);
-            spawnSparks(piece);
-            if (navigator.vibrate) navigator.vibrate(25);
-            lockedCount++;
-            if (lockedCount === cols * rows) {
-                document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
-                document.querySelector('.header h1').style.color = "#10b981";
-                puzzleArea.classList.add('completed');
-                stopTimerAndShowModal();
+        function initVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ru-RU';
+                recognition.continuous = true;
+                recognition.interimResults = false;
+                recognition.onresult = (event) => {
+                    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+                    if (transcript.includes('сова') || transcript.includes('закрой') || transcript.includes('взрыв')) {
+                        triggerImplosion();
+                    }
+                };
+                recognition.onend = () => { if(!isImploding) recognition.start(); };
+                try { recognition.start(); } catch(e){}
             }
         }
-    }
 
-    function spawnSparks(piece) {
-        if (prefersReducedMotion) return;
-        const rect = piece.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-        for (let i = 0; i < 10; i++) {
-            const s = document.createElement('div');
-            s.className = 'spark';
-            const angle = (i / 10) * Math.PI * 2;
-            s.style.setProperty('--sx', Math.cos(angle) * 70 + 'px');
-            s.style.setProperty('--sy', Math.sin(angle) * 70 + 'px');
-            s.style.left = cx + 'px'; s.style.top = cy + 'px';
-            document.body.appendChild(s);
-            setTimeout(() => s.remove(), 650);
+        const puzzleArea = document.getElementById('puzzleArea');
+        const grid = document.getElementById('grid');
+        const cols = 3, rows = 2;
+        const boardW = 600, boardH = 400; 
+        const pW = boardW / cols; 
+        const pH = boardH / rows; 
+        let lockedCount = 0;
+
+        const pts = [];
+        for(let r = 0; r <= rows; r++) {
+            let rowPts = [];
+            for(let c = 0; c <= cols; c++) {
+                let x = c * pW; let y = r * pH;
+                if (c > 0 && c < cols) x += (Math.random() - 0.5) * 60;
+                if (r > 0 && r < rows) y += (Math.random() - 0.5) * 60;
+                rowPts.push({x, y});
+            }
+            pts.push(rowPts);
         }
-    }
 
-    function enableTouchMode() {
-        pieces.forEach(({ el }) => {
-            el.addEventListener('pointerdown', (e) => {
-                if (el.classList.contains('locked')) return;
-                el.setPointerCapture(e.pointerId);
-                startTimer();
-                draggedPiece = el;
-                const rect = el.getBoundingClientRect();
-                dragOffsetX = e.clientX - rect.left; dragOffsetY = e.clientY - rect.top;
-                dragStartX = e.clientX; dragStartY = e.clientY;
-                el.classList.add('dragging');
-            });
-            el.addEventListener('pointermove', (e) => {
-                if (draggedPiece !== el) return;
-                moveInteractionAt(e.clientX, e.clientY);
-            });
-            const release = (e) => { if (draggedPiece === el) endInteraction(); };
-            el.addEventListener('pointerup', release);
-            el.addEventListener('pointercancel', release);
+        let leftCount = 0, rightCount = 0;
+        let pieces = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let slot = document.createElement('div');
+                slot.className = 'grid-slot';
+                grid.appendChild(slot);
+
+                let piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                piece.style.width = `${pW}px`;
+                piece.style.height = `${pH}px`;
+
+                piece.dataset.correctX = c * pW;
+                piece.dataset.correctY = r * pH;
+                piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
+                piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
+
+                const tl = pts[r][c], tr = pts[r][c+1];
+                const br = pts[r+1][c+1], bl = pts[r+1][c];
+                const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
+                const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
+                piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
+
+                const isLeft = (c < cols / 2);
+                let startX = isLeft ? -250 : boardW + 50; 
+                let startY = isLeft ? leftCount * 120 : rightCount * 120;
+                startX += (Math.random() * 30 - 15);
+                startY += (Math.random() * 30 - 15);
+
+                if (isLeft) leftCount++; else rightCount++;
+
+                piece.style.left = `${startX}px`;
+                piece.style.top = `${startY}px`;
+
+                puzzleArea.appendChild(piece);
+                pieces.push({ el: piece, locked: false });
+            }
+        }
+
+        const termsData = [
+            { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
+            { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
+            { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
+            { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
+            { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
+            { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
+        ];
+        const termsContainer = document.getElementById('termsSection');
+        let termCards = [];
+        termsData.forEach((term) => {
+            let card = document.createElement('div');
+            card.className = 'term-card';
+            card.innerHTML = `<h3>${term.t}</h3><p>${term.d}</p>`;
+            card.dataset.scale = 1;
+            termsContainer.appendChild(card);
+            termCards.push(card);
         });
 
-        termCards.forEach(card => {
-            const active = new Map();
-            let startDist = 0, startScale = 1;
-            card.addEventListener('pointerdown', (e) => {
-                card.setPointerCapture(e.pointerId);
-                active.set(e.pointerId, { x: e.clientX, y: e.clientY });
-                card.classList.add('hovered');
-                if (active.size === 2) {
-                    const pts = Array.from(active.values());
-                    startDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-                    startScale = parseFloat(card.dataset.scale) || 1;
-                }
-            });
-            card.addEventListener('pointermove', (e) => {
-                if (!active.has(e.pointerId)) return;
-                active.set(e.pointerId, { x: e.clientX, y: e.clientY });
-                if (active.size === 2) {
-                    const pts = Array.from(active.values());
-                    const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
-                    let scale = startScale * (dist / (startDist || dist));
-                    scale = Math.max(0.8, Math.min(scale, 2.5));
-                    card.style.setProperty('--cscale', scale);
-                    card.dataset.scale = scale;
-                }
-            });
-            const release = (e) => { active.delete(e.pointerId); if (active.size < 2) startDist = 0; if (active.size === 0) card.classList.remove('hovered'); };
-            card.addEventListener('pointerup', release);
-            card.addEventListener('pointercancel', release);
-        });
-    }
+        const scene = new THREE.Scene();
+        const camera3D = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-    function physicsLoop() {
-        if (interactionMode === 'gesture') {
+        const geometry = new THREE.IcosahedronGeometry(12, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.15 });
+        const coreMesh = new THREE.Mesh(geometry, material);
+        scene.add(coreMesh);
+        camera3D.position.z = 30;
+
+        let targetRotX = 0, targetRotY = 0;
+
+        const videoElement = document.getElementById('webcam');
+        const canvasElement = document.getElementById('output_canvas');
+        const canvasCtx = canvasElement.getContext('2d');
+        const scrollContainer = document.getElementById('scroll-container');
+        const cursor0 = document.getElementById('cursor0');
+        const cursor1 = document.getElementById('cursor1');
+
+        let isPinching0 = false, isPinching1 = false;
+        let p0 = {x:0, y:0}, p1 = {x:0, y:0};
+        
+        let draggedPiece = null;
+        let dragOffsetX = 0, dragOffsetY = 0;
+        let dragStartX = 0, dragStartY = 0;
+
+        let scrollY = 0, targetScrollY = 0, scrollVelocity = 0, lastDragY = null;
+        const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
+
+        let zoomedCard = null, zoomStartY = 0, initialCardScale = 1;
+        let peaceFrames = 0;
+
+        function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
+        let smoothP0 = {x: window.innerWidth/2, y: window.innerHeight/2};
+
+        function physicsLoop() {
             if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
                 targetScrollY += scrollVelocity;
                 scrollVelocity *= 0.9;
@@ -774,436 +428,303 @@
             targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
             scrollY = lerp(scrollY, targetScrollY, 0.2);
             scrollContainer.style.transform = `translateY(${scrollY}px)`;
-        }
 
-        if (sceneReady && (!document.hidden)) {
-            const scrollProgress = interactionMode === 'gesture'
-                ? Math.min(1, Math.abs(scrollY) / Math.max(1, -maxScroll()))
-                : Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
             coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
             coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
-            coreMesh.rotation.x += 0.0012;
+            coreMesh.rotation.x += 0.001; 
             coreMesh.rotation.y += 0.002;
-            glowMesh.rotation.copy(coreMesh.rotation);
-            ringMesh.rotation.z += 0.0015;
-            particles.rotation.y += 0.0006;
-            camera3D.position.z = 30 - scrollProgress * 10;
-            ringMesh.rotation.x = Math.PI / 2.4 + scrollProgress * 0.4;
             renderer.render(scene, camera3D);
+
+            requestAnimationFrame(physicsLoop);
         }
-        requestAnimationFrame(physicsLoop);
-    }
-    physicsLoop();
+        physicsLoop();
 
-    function lerp(a, b, t) { return (1 - t) * a + t * b; }
-
-    if (interactionMode === 'gesture') {
         window.addEventListener('wheel', (e) => {
             targetScrollY -= e.deltaY;
             targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
-            scrollVelocity = 0;
-        }, { passive: true });
-    } else {
-        window.addEventListener('scroll', () => {}, { passive: true });
-    }
+            scrollVelocity = 0; 
+        });
 
-    let cameraFeed = null, hands = null;
-    let mediaStream = null;
-
-    document.getElementById('modeToggleBtn').addEventListener('click', () => {
-        if (interactionMode === 'gesture') { switchToTouch(); }
-        else { switchToGesture(); }
-    });
-
-    function switchToTouch() {
-        stopGesturePipeline();
-        interactionMode = 'touch';
-        setModeBadge();
-        enableTouchMode();
-        showToast('Сенсорное управление включено', true);
-    }
-
-    function switchToGesture() {
-        if (!hasMediaDevices) { showToast('Камера недоступна на этом устройстве'); return; }
-        interactionMode = 'gesture';
-        setModeBadge();
-        showToast('Запуск камеры…', true);
-        startGesturePipeline();
-    }
-
-    function stopGesturePipeline() {
-        try { if (cameraFeed && cameraFeed.stop) cameraFeed.stop(); } catch (e) {}
-        try { if (mediaStream) mediaStream.getTracks().forEach(t => t.stop()); } catch (e) {}
-        document.getElementById('cursor0').style.opacity = 0;
-        document.getElementById('cursor1').style.opacity = 0;
-    }
-
-    const videoElement = document.getElementById('webcam');
-    const canvasElement = document.getElementById('output_canvas');
-    const canvasCtx = canvasElement.getContext('2d');
-    const cursor0 = document.getElementById('cursor0');
-    const cursor1 = document.getElementById('cursor1');
-
-    const preCanvas = document.createElement('canvas');
-    const preCtx = preCanvas.getContext('2d', { willReadFrequently: true });
-    let brightnessBoost = 1.0;
-    let lastLumaCheck = 0;
-
-    let isPinching0 = false, isPinching1 = false;
-    let p0 = { x: 0, y: 0 }, p1 = { x: 0, y: 0 };
-    let smoothP0 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    let smoothP1 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    let peaceFrames = 0;
-    let framesSinceHandSeen = 9999;
-    let relaxedConfidence = false;
-    let frameSkipCounter = 0;
-    let frameSkip = 1;
-
-    function startGesturePipeline() {
-        document.getElementById('loader').style.display = 'flex';
-        document.getElementById('loaderTitle').textContent = 'Запуск камеры...';
-        document.getElementById('loaderError').style.display = 'none';
-        document.getElementById('loaderTouchFallback').style.display = 'none';
-        document.getElementById('loaderSpinner').style.display = 'block';
-
-        hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-        hands.setOptions({ maxNumHands: 2, modelComplexity: isTouchCapable ? 0 : 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
+        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+        hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
-        const attempts = [
-            { width: 1280, height: 720 },
-            { width: 640, height: 480 },
-            { width: 320, height: 240 }
-        ];
+        const cameraFeed = new Camera(videoElement, {
+            onFrame: async () => { await hands.send({image: videoElement}); },
+            width: 1280, height: 720
+        });
 
-        (async function tryNext(i) {
-            if (i >= attempts.length) { showCameraError({ name: 'NotFoundError' }); return; }
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: attempts[i].width, height: attempts[i].height }
-                });
-                videoElement.srcObject = mediaStream;
-                await videoElement.play();
-                cameraFeed = {
-                    stop: () => {},
-                    _raf: null
-                };
-                
-                let isMediaPipeProcessing = false;
-                function loop() {
-                    if (interactionMode !== 'gesture' || document.hidden) { cameraFeed._raf = requestAnimationFrame(loop); return; }
-                    frameSkipCounter++;
-                    if (frameSkipCounter % frameSkip === 0 && videoElement.readyState >= 2 && !isMediaPipeProcessing) {
-                        isMediaPipeProcessing = true;
-                        processFrame().then(() => {
-                            isMediaPipeProcessing = false;
-                        }).catch((err) => {
-                            console.error('MediaPipe error:', err);
-                            isMediaPipeProcessing = false;
-                        });
-                    }
-                    cameraFeed._raf = requestAnimationFrame(loop);
-                }
-                cameraFeed.stop = () => { if (cameraFeed._raf) cancelAnimationFrame(cameraFeed._raf); };
-                loop();
+        // Таймаут безопасности: если камера думает дольше 4 секунд, покажем кнопку пропуска
+        const loaderTimeout = setTimeout(() => {
+            document.getElementById('loaderTitle').textContent = "Камера задерживается";
+            document.getElementById('loaderText').textContent = "Возможно, доступ заблокирован или устройство занято.";
+            document.getElementById('skipLoaderBtn').style.display = "inline-block";
+        }, 4000);
 
-                document.getElementById('loader').style.display = 'none';
-                initVoice();
-                calibratePerformance();
-            } catch (err) {
-                if (i < attempts.length - 1) { tryNext(i + 1); }
-                else { showCameraError(err); }
-            }
-        })(0);
-    }
+        cameraFeed.start().then(() => { 
+            clearTimeout(loaderTimeout);
+            document.getElementById('loader').style.display = 'none'; 
+            initVoice(); 
+        }).catch(err => {
+            clearTimeout(loaderTimeout);
+            document.getElementById('loaderTitle').textContent = "Ошибка камеры";
+            document.getElementById('loaderText').textContent = "Проверьте разрешения браузера или используйте мышь.";
+            document.getElementById('skipLoaderBtn').style.display = "inline-block";
+        });
 
-    async function processFrame() {
-        const vw = videoElement.videoWidth, vh = videoElement.videoHeight;
-        if (!vw || !vh) return;
-        if (preCanvas.width !== vw) { preCanvas.width = vw; preCanvas.height = vh; }
-
-        const now = performance.now();
-        if (now - lastLumaCheck > 1000) {
-            lastLumaCheck = now;
-            measureLuminanceAndAdapt();
-        }
-
-        preCtx.filter = `brightness(${brightnessBoost}) contrast(1.08)`;
-        preCtx.drawImage(videoElement, 0, 0, vw, vh);
-        await hands.send({ image: preCanvas });
-    }
-
-    function measureLuminanceAndAdapt() {
-        try {
-            const sampleSize = 24;
-            const sctx = document.createElement('canvas').getContext('2d');
-            sctx.canvas.width = sampleSize; sctx.canvas.height = sampleSize;
-            sctx.drawImage(videoElement, 0, 0, sampleSize, sampleSize);
-            const data = sctx.getImageData(0, 0, sampleSize, sampleSize).data;
-            let sum = 0;
-            for (let i = 0; i < data.length; i += 4) sum += (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-            const avg = sum / (data.length / 4);
-            const target = 120;
-            const dim = avg < 70;
-            document.getElementById('lowLightChip').classList.toggle('show', dim);
-            const desired = Math.max(1, Math.min(2.4, target / Math.max(20, avg)));
-            brightnessBoost = lerp(brightnessBoost, desired, 0.35);
-        } catch (e) {}
-    }
-
-    function calibratePerformance() {
-        let frames = 0, start = performance.now();
-        function tick() {
-            frames++;
-            if (performance.now() - start < 1500) { requestAnimationFrame(tick); return; }
-            const fps = frames / 1.5;
-            if (fps < 20) {
-                frameSkip = 2;
-                try { hands.setOptions({ modelComplexity: 0 }); } catch (e) {}
-                showToast('Слабое устройство — снижена нагрузка для стабильности', true);
-            }
-        }
-        requestAnimationFrame(tick);
-    }
-
-    function showCameraError(err) {
-        document.getElementById('loaderSpinner').style.display = 'none';
-        const errEl = document.getElementById('loaderError');
-        const messages = {
-            NotAllowedError: 'Доступ к камере запрещён. Разрешите доступ в настройках браузера — или используйте сенсорное управление.',
-            NotFoundError: 'Камера не найдена на этом устройстве.',
-            NotReadableError: 'Камера занята другим приложением.',
-            OverconstrainedError: 'Камера не поддерживает требуемые параметры.'
-        };
-        errEl.textContent = messages[err && err.name] || 'Не удалось запустить камеру.';
-        errEl.style.display = 'block';
-        document.getElementById('loaderTitle').textContent = 'Камера недоступна';
-        document.getElementById('loaderTouchFallback').style.display = 'inline-block';
-        document.getElementById('loaderTouchFallback').onclick = () => {
+        function forceHideLoader() {
+            clearTimeout(loaderTimeout);
             document.getElementById('loader').style.display = 'none';
-            switchToTouch();
-        };
-    }
-
-    // ЛОГИКА ЖЕСТОВ: КУЛАК ДЛЯ СКРОЛЛА, ИЗОЛИРОВАННЫЙ ЩИПОК ДЛЯ ОБЪЕКТОВ, ТАП (КЛИК)
-    let lastPinchState0 = false;
-    let clickCooldown = false;
-
-    function onResults(results) {
-        canvasElement.width = window.innerWidth;
-        canvasElement.height = window.innerHeight;
-        canvasCtx.save();
-        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-        cursor0.style.opacity = 0; cursor1.style.opacity = 0;
-        let pinch0 = false, pinch1 = false;
-        let activeFistY = null;
-        let triggerClick = false;
-
-        const handFound = results.multiHandLandmarks && results.multiHandLandmarks.length > 0;
-
-        if (!handFound) {
-            framesSinceHandSeen++;
-            if (framesSinceHandSeen > 90 && !relaxedConfidence) {
-                relaxedConfidence = true;
-                try { hands.setOptions({ minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 }); } catch (e) {}
-            }
-        } else {
-            framesSinceHandSeen = 0;
-            if (relaxedConfidence) {
-                relaxedConfidence = false;
-                try { hands.setOptions({ minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 }); } catch (e) {}
-            }
+            initVoice();
+            showToast("Включено резервное управление", true);
         }
 
-        if (handFound) {
-            for (const landmarks of results.multiHandLandmarks) {
-                drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3 });
-                drawLandmarks(canvasCtx, landmarks, { color: '#CA0F3E', lineWidth: 1, radius: 2 });
-            }
+        let lastPinchState0 = false;
+        let clickCooldown = false;
 
-            const h1 = results.multiHandLandmarks[0][0];
-            targetRotX = (h1.y - 0.5) * 2;
-            targetRotY = (h1.x - 0.5) * 2;
+        function onResults(results) {
+            canvasElement.width = window.innerWidth;
+            canvasElement.height = window.innerHeight;
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-            let isPeace = false;
+            cursor0.style.opacity = 0; cursor1.style.opacity = 0;
+            let pinch0 = false;
+            let activeFistY = null;
+            let triggerClick = false;
 
-            results.multiHandLandmarks.forEach((lm, index) => {
-                const indexDown = lm[8].y > lm[6].y;
-                const middleDown = lm[12].y > lm[10].y;
-                const ringDown = lm[16].y > lm[14].y;
-                const pinkyDown = lm[20].y > lm[18].y;
-
-                // КУЛАК: все 4 пальца прижаты (используем для скролла)
-                const isFist = indexDown && middleDown && ringDown && pinkyDown;
-
-                if (!indexDown && !middleDown && ringDown && pinkyDown && !isFist) {
-                    isPeace = true;
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                for (const landmarks of results.multiHandLandmarks) {
+                    drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3});
+                    drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
-                if (isFist) {
-                    activeFistY = lm[9].y * window.innerHeight;
-                }
+                const h1 = results.multiHandLandmarks[0][0];
+                targetRotX = (h1.y - 0.5) * 2;
+                targetRotY = (h1.x - 0.5) * 2;
 
-                const tip = lm[8], thumb = lm[4];
-                const px = window.innerWidth - (tip.x * window.innerWidth);
-                const py = tip.y * window.innerHeight;
-                const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
+                let isPeace = false;
 
-                if (index === 0) {
-                    smoothP0.x = lerp(smoothP0.x, px, 0.5); smoothP0.y = lerp(smoothP0.y, py, 0.5);
-                    p0 = { x: smoothP0.x, y: smoothP0.y };
-                    isPinching0 = dist2D < 0.055 && !isFist;
-                    pinch0 = isPinching0;
+                results.multiHandLandmarks.forEach((lm, index) => {
+                    const indexDown = lm[8].y > lm[6].y;
+                    const middleDown = lm[12].y > lm[10].y;
+                    const ringDown = lm[16].y > lm[14].y;
+                    const pinkyDown = lm[20].y > lm[18].y;
 
-                    // Детекция резкого тапа (клика)
-                    if (pinch0 && !lastPinchState0 && !clickCooldown) {
-                        triggerClick = true;
-                        clickCooldown = true;
-                        setTimeout(() => clickCooldown = false, 600);
+                    const isFist = indexDown && middleDown && ringDown && pinkyDown;
+
+                    if (!indexDown && !middleDown && ringDown && pinkyDown && !isFist) {
+                        isPeace = true;
                     }
-                    lastPinchState0 = pinch0;
 
-                    updateCursor(cursor0, p0, pinch0, triggerClick);
+                    if (isFist) {
+                        activeFistY = lm[9].y * window.innerHeight;
+                    }
+
+                    const tip = lm[8], thumb = lm[4];
+                    const px = window.innerWidth - (tip.x * window.innerWidth);
+                    const py = tip.y * window.innerHeight;
+                    const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
+
+                    if (index === 0) { 
+                        smoothP0.x = lerp(smoothP0.x, px, 0.5);
+                        smoothP0.y = lerp(smoothP0.y, py, 0.5);
+                        p0 = {x: smoothP0.x, y: smoothP0.y}; 
+                        isPinching0 = dist2D < 0.055 && !isFist;
+                        pinch0 = isPinching0;
+
+                        if (pinch0 && !lastPinchState0 && !clickCooldown) {
+                            triggerClick = true;
+                            clickCooldown = true;
+                            setTimeout(() => clickCooldown = false, 600);
+                        }
+                        lastPinchState0 = pinch0;
+
+                        updateCursor(cursor0, p0, pinch0, triggerClick); 
+                    }
+                });
+
+                if (isPeace && !draggedPiece && zoomedCard === null) {
+                    peaceFrames++;
+                    if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; }
+                } else { peaceFrames = 0; }
+
+                if (triggerClick && !draggedPiece) {
+                    const el = document.elementFromPoint(p0.x, p0.y);
+                    const suspectCard = el ? el.closest('.suspect-card') : null;
+                    if (suspectCard) {
+                        checkDetectiveVote(suspectCard);
+                    }
                 }
-            });
 
-            if (isPeace && !draggedPiece && zoomedCard === null) {
-                peaceFrames++;
-                if (peaceFrames > 15) { triggerImplosion(); canvasCtx.restore(); return; }
-            } else { peaceFrames = 0; }
-
-            // ТАП (КЛИК) В ВОЗДУХЕ ДЛЯ ВЫБОРА В ИГРЕ
-            if (triggerClick && !draggedPiece) {
-                const el = document.elementFromPoint(p0.x, p0.y);
-                const suspectCard = el ? el.closest('.suspect-card') : null;
-                if (suspectCard) {
-                    checkDetectiveVote(suspectCard);
+                // СКРОЛЛ ТОЛЬКО КУЛАКОМ
+                if (activeFistY !== null && !draggedPiece && !zoomedCard) {
+                    if (lastDragY !== null) {
+                        const deltaY = activeFistY - lastDragY;
+                        targetScrollY += deltaY * 3.5; 
+                        scrollVelocity = deltaY * 0.5;
+                    }
+                    lastDragY = activeFistY;
+                } else {
+                    lastDragY = null;
                 }
-            }
 
-            // СКРОЛЛ КУЛАКОМ (страница не двигается от случайных жестов!)
-            if (activeFistY !== null && !draggedPiece && !zoomedCard) {
-                if (lastDragY !== null) {
-                    const deltaY = activeFistY - lastDragY;
-                    targetScrollY += deltaY * 3.5;
-                    scrollVelocity = deltaY * 0.5;
+                const activePinch = pinch0 ? p0 : null;
+                
+                if (activePinch) {
+                    if (zoomedCard !== null) {
+                        const deltaY = zoomStartY - activePinch.y; 
+                        let targetScale = initialCardScale + (deltaY * 0.005); 
+                        targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
+                        zoomedCard.style.transform = `scale(${targetScale})`;
+                        zoomedCard.dataset.scale = targetScale;
+                    } 
+                    else if (draggedPiece !== null) {
+                        const containerRect = puzzleArea.getBoundingClientRect();
+                        let newX = activePinch.x - dragOffsetX - containerRect.left;
+                        let newY = activePinch.y - dragOffsetY - containerRect.top;
+                        draggedPiece.style.left = `${newX}px`;
+                        draggedPiece.style.top = `${newY}px`;
+                        
+                        const dx = activePinch.x - dragStartX, dy = activePinch.y - dragStartY;
+                        draggedPiece.style.transform = `translateZ(30px) rotateX(${Math.max(-10, Math.min(10, -dy * 0.05))}deg) rotateY(${Math.max(-10, Math.min(10, dx * 0.05))}deg)`;
+                    } 
+                    else {
+                        const el = document.elementFromPoint(activePinch.x, activePinch.y);
+                        
+                        if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
+                            startTimer(); 
+                            draggedPiece = el;
+                            const rect = el.getBoundingClientRect();
+                            dragOffsetX = activePinch.x - rect.left;
+                            dragOffsetY = activePinch.y - rect.top;
+                            dragStartX = activePinch.x; dragStartY = activePinch.y;
+                            el.classList.add('dragging');
+                        } 
+                        else if (el && el.closest('.term-card')) {
+                            zoomedCard = el.closest('.term-card');
+                            zoomedCard.classList.add('hovered');
+                            zoomStartY = activePinch.y;
+                            initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
+                        } 
+                    }
+                } else {
+                    if (draggedPiece) {
+                        draggedPiece.classList.remove('dragging');
+                        draggedPiece.style.transform = '';
+                        checkSnap(draggedPiece);
+                        draggedPiece = null;
+                    }
+                    if (zoomedCard) {
+                        zoomedCard.classList.remove('hovered');
+                        zoomedCard = null;
+                    }
                 }
-                lastDragY = activeFistY;
+
             } else {
                 lastDragY = null;
+                peaceFrames = 0;
+                targetRotX = 0; targetRotY = 0; 
             }
 
-            // ЩИПОК ДЛЯ ОБЪЕКТОВ
-            const activePinch = pinch0 ? p0 : null;
+            canvasCtx.restore();
+        }
+
+        function updateCursor(cursorEl, p, isPinched, isClicked) {
+            cursorEl.style.opacity = 1; cursorEl.style.left = `${p.x}px`; cursorEl.style.top = `${p.y}px`;
+            cursorEl.classList.toggle('pinched', isPinched);
+            cursorEl.classList.toggle('clicked', isClicked);
             
-            if (activePinch) {
-                if (zoomedCard !== null) {
-                    const deltaY = zoomStartY - activePinch.y;
-                    let targetScale = initialCardScale + (deltaY * 0.005);
-                    targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
-                    zoomedCard.style.setProperty('--cscale', targetScale);
-                    zoomedCard.dataset.scale = targetScale;
-                } else if (draggedPiece !== null) {
-                    const containerRect = puzzleArea.getBoundingClientRect();
-                    const newX = activePinch.x - dragOffsetX - containerRect.left;
-                    const newY = activePinch.y - dragOffsetY - containerRect.top;
-                    draggedPiece.style.left = `${newX}px`;
-                    draggedPiece.style.top = `${newY}px`;
-                    const dx = activePinch.x - dragStartX, dy = activePinch.y - dragStartY;
-                    draggedPiece.style.transform = `translateZ(30px) rotateX(${Math.max(-10, Math.min(10, -dy * 0.05))}deg) rotateY(${Math.max(-10, Math.min(10, dx * 0.05))}deg)`;
-                } else {
-                    const el = document.elementFromPoint(activePinch.x, activePinch.y);
-                    if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                        startTimer();
-                        draggedPiece = el;
-                        const rect = el.getBoundingClientRect();
-                        dragOffsetX = activePinch.x - rect.left; dragOffsetY = activePinch.y - rect.top;
-                        dragStartX = activePinch.x; dragStartY = activePinch.y;
-                        el.classList.add('dragging');
-                    } else if (el && el.closest('.term-card')) {
-                        zoomedCard = el.closest('.term-card');
-                        zoomedCard.classList.add('hovered');
-                        zoomStartY = activePinch.y;
-                        initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
-                    }
-                }
+            const el = document.elementFromPoint(p.x, p.y);
+            if (el && el.closest('.suspect-card')) {
+                cursorEl.style.borderColor = '#fde68a';
+                cursorEl.style.boxShadow = '0 0 15px #fde68a';
             } else {
-                endInteraction();
+                cursorEl.style.borderColor = 'var(--accent)';
+                cursorEl.style.boxShadow = '0 0 15px var(--accent)';
             }
-        } else {
-            endInteraction();
-            peaceFrames = 0;
-            targetRotX = 0; targetRotY = 0;
         }
-        canvasCtx.restore();
-    }
 
-    function updateCursor(cursorEl, p, isPinched, isClicked) {
-        cursorEl.style.opacity = 1; cursorEl.style.left = `${p.x}px`; cursorEl.style.top = `${p.y}px`;
-        cursorEl.classList.toggle('pinched', isPinched);
-        cursorEl.classList.toggle('clicked', isClicked);
-        const el = document.elementFromPoint(p.x, p.y);
-        if (el && el.closest('.suspect-card')) {
-            cursorEl.style.borderColor = '#fde68a';
-            cursorEl.style.boxShadow = '0 0 15px #fde68a';
-        } else {
-            cursorEl.style.borderColor = 'var(--accent)';
-            cursorEl.style.boxShadow = '0 0 15px var(--accent)';
+        function checkSnap(piece) {
+            const currentX = parseInt(piece.style.left);
+            const currentY = parseInt(piece.style.top);
+            const targetX = parseInt(piece.dataset.correctX);
+            const targetY = parseInt(piece.dataset.correctY);
+
+            if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
+                piece.style.left = `${targetX}px`;
+                piece.style.top = `${targetY}px`;
+                piece.classList.add('locked');
+                lockedCount++;
+
+                if (lockedCount === cols * rows) {
+                    document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
+                    document.querySelector('.header h1').style.color = "#10b981";
+                    puzzleArea.classList.add('completed');
+                    stopTimerAndShowModal();
+                }
+            }
         }
-    }
 
-    // ==========================================
-    // ЛОГИКА МИНИ-ИГРЫ "ИИ-ДЕТЕКТИВ"
-    // ==========================================
-    function checkDetectiveVote(card) {
-        const isAI = card.dataset.isAi === "true";
-        const suspectName = card.dataset.suspect;
+        function checkDetectiveVote(card) {
+            const isAI = card.dataset.isAi === "true";
+            const suspectName = card.dataset.suspect;
 
-        document.querySelectorAll('.suspect-card').forEach(c => {
-            c.style.opacity = "0.3";
-            c.style.pointerEvents = "none";
+            document.querySelectorAll('.suspect-card').forEach(c => {
+                c.style.opacity = "0.3";
+                c.style.pointerEvents = "none";
+            });
+            card.style.opacity = "1";
+
+            if (isAI) {
+                card.style.borderColor = "#10b981"; 
+                card.style.boxShadow = "0 0 40px rgba(16, 185, 129, 0.6)";
+                showToast(`✅ ВЕРНО! Подозреваемый ${suspectName} — это нейросеть!`, true);
+                
+                setTimeout(() => {
+                    document.querySelector('#detectiveSection h2').innerHTML = "✨ УГРОЗА НЕЙТРАЛИЗОВАНА ✨";
+                    document.querySelector('#detectiveSection h2').style.color = "#10b981";
+                }, 1500);
+
+            } else {
+                card.style.borderColor = "#CA0F3E"; 
+                card.style.boxShadow = "0 0 40px rgba(202, 15, 62, 0.6)";
+                showToast(`❌ ОШИБКА! Подозреваемый ${suspectName} — живой человек. ИИ сбежал!`, false);
+                
+                setTimeout(() => {
+                    document.querySelector('#detectiveSection h2').innerHTML = "⚠️ СИСТЕМА ВЗЛОМАНА ⚠️";
+                    document.querySelector('#detectiveSection h2').style.color = "#CA0F3E";
+                    document.body.style.filter = "invert(1) hue-rotate(180deg)";
+                    setTimeout(() => document.body.style.filter = "none", 500);
+                }, 1500);
+            }
+        }
+
+        let isImploding = false;
+        function triggerImplosion() {
+            if (isImploding) return;
+            isImploding = true;
+            
+            showToast("СИНХРОНИЗАЦИЯ... ВОЗВРАТ", true);
+            document.body.classList.add('implode');
+            setTimeout(() => { window.location.href = 'index.html'; }, 1400);
+        }
+
+        function showToast(text, isSuccess = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            if (isSuccess) toast.classList.add('success');
+            else toast.classList.remove('success');
+            
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        window.addEventListener('resize', () => {
+            camera3D.aspect = window.innerWidth / window.innerHeight;
+            camera3D.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
-        card.style.opacity = "1";
-
-        if (isAI) {
-            card.style.borderColor = "#10b981"; 
-            card.style.boxShadow = "0 0 40px rgba(16, 185, 129, 0.6)";
-            showToast(`✅ ВЕРНО! Подозреваемый ${suspectName} — это нейросеть!`, true);
-            setTimeout(() => {
-                document.querySelector('#detectiveSection h2').innerHTML = "✨ УГРОЗА НЕЙТРАЛИЗОВАНА ✨";
-                document.querySelector('#detectiveSection h2').style.color = "#10b981";
-            }, 1500);
-        } else {
-            card.style.borderColor = "#CA0F3E"; 
-            card.style.boxShadow = "0 0 40px rgba(202, 15, 62, 0.6)";
-            showToast(`❌ ОШИБКА! Подозреваемый ${suspectName} — живой человек. ИИ сбежал!`, false);
-            setTimeout(() => {
-                document.querySelector('#detectiveSection h2').innerHTML = "⚠️ СИСТЕМА ВЗЛОМАНА ⚠️";
-                document.querySelector('#detectiveSection h2').style.color = "#CA0F3E";
-                document.body.style.filter = "invert(1) hue-rotate(180deg)";
-                setTimeout(() => document.body.style.filter = "none", 500);
-            }, 1500);
-        }
-    }
-
-    let isImploding = false;
-    function triggerImplosion() {
-        if (isImploding) return;
-        isImploding = true;
-        showToast('СИНХРОНИЗАЦИЯ... ВОЗВРАТ', true);
-        stopGesturePipeline();
-        document.body.classList.add('implode');
-        setTimeout(() => { window.location.href = 'index.html'; }, prefersReducedMotion ? 650 : 1400);
-    }
-
-    function showToast(text, isSuccess = false) {
-        const toast = document.getElementById('toast');
-        toast.innerText = text;
-        toast.classList.toggle('success', !!isSuccess);
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
-    }
     </script>
 </body>
 </html>
