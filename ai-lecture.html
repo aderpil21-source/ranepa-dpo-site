@@ -6,7 +6,7 @@
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
-    <!-- MediaPipe -->
+    <!-- Официальные стабильные скрипты MediaPipe -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
@@ -72,7 +72,7 @@
             padding: 14px 26px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', sans-serif;
         }
 
-        /* Сова-компаньон */
+        /* Сова в шляпе и бордовом шарфе */
         .companion-owl {
             position: fixed; bottom: 30px; right: 30px; width: 95px; height: 95px; z-index: 2500;
             pointer-events: none; animation: owlFloat 4s ease-in-out infinite;
@@ -153,7 +153,6 @@
         body.touch-mode #scroll-container { position: static; width: 100%; transform: none !important; }
         body.touch-mode { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
-        /* Экраны */
         .screen-puzzle { min-height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 90px 12px 40px; }
 
         .header { position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: calc(20px + var(--safe-t)) 20px 10px; z-index: 10; pointer-events: none; }
@@ -229,7 +228,7 @@
         /* ИНТЕРАКТИВНАЯ АРЕНА КНБ */
         .rps-arena {
             width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(20px);
-            border: 2px solid rgba(56, 189, 248, 0.4); border-radius: 24px; padding: 30px; margin-top: 30px;
+            border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 24px; padding: 30px; margin-top: 30px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8); text-align: center; position: relative;
         }
         .rps-zone-indicator {
@@ -278,7 +277,7 @@
 </head>
 <body>
 
-    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Все утечки устранены! Покажи жест прямо в зону рентгена!</div>
+    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Я наставник ИИ! Скролль кулаком, меняй масштаб двумя руками и играй!</div>
     <div class="companion-owl">
         <svg viewBox="0 0 120 120" width="100%" height="100%">
             <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
@@ -304,8 +303,8 @@
 
     <div id="loader">
         <div class="spinner" id="loaderSpinner"></div>
-        <h2 id="loaderTitle" style="margin-bottom: 6px;">Запуск AR-ядра...</h2>
-        <p style="color: #94A3B8;" id="loaderSubtitle">Предоставьте доступ к камере.</p>
+        <h2 id="loaderTitle" style="margin-bottom: 6px;">Инициализация AR-ядра...</h2>
+        <p style="color: #94A3B8;">Ожидаем загрузки камеры.</p>
         <p id="loaderError"></p>
         <button id="loaderTouchFallback" class="fallback-btn">👆 Перейти на мышь</button>
     </div>
@@ -320,10 +319,10 @@
     </div>
 
     <div class="hints-panel" id="hintsPanel">
-        <h3>Управление</h3>
+        <h3>Управление (2 руки)</h3>
         <div class="hint-row"><span class="hint-icon">🤏</span><span><b>Щипок</b> — пазлы и карточки (двумя руками - масштаб).</span></div>
         <div class="hint-row"><span class="hint-icon">✊</span><span><b>Кулак</b> — прокрутка страницы.</span></div>
-        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Резкий тап</b> — клик по карточке в ИИ-Детективе.</span></div>
+        <div class="hint-row"><span class="hint-icon">👆</span><span><b>Резкий тап</b> — выбор в ИИ-Детективе.</span></div>
         <div class="hint-row"><span class="hint-icon">✌️</span><span><b>Пис вверху экрана</b> — выход.</span></div>
         <label class="hints-dont-show"><input type="checkbox" id="hintsDontShow"> Больше не показывать</label>
     </div>
@@ -351,11 +350,11 @@
             </div>
         </div>
 
-        <!-- КАРТОЧКИ (С ПОДДЕРЖКОЙ МАСШТАБА ДВУМЯ РУКАМИ) -->
+        <!-- КАРТОЧКИ -->
         <div class="screen-terms" id="termsSection">
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--accent); margin-bottom: 8px;">База данных ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1rem;">Используйте щипок двумя руками для масштабирования!</p>
+                <p style="color: #94A3B8; font-size: 1rem;">Щипните карточку двумя руками, чтобы изменить масштаб!</p>
             </div>
         </div>
 
@@ -384,7 +383,7 @@
         <div class="screen-terms" id="gameSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent; display: flex; flex-direction: column; align-items: center;">
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 3: Дуэль с ИИ-Рентгеном</h2>
-                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Покажите жест (Камень ✊, Ножницы ✌️, Бумага ✋) <b>строго в рамке сканирования</b>. Вне рамки работает обычный скролл кулаком!</p>
+                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Покажите жест (Камень ✊, Ножницы ✌️, Бумага ✋) <b>строго в рамке сканирования</b>.</p>
             </div>
 
             <div class="rps-arena" id="rpsArenaBox">
@@ -429,7 +428,7 @@
     let interactionMode = (isTouchCapable && !hasFinePointer) || !hasMediaDevices ? 'touch' : 'gesture';
 
     function setModeBadge() {
-        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты (2 руки)' : 'Режим: мышь';
+        document.getElementById('modeBadge').textContent = interactionMode === 'gesture' ? 'Режим: жесты' : 'Режим: мышь';
         document.getElementById('modeToggleBtn').textContent = interactionMode === 'gesture' ? '🖐️' : '👆';
         document.body.classList.toggle('touch-mode', interactionMode === 'touch');
     }
@@ -442,22 +441,10 @@
         owlBubble.classList.add('show');
         setTimeout(() => owlBubble.classList.remove('show'), duration);
     }
-    setTimeout(() => sayOwl("Ху-ху! Защита от перегрузок включена. Управлению ничто не помешает!"), 1500);
+    setTimeout(() => sayOwl("Ху-ху! Защита сети и памяти включена!"), 1500);
 
     const hintsPanel = document.getElementById('hintsPanel');
-    const hintsToggleBtn = document.getElementById('hintsToggleBtn');
-    const hintsDontShow = document.getElementById('hintsDontShow');
-    hintsToggleBtn.addEventListener('click', () => hintsPanel.classList.toggle('open'));
-    hintsDontShow.addEventListener('change', () => {
-        try { localStorage.setItem('ar_hints_dismissed', hintsDontShow.checked ? '1' : ''); } catch (e) {}
-    });
-    (function initialHintsState() {
-        let dismissed = false;
-        try { dismissed = localStorage.getItem('ar_hints_dismissed') === '1'; } catch (e) {}
-        hintsDontShow.checked = dismissed;
-        if (!dismissed) hintsPanel.classList.add('open');
-    })();
-
+    document.getElementById('hintsToggleBtn').addEventListener('click', () => hintsPanel.classList.toggle('open'));
     document.getElementById('exitBtn').addEventListener('click', () => triggerImplosion());
 
     let timerInterval = null, timeElapsed = 0, timerStarted = false;
@@ -657,8 +644,8 @@
             draggedPiece.style.transform = `translateZ(30px) rotateX(${Math.max(-10, Math.min(10, -dy * 0.05))}deg) rotateY(${Math.max(-10, Math.min(10, dx * 0.05))}deg)`;
         } else if (lastDragY !== null) {
             const deltaY = y - lastDragY;
-            targetScrollY += deltaY * 2.5;
-            scrollVelocity = deltaY * 0.5;
+            targetScrollY += deltaY * 3.0;
+            scrollVelocity = deltaY * 0.4;
             lastDragY = y;
         }
     }
@@ -670,7 +657,6 @@
             checkSnap(draggedPiece);
             draggedPiece = null;
         }
-        if (zoomedCard) { zoomedCard.classList.remove('hovered'); zoomedCard = null; }
         lastDragY = null;
     }
 
@@ -716,16 +702,10 @@
                 startTimer(); draggedPiece = el;
                 const rect = el.getBoundingClientRect();
                 dragOffsetX = e.clientX - rect.left; dragOffsetY = e.clientY - rect.top;
-                dragStartX = e.clientX; dragStartY = e.clientY;
                 el.classList.add('dragging');
             });
-            el.addEventListener('pointermove', (e) => {
-                if (draggedPiece !== el) return;
-                moveInteractionAt(e.clientX, e.clientY);
-            });
-            const release = (e) => { if (draggedPiece === el) endInteraction(); };
-            el.addEventListener('pointerup', release);
-            el.addEventListener('pointercancel', release);
+            el.addEventListener('pointermove', (e) => { if (draggedPiece === el) moveInteractionAt(e.clientX, e.clientY); });
+            el.addEventListener('pointerup', () => endInteraction());
         });
 
         document.querySelectorAll('.suspect-card').forEach(card => {
@@ -748,13 +728,9 @@
             const scrollProgress = interactionMode === 'gesture'
                 ? Math.min(1, Math.abs(scrollY) / Math.max(1, -maxScroll()))
                 : Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
-            coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
-            coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
-            coreMesh.rotation.x += 0.0012;
-            coreMesh.rotation.y += 0.002;
+            coreMesh.rotation.x += 0.001; coreMesh.rotation.y += 0.002;
             glowMesh.rotation.copy(coreMesh.rotation);
             ringMesh.rotation.z += 0.0015;
-            particles.rotation.y += 0.0006;
             camera3D.position.z = 30 - scrollProgress * 10;
             ringMesh.rotation.x = Math.PI / 2.4 + scrollProgress * 0.4;
             renderer.render(scene, camera3D);
@@ -765,11 +741,11 @@
 
     function lerp(a, b, t) { return (1 - t) * a + t * b; }
 
-    let cameraFeed = null, hands = null, mediaStream = null;
+    let cameraFeed = null, hands = null;
 
     document.getElementById('modeToggleBtn').addEventListener('click', () => {
         if (interactionMode === 'gesture') {
-            stopGesturePipeline();
+            if (cameraFeed) cameraFeed.stop();
             interactionMode = 'touch';
             setModeBadge();
             enableTouchMode();
@@ -782,13 +758,6 @@
         }
     });
 
-    function stopGesturePipeline() {
-        try { if (cameraFeed && cameraFeed.stop) cameraFeed.stop(); } catch (e) {}
-        try { if (mediaStream) mediaStream.getTracks().forEach(t => t.stop()); } catch (e) {}
-        document.getElementById('cursor0').style.opacity = 0;
-        document.getElementById('cursor1').style.opacity = 0;
-    }
-
     const videoElement = document.getElementById('webcam');
     const canvasElement = document.getElementById('output_canvas');
     const canvasCtx = canvasElement.getContext('2d');
@@ -799,18 +768,12 @@
     let smoothP0 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let smoothP1 = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let peaceFrames = 0;
-    let isProcessing = false; // БЛОКИРАТОР ПОТОКОВ (РЕШЕНИЕ ОШИБКИ ERR_INSUFFICIENT_RESOURCES)
 
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
-        document.getElementById('loaderTitle').textContent = 'Запуск камеры...';
         document.getElementById('loaderError').style.display = 'none';
 
-        if (hands) {
-            try { hands.close(); } catch (e) {}
-        }
-
-        // Подключаемся к стабильному публичному CDN без жесткой привязки к поврежденным сборкам
+        // ВОЗВРАЩАЕМ СТАНДАРТНУЮ РЕАЛИЗАЦИЮ КАМЕРЫ (СИНХРОННУЮ), ЧТОБЫ УБРАТЬ УТЕЧКИ
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
         hands.setOptions({ 
             maxNumHands: 2, 
@@ -820,39 +783,21 @@
         });
         hands.onResults(onResults);
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 } })
-        .then((stream) => {
-            mediaStream = stream;
-            videoElement.srcObject = mediaStream;
-            videoElement.play().then(() => {
-                cameraFeed = { stop: () => { if (cameraFeed._raf) cancelAnimationFrame(cameraFeed._raf); } };
-                
-                // БЕЗОПАСНЫЙ ЦИКЛ ОБРАБОТКИ С БЛОКИРОВКОЙ УТЕЧКИ
-                async function loop() {
-                    if (interactionMode !== 'gesture' || document.hidden) {
-                        cameraFeed._raf = requestAnimationFrame(loop);
-                        return;
-                    }
-                    if (videoElement.readyState >= 2 && !isProcessing) {
-                        isProcessing = true;
-                        try {
-                            await hands.send({ image: videoElement });
-                        } catch (err) {
-                            console.warn("MediaPipe Frame Drop:", err);
-                        } finally {
-                            isProcessing = false;
-                        }
-                    }
-                    cameraFeed._raf = requestAnimationFrame(loop);
-                }
-                loop();
+        cameraFeed = new Camera(videoElement, {
+            onFrame: async () => {
+                // Стандартный Camera utils сам дожидается Wasm, никаких утечек!
+                await hands.send({image: videoElement});
+            },
+            width: 640,
+            height: 480
+        });
 
-                document.getElementById('loader').style.display = 'none';
-            });
+        cameraFeed.start().then(() => {
+            document.getElementById('loader').style.display = 'none';
         }).catch(err => {
             document.getElementById('loaderSpinner').style.display = 'none';
             document.getElementById('loaderError').style.display = 'block';
-            document.getElementById('loaderError').textContent = 'Камера недоступна. Используйте мышь.';
+            document.getElementById('loaderError').textContent = 'Камера недоступна.';
             document.getElementById('loaderTouchFallback').style.display = 'inline-block';
             document.getElementById('loaderTouchFallback').onclick = () => {
                 document.getElementById('loader').style.display = 'none';
@@ -887,13 +832,14 @@
                 const distPinch = Math.hypot(lm[8].x - lm[4].x, lm[8].y - lm[4].y);
                 const isPinched = distPinch < 0.06;
 
-                // НАДЕЖНЫЙ АЛГОРИТМ КУЛАКА (измерение от запястья до кончиков пальцев)
-                const dIndex = Math.hypot(lm[8].x - lm[0].x, lm[8].y - lm[0].y);
-                const dMiddle = Math.hypot(lm[12].x - lm[0].x, lm[12].y - lm[0].y);
-                const dRing = Math.hypot(lm[16].x - lm[0].x, lm[16].y - lm[0].y);
-                const dPinky = Math.hypot(lm[20].x - lm[0].x, lm[20].y - lm[0].y);
+                // НАДЕЖНЫЙ АЛГОРИТМ КУЛАКА (дистанция пальцев до запястья)
                 const handSize = Math.hypot(lm[9].x - lm[0].x, lm[9].y - lm[0].y);
-                const isFist = (dIndex/handSize < 1.2 && dMiddle/handSize < 1.2 && dRing/handSize < 1.2 && dPinky/handSize < 1.2) && !isPinched;
+                const dIndex = Math.hypot(lm[8].x - lm[0].x, lm[8].y - lm[0].y) / handSize;
+                const dMiddle = Math.hypot(lm[12].x - lm[0].x, lm[12].y - lm[0].y) / handSize;
+                const dRing = Math.hypot(lm[16].x - lm[0].x, lm[16].y - lm[0].y) / handSize;
+                const dPinky = Math.hypot(lm[20].x - lm[0].x, lm[20].y - lm[0].y) / handSize;
+                
+                const isFist = (dIndex < 1.3 && dMiddle < 1.3 && dRing < 1.3 && dPinky < 1.3) && !isPinched;
 
                 if (idx === 0) {
                     smoothP0.x = lerp(smoothP0.x, px, 0.5); smoothP0.y = lerp(smoothP0.y, py, 0.5);
@@ -972,10 +918,8 @@
                         const r = el.getBoundingClientRect();
                         dragOffsetX = p0.x - r.left; dragOffsetY = p0.y - r.top;
                         el.classList.add('dragging');
-                    } else if (el && el.closest('.suspect-card') && !rpsCooldown) {
-                        rpsCooldown = true;
+                    } else if (el && el.closest('.suspect-card')) {
                         checkDetectiveVote(el.closest('.suspect-card'));
-                        setTimeout(() => rpsCooldown = false, 1500);
                     }
                 }
                 if (draggedPiece) {
@@ -986,9 +930,8 @@
                 lastDragY = null;
             }
             else if (activeFistY !== null && !draggedPiece && !zoomedCard) {
-                // СКРОЛЛ КУЛАКОМ
                 if (lastDragY !== null) {
-                    targetScrollY += (activeFistY - lastDragY) * 3.0;
+                    targetScrollY += (activeFistY - lastDragY) * 3.5;
                     scrollVelocity = (activeFistY - lastDragY) * 0.4;
                 }
                 lastDragY = activeFistY;
@@ -1056,7 +999,7 @@
             let resultText = "";
             if (playerChoiceStr === aiChoiceStr) {
                 resultText = "Ничья! Рентген зафиксировал зеркальный выбор.";
-                sayOwl("Ничья! Мы думаем на одной частоте.");
+                sayOwl("Ничья! Отражение повторило вас.");
             } else if (
                 (playerChoiceStr === 'камень' && aiChoiceStr === 'ножницы') ||
                 (playerChoiceStr === 'ножницы' && aiChoiceStr === 'бумага') ||
