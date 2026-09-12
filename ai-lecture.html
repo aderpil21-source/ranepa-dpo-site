@@ -185,7 +185,7 @@
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 50px rgba(56, 189, 248, 0.6); z-index: 10; }
 
-        /* ИНТЕРАКТИВНАЯ АРЕНА КНБ С ЧЕТКОЙ ЗОНОЙ ДЛЯ РУК */
+        /* ИНТЕРАКТИВНАЯ АРЕНА КНБ С ВИЗУАЛЬНЫМ РЕНТГЕН-ОТРАЖЕНИЕМ */
         .rps-arena {
             width: 100%; max-width: 750px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px);
             border: 2px solid var(--accent); border-radius: 24px; padding: 30px; margin-top: 30px;
@@ -202,8 +202,13 @@
         .rps-box span.icon { font-size: 3.5rem; }
         .rps-box span.label { font-size: 0.75rem; position: absolute; bottom: 6px; color: #94a3b8; }
         
-        .xray-scanning::after {
-            content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(56,189,248,0.4), transparent);
+        /* Голографический эффект рентген-сканирования */
+        .xray-reflection {
+            position: relative; border-color: var(--ranepa-red) !important;
+            box-shadow: 0 0 30px rgba(202, 15, 62, 0.4);
+        }
+        .xray-reflection::after {
+            content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent, rgba(202,15,62,0.4), transparent);
             animation: xrayScan 1s linear infinite; pointer-events: none;
         }
         @keyframes xrayScan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
@@ -231,7 +236,7 @@
 <body>
 
     <!-- Сова в шляпе и бордовом шарфе -->
-    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Управляй обеими руками! На арене поднеси руку в зону сканирования для дуэли!</div>
+    <div class="owl-bubble" id="owlBodyBubble">Ху-ху! Обе руки под контролем. В зоне дуэли твое отражение-рентген скопирует комбинацию!</div>
     <div class="companion-owl">
         <svg viewBox="0 0 120 120" width="100%" height="100%">
             <path d="M 35 35 Q 25 10 40 25 Z" fill="#654321"/>
@@ -308,11 +313,11 @@
             </div>
         </div>
 
-        <!-- УРОВЕНЬ 2: ИГРА КАМЕНЬ, НОЖНИЦЫ, БУМАГА С ЗОНОЙ -->
+        <!-- УРОВЕНЬ 2: ИГРА КАМЕНЬ, НОЖНИЦЫ, БУМАГА С РЕНТГЕН-ОТРАЖЕНИЕМ -->
         <div class="screen-terms" id="gameSection" style="padding-top: 20px; padding-bottom: 150px; background: transparent; display: flex; flex-direction: column; align-items: center;">
             <div style="width: 100%; text-align: center; margin-bottom: 10px;">
                 <h2 style="font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--ranepa-red); margin-bottom: 6px;">Уровень 2: Дуэль с ИИ-Рентгеном</h2>
-                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Сыграй против 3D-рентгена ИИ. Сделай жест прямо в выделенной зоне арены!</p>
+                <p style="color: #94A3B8; font-size: 0.95rem; max-width: 800px; margin: 0 auto;">Покажи жест (Камень, Ножницы, Бумага) в зоне сканирования арены. Рентген-отражение ИИ мгновенно считает твой ход!</p>
             </div>
 
             <div class="rps-arena" id="rpsArenaBox">
@@ -324,9 +329,9 @@
                 <div class="rps-display">
                     <div class="rps-box"><span class="icon" id="playerChoice">❔</span><span class="label">Твой жест</span></div>
                     <div style="font-size: 1.5rem; color: var(--accent);">VS</div>
-                    <div class="rps-box" id="aiBox"><span class="icon" id="aiChoice">🔮</span><span class="label">Рентген ИИ</span></div>
+                    <div class="rps-box" id="aiBox"><span class="icon" id="aiChoice">🔮</span><span class="label">Рентген-отражение ИИ</span></div>
                 </div>
-                <p id="rpsStatus" style="font-size: 1rem; color: #fde68a; margin-bottom: 15px; min-height: 24px;">Покажи жест в рамку арены...</p>
+                <p id="rpsStatus" style="font-size: 1rem; color: #fde68a; margin-bottom: 15px; min-height: 24px;">Жду жест в рамке арены...</p>
             </div>
         </div>
     </div>
@@ -369,7 +374,7 @@
         owlBubble.classList.add('show');
         setTimeout(() => owlBubble.classList.remove('show'), duration);
     }
-    setTimeout(() => sayOwl("Ху-ху! Обе руки под контролем! Попробуй собрать пазл двумя руками!"), 1500);
+    setTimeout(() => sayOwl("Ху-ху! Обе руки под контролем! В зоне дуэли включено отражение-рентген."), 1500);
 
     const hintsPanel = document.getElementById('hintsPanel');
     document.getElementById('hintsToggleBtn').addEventListener('click', () => hintsPanel.classList.toggle('open'));
@@ -574,7 +579,6 @@
 
     function startGesturePipeline() {
         document.getElementById('loader').style.display = 'flex';
-        // Возвращаем полноценный трекинг 2 рук одновременно
         hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
         hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
         hands.onResults(onResults);
@@ -592,19 +596,19 @@
         });
     }
 
-    // ДВУХРУЧНЫЙ ДВИЖОК + СКАНЕР ЖЕСТОВ В ЗОНЕ АРЕНЫ
+    // ДВУХРУЧНЫЙ ДВИЖОК + СХОЖДЕНИЕ С РЕНТГЕН-ОТРАЖЕНИЕМ
     let rpsCooldown = false;
     let playerScore = 0;
     let aiScore = 0;
 
     const arrogantTaunts = [
-        "Ваш ход просчитан моим 3D-рентгеном за 3 миллисекунды.",
-        "Элементарно. Кремниевая логика предсказуемо побеждает.",
-        "Статистический анализ ваших побед дал сбой. У вас."
+        "Ваш выбор просчитан моим рентгеном мгновенно.",
+        "Элементарно. Мое отражение всегда на шаг впереди.",
+        "Кремниевая логика снова предсказала ваш ход."
     ];
     const respectfulCompliments = [
-        "Невероятно! Ваша интуиция обошла квантовый рандом.",
-        "Достойный ход. Признаю превосходство."
+        "Невероятно! Ваша интуиция обманула отражение.",
+        "Достойный ход. Отражение признает поражение в раунде."
     ];
 
     function onResults(results) {
@@ -633,11 +637,10 @@
                 const pinch = dist < 0.055;
                 cursor.classList.toggle('pinched', pinch);
 
-                // Кулак для скролла
                 const isFist = lm[12].y > lm[9].y && lm[16].y > lm[13].y;
                 if (isFist) activeFistY = lm[9].y * window.innerHeight;
 
-                // Проверяем попадание руки в зону арены игры КНБ
+                // Проверка зоны сканирования КНБ
                 const arenaBox = document.getElementById('rpsArenaBox');
                 if (arenaBox) {
                     const r = arenaBox.getBoundingClientRect();
@@ -654,7 +657,7 @@
 
                         if (gesture && !rpsCooldown) {
                             rpsCooldown = true;
-                            triggerRPSBattle(gesture);
+                            triggerRPSReflection(gesture);
                             setTimeout(() => rpsCooldown = false, 2500);
                         }
                     }
@@ -692,15 +695,15 @@
         canvasCtx.restore();
     }
 
-    function triggerRPSBattle(playerChoiceStr) {
+    function triggerRPSReflection(playerChoiceStr) {
         startTimer();
         const aiBox = document.getElementById('aiBox');
-        aiBox.classList.add('xray-scanning');
-        document.getElementById('rpsStatus').textContent = "3D-Рентген сканирует жест в зоне...";
-        sayOwl("Сканирую жест в рамке арены...");
+        aiBox.classList.add('xray-reflection');
+        document.getElementById('rpsStatus').textContent = "Рентген-отражение сканирует ваш жест...";
+        sayOwl("Мое отражение считывает твой жест...");
 
         setTimeout(() => {
-            aiBox.classList.remove('xray-scanning');
+            aiBox.classList.remove('xray-reflection');
             
             const winningMove = { 'камень': 'бумага', 'ножницы': 'камень', 'бумага': 'ножницы' };
             const losingMove = { 'камень': 'ножницы', 'ножницы': 'бумага', 'бумага': 'камень' };
@@ -717,8 +720,8 @@
 
             let resultText = "";
             if (playerChoiceStr === aiChoiceStr) {
-                resultText = "Ничья! Рентген зафиксировал зеркальный выбор.";
-                sayOwl("Ничья! Мы думаем на одной частоте.");
+                resultText = "Ничья! Отражение повторило ваш квантовый жест.";
+                sayOwl("Ничья! Отражение зеркально отразило мысль.");
             } else if (
                 (playerChoiceStr === 'камень' && aiChoiceStr === 'ножницы') ||
                 (playerChoiceStr === 'ножницы' && aiChoiceStr === 'бумага') ||
@@ -733,7 +736,7 @@
                 aiScore++;
                 document.getElementById('aiScore').textContent = aiScore;
                 const taunt = arrogantTaunts[Math.floor(Math.random() * arrogantTaunts.length)];
-                resultText = `ИИ победил. ${taunt}`;
+                resultText = `Рентген победил. ${taunt}`;
                 sayOwl(taunt);
             }
 
@@ -743,8 +746,8 @@
                 if (playerScore === 3) {
                     stopTimerAndShowModal();
                 } else {
-                    showToast("ИИ выиграл серию до 3 побед!", false);
-                    sayOwl("Серия за мной! Кремниевый разум непобедим.");
+                    showToast("ИИ-Рентген выиграл серию до 3 побед!", false);
+                    sayOwl("Серия за отражением! Кремниевый разум победил.");
                     playerScore = 0; aiScore = 0;
                     document.getElementById('playerScore').textContent = '0';
                     document.getElementById('aiScore').textContent = '0';
