@@ -1329,9 +1329,11 @@
             else htmlMap[t] = {};
         });
         
-        // ВАЖНО: Сортируем программы по алфавиту изначально
+        // Сортируем программы по алфавиту изначально
         programs.sort((a, b) => String(a.title_ru).trim().localeCompare(String(b.title_ru).trim(), 'ru'));
         globalPrograms = programs;
+
+        let docsHTML = ''; // Переменная для сбора ссылок на PDF
 
         programs.forEach(prog => {
             translationsHTML.ru[`${prog.id}_title`] = prog.title_ru;
@@ -1349,6 +1351,14 @@
                     bulletsHTML += `<li data-i18n="${bulletKey}">✔️ ${b_ru.trim()}</li>`;
                 });
             }
+
+            // --- АВТОМАТИЧЕСКАЯ СБОРКА АРХИВА PDF ---
+            if (prog.pdf_link && prog.pdf_link.trim() !== '') {
+                let docTitle = prog.type ? `${prog.type} «${prog.title_ru}»` : `«${prog.title_ru}»`;
+                if (prog.hours) docTitle += ` (${prog.hours})`;
+                docsHTML += `<div>📄 <a href="${prog.pdf_link}" target="_blank" class="contact-link" style="text-decoration: underline;">${docTitle}</a></div>`;
+            }
+            // ----------------------------------------
 
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
@@ -1381,15 +1391,19 @@
                 </div>
             </div>`;
 
-            // Плоский список для "Все программы"
             htmlMap['tab-all'].push(cardHTML);
 
-            // И добавляем в нужную вкладку по типу с разделами
             if (prog.tab && tabs.includes(prog.tab) && prog.tab !== 'tab-all') {
                 if (!htmlMap[prog.tab][prog.sector]) htmlMap[prog.tab][prog.sector] = [];
                 htmlMap[prog.tab][prog.sector].push(cardHTML);
             }
         });
+
+        // Заполняем модальное окно документов сгенерированными ссылками
+        const docsListEl = document.getElementById('docsList');
+        if (docsListEl) {
+            docsListEl.innerHTML = docsHTML !== '' ? docsHTML : '<div style="color: var(--text-muted);">Документы пока не загружены.</div>';
+        }
 
         const sectorOrder = ['gos', 'biz', 'horeca', 'prof'];
         
