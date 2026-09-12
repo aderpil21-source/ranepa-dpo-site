@@ -6,11 +6,11 @@
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
-    <!-- Стабильные ES-модули MediaPipe через unpkg (исправляет все wasm/CORS ошибки) -->
-    <script src="https://unpkg.com/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <!-- MediaPipe Hands (фиксированная стабильная версия с CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" crossorigin="anonymous"></script>
 
     <!-- Three.js (3D depth scene) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -965,13 +965,13 @@
         document.getElementById('loaderTouchFallback').style.display = 'none';
         document.getElementById('loaderSpinner').style.display = 'block';
 
-        // ИСПОЛЬЗУЕМ STABLE UNPKG CDN С CORPN/CORS-совместимым loader
+        // Используем встроенный конструктор window.Hands с локальным файлом путей через jsdelivr с полной версией
         hands = new Hands({
-            locateFile: (file) => `https://unpkg.com/@mediapipe/hands/${file}`
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/${file}`
         });
         hands.setOptions({ 
             maxNumHands: 2, 
-            modelComplexity: 0, 
+            modelComplexity: 1, 
             minDetectionConfidence: 0.5, 
             minTrackingConfidence: 0.5 
         });
