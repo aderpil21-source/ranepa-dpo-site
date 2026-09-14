@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-    
+
     <!-- Библиотеки Google MediaPipe (AR Жесты) -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
@@ -17,12 +17,15 @@
 
     <style>
         :root {
-            --bg: #05080e;
-            --accent: #38bdf8;
-            --ranepa-red: #CA0F3E;
+            --bg: 
+#05080e;
+            --accent: 
+#38bdf8;
+            --ranepa-red: 
+#CA0F3E;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
-        
+
         body {
             background-color: var(--bg); color: #fff;
             overflow: hidden; 
@@ -63,11 +66,15 @@
             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
         .hud-mic {
-            display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 700; color: #94A3B8;
+            display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: 700; color: 
+#94A3B8;
             background: rgba(0, 0, 0, 0.6); padding: 10px 15px; border-radius: 15px;
         }
-        .mic-dot { width: 12px; height: 12px; border-radius: 50%; background: #ef4444; animation: pulseMic 1.5s infinite; }
-        @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px #ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px #ef4444; } }
+        .mic-dot { width: 12px; height: 12px; border-radius: 50%; background: 
+#ef4444; animation: pulseMic 1.5s infinite; }
+        @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px 
+#ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px 
+#ef4444; } }
 
         /* Камера и Канвас */
         .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
@@ -87,7 +94,7 @@
 
         /* ЭКРАН 1: СТОЛ С ПАЗЛАМИ */
         .screen-puzzle { height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
+
         .header { 
             position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: 30px 20px; z-index: 10;
             background: linear-gradient(to bottom, rgba(5,8,14,0.95), transparent);
@@ -98,7 +105,8 @@
         }
         .header .instr-block {
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px 20px;
-            border-radius: 15px; backdrop-filter: blur(10px); color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; flex: 1;
+            border-radius: 15px; backdrop-filter: blur(10px); color: 
+#cbd5e1; font-size: 0.95rem; line-height: 1.5; flex: 1;
         }
         .header .instr-block b { color: var(--accent); }
 
@@ -147,7 +155,8 @@
         }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); z-index: 10; }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
-        .term-card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
+        .term-card p { font-size: 0.9rem; color: 
+#cbd5e1; line-height: 1.6; }
 
         /* МОДАЛКА УСПЕХА */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
@@ -165,7 +174,8 @@
             transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; letter-spacing: 1px;
         }
         .toast.show { bottom: 40px; }
-        .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
+        .toast.success { background: 
+#10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
 
     </style>
 </head>
@@ -174,7 +184,8 @@
     <div id="loader">
         <div class="spinner"></div>
         <h2 style="margin-bottom: 10px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;">Предоставьте доступ к камере. Включен 3D-движок и Распознавание речи.</p>
+        <p style="color: 
+#94A3B8;">Предоставьте доступ к камере. Включен 3D-движок и Распознавание речи.</p>
     </div>
 
     <!-- HUD: Таймер и Голосовой статус -->
@@ -205,7 +216,7 @@
                     <div class="instr-block"><b>3.</b> Покажите жест ✌️ <b>«Пис»</b> (или скажите "Взрыв") для выхода.</div>
                 </div>
             </div>
-            
+
             <div class="puzzle-area" id="puzzleArea">
                 <div class="puzzle-grid" id="grid"></div>
             </div>
@@ -215,15 +226,18 @@
         <div class="screen-terms" id="termsSection">
             <div style="width: 100%; text-align: center; margin-bottom: 20px;">
                 <h2 style="font-size: 2.2rem; color: var(--accent); margin-bottom: 10px;">База данных ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1.1rem;">Масштабируйте карточки щипком <b>ОДНОЙ РУКИ (тяните вверх/вниз)</b></p>
+                <p style="color: 
+#94A3B8; font-size: 1.1rem;">Масштабируйте карточки щипком <b>ОДНОЙ РУКИ (тяните вверх/вниз)</b></p>
             </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="victoryModal">
         <div class="modal-box">
-            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
-            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Вы успешно восстановили структуру.<br>Затраченное время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
+            <h2 style="color: 
+#10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
+            <p style="color: 
+#cbd5e1; font-size: 1.1rem; line-height: 1.6;">Вы успешно восстановили структуру.<br>Затраченное время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
             <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить изучение</button>
         </div>
     </div>
@@ -245,7 +259,7 @@
                 timeElapsed++;
                 const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
                 const s = String(timeElapsed % 60).padStart(2, '0');
-                document.getElementById('timerDisplay').innerText = `${m}:${s}`;
+                document.getElementById('timerDisplay').innerText = ${m}:${s};
             }, 1000);
         }
 
@@ -253,7 +267,7 @@
             clearInterval(timerInterval);
             const m = String(Math.floor(timeElapsed / 60)).padStart(2, '0');
             const s = String(timeElapsed % 60).padStart(2, '0');
-            document.getElementById('finalTimeResult').innerText = `${m}:${s}`;
+            document.getElementById('finalTimeResult').innerText = ${m}:${s};
             setTimeout(() => { document.getElementById('victoryModal').classList.add('active'); }, 1500); 
         }
 
@@ -315,20 +329,20 @@
 
                 let piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
-                piece.style.width = `${pW}px`;
-                piece.style.height = `${pH}px`;
+                piece.style.width = ${pW}px;
+                piece.style.height = ${pH}px;
 
                 piece.dataset.correctX = c * pW;
                 piece.dataset.correctY = r * pH;
-                piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
-                piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
+                piece.style.backgroundPosition = -${c * pW}px -${r * pH}px;
+                piece.innerHTML = <span class="piece-num">${r * cols + c + 1}</span>;
 
                 const tl = pts[r][c], tr = pts[r][c+1];
                 const br = pts[r+1][c+1], bl = pts[r+1][c];
-                
-                const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
-                const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
-                piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
+
+                const px = (p) => ${((p.x - c*pW) / pW) * 100}%;
+                const py = (p) => ${((p.y - r*pH) / pH) * 100}%;
+                piece.style.clipPath = polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)});
 
                 const isLeft = (c < cols / 2);
                 let startX = isLeft ? -250 : boardW + 50; 
@@ -338,8 +352,8 @@
 
                 if (isLeft) leftCount++; else rightCount++;
 
-                piece.style.left = `${startX}px`;
-                piece.style.top = `${startY}px`;
+                piece.style.left = ${startX}px;
+                piece.style.top = ${startY}px;
 
                 puzzleArea.appendChild(piece);
                 pieces.push({ el: piece, locked: false });
@@ -359,7 +373,7 @@
         termsData.forEach((term) => {
             let card = document.createElement('div');
             card.className = 'term-card';
-            card.innerHTML = `<h3>${term.t}</h3><p>${term.d}</p>`;
+            card.innerHTML = <h3>${term.t}</h3><p>${term.d}</p>;
             card.dataset.scale = 1;
             termsContainer.appendChild(card);
             termCards.push(card);
@@ -393,7 +407,7 @@
 
         let isPinching0 = false, isPinching1 = false;
         let p0 = {x:0, y:0}, p1 = {x:0, y:0};
-        
+
         let draggedPiece = null;
         let dragOffsetX = 0, dragOffsetY = 0;
 
@@ -421,7 +435,7 @@
             }
             targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY));
             scrollY = lerp(scrollY, targetScrollY, 0.2);
-            scrollContainer.style.transform = `translateY(${scrollY}px)`;
+            scrollContainer.style.transform = translateY(${scrollY}px);
 
             coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
             coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
@@ -439,7 +453,7 @@
             scrollVelocity = 0; 
         });
 
-        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+        const hands = new Hands({locateFile: (file) => https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}});
         hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
         hands.onResults(onResults);
 
@@ -462,10 +476,11 @@
             let pinch0 = false, pinch1 = false;
 
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                
+
                 for (const landmarks of results.multiHandLandmarks) {
                     drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3});
-                    drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
+                    drawLandmarks(canvasCtx, landmarks, {color: '
+#CA0F3E', lineWidth: 1, radius: 2});
                 }
 
                 const h1 = results.multiHandLandmarks[0][0];
@@ -547,21 +562,21 @@
 
                 // МУЛЬТИ-ИНСТРУМЕНТ (Одной рукой)
                 const activePinch = pinch0 ? p0 : (pinch1 ? p1 : null);
-                
+
                 if (activePinch) {
                     if (zoomedCard !== null) {
                         const deltaY = zoomStartY - activePinch.y; 
                         let targetScale = initialCardScale + (deltaY * 0.005); 
                         targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
-                        zoomedCard.style.transform = `scale(${targetScale})`;
+                        zoomedCard.style.transform = scale(${targetScale});
                         zoomedCard.dataset.scale = targetScale;
                     } 
                     else if (draggedPiece !== null) {
                         const containerRect = puzzleArea.getBoundingClientRect();
                         let newX = activePinch.x - dragOffsetX - containerRect.left;
                         let newY = activePinch.y - dragOffsetY - containerRect.top;
-                        draggedPiece.style.left = `${newX}px`;
-                        draggedPiece.style.top = `${newY}px`;
+                        draggedPiece.style.left = ${newX}px;
+                        draggedPiece.style.top = ${newY}px;
                     } 
                     else if (lastDragY !== null) {
                         const deltaY = activePinch.y - lastDragY;
@@ -571,7 +586,7 @@
                     } 
                     else {
                         const el = document.elementFromPoint(activePinch.x, activePinch.y);
-                        
+
                         if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
                             startTimer(); 
                             draggedPiece = el;
@@ -614,7 +629,7 @@
         }
 
         function updateCursor(cursorEl, p, isPinched) {
-            cursorEl.style.opacity = 1; cursorEl.style.left = `${p.x}px`; cursorEl.style.top = `${p.y}px`;
+            cursorEl.style.opacity = 1; cursorEl.style.left = ${p.x}px; cursorEl.style.top = ${p.y}px;
             if (isPinched) cursorEl.classList.add('pinched'); else cursorEl.classList.remove('pinched');
         }
 
@@ -625,14 +640,15 @@
             const targetY = parseInt(piece.dataset.correctY);
 
             if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
-                piece.style.left = `${targetX}px`;
-                piece.style.top = `${targetY}px`;
+                piece.style.left = ${targetX}px;
+                piece.style.top = ${targetY}px;
                 piece.classList.add('locked');
                 lockedCount++;
 
                 if (lockedCount === cols * rows) {
                     document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
-                    document.querySelector('.header h1').style.color = "#10b981";
+                    document.querySelector('.header h1').style.color = "
+#10b981";
                     puzzleArea.classList.add('completed');
                     stopTimerAndShowModal();
                 }
@@ -643,7 +659,7 @@
         function triggerImplosion() {
             if (isImploding) return;
             isImploding = true;
-            
+
             showToast("СИНХРОНИЗАЦИЯ... ВОЗВРАТ", true);
             document.body.classList.add('implode');
             setTimeout(() => { window.location.href = 'index.html'; }, 1400);
@@ -654,7 +670,7 @@
             toast.innerText = text;
             if (isSuccess) toast.classList.add('success');
             else toast.classList.remove('success');
-            
+
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
