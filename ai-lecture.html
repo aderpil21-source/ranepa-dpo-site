@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-    
+
     <!-- Библиотеки Google MediaPipe (AR Жесты) -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
@@ -22,7 +22,7 @@
             --ranepa-red: #CA0F3E;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
-        
+
         body {
             background-color: var(--bg); color: #fff;
             overflow: hidden; 
@@ -80,28 +80,39 @@
         #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
 
         .screen-puzzle { height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
+
         .header { 
-            position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: 30px 20px; z-index: 10;
+            position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: 20px; z-index: 10;
             background: linear-gradient(to bottom, rgba(5,8,14,0.95), transparent);
         }
-        .header h1 { font-size: 2.2rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 15px; color: #fff; }
+        .header h1 { font-size: 1.8rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 10px; color: #fff; }
+        
+        /* ПАНЕЛЬ НАСТРОЕК УРОВНЕЙ И КАРТИНОК */
+        .settings-panel {
+            display: flex; gap: 15px; justify-content: center; align-items: center; margin-bottom: 10px; z-index: 20; position: relative;
+        }
+        .settings-group { display: flex; gap: 5px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .settings-btn {
+            background: transparent; border: none; color: #94A3B8; padding: 6px 12px; font-weight: 700; font-size: 0.85rem; border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .settings-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 10px rgba(56,189,248,0.4); }
+
         .header .instructions { 
-            display: flex; gap: 30px; justify-content: center; max-width: 1000px; margin: 0 auto;
+            display: flex; gap: 20px; justify-content: center; max-width: 1000px; margin: 0 auto;
         }
         .header .instr-block {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px 20px;
-            border-radius: 15px; backdrop-filter: blur(10px); color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; flex: 1;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px;
+            border-radius: 12px; backdrop-filter: blur(10px); color: #cbd5e1; font-size: 0.85rem; line-height: 1.4; flex: 1;
         }
         .header .instr-block b { color: var(--accent); }
 
         .puzzle-area {
-            position: relative; width: 600px; height: 400px; margin-top: 80px;
+            position: relative; width: 600px; height: 400px; margin-top: 120px;
             border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px;
             background: rgba(0,0,0,0.5); backdrop-filter: blur(15px);
             transition: all 0.5s ease;
         }
-        .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
+        .puzzle-grid { display: grid; width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
         .grid-slot { border: 1px dashed rgba(255,255,255,0.05); }
 
         @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
@@ -114,14 +125,13 @@
         }
 
         .puzzle-piece {
-            position: absolute; width: 200px; height: 200px;
-            background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop');
+            position: absolute;
             background-size: 600px 400px;
             cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
             transition: box-shadow 0.1s, filter 0.1s; 
         }
         .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
-        .piece-num { position: absolute; top: 8px; left: 12px; font-size: 16px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .piece-num { position: absolute; top: 6px; left: 10px; font-size: 12px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 
         .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
         .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; }
@@ -165,7 +175,7 @@
             transition: 0.2s; text-align: left;
         }
         .guide-tab:hover, .guide-tab.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 20px rgba(56,189,248,0.4); }
-        
+
         .guides-content { padding: 50px; overflow-y: auto; position: relative; height: 100vh; }
         .guide-panel { display: none; max-width: 800px; }
         .guide-panel.active { display: block; }
@@ -241,13 +251,12 @@
             <div class="guide-tab" onclick="switchGuide(3)">Чат с ИИ</div>
         </div>
         <div class="guides-content">
-            <!-- ПАНЕЛЬ 1 -->
             <div class="guide-panel active">
                 <h2>Секреты Промпт-инжиниринга</h2>
                 <h3>1. Ролевая модель (Persona)</h3>
                 <p>Задавайте нейросети конкретную роль. Это меняет стиль, словарный запас и глубину ответов.</p>
                 <div class="code-snippet">"Действуй как усталый, но гениальный профессор физики. Объясни мне квантовую запутаность так, будто я 10-летний ребенок."</div>
-                
+
                 <h3>2. Контекст и Ограничения</h3>
                 <p>ИИ не умеет читать мысли. Давайте ему вводные данные и жесткие рамки форматов, иначе он нальет "воды".</p>
                 <div class="code-snippet">"Контекст: Я готовлюсь к собеседованию на Junior Аналитика.<br>Ограничения: Не пиши ответы сразу. Выдавай по одному вопросу и жди моего ответа."</div>
@@ -256,12 +265,11 @@
                 <p>Покажите нейросети 2-3 примера того, что вы хотите получить, прежде чем давать основное задание. Это повышает точность на 80%.</p>
             </div>
 
-            <!-- ПАНЕЛЬ 2 -->
             <div class="guide-panel">
                 <h2>Основы работы с LLM</h2>
                 <h3>Токены и Контекстное окно</h3>
                 <p>Большие языковые моделни обрабатывают текст не словами, а токенами (кусками слов). Контекстное окно — это объем памяти нейросети в рамках одного диалога.</p>
-                
+
                 <h3>Температура (Temperature)</h3>
                 <p>Параметр креативности:</p>
                 <ul>
@@ -270,7 +278,6 @@
                 </ul>
             </div>
 
-            <!-- ПАНЕЛЬ 3 -->
             <div class="guide-panel">
                 <h2>Безлимитный Генератор Изображений</h2>
                 <p>Нажмите кнопку, чтобы сгенерировать случайный промпт через Pollinations API.</p>
@@ -283,7 +290,6 @@
                 </div>
             </div>
 
-            <!-- ПАНЕЛЬ 4 -->
             <div class="guide-panel" style="height: 100%; display: flex; flex-direction: column;">
                 <h2>Нейро-Терминал (Gemma 2)</h2>
                 <p style="margin-bottom: 15px;">Встроенный чат через защищенный бэкенд. Практикуйте промпты прямо здесь!</p>
@@ -322,13 +328,28 @@
         <div class="screen-puzzle">
             <div class="header">
                 <h1>Практика ИИ</h1>
+                
+                <!-- ПАНЕЛЬ ВЫБОРА КАРТИНОК И УРОВНЕЙ -->
+                <div class="settings-panel">
+                    <div class="settings-group" id="imgSelector">
+                        <button class="settings-btn active" onclick="changeImage(0)">Изображение 1</button>
+                        <button class="settings-btn" onclick="changeImage(1)">Изображение 2</button>
+                        <button class="settings-btn" onclick="changeImage(2)">Изображение 3</button>
+                    </div>
+                    <div class="settings-group" id="diffSelector">
+                        <button class="settings-btn active" onclick="changeDifficulty(3, 2, 'easy')">Лёгкий (3×2)</button>
+                        <button class="settings-btn" onclick="changeDifficulty(4, 3, 'medium')">Средний (4×3)</button>
+                        <button class="settings-btn" onclick="changeDifficulty(5, 4, 'hard')">Сложный (5×4)</button>
+                    </div>
+                </div>
+
                 <div class="instructions">
                     <div class="instr-block"><b>1.</b> Берите осколки <b>щипком</b> руки и ставьте на сетку.</div>
-                    <div class="instr-block"><b>2.</b> <b>Зажмите воздух</b> щипком и тяните руку вверх (или крутите мышку) для скролла.</div>
-                    <div class="instr-block"><b>3.</b> Покажите жест ✌️ <b>«Пис»</b> (или скажите "Взрыв") для выхода.</div>
+                    <div class="instr-block"><b>2.</b> <b>Зажмите воздух</b> щипком и тяните руку вверх для скролла.</div>
+                    <div class="instr-block"><b>3.</b> Жест ✌️ <b>«Пис»</b> — для выхода.</div>
                 </div>
             </div>
-            
+
             <div class="puzzle-area" id="puzzleArea">
                 <div class="puzzle-grid" id="grid"></div>
             </div>
@@ -354,7 +375,6 @@
     <div class="toast" id="toast">ПОКАЖИТЕ ЖЕСТ ✌️ (ПИС) ДЛЯ ВЫХОДА</div>
 
     <script>
-        // --- ПЕРЕКЛЮЧАТЕЛЬ ГАЙДОВ ---
         function toggleGuides(show) {
             const modal = document.getElementById('guidesModal');
             if(show) modal.classList.add('active');
@@ -374,7 +394,6 @@
             });
         }
 
-        // --- БЕСКОНЕЧНЫЙ ГЕНЕРАТОР КАРТИНОК ---
         const promptsList = [
             "Cyberpunk city at night, neon lights, flying cars, 8k, highly detailed",
             "A cute cyberpunk cat wearing glowing holographic glasses, neon background",
@@ -389,25 +408,17 @@
         function generateNewImage() {
             const randomPrompt = promptsList[Math.floor(Math.random() * promptsList.length)];
             document.getElementById('currentPromptDisplay').innerText = `Промпт: "${randomPrompt}"`;
-            
             const box = document.getElementById('imageResultBox');
             box.innerHTML = `<span>Генерация...</span>`;
-
             const encoded = encodeURIComponent(randomPrompt);
             const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=800&height=500&nologo=true&seed=${Math.floor(Math.random()*10000)}`;
 
             const img = new Image();
             img.src = imageUrl;
-            img.onload = () => {
-                box.innerHTML = '';
-                box.appendChild(img);
-            };
-            img.onerror = () => {
-                box.innerHTML = `<span style="color: #ef4444;">Не удалось загрузить картинку</span>`;
-            };
+            img.onload = () => { box.innerHTML = ''; box.appendChild(img); };
+            img.onerror = () => { box.innerHTML = `<span style="color: #ef4444;">Не удалось загрузить картинку</span>`; };
         }
 
-        // --- ЗАЩИЩЕННЫЙ ЧАТ ЧЕРЕЗ VERCEL ПРОКСИ ---
         async function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const text = input.value.trim();
@@ -415,13 +426,10 @@
 
             addMessage(text, 'user');
             input.value = '';
-            
             const loadingId = addMessage('Думаю...', 'ai');
 
             try {
-                // Адрес вашего бэкенда на Vercel
                 const VERCEL_PROXY_URL = "https://ranepa-dpo-site.vercel.app/api/chat";
-
                 const response = await fetch(VERCEL_PROXY_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -433,14 +441,10 @@
 
                 if (!response.ok) throw new Error('Ошибка сервера');
                 const data = await response.json();
-                
-                const reply = data.choices && data.choices[0] && data.choices[0].message 
-                    ? data.choices[0].message.content 
-                    : "Получен пустой ответ от модели.";
-
+                const reply = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "Получен пустой ответ от модели.";
                 document.getElementById(loadingId).innerText = reply;
             } catch (e) {
-                document.getElementById(loadingId).innerText = "⚠️ Ошибка связи с сервером Vercel. Убедитесь, что прокси развернут и URL указан верно.";
+                document.getElementById(loadingId).innerText = "⚠️ Ошибка связи с сервером Vercel.";
                 document.getElementById(loadingId).style.color = "#ef4444";
             }
         }
@@ -457,9 +461,6 @@
             return id;
         }
 
-        // ==========================================
-        // ТАЙМЕР
-        // ==========================================
         let timerInterval = null;
         let timeElapsed = 0;
         let timerStarted = false;
@@ -483,9 +484,6 @@
             setTimeout(() => { document.getElementById('victoryModal').classList.add('active'); }, 1500); 
         }
 
-        // ==========================================
-        // WEB SPEECH API
-        // ==========================================
         function initVoice() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (SpeechRecognition) {
@@ -501,76 +499,116 @@
                 };
                 recognition.onend = () => { if(!isImploding) recognition.start(); };
                 try { recognition.start(); } catch(e){}
-            } else {
-                document.querySelector('.hud-mic').innerHTML = "Голос не поддерживается";
             }
         }
 
-        // ==========================================
-        // ГЕНЕРАЦИЯ ПАЗЛОВ
-        // ==========================================
+        // --- УПРАВЛЕНИЕ ПАЗЛАМИ, КАРТИНКАМИ И УРОВНЯМИ ---
         const puzzleArea = document.getElementById('puzzleArea');
         const grid = document.getElementById('grid');
-        const cols = 3, rows = 2;
-        const boardW = 600, boardH = 400; 
-        const pW = boardW / cols; 
-        const pH = boardH / rows; 
+        
+        const imagesList = [
+            'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=800&auto=format&fit=crop'
+        ];
+
+        let currentImageIndex = 0;
+        let cols = 3, rows = 2;
         let lockedCount = 0;
-
-        const pts = [];
-        for(let r = 0; r <= rows; r++) {
-            let rowPts = [];
-            for(let c = 0; c <= cols; c++) {
-                let x = c * pW; let y = r * pH;
-                if (c > 0 && c < cols) x += (Math.random() - 0.5) * 60;
-                if (r > 0 && r < rows) y += (Math.random() - 0.5) * 60;
-                rowPts.push({x, y});
-            }
-            pts.push(rowPts);
-        }
-
-        let leftCount = 0;
-        let rightCount = 0;
-
         let pieces = [];
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                let slot = document.createElement('div');
-                slot.className = 'grid-slot';
-                grid.appendChild(slot);
 
-                let piece = document.createElement('div');
-                piece.className = 'puzzle-piece';
-                piece.style.width = `${pW}px`;
-                piece.style.height = `${pH}px`;
+        function changeImage(index) {
+            currentImageIndex = index;
+            const buttons = document.querySelectorAll('#imgSelector .settings-btn');
+            buttons.forEach((btn, i) => btn.classList.toggle('active', i === index));
+            initPuzzle();
+        }
 
-                piece.dataset.correctX = c * pW;
-                piece.dataset.correctY = r * pH;
-                piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
-                piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
+        function changeDifficulty(c, r, level) {
+            cols = c; rows = r;
+            const buttons = document.querySelectorAll('#diffSelector .settings-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            initPuzzle();
+        }
 
-                const tl = pts[r][c], tr = pts[r][c+1];
-                const br = pts[r+1][c+1], bl = pts[r+1][c];
-                
-                const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
-                const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
-                piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
+        function initPuzzle() {
+            grid.innerHTML = '';
+            // Удаляем старые куски
+            pieces.forEach(p => p.el.remove());
+            pieces = [];
+            lockedCount = 0;
+            puzzleArea.classList.remove('completed');
+            document.querySelector('.header h1').innerHTML = "Практика ИИ";
+            document.querySelector('.header h1').style.color = "#fff";
 
-                const isLeft = (c < cols / 2);
-                let startX = isLeft ? -250 : boardW + 50; 
-                let startY = isLeft ? leftCount * 120 : rightCount * 120;
-                startX += (Math.random() * 30 - 15);
-                startY += (Math.random() * 30 - 15);
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-                if (isLeft) leftCount++; else rightCount++;
+            const boardW = 600, boardH = 400; 
+            const pW = boardW / cols; 
+            const pH = boardH / rows; 
 
-                piece.style.left = `${startX}px`;
-                piece.style.top = `${startY}px`;
+            // Генерация точек для полигонов пазла
+            const pts = [];
+            for(let r = 0; r <= rows; r++) {
+                let rowPts = [];
+                for(let c = 0; c <= cols; c++) {
+                    let x = c * pW; let y = r * pH;
+                    if (c > 0 && c < cols) x += (Math.random() - 0.5) * (60 / cols);
+                    if (r > 0 && r < rows) y += (Math.random() - 0.5) * (60 / rows);
+                    rowPts.push({x, y});
+                }
+                pts.push(rowPts);
+            }
 
-                puzzleArea.appendChild(piece);
-                pieces.push({ el: piece, locked: false });
+            let leftCount = 0, rightCount = 0;
+            const activeImageUrl = imagesList[currentImageIndex];
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    let slot = document.createElement('div');
+                    slot.className = 'grid-slot';
+                    grid.appendChild(slot);
+
+                    let piece = document.createElement('div');
+                    piece.className = 'puzzle-piece';
+                    piece.style.width = `${pW}px`;
+                    piece.style.height = `${pH}px`;
+                    piece.style.backgroundImage = `url('${activeImageUrl}')`;
+                    piece.style.backgroundSize = `${boardW}px ${boardH}px`;
+
+                    piece.dataset.correctX = c * pW;
+                    piece.dataset.correctY = r * pH;
+                    piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
+                    piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
+
+                    const tl = pts[r][c], tr = pts[r][c+1];
+                    const br = pts[r+1][c+1], bl = pts[r+1][c];
+
+                    const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
+                    const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
+                    piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
+
+                    const isLeft = (c < cols / 2);
+                    let startX = isLeft ? -250 : boardW + 50; 
+                    let startY = isLeft ? (leftCount * (400/(rows*cols/2))) : (rightCount * (400/(rows*cols/2)));
+                    startX += (Math.random() * 30 - 15);
+                    startY += (Math.random() * 30 - 15);
+
+                    if (isLeft) leftCount++; else rightCount++;
+
+                    piece.style.left = `${startX}px`;
+                    piece.style.top = `${startY}px`;
+
+                    puzzleArea.appendChild(piece);
+                    pieces.push({ el: piece, locked: false });
+                }
             }
         }
+
+        // Первичная инициализация пазла
+        initPuzzle();
 
         const termsData = [
             { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
@@ -619,7 +657,7 @@
 
         let isPinching0 = false, isPinching1 = false;
         let p0 = {x:0, y:0}, p1 = {x:0, y:0};
-        
+
         let draggedPiece = null;
         let dragOffsetX = 0, dragOffsetY = 0;
 
@@ -634,7 +672,6 @@
         let initialCardScale = 1;
 
         let peaceFrames = 0;
-        let thumbsUpCooldown = false;
 
         function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
         let smoothP0 = {x: window.innerWidth/2, y: window.innerHeight/2};
@@ -677,7 +714,6 @@
             document.getElementById('loader').style.display = 'none'; 
             initVoice(); 
         }).catch(err => {
-            console.warn("Камера недоступна, управление переключено на мышь:", err);
             document.getElementById('loader').style.display = 'none';
             showToast("Камера недоступна. Используйте мышь.", false);
         });
@@ -753,7 +789,7 @@
                 });
 
                 const activePinch = pinch0 ? p0 : (pinch1 ? p1 : null);
-                
+
                 if (activePinch) {
                     if (zoomedCard !== null) {
                         const deltaY = zoomStartY - activePinch.y; 
@@ -777,7 +813,7 @@
                     } 
                     else {
                         const el = document.elementFromPoint(activePinch.x, activePinch.y);
-                        
+
                         if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
                             startTimer(); 
                             draggedPiece = el;
@@ -849,7 +885,7 @@
         function triggerImplosion() {
             if (isImploding) return;
             isImploding = true;
-            
+
             showToast("СИНХРОНИЗАЦИЯ... ВОЗВРАТ", true);
             document.body.classList.add('implode');
             setTimeout(() => { window.location.href = 'index.html'; }, 1400);
@@ -860,7 +896,7 @@
             toast.innerText = text;
             if (isSuccess) toast.classList.add('success');
             else toast.classList.remove('success');
-            
+
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
