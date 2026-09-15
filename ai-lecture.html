@@ -510,58 +510,36 @@
         const imgLoader = document.getElementById('img-loader');
         const promptDisplay = document.getElementById('currentGenPrompt');
 
-        async function fetchImageWithRetry(apiUrl, payload, retries = 3, delay = 1000) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) {
-                        if (response.status === 403 || response.status === 429) {
-                            await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
-                            continue;
-                        }
-                        throw new Error(`Ошибка HTTP: ${response.status}`);
-                    }
-                    return await response.json();
-                } catch (e) {
-                    if (i === retries - 1) throw e;
-                    await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
-                }
-            }
-        }
-
-        genBtn.addEventListener('click', async () => {
+        genBtn.addEventListener('click', () => {
             const randomPrompt = promptsList[Math.floor(Math.random() * promptsList.length)];
             promptDisplay.innerText = `Промпт: "${randomPrompt}"`;
-            imgElement.style.display = 'none'; imgLoader.style.display = 'block'; genBtn.disabled = true;
+            
+            // Показываем загрузчик, прячем старую картинку
+            imgElement.style.display = 'none'; 
+            imgLoader.style.display = 'block'; 
+            genBtn.disabled = true;
 
-            // ОБНОВЛЕННЫЙ PAYLOAD ДЛЯ БЫСТРОЙ LITE МОДЕЛИ (решает проблему 403 Forbidden)
-            const payload = {
-                contents: [{
-                    parts: [{ text: randomPrompt }]
-                }],
-                generationConfig: {
-                    responseModalities: ['TEXT', 'IMAGE']
-                }
+            // Используем бесплатный, бесконечный API (Pollinations) без ключей
+            // Добавляем seed, чтобы при одинаковых промптах картинки всегда были разными
+            const seed = Math.floor(Math.random() * 100000);
+            const encodedPrompt = encodeURIComponent(randomPrompt + ", highly detailed, masterpiece, 8k");
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=300&height=300&nologo=true&seed=${seed}`;
+
+            // Ждем пока картинка загрузится
+            imgElement.onload = () => {
+                imgLoader.style.display = 'none';
+                imgElement.style.display = 'block';
+                genBtn.disabled = false;
             };
-            const apiKey = ""; // Canvas will automatically inject
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-image:generateContent?key=${apiKey}`;
 
-            try {
-                const result = await fetchImageWithRetry(apiUrl, payload);
-                const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
-                
-                if (base64Data) {
-                    imgElement.src = `data:image/png;base64,${base64Data}`;
-                    imgElement.style.display = 'block';
-                } else {
-                    showToast("Не удалось получить картинку от ИИ", false);
-                }
-            } catch (e) {
-                console.error(e);
+            imgElement.onerror = () => {
+                imgLoader.style.display = 'none';
+                genBtn.disabled = false;
                 showToast("Ошибка генерации изображения", false);
-            } finally {
-                imgLoader.style.display = 'none'; genBtn.disabled = false;
-            }
+            };
+
+            // Запускаем загрузку картинки
+            imgElement.src = imageUrl;
         });
 
         // ==========================================
