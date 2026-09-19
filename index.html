@@ -2731,6 +2731,12 @@
         armRevealTargets();
         updateScrollNav();
     });
+        function openDocLightbox(imgUrl, title) {
+    const box = document.getElementById('lightboxContent');
+    box.innerHTML = `<img src="${imgUrl}" style="max-width:90vw; max-height:80vh; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"><div style="color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem;">${title}</div>`;
+    document.getElementById('lightboxNav').style.display = 'none';
+    document.getElementById('mediaLightbox').classList.add('active');
+}
     </script>
 </body>
 </html>
