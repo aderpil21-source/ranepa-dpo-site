@@ -174,8 +174,7 @@
         .filter-group { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
         .filter-group label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; color: var(--text-muted); }
         
-        /* Исправление читаемости select-фильтров в темной теме */
-        .filter-group select, .filter-group input[type="number"] {
+        .filter-group select, .filter-group input[type="number"], .filter-group input[type="file"] {
             background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 10px;
             padding: 9px 12px; color: var(--text-main); font-size: 0.88rem; font-weight: 600; outline: none;
         }
@@ -197,7 +196,6 @@
 
         .loader-box { grid-column: 1 / -1; width: 100%; text-align: center; padding: 50px; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
         .loader-spinner { width: 40px; height: 40px; border: 4px solid rgba(202, 15, 62, 0.2); border-top-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         .sector-header {
             grid-column: 1 / -1; font-family: 'Montserrat', sans-serif; font-size: 1.5rem; font-weight: 800;
@@ -593,6 +591,14 @@
         .news-add-block-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 24px; }
         .news-add-block-row button { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
         .news-add-block-row button:hover { border-color: var(--ranepa-red); color: var(--ranepa-red); }
+        
+        /* Изменение для обеспечения скроллинга и растягивания текстовых полей */
+        textarea.news-editor-field {
+            resize: vertical;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        
         .news-editor-field { width: 100%; color: var(--text-main); background: rgba(255,255,255,0.07); }
 
         #mediaLightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 30000; display: none; align-items: center; justify-content: center; padding: 30px; }
@@ -1041,8 +1047,10 @@
                 <textarea id="newsEditorLead" class="chat-text-input news-editor-field" style="min-height:60px;"></textarea>
             </div>
             <div class="filter-group" style="margin-bottom:14px;">
-                <label>Обложка (ссылка на изображение, необязательно)</label>
-                <input type="text" id="newsEditorCover" class="chat-text-input news-editor-field">
+                <label>Медиа (Обложка и контент, загрузка до 10 файлов)</label>
+                <input type="file" id="newsBulkUpload" multiple accept="image/*,video/*" onchange="handleBulkMediaUpload(event)" style="margin-bottom: 6px; color: var(--text-main);">
+                <input type="text" id="newsEditorCover" class="chat-text-input news-editor-field" placeholder="Ссылка на обложку (заполнится автоматически или введите вручную)">
+                <div id="bulkUploadProgress" style="font-size: 0.8rem; color: #38bdf8; margin-top: 6px;"></div>
             </div>
             <div class="filter-group" style="margin-bottom:20px;">
                 <label>Теги</label>
@@ -1249,17 +1257,20 @@
         <div class="chat-options" id="chatOptions">
             <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
             <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
+
             <button class="chat-opt-btn" onclick="openNews(); toggleChat();" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
-                📰 Новости центра
+                📰 ${currentLang === 'ru' ? 'Новости центра' : 'Center news'}
             </button>
+            
             <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-                📅 <span data-i18n="schBtnText">Расписание занятий</span>
+                📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
             </button>
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
+
+            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
             
             <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
             <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
-                🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
+                🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
             </a>
         </div>
     </div>
@@ -2162,6 +2173,7 @@
 
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
             
+            <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
             <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
                 🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
             </a>
@@ -2515,6 +2527,7 @@
         document.getElementById('newsEditorCover').value = n ? n.coverImage || '' : '';
         document.getElementById('newsEditorTagsInput').value = '';
         document.getElementById('newsEditorPublished').checked = n ? n.status === 'published' : false;
+        document.getElementById('bulkUploadProgress').textContent = '';
 
         newsEditorTags = n ? [...(n.tags || [])] : [];
         newsEditorBlocks = n ? JSON.parse(JSON.stringify(n.blocks || [])) : [];
@@ -2562,21 +2575,16 @@
                 fieldHtml = `<textarea class="chat-text-input news-editor-field" style="min-height:80px;" placeholder="${b.type === 'insert' ? 'Текст врезки...' : 'Текст абзаца...'}" oninput="updateNewsBlockField(${idx},'content',this.value)">${escapeHtml(b.content)}</textarea>`;
             } else if (b.type === 'image') {
                 fieldHtml = `
-                    <input type="file" accept="image/*" onchange="handleNewsMediaUpload(event, ${idx})">
                     <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="или вставьте ссылку на изображение" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">
                     <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="подпись (необязательно)" value="${escapeHtml(b.caption)}" oninput="updateNewsBlockField(${idx},'caption',this.value)">
                     ${b.url ? `<img src="${b.url}" style="max-width:160px; border-radius:8px; margin-top:8px; display:block;">` : ''}`;
             } else if (b.type === 'video') {
                 fieldHtml = `
                     <select class="chat-text-input news-editor-field" style="margin-bottom:6px;" onchange="updateNewsBlockField(${idx},'provider',this.value); renderNewsEditorBlocks();">
-                        <option value="upload" ${b.provider !== 'embed' ? 'selected' : ''}>Файл (загрузить, до ~40 МБ)</option>
+                        <option value="upload" ${b.provider !== 'embed' ? 'selected' : ''}>Загруженное видео (из галереи выше)</option>
                         <option value="embed" ${b.provider === 'embed' ? 'selected' : ''}>Ссылка для встраивания (YouTube/VK/RuTube)</option>
                     </select>
-                    ${b.provider === 'embed'
-                        ? `<input type="text" class="chat-text-input news-editor-field" placeholder="embed-ссылка на видео" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">`
-                        : `<input type="file" accept="video/*" onchange="handleNewsMediaUpload(event, ${idx})">
-                           <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="или вставьте прямую ссылку на видеофайл" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">`
-                    }
+                    <input type="text" class="chat-text-input news-editor-field" placeholder="Прямая или embed-ссылка на видео" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">
                     <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="подпись (необязательно)" value="${escapeHtml(b.caption)}" oninput="updateNewsBlockField(${idx},'caption',this.value)">`;
             }
             return `
@@ -2592,30 +2600,67 @@
                 </div>
                 ${fieldHtml}
             </div>`;
-        }).join('') || '<div style="color:var(--text-muted); padding:10px 0;">Блоков пока нет — добавьте абзац, врезку, фото или видео кнопками ниже.</div>';
+        }).join('') || '<div style="color:var(--text-muted); padding:10px 0;">Блоков пока нет — загрузите файлы через кнопку "Медиа" или добавьте текст ниже.</div>';
     }
 
-    async function handleNewsMediaUpload(evt, idx) {
-        const file = evt.target.files[0];
-        if (!file) return;
-        if (file.size > 40 * 1024 * 1024) {
-            alert('Файл слишком большой для прямой загрузки (максимум ~40 МБ). Для крупного видео используйте вариант «Ссылка для встраивания».');
+    // МАССОВАЯ ЗАГРУЗКА (ОБЛОЖКА + ДО 10 ФАЙЛОВ)
+    async function handleBulkMediaUpload(evt) {
+        const files = Array.from(evt.target.files);
+        if (!files.length) return;
+        
+        if (files.length > 10) {
+            alert('Можно загрузить не более 10 файлов за один раз.');
             evt.target.value = '';
             return;
         }
-        const reader = new FileReader();
-        reader.onload = async () => {
-            const base64 = reader.result.split(',')[1];
+
+        const progressEl = document.getElementById('bulkUploadProgress');
+        progressEl.textContent = `Подготовка к загрузке: 0 / ${files.length}...`;
+        let uploadedCount = 0;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > 40 * 1024 * 1024) {
+                alert(`Файл ${file.name} слишком большой (>40 МБ) и пропущен.`);
+                continue;
+            }
+
+            const base64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({
                     action: 'newsUpload', token: newsAdminToken, filename: file.name, mimeType: file.type, dataBase64: base64
                 })});
                 const data = await res.json();
-                if (data.ok) { newsEditorBlocks[idx].url = data.url; renderNewsEditorBlocks(); }
-                else alert('Не удалось загрузить файл. Возможно, истекла сессия — войдите заново.');
-            } catch (e) { alert('Ошибка загрузки файла'); }
-        };
-        reader.readAsDataURL(file);
+                
+                if (data.ok) {
+                    const coverInput = document.getElementById('newsEditorCover');
+                    // Если обложка пустая и это картинка - ставим обложку
+                    if (!coverInput.value && file.type.startsWith('image/')) {
+                        coverInput.value = data.url;
+                    } else {
+                        // Иначе добавляем как контент-блок
+                        const blockType = file.type.startsWith('video/') ? 'video' : 'image';
+                        newsEditorBlocks.push({ type: blockType, content: '', url: data.url, caption: '', hidden: false, provider: 'upload' });
+                    }
+                    uploadedCount++;
+                    progressEl.textContent = `Загрузка: ${uploadedCount} / ${files.length}...`;
+                    renderNewsEditorBlocks();
+                } else {
+                    console.error('Ошибка сервера при загрузке:', file.name);
+                }
+            } catch (e) {
+                console.error('Сетевая ошибка при загрузке:', file.name, e);
+            }
+        }
+        
+        progressEl.textContent = `Успешно загружено файлов: ${uploadedCount}.`;
+        evt.target.value = '';
+        setTimeout(() => { progressEl.textContent = ''; }, 4000);
     }
 
     async function saveNewsItem() {
