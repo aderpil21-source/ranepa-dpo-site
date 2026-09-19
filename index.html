@@ -2767,6 +2767,15 @@
         if (lbNav) lbNav.style.display = 'none';
         document.getElementById('mediaLightbox').classList.add('active');
     }
-    </script>
-</body>
-</html>
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+        window.scrollTo(0, 0);
+
+        fetchPrograms();
+        armRevealTargets();
+        updateScrollNav();
+    });
+</script>
