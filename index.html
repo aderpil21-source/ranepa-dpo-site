@@ -2761,12 +2761,12 @@
     }
 
     function openDocLightbox(imgUrl, title) {
-        const box = document.getElementById('lightboxContent');
-        box.innerHTML = `<img src="${imgUrl}" alt="${title}"><div style="color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; text-align:center;">${title}</div>`;
-        const lbNav = document.getElementById('lightboxNav');
-        if (lbNav) lbNav.style.display = 'none';
-        document.getElementById('mediaLightbox').classList.add('active');
-    }
+    const box = document.getElementById('lightboxContent');
+    box.innerHTML = `<img src="${imgUrl}" alt="${title}" style="max-width:90vw; max-height:75vh; object-fit:contain; border-radius:12px; display:block; margin:0 auto;"><div style="color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; text-align:center;">${title}</div>`;
+    const lbNav = document.getElementById('lightboxNav');
+    if (lbNav) lbNav.style.display = 'none';
+    document.getElementById('mediaLightbox').classList.add('active');
+}
 
     window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'dark';
