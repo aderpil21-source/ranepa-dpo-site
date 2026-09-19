@@ -310,7 +310,9 @@
             background: linear-gradient(165deg, rgba(255,255,255,0.14) 0%, var(--bg-glass) 35%, var(--bg-glass) 100%) !important;
             border: 1px solid rgba(255,255,255,0.35) !important;
             box-shadow: 0 55px 100px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.2), 0 0 60px rgba(202,15,62,0.12) !important;
-            position: relative; overflow: hidden;
+            position: relative; 
+            overflow-x: hidden; 
+            overflow-y: auto; /* Исправлено: возвращаем скроллинг */
         }
         .chrome-glass::after {
             content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -592,7 +594,7 @@
         .news-add-block-row button { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
         .news-add-block-row button:hover { border-color: var(--ranepa-red); color: var(--ranepa-red); }
         
-        /* Изменение для обеспечения скроллинга и растягивания текстовых полей */
+        /* Исправление для обеспечения скроллинга и растягивания текстовых полей */
         textarea.news-editor-field {
             resize: vertical;
             overflow-y: auto;
