@@ -2346,6 +2346,17 @@
         if (isNaN(d)) return String(iso);
         return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
     }
+        // Вспомогательная функция конвертации ссылок Google Drive
+    function convertDriveUrl(url) {
+        if (!url) return '';
+        if (url.includes('drive.google.com') && url.includes('id=')) {
+            const idMatch = url.match(/id=([^&]+)/);
+            if (idMatch) {
+                return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w1600`;
+            }
+        }
+        return url;
+    }
 
     async function fetchNews() {
         try {
@@ -2398,7 +2409,7 @@
 
         grid.innerHTML = items.map(n => {
             const coverBlock = (n.blocks || []).find(b => b.type === 'image' && !b.hidden && b.url);
-            const cover = n.coverImage || (coverBlock ? coverBlock.url : '');
+            const cover = convertDriveUrl(n.coverImage || (coverBlock ? coverBlock.url : ''));
             const hiddenBadge = n.status !== 'published'
                 ? '<span style="background:#f59e0b; color:#000; padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">СКРЫТО</span>'
                 : '<span></span>';
@@ -2433,7 +2444,7 @@
             if (b.type === 'insert') return `<div class="news-insert">${escapeHtml(b.content)}</div>`;
             if (b.type === 'image' && b.url) {
                 const mi = currentArticleMedia.indexOf(b);
-                return `<figure class="news-media-figure"><img src="${b.url}" alt="" onclick="openLightboxAt(${mi})">${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
+                return `<figure class="news-media-figure"><img src="${convertDriveUrl(b.url)}" alt="" onclick="openLightboxAt(${mi})">${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
             }
             if (b.type === 'video' && b.url) {
                 if (b.provider === 'embed') {
@@ -2475,7 +2486,7 @@
                 ? `<div class="news-video-embed-wrap" style="width:80vw; max-width:960px;"><iframe src="${m.url}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>`
                 : `<video src="${m.url}" controls autoplay></video>`;
         } else {
-            box.innerHTML = `<img src="${m.url}">`;
+            box.innerHTML = `<img src="${convertDriveUrl(m.url)}">`;
         }
         document.getElementById('lightboxNav').style.display = currentLightboxMedia.length > 1 ? 'flex' : 'none';
     }
@@ -2579,7 +2590,7 @@
                 fieldHtml = `
                     <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="или вставьте ссылку на изображение" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">
                     <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="подпись (необязательно)" value="${escapeHtml(b.caption)}" oninput="updateNewsBlockField(${idx},'caption',this.value)">
-                    ${b.url ? `<img src="${b.url}" style="max-width:160px; border-radius:8px; margin-top:8px; display:block;">` : ''}`;
+                    ${b.url ? `<img src="${convertDriveUrl(b.url)}" style="max-width:160px; border-radius:8px; margin-top:8px; display:block;">` : ''}`;
             } else if (b.type === 'video') {
                 fieldHtml = `
                     <select class="chat-text-input news-editor-field" style="margin-bottom:6px;" onchange="updateNewsBlockField(${idx},'provider',this.value); renderNewsEditorBlocks();">
