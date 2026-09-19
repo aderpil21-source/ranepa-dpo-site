@@ -2760,37 +2760,13 @@
         } catch (e) { alert('Ошибка удаления новости'); }
     }
 
-    function renderAdminNewsList() {
-        const box = document.getElementById('newsAdminList');
-        if (!box) return;
-        box.innerHTML = newsItems.map(n => `
-            <div class="news-admin-row">
-                <span>${escapeHtml(n.title)} ${n.status !== 'published' ? '<i style="color:#f59e0b;">(скрыта)</i>' : ''}</span>
-                <div class="news-admin-row-actions">
-                    <button class="chat-opt-btn" onclick="openNewsEditor('${n.id}')">✏️ Изменить</button>
-                    <button class="chat-opt-btn" onclick="deleteNewsItem('${n.id}')">🗑 Удалить</button>
-                </div>
-            </div>`).join('') || '<div style="color:var(--text-muted);">Пока нет новостей.</div>';
+    function openDocLightbox(imgUrl, title) {
+        const box = document.getElementById('lightboxContent');
+        box.innerHTML = `<img src="${imgUrl}" alt="${title}"><div style="color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; text-align:center;">${title}</div>`;
+        const lbNav = document.getElementById('lightboxNav');
+        if (lbNav) lbNav.style.display = 'none';
+        document.getElementById('mediaLightbox').classList.add('active');
     }
-    /* =============== КОНЕЦ БЛОКА НОВОСТЕЙ =============== */
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-
-        window.scrollTo(0, 0);
-
-        fetchPrograms();
-        armRevealTargets();
-        updateScrollNav();
-    });
-        function openDocLightbox(imgUrl, title) {
-    const box = document.getElementById('lightboxContent');
-    box.innerHTML = `<img src="${imgUrl}" style="max-width:90vw; max-height:80vh; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"><div style="color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem;">${title}</div>`;
-    document.getElementById('lightboxNav').style.display = 'none';
-    document.getElementById('mediaLightbox').classList.add('active');
-}
     </script>
 </body>
 </html>
