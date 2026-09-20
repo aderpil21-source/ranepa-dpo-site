@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="./favicon.png">
     <style>
-        /* БАЗОВЫЕ ПЕРЕМЕННЫЕ И ТЕМЫ ИЗ ВАШЕГО CSS */
         :root {
             --ranepa-red: #CA0F3E;
             --ranepa-burgundy: #881337;
@@ -29,12 +28,10 @@
             --shadow-color: rgba(0, 0, 0, 0.6);
         }
 
-        /* БАЗОВЫЕ СТИЛИ СТРАНИЦЫ */
         html, body { width: 100%; min-height: 100vh; font-size: 16px; overflow-x: hidden; scroll-behavior: smooth; margin: 0; padding: 0; }
         * { box-sizing: border-box; font-family: 'Manrope', sans-serif; }
         body { background-color: var(--bg-deep); color: var(--text-main); }
         
-        /* УПРОЩЕННЫЙ ХЕДЕР ДЛЯ ОТДЕЛЬНОЙ СТРАНИЦЫ */
         header {
             background: var(--header-bg); backdrop-filter: blur(25px);
             padding: 14px max(32px, env(safe-area-inset-right)) 14px max(32px, env(safe-area-inset-left));
@@ -47,13 +44,11 @@
         .back-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: #fff; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 800; font-family: 'Montserrat', sans-serif; transition: 0.3s; }
         .back-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР НОВОСТЕЙ */
         .news-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
         .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
         .schedule-title { font-size: 2.2rem; font-family: 'Montserrat', sans-serif; color: var(--text-main); font-weight: 900; margin:0;}
         .schedule-title span { color: #38bdf8; }
 
-        /* СТИЛИ КАРТОЧЕК И ГРИДА */
         .news-tags-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
         .filter-sector-chip { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted); padding: 8px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; user-select: none; }
         .filter-sector-chip.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); }
@@ -70,7 +65,6 @@
         .news-card-tags { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 22px; }
         .news-tag-pill { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
 
-        /* ДЕТАЛЬНЫЙ ПРОСМОТР */
         .news-detail-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
         .news-detail-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 10px; line-height: 1.3; color: var(--text-main); }
         .news-detail-date { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
@@ -84,7 +78,6 @@
         .accordion-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: #fff; padding: 15px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-bottom: 24px; display:inline-block; }
         .accordion-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); }
 
-        /* АДМИН ПАНЕЛЬ */
         .news-admin-gear { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; }
         .news-admin-bar { display: none; flex-direction: column; gap: 14px; background: rgba(202,15,62,0.08); border: 1px solid rgba(202,15,62,0.3); padding: 16px 18px; border-radius: 14px; margin-bottom: 28px; }
         .chat-opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: 0.2s; }
@@ -92,7 +85,6 @@
         .news-admin-list { display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow-y: auto; }
         .news-admin-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 10px; flex-wrap: wrap; }
         
-        /* МОДАЛЬНЫЕ ОКНА И РЕДАКТОР (Скопировано из оригинала) */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 20000; padding: 15px; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: var(--bg-glass); border-radius: 30px; width: 100%; text-align: center; border: 1px solid var(--border-glass); max-height: 88vh; overflow-y: auto; padding: 30px; color: var(--text-main); }
@@ -101,6 +93,18 @@
         .buy-btn { width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 18px; border-radius: 14px; font-weight: 900; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif;}
         .close-modal { margin-top: 15px; cursor: pointer; color: var(--text-muted); text-decoration: underline; padding: 10px; }
         
+        /* СТИЛИ КОНСТРУКТОРА БЛОКОВ */
+        .news-block-editor { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+        .news-block-editor.is-hidden-block { opacity: 0.5; }
+        .news-block-editor-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: var(--text-main); }
+        .news-block-editor-controls button { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; margin-left: 4px; font-size: 0.85rem; }
+        .news-block-editor-controls button:hover { border-color: var(--ranepa-red); }
+        .news-add-block-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 24px; }
+        .news-add-block-row button { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
+        .news-add-block-row button:hover { border-color: var(--ranepa-red); color: var(--ranepa-red); }
+        textarea.news-editor-field { resize: vertical; overflow-y: auto; max-height: 400px; }
+        .news-editor-field { width: 100%; color: var(--text-main); background: rgba(255,255,255,0.07); }
+
         /* ЛАЙТБОКС */
         #mediaLightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 30000; display: none; align-items: center; justify-content: center; padding: 30px; }
         #mediaLightbox.active { display: flex; }
@@ -153,7 +157,7 @@
     <div class="modal-overlay" id="newsAdminLoginModal">
         <div class="modal-box" style="max-width: 400px;">
             <h3>Вход для администратора</h3>
-            <p style="text-align:left; color: var(--text-muted); margin-bottom:10px;">Введите пароль редактора:</p>
+            <p style="text-align:left; color: var(--text-muted); margin-bottom:10px;">Введите пароль редактора новостей:</p>
             <input type="password" id="newsAdminPassInput" class="chat-text-input" onkeydown="if(event.key==='Enter') submitNewsAdminLogin()">
             <div id="newsAdminLoginError" style="display:none; color: var(--ranepa-red); font-weight:700; margin-bottom:14px; text-align:left;"></div>
             <button class="buy-btn" onclick="submitNewsAdminLogin()">Войти</button>
@@ -161,28 +165,50 @@
         </div>
     </div>
 
-    <!-- РЕДАКТОР НОВОСТИ -->
+    <!-- ПОЛНЫЙ РЕДАКТОР НОВОСТИ С КОНСТРУКТОРОМ БЛОКОВ -->
     <div class="modal-overlay" id="newsEditorModal">
         <div class="modal-box chrome-glass" style="text-align:left; max-width:720px;">
             <h3 id="newsEditorHeading">Новость</h3>
-            <label style="color: var(--text-muted); font-size: 0.8rem;">Заголовок</label>
-            <input type="text" id="newsEditorTitle" class="chat-text-input">
-            
-            <label style="color: var(--text-muted); font-size: 0.8rem;">Лид (краткий анонс)</label>
-            <textarea id="newsEditorLead" class="chat-text-input" style="min-height:60px;"></textarea>
-            
-            <label style="color: var(--text-muted); font-size: 0.8rem;">Обложка (ссылка)</label>
-            <input type="text" id="newsEditorCover" class="chat-text-input" placeholder="Оставьте пустым для авто-выбора из текста">
-            
-            <label style="color: var(--text-muted); font-size: 0.8rem;">Теги (через запятую)</label>
-            <input type="text" id="newsEditorTagsInput" class="chat-text-input" placeholder="например: приём, ИИ, событие">
-            
+
+            <div style="margin-bottom:14px;">
+                <label style="color: var(--text-muted); font-size: 0.8rem;">Заголовок</label>
+                <input type="text" id="newsEditorTitle" class="chat-text-input news-editor-field">
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="color: var(--text-muted); font-size: 0.8rem;">Лид (краткий анонс)</label>
+                <textarea id="newsEditorLead" class="chat-text-input news-editor-field" style="min-height:60px;"></textarea>
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="color: var(--text-muted); font-size: 0.8rem;">Медиа (Обложка и контент, загрузка до 10 файлов)</label>
+                <input type="file" id="newsBulkUpload" multiple accept="image/*,video/*" onchange="handleBulkMediaUpload(event)" style="display:block; margin-bottom: 6px; color: var(--text-main);">
+                <input type="text" id="newsEditorCover" class="chat-text-input news-editor-field" placeholder="Ссылка на обложку (заполнится автоматически или введите вручную)">
+                <div id="bulkUploadProgress" style="font-size: 0.8rem; color: #38bdf8; margin-top: 6px;"></div>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="color: var(--text-muted); font-size: 0.8rem;">Теги</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="newsEditorTagsInput" class="chat-text-input news-editor-field" placeholder="например: приём, ИИ, событие" onkeydown="if(event.key==='Enter'){event.preventDefault();addNewsEditorTag();}">
+                    <button class="chat-opt-btn" type="button" onclick="addNewsEditorTag()" style="color:var(--text-main); flex-shrink:0;">Добавить</button>
+                </div>
+                <div id="newsEditorTagsList" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
+            </div>
+
+            <label style="font-size:0.72rem; text-transform:uppercase; font-weight:800; color:var(--text-muted);">Содержание (абзацы, врезки, фото, видео)</label>
+            <div id="newsEditorBlocks" style="margin-top:10px;"></div>
+            <div class="news-add-block-row">
+                <button type="button" onclick="addNewsBlock('text')">+ Абзац текста</button>
+                <button type="button" onclick="addNewsBlock('insert')">+ Врезка</button>
+                <button type="button" onclick="addNewsBlock('image')">+ Фото</button>
+                <button type="button" onclick="addNewsBlock('video')">+ Видео</button>
+            </div>
+
             <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer;">
                 <input type="checkbox" id="newsEditorPublished" style="width:18px; height:18px;">
-                <span>Опубликовать на сайте</span>
+                <span>Опубликовать (видно посетителям сайта)</span>
             </label>
-            <button class="buy-btn" onclick="saveNewsItem()">💾 Сохранить</button>
-            <div class="close-modal" onclick="closeNewsEditor()" style="text-align: center;">Отмена</div>
+
+            <button class="buy-btn" onclick="saveNewsItem()">💾 Сохранить новость</button>
+            <div class="close-modal" onclick="closeNewsEditor()" style="text-align: center;">Закрыть без сохранения</div>
         </div>
     </div>
 
@@ -197,7 +223,6 @@
     </div>
 
 <script>
-    // --- ИНИЦИАЛИЗАЦИЯ И УТИЛИТЫ ---
     const API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
     
     let newsItems = [];
@@ -207,6 +232,11 @@
     let currentArticleMedia = [];
     let currentLightboxMedia = [];
     let currentLightboxIndex = 0;
+    
+    // Переменные для конструктора
+    let newsEditorBlocks = [];
+    let newsEditorTags = [];
+    const NEWS_BLOCK_LABELS = { text: 'Абзац', insert: 'Врезка', image: 'Фото', video: 'Видео' };
 
     function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function formatNewsDate(iso) {
@@ -222,7 +252,6 @@
         return url;
     }
 
-    // --- ОСНОВНАЯ ЗАГРУЗКА НОВОСТЕЙ ---
     async function fetchNews() {
         try {
             let url = API_URL + '?type=news';
@@ -237,7 +266,6 @@
                 renderAdminNewsList();
             }
 
-            // ПРОВЕРКА URL ДЛЯ АВТОМАТИЧЕСКОГО ОТКРЫТИЯ НОВОСТИ (Например: news.html#12345)
             const hash = window.location.hash.replace('#', '').replace('news=', '');
             if (hash && newsItems.find(n => n.id === hash)) {
                 openNewsDetail(hash);
@@ -248,11 +276,10 @@
         }
     }
 
-    // --- ОТОБРАЖЕНИЕ КАТАЛОГА ---
     function showNewsListView() {
         document.getElementById('newsListView').style.display = 'block';
         document.getElementById('newsDetailView').style.display = 'none';
-        window.history.replaceState(null, null, window.location.pathname); // Очищаем хэш
+        window.history.replaceState(null, null, window.location.pathname);
         window.scrollTo({top: 0, behavior: 'smooth'});
     }
 
@@ -267,7 +294,7 @@
         ).join('');
 
         let items = newsItems;
-        if (!newsAdminToken) items = items.filter(n => n.status === 'published'); // Прячем скрытые от обычных юзеров
+        if (!newsAdminToken) items = items.filter(n => n.status === 'published');
         if (activeNewsTagFilter) items = items.filter(n => (n.tags || []).includes(activeNewsTagFilter));
 
         if (!items.length) {
@@ -278,7 +305,7 @@
         grid.innerHTML = items.map(n => {
             const coverBlock = (n.blocks || []).find(b => b.type === 'image' && !b.hidden && b.url);
             const cover = convertDriveUrl(n.coverImage || (coverBlock ? coverBlock.url : ''));
-            const hiddenBadge = n.status !== 'published' ? '<span style="color:#f59e0b; font-size:0.8rem; font-weight:800;">[СКРЫТО]</span>' : '';
+            const hiddenBadge = n.status !== 'published' ? '<span style="background:#f59e0b; color:#000; padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">СКРЫТО</span>' : '';
             return `
             <div class="card news-card" onclick="openNewsDetail('${n.id}')">
                 ${cover ? `<div class="news-card-cover" style="background-image:url('${String(cover).replace(/'/g, '%27')}')"></div>` : ''}
@@ -295,7 +322,6 @@
         renderNewsGrid();
     }
 
-    // --- ОТОБРАЖЕНИЕ КОНКРЕТНОЙ НОВОСТИ ---
     function openNewsDetail(id) {
         const n = newsItems.find(x => x.id === id);
         if (!n) return;
@@ -303,7 +329,7 @@
         document.getElementById('newsListView').style.display = 'none';
         const view = document.getElementById('newsDetailView');
         view.style.display = 'block';
-        window.history.replaceState(null, null, `#${id}`); // Добавляем ID в адресную строку
+        window.history.replaceState(null, null, `#${id}`);
         window.scrollTo({top: 0, behavior: 'smooth'});
 
         const visibleBlocks = (n.blocks || []).filter(b => !b.hidden);
@@ -324,7 +350,7 @@
         }).join('');
 
         view.innerHTML = `
-            <button class="accordion-btn" onclick="showNewsListView()">← Ко всем новостям</button>
+            <button class="accordion-btn" onclick="showNewsListView()">← Назад к новостям</button>
             <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
             <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
             <div class="news-detail-date">${formatNewsDate(n.createdAt)}</div>
@@ -333,7 +359,6 @@
         `;
     }
 
-    // --- ЛАЙТБОКС ---
     function openLightboxAt(index) {
         currentLightboxMedia = currentArticleMedia;
         currentLightboxIndex = index;
@@ -357,13 +382,13 @@
         document.getElementById('lightboxNav').style.display = currentLightboxMedia.length > 1 ? 'flex' : 'none';
     }
 
-    // --- АДМИН-ПАНЕЛЬ (Упрощенная версия для отдельного файла) ---
     function openNewsAdminLogin() { document.getElementById('newsAdminLoginModal').classList.add('active'); }
     function closeNewsAdminLogin() { document.getElementById('newsAdminLoginModal').classList.remove('active'); document.getElementById('newsAdminPassInput').value = ''; }
     
     async function submitNewsAdminLogin() {
         const pass = document.getElementById('newsAdminPassInput').value;
         const errEl = document.getElementById('newsAdminLoginError');
+        errEl.style.display = 'none';
         try {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsLogin', password: pass }) });
             const data = await res.json();
@@ -373,6 +398,7 @@
             } else { errEl.textContent = 'Неверный пароль'; errEl.style.display = 'block'; }
         } catch (e) { errEl.textContent = 'Ошибка сервера'; errEl.style.display = 'block'; }
     }
+    
     function newsAdminLogout() { newsAdminToken = null; sessionStorage.removeItem('newsAdminToken'); document.getElementById('newsAdminBar').style.display = 'none'; fetchNews(); }
 
     function renderAdminNewsList() {
@@ -389,18 +415,147 @@
         `).join('');
     }
 
+    /* ФУНКЦИОНАЛ ПОЛНОГО РЕДАКТОРА (С КОНСТРУКТОРОМ БЛОКОВ) */
     function openNewsEditor(id) {
         editingNewsId = id || null;
         const n = id ? newsItems.find(x => x.id === id) : null;
-        document.getElementById('newsEditorHeading').textContent = id ? 'Редактирование' : 'Новая новость';
-        document.getElementById('newsEditorTitle').value = n ? n.title : '';
-        document.getElementById('newsEditorLead').value = n ? n.lead : '';
-        document.getElementById('newsEditorCover').value = n ? n.coverImage : '';
-        document.getElementById('newsEditorTagsInput').value = n && n.tags ? n.tags.join(', ') : '';
+
+        document.getElementById('newsEditorHeading').textContent = id ? 'Редактирование новости' : 'Новая новость';
+        document.getElementById('newsEditorTitle').value = n ? n.title || '' : '';
+        document.getElementById('newsEditorLead').value = n ? n.lead || '' : '';
+        document.getElementById('newsEditorCover').value = n ? n.coverImage || '' : '';
+        document.getElementById('newsEditorTagsInput').value = '';
         document.getElementById('newsEditorPublished').checked = n ? n.status === 'published' : false;
+        document.getElementById('bulkUploadProgress').textContent = '';
+
+        newsEditorTags = n ? [...(n.tags || [])] : [];
+        newsEditorBlocks = n ? JSON.parse(JSON.stringify(n.blocks || [])) : [];
+
+        renderNewsEditorTags();
+        renderNewsEditorBlocks();
         document.getElementById('newsEditorModal').classList.add('active');
     }
     function closeNewsEditor() { document.getElementById('newsEditorModal').classList.remove('active'); }
+
+    function addNewsEditorTag() {
+        const input = document.getElementById('newsEditorTagsInput');
+        const val = input.value.trim();
+        if (val && !newsEditorTags.includes(val)) { newsEditorTags.push(val); renderNewsEditorTags(); }
+        input.value = '';
+    }
+    function removeNewsEditorTag(t) { newsEditorTags = newsEditorTags.filter(x => x !== t); renderNewsEditorTags(); }
+    function renderNewsEditorTags() {
+        document.getElementById('newsEditorTagsList').innerHTML = newsEditorTags.map(t =>
+            `<span class="filter-sector-chip active" style="cursor:pointer;" onclick="removeNewsEditorTag('${t.replace(/'/g, "\\'")}')">${escapeHtml(t)} ✕</span>`
+        ).join('');
+    }
+
+    function addNewsBlock(type) {
+        newsEditorBlocks.push({ type, content: '', url: '', caption: '', hidden: false, provider: type === 'video' ? 'upload' : undefined });
+        renderNewsEditorBlocks();
+    }
+    function removeNewsBlock(idx) { newsEditorBlocks.splice(idx, 1); renderNewsEditorBlocks(); }
+    function moveNewsBlock(idx, dir) {
+        const j = idx + dir;
+        if (j < 0 || j >= newsEditorBlocks.length) return;
+        const tmp = newsEditorBlocks[idx]; newsEditorBlocks[idx] = newsEditorBlocks[j]; newsEditorBlocks[j] = tmp;
+        renderNewsEditorBlocks();
+    }
+    function toggleNewsBlockHidden(idx) { newsEditorBlocks[idx].hidden = !newsEditorBlocks[idx].hidden; renderNewsEditorBlocks(); }
+    function updateNewsBlockField(idx, field, value) { newsEditorBlocks[idx][field] = value; }
+
+    function renderNewsEditorBlocks() {
+        const box = document.getElementById('newsEditorBlocks');
+        box.innerHTML = newsEditorBlocks.map((b, idx) => {
+            let fieldHtml = '';
+            if (b.type === 'text' || b.type === 'insert') {
+                fieldHtml = `<textarea class="chat-text-input news-editor-field" style="min-height:80px;" placeholder="${b.type === 'insert' ? 'Текст врезки...' : 'Текст абзаца...'}" oninput="updateNewsBlockField(${idx},'content',this.value)">${escapeHtml(b.content)}</textarea>`;
+            } else if (b.type === 'image') {
+                fieldHtml = `
+                    <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="или вставьте ссылку на изображение" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">
+                    <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="подпись (необязательно)" value="${escapeHtml(b.caption)}" oninput="updateNewsBlockField(${idx},'caption',this.value)">
+                    ${b.url ? `<img src="${convertDriveUrl(b.url)}" style="max-width:160px; border-radius:8px; margin-top:8px; display:block;">` : ''}`;
+            } else if (b.type === 'video') {
+                fieldHtml = `
+                    <select class="chat-text-input news-editor-field" style="margin-bottom:6px;" onchange="updateNewsBlockField(${idx},'provider',this.value); renderNewsEditorBlocks();">
+                        <option value="upload" ${b.provider !== 'embed' ? 'selected' : ''}>Загруженное видео (из галереи выше)</option>
+                        <option value="embed" ${b.provider === 'embed' ? 'selected' : ''}>Ссылка для встраивания (YouTube/VK/RuTube)</option>
+                    </select>
+                    <input type="text" class="chat-text-input news-editor-field" placeholder="Прямая или embed-ссылка на видео" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">
+                    <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="подпись (необязательно)" value="${escapeHtml(b.caption)}" oninput="updateNewsBlockField(${idx},'caption',this.value)">`;
+            }
+            return `
+            <div class="news-block-editor ${b.hidden ? 'is-hidden-block' : ''}">
+                <div class="news-block-editor-head">
+                    <b>${NEWS_BLOCK_LABELS[b.type] || b.type}</b>
+                    <div class="news-block-editor-controls">
+                        <button type="button" onclick="moveNewsBlock(${idx},-1)" title="Переместить вверх">↑</button>
+                        <button type="button" onclick="moveNewsBlock(${idx},1)" title="Переместить вниз">↓</button>
+                        <button type="button" onclick="toggleNewsBlockHidden(${idx})" title="Скрыть/показать блок">${b.hidden ? '🚫' : '👁'}</button>
+                        <button type="button" onclick="removeNewsBlock(${idx})" title="Удалить блок">✕</button>
+                    </div>
+                </div>
+                ${fieldHtml}
+            </div>`;
+        }).join('') || '<div style="color:var(--text-muted); padding:10px 0;">Блоков пока нет — загрузите файлы через кнопку "Медиа" или добавьте текст ниже.</div>';
+    }
+
+    async function handleBulkMediaUpload(evt) {
+        const files = Array.from(evt.target.files);
+        if (!files.length) return;
+        
+        if (files.length > 10) {
+            alert('Можно загрузить не более 10 файлов за один раз.');
+            evt.target.value = '';
+            return;
+        }
+
+        const progressEl = document.getElementById('bulkUploadProgress');
+        progressEl.textContent = `Подготовка к загрузке: 0 / ${files.length}...`;
+        let uploadedCount = 0;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size > 40 * 1024 * 1024) {
+                alert(`Файл ${file.name} слишком большой (>40 МБ) и пропущен.`);
+                continue;
+            }
+
+            const base64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.readAsDataURL(file);
+            });
+
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({
+                    action: 'newsUpload', token: newsAdminToken, filename: file.name, mimeType: file.type, dataBase64: base64
+                })});
+                const data = await res.json();
+                
+                if (data.ok) {
+                    const coverInput = document.getElementById('newsEditorCover');
+                    if (!coverInput.value && file.type.startsWith('image/')) {
+                        coverInput.value = data.url;
+                    } else {
+                        const blockType = file.type.startsWith('video/') ? 'video' : 'image';
+                        newsEditorBlocks.push({ type: blockType, content: '', url: data.url, caption: '', hidden: false, provider: 'upload' });
+                    }
+                    uploadedCount++;
+                    progressEl.textContent = `Загрузка: ${uploadedCount} / ${files.length}...`;
+                    renderNewsEditorBlocks();
+                } else {
+                    console.error('Ошибка сервера при загрузке:', file.name);
+                }
+            } catch (e) {
+                console.error('Сетевая ошибка при загрузке:', file.name, e);
+            }
+        }
+        
+        progressEl.textContent = `Успешно загружено файлов: ${uploadedCount}.`;
+        evt.target.value = '';
+        setTimeout(() => { progressEl.textContent = ''; }, 4000);
+    }
 
     async function saveNewsItem() {
         const item = {
@@ -408,26 +563,29 @@
             title: document.getElementById('newsEditorTitle').value.trim(),
             lead: document.getElementById('newsEditorLead').value.trim(),
             coverImage: document.getElementById('newsEditorCover').value.trim(),
-            tags: document.getElementById('newsEditorTagsInput').value.split(',').map(s=>s.trim()).filter(Boolean),
-            blocks: editingNewsId ? newsItems.find(x => x.id === editingNewsId).blocks : [], // В этой лайт-версии блоки сохраняем как есть
+            tags: newsEditorTags,
+            blocks: newsEditorBlocks,
             status: document.getElementById('newsEditorPublished').checked ? 'published' : 'hidden'
         };
-        if (!item.title) { alert('Укажите заголовок'); return; }
+        if (!item.title) { alert('Укажите заголовок новости'); return; }
         try {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsSave', token: newsAdminToken, item }) });
-            if ((await res.json()).ok) { closeNewsEditor(); fetchNews(); } else { alert('Ошибка сохранения (истек токен?)'); }
-        } catch (e) { alert('Ошибка сети'); }
+            const data = await res.json();
+            if (data.ok) { closeNewsEditor(); fetchNews(); }
+            else alert('Не удалось сохранить новость. Возможно, истекла сессия — войдите заново.');
+        } catch (e) { alert('Ошибка сохранения новости'); }
     }
 
     async function deleteNewsItem(id) {
         if (!confirm('Удалить новость безвозвратно?')) return;
         try {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsDelete', token: newsAdminToken, id }) });
-            if ((await res.json()).ok) fetchNews(); else alert('Ошибка удаления');
-        } catch (e) { alert('Ошибка сети'); }
+            const data = await res.json();
+            if (data.ok) fetchNews();
+            else alert('Не удалось удалить новость.');
+        } catch (e) { alert('Ошибка удаления новости'); }
     }
 
-    // ЗАПУСК ПРИ ОТКРЫТИИ СТРАНИЦЫ
     window.addEventListener('DOMContentLoaded', fetchNews);
 </script>
 </body>
