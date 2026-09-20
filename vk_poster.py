@@ -105,8 +105,9 @@ def upload_photo_to_vk(image_path):
     group_id_param = OWNER_ID if str(OWNER_ID).startswith('-') else f"-{OWNER_ID}"
     group_id = group_id_param.lstrip('-')
 
+    # Используем метод загрузки документов на стену, разрешенный для токенов сообществ
     url_server = requests.get(
-        "https://api.vk.com/method/photos.getWallUploadServer",
+        "https://api.vk.com/method/docs.getWallUploadServer",
         params={
             'group_id': group_id,
             'access_token': TOKEN,
@@ -115,36 +116,34 @@ def upload_photo_to_vk(image_path):
     ).json()
     
     if 'response' not in url_server:
-        print(f"Ошибка сервера загрузки ВК: {url_server}")
+        print(f"Ошибка сервера загрузки документов ВК: {url_server}")
         return None
         
     upload_url = url_server['response']['upload_url']
     
-    with open(image_path, 'rb') as photo_file:
-        files = {'photo': ('cover.jpg', photo_file, 'image/jpeg')}
+    with open(image_path, 'rb') as file:
+        files = {'file': ('cover.jpg', file, 'image/jpeg')}
         upload_response = requests.post(upload_url, files=files).json()
         
-    if not upload_response.get('photo') or upload_response.get('photo') == '[]':
-        print("[!] ВК сервер отклонил файл. (вернулся пустой массив)")
+    if 'file' not in upload_response:
+        print(f"[!] ВК сервер отклонил файл: {upload_response}")
         return None
         
     save_response = requests.post(
-        "https://api.vk.com/method/photos.saveWallPhoto",
+        "https://api.vk.com/method/docs.save",
         data={
-            'group_id': group_id,
-            'server': upload_response['server'],
-            'photo': upload_response['photo'],
-            'hash': upload_response['hash'],
+            'file': upload_response['file'],
+            'title': 'cover',
             'access_token': TOKEN,
             'v': API_VERSION
         }
     ).json()
     
     if 'response' in save_response:
-        photo_data = save_response['response'][0]
-        return f"photo{photo_data['owner_id']}_{photo_data['id']}"
+        doc_data = save_response['response']['doc']
+        return f"doc{doc_data['owner_id']}_{doc_data['id']}"
     
-    print(f"Ошибка сохранения фото в ВК: {save_response}")
+    print(f"Ошибка сохранения документа в ВК: {save_response}")
     return None
 
 def auto_post_latest_news():
