@@ -1588,7 +1588,7 @@
             translationsHTML.ru[`${prog.id}_desc`] = prog.desc_ru;
             translationsHTML.en[`${prog.id}_title`] = prog.title_en;
             translationsHTML.en[`${prog.id}_desc`] = prog.desc_en;
-
+injectCoursesSchema(prog.title_ru, prog.desc_ru);
             let bulletsHTML = '';
             if (prog.bullets_ru && Array.isArray(prog.bullets_ru)) {
                 prog.bullets_ru.forEach((b_ru, i) => {
