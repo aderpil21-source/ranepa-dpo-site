@@ -2787,7 +2787,23 @@
     if (lbNav) lbNav.style.display = 'none';
     document.getElementById('mediaLightbox').classList.add('active');
 }
-
+function injectCourseSchema(programName, programDesc) {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": programName,
+        "description": programDesc || "Программа профессиональной переподготовки или повышения квалификации.",
+        "provider": {
+            "@type": "CollegeOrUniversity",
+            "name": "Западный филиал РАНХиГС",
+            "url": "https://ranepa-dpo39.ru/"
+        },
+        "educationalCredentialAwarded": "Документ установленного образца с внесением в ФИС ФРДО"
+    });
+    document.head.appendChild(script);
+}
     window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
