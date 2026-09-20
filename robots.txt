@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /img/
-Sitemap: https://ranepa-cdo.ru/sitemap.xml
+Disallow: /*?*
+Disallow: /admin/
+Disallow: /private/
+Sitemap: https://ranepa-dpo39.ru/sitemap.xml
