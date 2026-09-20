@@ -102,13 +102,13 @@ def download_image(image_url, save_path="temp_news_img.jpg"):
         print(f"Ошибка скачивания картинки: {e}")
     return None
 
-def upload_photo_to_vk(image_path):
-    group_id = str(OWNER_ID).lstrip('-')
-    
+# Убеждаемся, что ID группы идет со знаком минус для метода стены
+    group_id_param = OWNER_ID if str(OWNER_ID).startswith('-') else f"-{OWNER_ID}"
+
     url_server = requests.get(
-        "https://api.vk.com/method/photos.getOwnerWallUploadServer",
+        "https://api.vk.com/method/photos.getWallUploadServer",
         params={
-            'group_id': str(OWNER_ID).lstrip('-'),
+            'group_id': group_id_param.lstrip('-'), # ВК для wall-сервера часто требует ID без минуса, но с правильным контекстом токена
             'access_token': TOKEN,
             'v': API_VERSION
         }
