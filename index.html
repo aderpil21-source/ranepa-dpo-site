@@ -2241,7 +2241,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const overlay = document.getElementById('scheduleOverlay');
         const container = document.getElementById('scheduleTimeline');
         
-        document.getElementById('newsOverlay').classList.remove('active');
+        const newsOverlay = document.getElementById('newsOverlay');
+if (newsOverlay) {
+    newsOverlay.classList.remove('active');
+}
         overlay.classList.add('active');
 
         if (!window.schedules || window.schedules.length === 0) {
