@@ -51,7 +51,6 @@ def fetch_latest_news_from_api():
             elif not cover_image.startswith('http'):
                 cover_image = SITE_URL.rstrip('/') + '/' + cover_image.lstrip('/')
 
-        # ИСПРАВЛЕНИЕ: Теперь бот формирует ссылку строго на страницу news.html с ID конкретной новости
         news_url = f"{SITE_URL}news.html#{news_id}" if news_id else f"{SITE_URL}news.html"
         
         return title, lead, cover_image, news_url
@@ -102,13 +101,14 @@ def download_image(image_url, save_path="temp_news_img.jpg"):
         print(f"Ошибка скачивания картинки: {e}")
     return None
 
-# Убеждаемся, что ID группы идет со знаком минус для метода стены
+def upload_photo_to_vk(image_path):
     group_id_param = OWNER_ID if str(OWNER_ID).startswith('-') else f"-{OWNER_ID}"
+    group_id = group_id_param.lstrip('-')
 
     url_server = requests.get(
         "https://api.vk.com/method/photos.getWallUploadServer",
         params={
-            'group_id': group_id_param.lstrip('-'), # ВК для wall-сервера часто требует ID без минуса, но с правильным контекстом токена
+            'group_id': group_id,
             'access_token': TOKEN,
             'v': API_VERSION
         }
