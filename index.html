@@ -2545,41 +2545,54 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         renderNewsGrid();
     }
 
-    function openNewsDetail(id) {
-        const n = newsItems.find(x => x.id === id);
-        if (!n) return;
-        document.getElementById('newsListView').style.display = 'none';
-        const view = document.getElementById('newsDetailView');
-        view.style.display = 'block';
+   function openNewsDetail(id) {
+    const n = newsItems.find(x => x.id === id);
+    if (!n) return;
+    
+    // Меняем адресную строку браузера на уникальный хвост новости
+    history.pushState(null, '', `#news=${id}`);
 
-        const visibleBlocks = (n.blocks || []).filter(b => !b.hidden);
-        currentArticleMedia = visibleBlocks.filter(b => (b.type === 'image' || b.type === 'video') && b.url);
+    document.getElementById('newsListView').style.display = 'none';
+    const view = document.getElementById('newsDetailView');
+    view.style.display = 'block';
 
-        const bodyHtml = visibleBlocks.map(b => {
-            if (b.type === 'text') return `<p class="news-body-text">${escapeHtml(b.content)}</p>`;
-            if (b.type === 'insert') return `<div class="news-insert">${escapeHtml(b.content)}</div>`;
-            if (b.type === 'image' && b.url) {
-                const mi = currentArticleMedia.indexOf(b);
-                return `<figure class="news-media-figure"><img src="${convertDriveUrl(b.url)}" alt="" onclick="openLightboxAt(${mi})">${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
+    const visibleBlocks = (n.blocks || []).filter(b => !b.hidden);
+    currentArticleMedia = visibleBlocks.filter(b => (b.type === 'image' || b.type === 'video') && b.url);
+
+    const bodyHtml = visibleBlocks.map(b => {
+        if (b.type === 'text') return `<p class="news-body-text">${escapeHtml(b.content)}</p>`;
+        if (b.type === 'insert') return `<div class="news-insert">${escapeHtml(b.content)}</div>`;
+        if (b.type === 'image' && b.url) {
+            const mi = currentArticleMedia.indexOf(b);
+            return `<figure class="news-media-figure"><img src="${convertDriveUrl(b.url)}" alt="" onclick="openLightboxAt(${mi})">${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
+        }
+        if (b.type === 'video' && b.url) {
+            if (b.provider === 'embed') {
+                return `<figure class="news-media-figure"><div class="news-video-embed-wrap"><iframe src="${b.url}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
             }
-            if (b.type === 'video' && b.url) {
-                if (b.provider === 'embed') {
-                    return `<figure class="news-media-figure"><div class="news-video-embed-wrap"><iframe src="${b.url}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
-                }
-                return `<figure class="news-media-figure"><video src="${b.url}" controls></video>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
-            }
-            return '';
-        }).join('');
+            return `<figure class="news-media-figure"><video src="${b.url}" controls></video>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
+        }
+        return '';
+    }).join('');
 
-        view.innerHTML = `
-            <button class="accordion-btn" style="max-width:240px; margin-bottom:24px;" onclick="showNewsListView()">← Назад к новостям</button>
-            <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
-            <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
-            <div class="news-detail-date">${formatNewsDate(n.createdAt)}</div>
-            ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
-            <div class="news-detail-body">${bodyHtml}</div>
-        `;
-    }
+    view.innerHTML = `
+        <button class="accordion-btn" style="max-width:240px; margin-bottom:24px;" onclick="showNewsListView()">← Назад к новостям</button>
+        <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+        <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
+        <div class="news-detail-date">${formatNewsDate(n.createdAt)}</div>
+        ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
+        <div class="news-detail-body">${bodyHtml}</div>
+    `;
+}
+
+function showNewsListView() {
+    // Возвращаем чистый адрес сайта без хвоста при возвращении к списку
+    history.pushState(null, '', window.location.pathname);
+
+    document.getElementById('newsListView').style.display = '';
+    document.getElementById('newsDetailView').style.display = 'none';
+    renderNewsGrid();
+}
 
     /* ---- Лайтбокс: увеличение фото и видео ---- */
     function openLightboxAt(index) {
