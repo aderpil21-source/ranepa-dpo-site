@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Новости Центра | Академия Кадров</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="./favicon.png">
+    <style>
+        /* БАЗОВЫЕ ПЕРЕМЕННЫЕ И ТЕМЫ ИЗ ВАШЕГО CSS */
+        :root {
+            --ranepa-red: #CA0F3E;
+            --ranepa-burgundy: #881337;
+            --ranepa-rich-blue: #1e3a8a;
+            --transition-speed: 0.3s;
+            --bezier-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --header-h: 90px;
+        }
+
+        [data-theme="dark"] {
+            --bg-deep: #05080e;
+            --bg-card: rgba(17, 24, 39, 0.55);
+            --bg-glass: rgba(17, 24, 39, 0.75);
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --header-bg: rgba(5, 8, 14, 0.95);
+            --btn-glass: rgba(255, 255, 255, 0.05);
+            --shadow-color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* БАЗОВЫЕ СТИЛИ СТРАНИЦЫ */
+        html, body { width: 100%; min-height: 100vh; font-size: 16px; overflow-x: hidden; scroll-behavior: smooth; margin: 0; padding: 0; }
+        * { box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-deep); color: var(--text-main); }
+        
+        /* УПРОЩЕННЫЙ ХЕДЕР ДЛЯ ОТДЕЛЬНОЙ СТРАНИЦЫ */
+        header {
+            background: var(--header-bg); backdrop-filter: blur(25px);
+            padding: 14px max(32px, env(safe-area-inset-right)) 14px max(32px, env(safe-area-inset-left));
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: sticky; top: 0; z-index: 10050;
+        }
+        .logo-group { display: flex; flex-direction: column; text-decoration: none; }
+        .logo-group img { height: 60px; object-fit: contain; object-position: left center; }
+        .back-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: #fff; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 800; font-family: 'Montserrat', sans-serif; transition: 0.3s; }
+        .back-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); }
+
+        /* ОСНОВНОЙ КОНТЕЙНЕР НОВОСТЕЙ */
+        .news-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .schedule-title { font-size: 2.2rem; font-family: 'Montserrat', sans-serif; color: var(--text-main); font-weight: 900; margin:0;}
+        .schedule-title span { color: #38bdf8; }
+
+        /* СТИЛИ КАРТОЧЕК И ГРИДА */
+        .news-tags-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+        .filter-sector-chip { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted); padding: 8px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; user-select: none; }
+        .filter-sector-chip.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); }
+        .news-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        @media (max-width: 768px) { .news-grid { grid-template-columns: 1fr; } }
+        
+        .card { background: var(--bg-card); border-radius: 22px; border: 1px solid var(--border-glass); transition: 0.3s; cursor: pointer; overflow: hidden; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); }
+        .card:hover { transform: translateY(-6px); border-color: rgba(202, 15, 62, 0.4); }
+        .news-card-cover { width: 100%; height: 260px; background-size: cover; background-position: center; background-color: rgba(255,255,255,0.03); }
+        .card-meta, .card h3, .card p, .news-card-tags { padding: 0 24px; }
+        .card-meta { margin-top: 20px; display: flex; justify-content: space-between;}
+        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.35rem; margin-top: 14px; margin-bottom:10px; color: var(--text-main); }
+        .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom:20px; }
+        .news-card-tags { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 22px; }
+        .news-tag-pill { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+
+        /* ДЕТАЛЬНЫЙ ПРОСМОТР */
+        .news-detail-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+        .news-detail-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 10px; line-height: 1.3; color: var(--text-main); }
+        .news-detail-date { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+        .news-detail-lead { font-size: 1.15rem; font-weight: 600; color: var(--text-main); border-left: 3px solid var(--ranepa-red); padding-left: 16px; margin-bottom: 28px; line-height: 1.6; }
+        .news-body-text { color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; font-size: 1.02rem; white-space: pre-wrap; }
+        .news-insert { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.3); border-left: 4px solid #38bdf8; border-radius: 0 14px 14px 0; padding: 18px 22px; margin: 24px 0; font-weight: 600; color: var(--text-main); white-space: pre-wrap; }
+        .news-media-figure { margin: 24px 0; }
+        .news-media-figure img, .news-media-figure video { width: 100%; border-radius: 16px; cursor: zoom-in; display: block; }
+        .news-video-embed-wrap { position: relative; width: 100%; padding-top: 56.25%; border-radius: 16px; overflow: hidden; }
+        .news-video-embed-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+        .accordion-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: #fff; padding: 15px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-bottom: 24px; display:inline-block; }
+        .accordion-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); }
+
+        /* АДМИН ПАНЕЛЬ */
+        .news-admin-gear { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; }
+        .news-admin-bar { display: none; flex-direction: column; gap: 14px; background: rgba(202,15,62,0.08); border: 1px solid rgba(202,15,62,0.3); padding: 16px 18px; border-radius: 14px; margin-bottom: 28px; }
+        .chat-opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: 0.2s; }
+        .chat-opt-btn:hover { background: var(--ranepa-red); border-color:var(--ranepa-red); }
+        .news-admin-list { display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow-y: auto; }
+        .news-admin-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 10px; flex-wrap: wrap; }
+        
+        /* МОДАЛЬНЫЕ ОКНА И РЕДАКТОР (Скопировано из оригинала) */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 20000; padding: 15px; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: var(--bg-glass); border-radius: 30px; width: 100%; text-align: center; border: 1px solid var(--border-glass); max-height: 88vh; overflow-y: auto; padding: 30px; color: var(--text-main); }
+        .chrome-glass { background: linear-gradient(165deg, rgba(255,255,255,0.14) 0%, var(--bg-glass) 35%, var(--bg-glass) 100%); border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 55px 100px rgba(0,0,0,0.7); }
+        .chat-text-input { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; color: #fff; outline: none; margin-bottom:14px; font-family: 'Manrope', sans-serif;}
+        .buy-btn { width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 18px; border-radius: 14px; font-weight: 900; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif;}
+        .close-modal { margin-top: 15px; cursor: pointer; color: var(--text-muted); text-decoration: underline; padding: 10px; }
+        
+        /* ЛАЙТБОКС */
+        #mediaLightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 30000; display: none; align-items: center; justify-content: center; padding: 30px; }
+        #mediaLightbox.active { display: flex; }
+        #lightboxContent img, #lightboxContent video { max-width: 90vw; max-height: 85vh; border-radius: 10px; display: block; margin: 0 auto; }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 2rem; cursor: pointer; background: none; border: none; }
+        #lightboxNav { position: absolute; top: 50%; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 20px; transform: translateY(-50%); pointer-events: none; }
+        #lightboxNav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; pointer-events: auto; font-size: 1.5rem;}
+        
+        .loader-spinner { width: 40px; height: 40px; border: 4px solid rgba(202, 15, 62, 0.2); border-top-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo-group">
+            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия">
+        </a>
+        <a href="index.html" class="back-btn">На главную</a>
+    </header>
+
+    <div class="news-container">
+        <div class="schedule-header">
+            <h2 class="schedule-title">Новости <span>центра</span></h2>
+            <button class="news-admin-gear" onclick="openNewsAdminLogin()" title="Вход для администратора">⚙</button>
+        </div>
+
+        <div class="news-admin-bar" id="newsAdminBar">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <b style="color: var(--ranepa-red); font-family:'Montserrat',sans-serif;">Режим администратора</b>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="chat-opt-btn" onclick="openNewsEditor(null)">+ Добавить новость</button>
+                    <button class="chat-opt-btn" onclick="newsAdminLogout()">Выйти</button>
+                </div>
+            </div>
+            <div class="news-admin-list" id="newsAdminList"></div>
+        </div>
+
+        <div id="newsListView">
+            <div class="news-tags-bar" id="newsTagsBar"></div>
+            <div class="news-grid" id="newsGrid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="loader-spinner"></div>Загрузка новостей...</div>
+            </div>
+        </div>
+
+        <div id="newsDetailView" style="display:none;"></div>
+    </div>
+
+    <!-- ВХОД ДЛЯ АДМИНА -->
+    <div class="modal-overlay" id="newsAdminLoginModal">
+        <div class="modal-box" style="max-width: 400px;">
+            <h3>Вход для администратора</h3>
+            <p style="text-align:left; color: var(--text-muted); margin-bottom:10px;">Введите пароль редактора:</p>
+            <input type="password" id="newsAdminPassInput" class="chat-text-input" onkeydown="if(event.key==='Enter') submitNewsAdminLogin()">
+            <div id="newsAdminLoginError" style="display:none; color: var(--ranepa-red); font-weight:700; margin-bottom:14px; text-align:left;"></div>
+            <button class="buy-btn" onclick="submitNewsAdminLogin()">Войти</button>
+            <div class="close-modal" onclick="closeNewsAdminLogin()">Отмена</div>
+        </div>
+    </div>
+
+    <!-- РЕДАКТОР НОВОСТИ -->
+    <div class="modal-overlay" id="newsEditorModal">
+        <div class="modal-box chrome-glass" style="text-align:left; max-width:720px;">
+            <h3 id="newsEditorHeading">Новость</h3>
+            <label style="color: var(--text-muted); font-size: 0.8rem;">Заголовок</label>
+            <input type="text" id="newsEditorTitle" class="chat-text-input">
+            
+            <label style="color: var(--text-muted); font-size: 0.8rem;">Лид (краткий анонс)</label>
+            <textarea id="newsEditorLead" class="chat-text-input" style="min-height:60px;"></textarea>
+            
+            <label style="color: var(--text-muted); font-size: 0.8rem;">Обложка (ссылка)</label>
+            <input type="text" id="newsEditorCover" class="chat-text-input" placeholder="Оставьте пустым для авто-выбора из текста">
+            
+            <label style="color: var(--text-muted); font-size: 0.8rem;">Теги (через запятую)</label>
+            <input type="text" id="newsEditorTagsInput" class="chat-text-input" placeholder="например: приём, ИИ, событие">
+            
+            <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer;">
+                <input type="checkbox" id="newsEditorPublished" style="width:18px; height:18px;">
+                <span>Опубликовать на сайте</span>
+            </label>
+            <button class="buy-btn" onclick="saveNewsItem()">💾 Сохранить</button>
+            <div class="close-modal" onclick="closeNewsEditor()" style="text-align: center;">Отмена</div>
+        </div>
+    </div>
+
+    <!-- ЛАЙТБОКС -->
+    <div id="mediaLightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <div id="lightboxNav" style="display:none;">
+            <button onclick="navLightbox(-1)">‹</button>
+            <button onclick="navLightbox(1)">›</button>
+        </div>
+        <div id="lightboxContent"></div>
+    </div>
+
+<script>
+    // --- ИНИЦИАЛИЗАЦИЯ И УТИЛИТЫ ---
+    const API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
+    
+    let newsItems = [];
+    let newsAdminToken = sessionStorage.getItem('newsAdminToken') || null;
+    let activeNewsTagFilter = null;
+    let editingNewsId = null;
+    let currentArticleMedia = [];
+    let currentLightboxMedia = [];
+    let currentLightboxIndex = 0;
+
+    function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function formatNewsDate(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        return isNaN(d) ? String(iso) : d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    function convertDriveUrl(url) {
+        if (url && url.includes('drive.google.com') && url.includes('id=')) {
+            const idMatch = url.match(/id=([^&]+)/);
+            if (idMatch) return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w1600`;
+        }
+        return url;
+    }
+
+    // --- ОСНОВНАЯ ЗАГРУЗКА НОВОСТЕЙ ---
+    async function fetchNews() {
+        try {
+            let url = API_URL + '?type=news';
+            if (newsAdminToken) url += '&admin=1&token=' + encodeURIComponent(newsAdminToken);
+            const res = await fetch(url);
+            const data = await res.json();
+            newsItems = data.items || [];
+            
+            renderNewsGrid();
+            if (newsAdminToken) {
+                document.getElementById('newsAdminBar').style.display = 'flex';
+                renderAdminNewsList();
+            }
+
+            // ПРОВЕРКА URL ДЛЯ АВТОМАТИЧЕСКОГО ОТКРЫТИЯ НОВОСТИ (Например: news.html#12345)
+            const hash = window.location.hash.replace('#', '').replace('news=', '');
+            if (hash && newsItems.find(n => n.id === hash)) {
+                openNewsDetail(hash);
+            }
+        } catch (e) {
+            console.error('Ошибка загрузки новостей', e);
+            document.getElementById('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Ошибка подключения к базе. Обновите страницу.</div>`;
+        }
+    }
+
+    // --- ОТОБРАЖЕНИЕ КАТАЛОГА ---
+    function showNewsListView() {
+        document.getElementById('newsListView').style.display = 'block';
+        document.getElementById('newsDetailView').style.display = 'none';
+        window.history.replaceState(null, null, window.location.pathname); // Очищаем хэш
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+
+    function renderNewsGrid() {
+        const grid = document.getElementById('newsGrid');
+        const tagsBar = document.getElementById('newsTagsBar');
+        if (!grid) return;
+
+        const allTags = [...new Set(newsItems.flatMap(n => n.tags || []))];
+        tagsBar.innerHTML = allTags.map(t =>
+            `<div class="filter-sector-chip ${activeNewsTagFilter === t ? 'active' : ''}" onclick="toggleNewsTagFilter('${t.replace(/'/g, "\\'")}')">${escapeHtml(t)}</div>`
+        ).join('');
+
+        let items = newsItems;
+        if (!newsAdminToken) items = items.filter(n => n.status === 'published'); // Прячем скрытые от обычных юзеров
+        if (activeNewsTagFilter) items = items.filter(n => (n.tags || []).includes(activeNewsTagFilter));
+
+        if (!items.length) {
+            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Новостей пока нет.</div>`;
+            return;
+        }
+
+        grid.innerHTML = items.map(n => {
+            const coverBlock = (n.blocks || []).find(b => b.type === 'image' && !b.hidden && b.url);
+            const cover = convertDriveUrl(n.coverImage || (coverBlock ? coverBlock.url : ''));
+            const hiddenBadge = n.status !== 'published' ? '<span style="color:#f59e0b; font-size:0.8rem; font-weight:800;">[СКРЫТО]</span>' : '';
+            return `
+            <div class="card news-card" onclick="openNewsDetail('${n.id}')">
+                ${cover ? `<div class="news-card-cover" style="background-image:url('${String(cover).replace(/'/g, '%27')}')"></div>` : ''}
+                <div class="card-meta"><span style="font-size:0.8rem; color:var(--text-muted);">${formatNewsDate(n.createdAt)}</span>${hiddenBadge}</div>
+                <h3>${escapeHtml(n.title)}</h3>
+                <p>${escapeHtml(n.lead || '')}</p>
+                <div class="news-card-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+            </div>`;
+        }).join('');
+    }
+
+    function toggleNewsTagFilter(tag) {
+        activeNewsTagFilter = (activeNewsTagFilter === tag) ? null : tag;
+        renderNewsGrid();
+    }
+
+    // --- ОТОБРАЖЕНИЕ КОНКРЕТНОЙ НОВОСТИ ---
+    function openNewsDetail(id) {
+        const n = newsItems.find(x => x.id === id);
+        if (!n) return;
+        
+        document.getElementById('newsListView').style.display = 'none';
+        const view = document.getElementById('newsDetailView');
+        view.style.display = 'block';
+        window.history.replaceState(null, null, `#${id}`); // Добавляем ID в адресную строку
+        window.scrollTo({top: 0, behavior: 'smooth'});
+
+        const visibleBlocks = (n.blocks || []).filter(b => !b.hidden);
+        currentArticleMedia = visibleBlocks.filter(b => (b.type === 'image' || b.type === 'video') && b.url);
+
+        const bodyHtml = visibleBlocks.map(b => {
+            if (b.type === 'text') return `<p class="news-body-text">${escapeHtml(b.content)}</p>`;
+            if (b.type === 'insert') return `<div class="news-insert">${escapeHtml(b.content)}</div>`;
+            if (b.type === 'image' && b.url) {
+                const mi = currentArticleMedia.indexOf(b);
+                return `<figure class="news-media-figure"><img src="${convertDriveUrl(b.url)}" onclick="openLightboxAt(${mi})">${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
+            }
+            if (b.type === 'video' && b.url) {
+                if (b.provider === 'embed') return `<figure class="news-media-figure"><div class="news-video-embed-wrap"><iframe src="${b.url}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
+                return `<figure class="news-media-figure"><video src="${b.url}" controls></video>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
+            }
+            return '';
+        }).join('');
+
+        view.innerHTML = `
+            <button class="accordion-btn" onclick="showNewsListView()">← Ко всем новостям</button>
+            <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+            <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
+            <div class="news-detail-date">${formatNewsDate(n.createdAt)}</div>
+            ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
+            <div class="news-detail-body">${bodyHtml}</div>
+        `;
+    }
+
+    // --- ЛАЙТБОКС ---
+    function openLightboxAt(index) {
+        currentLightboxMedia = currentArticleMedia;
+        currentLightboxIndex = index;
+        renderLightbox();
+        document.getElementById('mediaLightbox').classList.add('active');
+    }
+    function closeLightbox() { document.getElementById('mediaLightbox').classList.remove('active'); }
+    function navLightbox(delta) {
+        currentLightboxIndex = (currentLightboxIndex + delta + currentLightboxMedia.length) % currentLightboxMedia.length;
+        renderLightbox();
+    }
+    function renderLightbox() {
+        const m = currentLightboxMedia[currentLightboxIndex];
+        const box = document.getElementById('lightboxContent');
+        if (!m) return;
+        if (m.type === 'video') {
+            box.innerHTML = m.provider === 'embed' ? `<div class="news-video-embed-wrap" style="width:80vw; max-width:960px;"><iframe src="${m.url}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>` : `<video src="${m.url}" controls autoplay></video>`;
+        } else {
+            box.innerHTML = `<img src="${convertDriveUrl(m.url)}">`;
+        }
+        document.getElementById('lightboxNav').style.display = currentLightboxMedia.length > 1 ? 'flex' : 'none';
+    }
+
+    // --- АДМИН-ПАНЕЛЬ (Упрощенная версия для отдельного файла) ---
+    function openNewsAdminLogin() { document.getElementById('newsAdminLoginModal').classList.add('active'); }
+    function closeNewsAdminLogin() { document.getElementById('newsAdminLoginModal').classList.remove('active'); document.getElementById('newsAdminPassInput').value = ''; }
+    
+    async function submitNewsAdminLogin() {
+        const pass = document.getElementById('newsAdminPassInput').value;
+        const errEl = document.getElementById('newsAdminLoginError');
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsLogin', password: pass }) });
+            const data = await res.json();
+            if (data.ok) {
+                newsAdminToken = data.token; sessionStorage.setItem('newsAdminToken', newsAdminToken);
+                closeNewsAdminLogin(); document.getElementById('newsAdminBar').style.display = 'flex'; fetchNews();
+            } else { errEl.textContent = 'Неверный пароль'; errEl.style.display = 'block'; }
+        } catch (e) { errEl.textContent = 'Ошибка сервера'; errEl.style.display = 'block'; }
+    }
+    function newsAdminLogout() { newsAdminToken = null; sessionStorage.removeItem('newsAdminToken'); document.getElementById('newsAdminBar').style.display = 'none'; fetchNews(); }
+
+    function renderAdminNewsList() {
+        const list = document.getElementById('newsAdminList');
+        if (!list) return;
+        list.innerHTML = newsItems.map(n => `
+            <div class="news-admin-row">
+                <div style="color:var(--text-main); font-weight:700;">${n.status==='published'?'✅':'🚫'} ${escapeHtml(n.title)}</div>
+                <div style="display:flex; gap:8px;">
+                    <button class="chat-opt-btn" onclick="openNewsEditor('${n.id}')">Редактировать</button>
+                    <button class="chat-opt-btn" style="background:#881337;" onclick="deleteNewsItem('${n.id}')">Удалить</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openNewsEditor(id) {
+        editingNewsId = id || null;
+        const n = id ? newsItems.find(x => x.id === id) : null;
+        document.getElementById('newsEditorHeading').textContent = id ? 'Редактирование' : 'Новая новость';
+        document.getElementById('newsEditorTitle').value = n ? n.title : '';
+        document.getElementById('newsEditorLead').value = n ? n.lead : '';
+        document.getElementById('newsEditorCover').value = n ? n.coverImage : '';
+        document.getElementById('newsEditorTagsInput').value = n && n.tags ? n.tags.join(', ') : '';
+        document.getElementById('newsEditorPublished').checked = n ? n.status === 'published' : false;
+        document.getElementById('newsEditorModal').classList.add('active');
+    }
+    function closeNewsEditor() { document.getElementById('newsEditorModal').classList.remove('active'); }
+
+    async function saveNewsItem() {
+        const item = {
+            id: editingNewsId,
+            title: document.getElementById('newsEditorTitle').value.trim(),
+            lead: document.getElementById('newsEditorLead').value.trim(),
+            coverImage: document.getElementById('newsEditorCover').value.trim(),
+            tags: document.getElementById('newsEditorTagsInput').value.split(',').map(s=>s.trim()).filter(Boolean),
+            blocks: editingNewsId ? newsItems.find(x => x.id === editingNewsId).blocks : [], // В этой лайт-версии блоки сохраняем как есть
+            status: document.getElementById('newsEditorPublished').checked ? 'published' : 'hidden'
+        };
+        if (!item.title) { alert('Укажите заголовок'); return; }
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsSave', token: newsAdminToken, item }) });
+            if ((await res.json()).ok) { closeNewsEditor(); fetchNews(); } else { alert('Ошибка сохранения (истек токен?)'); }
+        } catch (e) { alert('Ошибка сети'); }
+    }
+
+    async function deleteNewsItem(id) {
+        if (!confirm('Удалить новость безвозвратно?')) return;
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsDelete', token: newsAdminToken, id }) });
+            if ((await res.json()).ok) fetchNews(); else alert('Ошибка удаления');
+        } catch (e) { alert('Ошибка сети'); }
+    }
+
+    // ЗАПУСК ПРИ ОТКРЫТИИ СТРАНИЦЫ
+    window.addEventListener('DOMContentLoaded', fetchNews);
+</script>
+</body>
+</html>
