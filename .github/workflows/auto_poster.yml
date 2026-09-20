@@ -1,0 +1,28 @@
+name: VK Auto Poster
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  post-to-vk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests python-dotenv
+
+      - name: Run vk_poster.py
+        env:
+          VK_TOKEN: ${{ secrets.VK_TOKEN }}
+          VK_OWNER_ID: ${{ secrets.VK_OWNER_ID }}
+        run: python vk_poster.py
