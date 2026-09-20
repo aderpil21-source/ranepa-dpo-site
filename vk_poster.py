@@ -106,8 +106,12 @@ def upload_photo_to_vk(image_path):
     group_id = str(OWNER_ID).lstrip('-')
     
     url_server = requests.get(
-        "https://api.vk.com/method/photos.getWallUploadServer",
-        params={'group_id': group_id, 'access_token': TOKEN, 'v': API_VERSION}
+        "https://api.vk.com/method/photos.getOwnerWallUploadServer",
+        params={
+            'group_id': str(OWNER_ID).lstrip('-'),
+            'access_token': TOKEN,
+            'v': API_VERSION
+        }
     ).json()
     
     if 'response' not in url_server:
