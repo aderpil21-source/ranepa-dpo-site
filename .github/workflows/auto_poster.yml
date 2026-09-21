@@ -1,8 +1,11 @@
 name: VK Auto Poster
 
 on:
+  # Проверка новых новостей каждые 30 минут
   schedule:
     - cron: '*/30 * * * *'
+  
+  # Возможность запустить скрипт вручную в любой момент из интерфейса GitHub
   workflow_dispatch:
 
 jobs:
@@ -19,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests python-dotenv
+          pip install requests Pillow python-dotenv
 
       - name: Run vk_poster.py
         env:
