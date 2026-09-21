@@ -1,592 +1,1278 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Новости Центра | Академия Кадров</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="./favicon.png">
-    <style>
-        :root {
-            --ranepa-red: #CA0F3E;
-            --ranepa-burgundy: #881337;
-            --ranepa-rich-blue: #1e3a8a;
-            --transition-speed: 0.3s;
-            --bezier-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --header-h: 90px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Новости Центра | Академия Кадров</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+/* Шрифты берутся с вашего же сервера, без внешних CDN.
+   Положите файлы в ./fonts/. Если их нет, подхватится системный набор. */
+@font-face { font-family:'AK Display'; src: local('PT Root UI'), local('Montserrat'), url('./fonts/ptrootui-bold.woff2') format('woff2'); font-weight:700 900; font-display:swap; }
+@font-face { font-family:'AK Text';    src: local('PT Root UI'), local('Manrope'),    url('./fonts/ptrootui-regular.woff2') format('woff2'); font-weight:400 600; font-display:swap; }
 
-        [data-theme="dark"] {
-            --bg-deep: #05080e;
-            --bg-card: rgba(17, 24, 39, 0.55);
-            --bg-glass: rgba(17, 24, 39, 0.75);
-            --text-main: #F8FAFC;
-            --text-muted: #94A3B8;
-            --border-glass: rgba(255, 255, 255, 0.08);
-            --header-bg: rgba(5, 8, 14, 0.95);
-            --btn-glass: rgba(255, 255, 255, 0.05);
-            --shadow-color: rgba(0, 0, 0, 0.6);
-        }
+:root {
+    --ranepa-red:#CA0F3E; --ranepa-burgundy:#881337; --accent-sky:#38bdf8;
+    --ok:#4ade80; --warn:#f59e0b;
+    --font-display:'AK Display','PT Root UI','Segoe UI',Roboto,system-ui,sans-serif;
+    --font-text:'AK Text','PT Root UI','Segoe UI',Roboto,system-ui,sans-serif;
+}
+[data-theme="dark"] {
+    --bg-deep:#05080e; --bg-card:rgba(17,24,39,.55); --bg-glass:rgba(17,24,39,.75);
+    --text-main:#F8FAFC; --text-muted:#94A3B8; --border-glass:rgba(255,255,255,.08);
+    --header-bg:rgba(5,8,14,.95); --btn-glass:rgba(255,255,255,.05);
+}
+html,body { width:100%; min-height:100vh; font-size:16px; overflow-x:hidden; scroll-behavior:smooth; margin:0; padding:0; }
+*{ box-sizing:border-box; font-family:var(--font-text); }
+body{ background-color:var(--bg-deep); color:var(--text-main); }
+:focus-visible{ outline:2px solid var(--accent-sky); outline-offset:2px; }
+@media (prefers-reduced-motion:reduce){ *{ animation-duration:.01ms!important; transition-duration:.01ms!important; } }
 
-        html, body { width: 100%; min-height: 100vh; font-size: 16px; overflow-x: hidden; scroll-behavior: smooth; margin: 0; padding: 0; }
-        * { box-sizing: border-box; font-family: 'Manrope', sans-serif; }
-        body { background-color: var(--bg-deep); color: var(--text-main); }
-        
-        header {
-            background: var(--header-bg); backdrop-filter: blur(25px);
-            padding: 14px max(32px, env(safe-area-inset-right)) 14px max(32px, env(safe-area-inset-left));
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7); position: sticky; top: 0; z-index: 10050;
-        }
-        .logo-group { display: flex; flex-direction: column; text-decoration: none; }
-        .logo-group img { height: 60px; object-fit: contain; object-position: left center; }
-        .back-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: #fff; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: 800; font-family: 'Montserrat', sans-serif; transition: 0.3s; }
-        .back-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); }
+header{ background:var(--header-bg); backdrop-filter:blur(25px);
+    padding:14px max(32px,env(safe-area-inset-right)) 14px max(32px,env(safe-area-inset-left));
+    display:flex; justify-content:space-between; align-items:center;
+    border-bottom:1px solid rgba(255,255,255,.1); box-shadow:0 15px 35px rgba(0,0,0,.7); position:sticky; top:0; z-index:10050; }
+.logo-group img{ height:60px; object-fit:contain; object-position:left center; display:block; }
+.back-btn{ background:var(--btn-glass); border:1px solid var(--border-glass); color:#fff; padding:10px 20px; border-radius:10px; text-decoration:none; font-weight:800; font-family:var(--font-display); transition:.3s; }
+.back-btn:hover{ background:var(--ranepa-red); border-color:var(--ranepa-red); }
 
-        .news-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-        .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .schedule-title { font-size: 2.2rem; font-family: 'Montserrat', sans-serif; color: var(--text-main); font-weight: 900; margin:0;}
-        .schedule-title span { color: #38bdf8; }
+.news-container{ max-width:1100px; margin:40px auto; padding:0 20px; }
+.schedule-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; gap:16px; }
+.schedule-title{ font-size:2.2rem; font-family:var(--font-display); font-weight:900; margin:0; }
+.schedule-title span{ color:var(--accent-sky); }
 
-        .news-tags-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-        .filter-sector-chip { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted); padding: 8px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s; user-select: none; }
-        .filter-sector-chip.active { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); }
-        .news-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
-        @media (max-width: 768px) { .news-grid { grid-template-columns: 1fr; } }
-        
-        .card { background: var(--bg-card); border-radius: 22px; border: 1px solid var(--border-glass); transition: 0.3s; cursor: pointer; overflow: hidden; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); }
-        .card:hover { transform: translateY(-6px); border-color: rgba(202, 15, 62, 0.4); }
-        .news-card-cover { width: 100%; height: 260px; background-size: cover; background-position: center; background-color: rgba(255,255,255,0.03); }
-        .card-meta, .card h3, .card p, .news-card-tags { padding: 0 24px; }
-        .card-meta { margin-top: 20px; display: flex; justify-content: space-between;}
-        .card h3 { font-family: 'Montserrat', sans-serif; font-size: 1.35rem; margin-top: 14px; margin-bottom:10px; color: var(--text-main); }
-        .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom:20px; }
-        .news-card-tags { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 22px; }
-        .news-tag-pill { background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+.offline-banner{ display:none; background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.4); color:var(--warn); border-radius:12px; padding:12px 16px; margin-bottom:20px; font-size:.9rem; }
+.offline-banner.is-on{ display:block; }
 
-        .news-detail-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
-        .news-detail-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 10px; line-height: 1.3; color: var(--text-main); }
-        .news-detail-date { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
-        .news-detail-lead { font-size: 1.15rem; font-weight: 600; color: var(--text-main); border-left: 3px solid var(--ranepa-red); padding-left: 16px; margin-bottom: 28px; line-height: 1.6; }
-        .news-body-text { color: var(--text-muted); line-height: 1.8; margin-bottom: 20px; font-size: 1.02rem; white-space: pre-wrap; }
-        .news-insert { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.3); border-left: 4px solid #38bdf8; border-radius: 0 14px 14px 0; padding: 18px 22px; margin: 24px 0; font-weight: 600; color: var(--text-main); white-space: pre-wrap; }
-        .news-media-figure { margin: 24px 0; }
-        .news-media-figure img, .news-media-figure video { width: 100%; border-radius: 16px; cursor: zoom-in; display: block; }
-        .news-video-embed-wrap { position: relative; width: 100%; padding-top: 56.25%; border-radius: 16px; overflow: hidden; }
-        .news-video-embed-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
-        .accordion-btn { background: var(--btn-glass); border: 1px solid var(--border-glass); color: #fff; padding: 15px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-bottom: 24px; display:inline-block; }
-        .accordion-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); }
+.news-tags-bar{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
+.filter-sector-chip{ background:var(--btn-glass); border:1px solid var(--border-glass); color:var(--text-muted); padding:8px 14px; border-radius:999px; font-size:.8rem; font-weight:700; cursor:pointer; transition:.2s; user-select:none; }
+.filter-sector-chip.active{ background:var(--ranepa-red); color:#fff; border-color:var(--ranepa-red); }
+.news-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:30px; }
+@media (max-width:768px){ .news-grid{ grid-template-columns:1fr; } }
 
-        .news-admin-gear { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-muted); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; }
-        .news-admin-bar { display: none; flex-direction: column; gap: 14px; background: rgba(202,15,62,0.08); border: 1px solid rgba(202,15,62,0.3); padding: 16px 18px; border-radius: 14px; margin-bottom: 28px; }
-        .chat-opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700; transition: 0.2s; }
-        .chat-opt-btn:hover { background: var(--ranepa-red); border-color:var(--ranepa-red); }
-        .news-admin-list { display: flex; flex-direction: column; gap: 10px; max-height: 260px; overflow-y: auto; }
-        .news-admin-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 10px; flex-wrap: wrap; }
-        
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); display: none; justify-content: center; align-items: center; z-index: 20000; padding: 15px; }
-        .modal-overlay.active { display: flex; }
-        .modal-box { background: var(--bg-glass); border-radius: 30px; width: 100%; text-align: center; border: 1px solid var(--border-glass); max-height: 88vh; overflow-y: auto; padding: 30px; color: var(--text-main); }
-        .chrome-glass { background: linear-gradient(165deg, rgba(255,255,255,0.14) 0%, var(--bg-glass) 35%, var(--bg-glass) 100%); border: 1px solid rgba(255,255,255,0.35); box-shadow: 0 55px 100px rgba(0,0,0,0.7); }
-        .chat-text-input { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; color: #fff; outline: none; margin-bottom:14px; font-family: 'Manrope', sans-serif;}
-        .buy-btn { width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 18px; border-radius: 14px; font-weight: 900; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif;}
-        .close-modal { margin-top: 15px; cursor: pointer; color: var(--text-muted); text-decoration: underline; padding: 10px; }
-        
-        /* СТИЛИ КОНСТРУКТОРА БЛОКОВ */
-        .news-block-editor { background: var(--bg-card); border: 1px solid var(--border-glass); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
-        .news-block-editor.is-hidden-block { opacity: 0.5; }
-        .news-block-editor-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: var(--text-main); }
-        .news-block-editor-controls button { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; margin-left: 4px; font-size: 0.85rem; }
-        .news-block-editor-controls button:hover { border-color: var(--ranepa-red); }
-        .news-add-block-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 24px; }
-        .news-add-block-row button { background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
-        .news-add-block-row button:hover { border-color: var(--ranepa-red); color: var(--ranepa-red); }
-        textarea.news-editor-field { resize: vertical; overflow-y: auto; max-height: 400px; }
-        .news-editor-field { width: 100%; color: var(--text-main); background: rgba(255,255,255,0.07); }
+.card{ background:var(--bg-card); border-radius:22px; border:1px solid var(--border-glass); transition:.3s; cursor:pointer; overflow:hidden; box-shadow:0 15px 35px rgba(0,0,0,.4); }
+.card:hover{ transform:translateY(-6px); border-color:rgba(202,15,62,.4); }
+.news-card-cover{ width:100%; height:260px; background-size:cover; background-position:center; background-color:rgba(255,255,255,.03); }
+.card-meta,.card h3,.card p,.news-card-tags{ padding:0 24px; }
+.card-meta{ margin-top:20px; display:flex; justify-content:space-between; }
+.card h3{ font-family:var(--font-display); font-size:1.35rem; margin:14px 0 10px; }
+.card p{ color:var(--text-muted); font-size:.95rem; line-height:1.6; margin-bottom:20px; }
+.news-card-tags{ display:flex; flex-wrap:wrap; gap:6px; padding-bottom:22px; }
+.news-tag-pill{ background:rgba(56,189,248,.15); border:1px solid rgba(56,189,248,.4); color:var(--accent-sky); padding:4px 10px; border-radius:999px; font-size:.72rem; font-weight:700; white-space:nowrap; }
 
-        /* ЛАЙТБОКС */
-        #mediaLightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 30000; display: none; align-items: center; justify-content: center; padding: 30px; }
-        #mediaLightbox.active { display: flex; }
-        #lightboxContent img, #lightboxContent video { max-width: 90vw; max-height: 85vh; border-radius: 10px; display: block; margin: 0 auto; }
-        .lightbox-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 2rem; cursor: pointer; background: none; border: none; }
-        #lightboxNav { position: absolute; top: 50%; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 20px; transform: translateY(-50%); pointer-events: none; }
-        #lightboxNav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; pointer-events: auto; font-size: 1.5rem;}
-        
-        .loader-spinner { width: 40px; height: 40px; border: 4px solid rgba(202, 15, 62, 0.2); border-top-color: var(--ranepa-red); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-    </style>
+.news-detail-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+.news-detail-title{ font-family:var(--font-display); font-weight:900; font-size:clamp(1.5rem,4vw,2.2rem); margin-bottom:10px; line-height:1.3; }
+.news-detail-date{ color:var(--text-muted); font-size:.9rem; margin-bottom:20px; }
+.news-detail-lead{ font-size:1.15rem; font-weight:600; border-left:3px solid var(--ranepa-red); padding-left:16px; margin-bottom:28px; line-height:1.6; max-width:68ch; }
+.news-body-text{ color:var(--text-muted); line-height:1.8; margin-bottom:20px; font-size:1.02rem; white-space:pre-wrap; max-width:68ch; }
+.news-insert{ background:rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.3); border-left:4px solid var(--accent-sky); border-radius:0 14px 14px 0; padding:18px 22px; margin:24px 0; font-weight:600; white-space:pre-wrap; }
+.news-media-figure{ margin:24px 0; }
+.news-media-figure img,.news-media-figure video{ width:100%; border-radius:16px; display:block; background:rgba(255,255,255,.03); }
+.news-media-figure img{ cursor:zoom-in; }
+.news-media-figure figcaption{ color:var(--text-muted); font-size:.85rem; margin-top:8px; }
+.news-video-embed-wrap{ position:relative; width:100%; padding-top:56.25%; border-radius:16px; overflow:hidden; }
+.news-video-embed-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:none; }
+.accordion-btn{ background:var(--btn-glass); border:1px solid var(--border-glass); color:#fff; padding:15px; border-radius:14px; font-weight:800; cursor:pointer; transition:.3s; margin-bottom:24px; }
+.accordion-btn:hover{ background:var(--ranepa-red); border-color:var(--ranepa-red); }
+
+.news-admin-gear{ background:var(--btn-glass); border:1px solid var(--border-glass); color:var(--text-muted); width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:1.1rem; flex-shrink:0; }
+.news-admin-bar{ display:none; flex-direction:column; gap:14px; background:rgba(202,15,62,.08); border:1px solid rgba(202,15,62,.3); padding:16px 18px; border-radius:14px; margin-bottom:28px; }
+.chat-opt-btn{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:#fff; padding:10px 12px; border-radius:10px; cursor:pointer; font-size:.85rem; font-weight:700; transition:.2s; }
+.chat-opt-btn:hover{ background:var(--ranepa-red); border-color:var(--ranepa-red); }
+.news-admin-list{ display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; }
+.news-admin-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; background:var(--bg-card); border:1px solid var(--border-glass); padding:10px 14px; border-radius:10px; flex-wrap:wrap; }
+
+.modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.8); backdrop-filter:blur(6px); display:none; justify-content:center; align-items:center; z-index:20000; padding:15px; }
+.modal-overlay.active{ display:flex; }
+.modal-box{ background:var(--bg-glass); border-radius:30px; width:100%; border:1px solid var(--border-glass); max-height:88vh; overflow-y:auto; padding:30px; }
+.chrome-glass{ background:linear-gradient(165deg,rgba(255,255,255,.14) 0%,var(--bg-glass) 35%,var(--bg-glass) 100%); border:1px solid rgba(255,255,255,.35); box-shadow:0 55px 100px rgba(0,0,0,.7); }
+.chat-text-input{ width:100%; background:rgba(255,255,255,.07); border:1px solid var(--border-glass); border-radius:10px; padding:10px 14px; color:#fff; outline:none; margin-bottom:10px; font-family:var(--font-text); }
+.buy-btn{ width:100%; background:linear-gradient(135deg,var(--ranepa-red),#e11d48); color:#fff; padding:18px; border-radius:14px; font-weight:900; cursor:pointer; border:none; font-family:var(--font-display); }
+.buy-btn[disabled]{ opacity:.5; cursor:not-allowed; }
+.close-modal{ margin-top:15px; cursor:pointer; color:var(--text-muted); text-decoration:underline; padding:10px; text-align:center; }
+.field-label{ color:var(--text-muted); font-size:.8rem; display:block; margin-bottom:4px; }
+
+.storage-status{ display:flex; align-items:center; gap:10px; font-size:.82rem; background:rgba(255,255,255,.04); border:1px solid var(--border-glass); border-radius:10px; padding:9px 13px; margin-bottom:12px; }
+.storage-dot{ width:9px; height:9px; border-radius:50%; background:var(--text-muted); flex-shrink:0; }
+.storage-dot.is-ok{ background:var(--ok); } .storage-dot.is-warn{ background:var(--warn); } .storage-dot.is-bad{ background:var(--ranepa-red); }
+
+.dropzone{ border:2px dashed rgba(255,255,255,.18); border-radius:18px; padding:26px 20px; text-align:center; cursor:pointer; transition:border-color .2s,background .2s; background:rgba(255,255,255,.02); }
+.dropzone:hover,.dropzone.is-over{ border-color:var(--accent-sky); background:rgba(56,189,248,.08); }
+.dropzone-title{ font-family:var(--font-display); font-weight:800; font-size:1rem; margin-bottom:6px; }
+.dropzone-hint{ color:var(--text-muted); font-size:.82rem; line-height:1.55; }
+
+.upload-queue{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.upload-row{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.04); border:1px solid var(--border-glass); border-radius:10px; padding:8px 12px; font-size:.82rem; }
+.upload-row-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.upload-row-state{ color:var(--text-muted); flex-shrink:0; font-variant-numeric:tabular-nums; }
+.upload-row.is-error{ border-color:rgba(202,15,62,.6); } .upload-row.is-error .upload-row-state{ color:#fb7185; }
+.upload-row.is-done .upload-row-state{ color:var(--ok); }
+.upload-row.is-queued-offline{ border-color:rgba(245,158,11,.5); }
+.upload-bar{ height:3px; border-radius:2px; background:rgba(255,255,255,.1); overflow:hidden; width:86px; flex-shrink:0; }
+.upload-bar i{ display:block; height:100%; background:var(--accent-sky); width:0; transition:width .15s linear; }
+.upload-row-cancel{ background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:1rem; flex-shrink:0; }
+.upload-error-detail{ font-size:.75rem; color:#fb7185; padding:0 12px 6px; }
+
+.media-library{ display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px; margin-top:14px; }
+.media-thumb{ position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; border:1px solid var(--border-glass); background:rgba(255,255,255,.04); }
+.media-thumb img,.media-thumb video{ width:100%; height:100%; object-fit:cover; display:block; }
+.media-thumb.is-cover{ border-color:var(--ranepa-red); box-shadow:0 0 0 2px rgba(202,15,62,.45); }
+.media-thumb-badge{ position:absolute; top:5px; left:5px; background:var(--ranepa-red); color:#fff; font-size:.6rem; font-weight:800; padding:2px 6px; border-radius:5px; }
+.media-thumb-actions{ position:absolute; inset:auto 0 0 0; display:flex; gap:2px; padding:4px; background:linear-gradient(transparent,rgba(0,0,0,.85)); }
+.media-thumb-actions button{ flex:1; background:rgba(255,255,255,.14); border:none; color:#fff; border-radius:5px; font-size:.65rem; padding:4px 0; cursor:pointer; }
+.media-thumb-actions button:hover{ background:var(--ranepa-red); }
+.cover-preview{ width:100%; max-height:190px; object-fit:cover; border-radius:14px; margin-top:10px; display:block; }
+
+.news-block-editor{ background:var(--bg-card); border:1px solid var(--border-glass); border-radius:14px; padding:14px; margin-bottom:14px; }
+.news-block-editor.is-hidden-block{ opacity:.5; }
+.news-block-editor.is-dragging{ opacity:.35; }
+.news-block-editor.is-drop-target{ border-color:var(--accent-sky); }
+.news-block-editor-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-family:var(--font-display); font-size:.85rem; gap:8px; }
+.news-block-grip{ cursor:grab; color:var(--text-muted); user-select:none; padding-right:6px; }
+.news-block-editor-controls button{ background:var(--btn-glass); border:1px solid var(--border-glass); color:var(--text-main); width:30px; height:30px; border-radius:8px; cursor:pointer; margin-left:4px; font-size:.85rem; }
+.news-block-editor-controls button:hover{ border-color:var(--ranepa-red); }
+.news-add-block-row{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 24px; }
+.news-add-block-row button{ background:var(--btn-glass); border:1px solid var(--border-glass); color:var(--text-main); padding:8px 14px; border-radius:10px; cursor:pointer; font-weight:700; font-size:.85rem; }
+.news-add-block-row button:hover{ border-color:var(--ranepa-red); color:var(--ranepa-red); }
+textarea.news-editor-field{ resize:vertical; max-height:400px; }
+.news-editor-field{ width:100%; color:var(--text-main); background:rgba(255,255,255,.07); }
+.draft-note{ font-size:.78rem; color:var(--text-muted); margin-bottom:14px; min-height:1em; }
+
+.toast-stack{ position:fixed; left:50%; transform:translateX(-50%); bottom:max(20px,env(safe-area-inset-bottom)); z-index:40000; display:flex; flex-direction:column; gap:8px; width:min(460px,calc(100vw - 32px)); }
+.toast{ background:rgba(17,24,39,.95); backdrop-filter:blur(20px); border:1px solid var(--border-glass); border-left:4px solid var(--accent-sky); border-radius:12px; padding:12px 16px; font-size:.88rem; box-shadow:0 20px 45px rgba(0,0,0,.6); line-height:1.45; }
+.toast.is-error{ border-left-color:var(--ranepa-red); } .toast.is-ok{ border-left-color:var(--ok); } .toast.is-warn{ border-left-color:var(--warn); }
+.toast code{ font-family:ui-monospace,monospace; font-size:.78rem; color:var(--text-muted); }
+
+#mediaLightbox{ position:fixed; inset:0; background:rgba(0,0,0,.92); z-index:30000; display:none; align-items:center; justify-content:center; padding:30px; }
+#mediaLightbox.active{ display:flex; }
+#lightboxContent img,#lightboxContent video{ max-width:90vw; max-height:85vh; border-radius:10px; display:block; margin:0 auto; }
+.lightbox-close{ position:absolute; top:max(20px,env(safe-area-inset-top)); right:30px; color:#fff; font-size:2rem; cursor:pointer; background:none; border:none; }
+#lightboxNav{ position:absolute; top:50%; left:0; right:0; display:flex; justify-content:space-between; padding:0 20px; transform:translateY(-50%); pointer-events:none; }
+#lightboxNav button{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3); color:#fff; width:48px; height:48px; border-radius:50%; cursor:pointer; pointer-events:auto; font-size:1.5rem; }
+
+.loader-spinner{ width:40px; height:40px; border:4px solid rgba(202,15,62,.2); border-top-color:var(--ranepa-red); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 15px; }
+@keyframes spin{ 100%{ transform:rotate(360deg); } }
+</style>
 </head>
 <body>
 
-    <header>
-        <a href="index.html" class="logo-group">
-            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия">
-        </a>
-        <a href="index.html" class="back-btn">На главную</a>
-    </header>
+<header>
+    <a href="index.html" class="logo-group"><img src="./img/logo.png" alt="РАНХиГС Президентская Академия"></a>
+    <a href="index.html" class="back-btn">На главную</a>
+</header>
 
-    <div class="news-container">
-        <div class="schedule-header">
-            <h2 class="schedule-title">Новости <span>центра</span></h2>
-            <button class="news-admin-gear" onclick="openNewsAdminLogin()" title="Вход для администратора">⚙</button>
-        </div>
-
-        <div class="news-admin-bar" id="newsAdminBar">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                <b style="color: var(--ranepa-red); font-family:'Montserrat',sans-serif;">Режим администратора</b>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="chat-opt-btn" onclick="openNewsEditor(null)">+ Добавить новость</button>
-                    <button class="chat-opt-btn" onclick="newsAdminLogout()">Выйти</button>
-                </div>
-            </div>
-            <div class="news-admin-list" id="newsAdminList"></div>
-        </div>
-
-        <div id="newsListView">
-            <div class="news-tags-bar" id="newsTagsBar"></div>
-            <div class="news-grid" id="newsGrid">
-                <div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="loader-spinner"></div>Загрузка новостей...</div>
-            </div>
-        </div>
-
-        <div id="newsDetailView" style="display:none;"></div>
+<div class="news-container">
+    <div class="schedule-header">
+        <h2 class="schedule-title">Новости <span>центра</span></h2>
+        <button class="news-admin-gear" id="adminGearBtn" title="Вход для администратора">⚙</button>
     </div>
 
-    <!-- ВХОД ДЛЯ АДМИНА -->
-    <div class="modal-overlay" id="newsAdminLoginModal">
-        <div class="modal-box" style="max-width: 400px;">
-            <h3>Вход для администратора</h3>
-            <p style="text-align:left; color: var(--text-muted); margin-bottom:10px;">Введите пароль редактора новостей:</p>
-            <input type="password" id="newsAdminPassInput" class="chat-text-input" onkeydown="if(event.key==='Enter') submitNewsAdminLogin()">
-            <div id="newsAdminLoginError" style="display:none; color: var(--ranepa-red); font-weight:700; margin-bottom:14px; text-align:left;"></div>
-            <button class="buy-btn" onclick="submitNewsAdminLogin()">Войти</button>
-            <div class="close-modal" onclick="closeNewsAdminLogin()">Отмена</div>
+    <div class="offline-banner" id="offlineBanner">Связь с сетью потеряна. Новости показаны из сохранённой копии, загрузка файлов встанет в очередь и продолжится сама.</div>
+
+    <div class="news-admin-bar" id="newsAdminBar">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+            <b style="color:var(--ranepa-red); font-family:var(--font-display);">Режим администратора</b>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="chat-opt-btn" id="addNewsBtn">Добавить новость</button>
+                <button class="chat-opt-btn" id="exportBtn">Скачать резервную копию</button>
+                <button class="chat-opt-btn" id="logoutBtn">Выйти</button>
+            </div>
+        </div>
+        <div id="pendingQueueNote" style="display:none; font-size:.85rem; color:var(--warn);"></div>
+        <div class="news-admin-list" id="newsAdminList"></div>
+    </div>
+
+    <div id="newsListView">
+        <div class="news-tags-bar" id="newsTagsBar"></div>
+        <div class="news-grid" id="newsGrid">
+            <div style="grid-column:1/-1; text-align:center; padding:40px;"><div class="loader-spinner"></div>Загружаем новости</div>
         </div>
     </div>
 
-    <!-- ПОЛНЫЙ РЕДАКТОР НОВОСТИ С КОНСТРУКТОРОМ БЛОКОВ -->
-    <div class="modal-overlay" id="newsEditorModal">
-        <div class="modal-box chrome-glass" style="text-align:left; max-width:720px;">
-            <h3 id="newsEditorHeading">Новость</h3>
+    <div id="newsDetailView" style="display:none;"></div>
+</div>
 
-            <div style="margin-bottom:14px;">
-                <label style="color: var(--text-muted); font-size: 0.8rem;">Заголовок</label>
-                <input type="text" id="newsEditorTitle" class="chat-text-input news-editor-field">
-            </div>
-            <div style="margin-bottom:14px;">
-                <label style="color: var(--text-muted); font-size: 0.8rem;">Лид (краткий анонс)</label>
-                <textarea id="newsEditorLead" class="chat-text-input news-editor-field" style="min-height:60px;"></textarea>
-            </div>
-            <div style="margin-bottom:14px;">
-                <label style="color: var(--text-muted); font-size: 0.8rem;">Медиа (Обложка и контент, загрузка до 10 файлов)</label>
-                <input type="file" id="newsBulkUpload" multiple accept="image/*,video/*" onchange="handleBulkMediaUpload(event)" style="display:block; margin-bottom: 6px; color: var(--text-main);">
-                <input type="text" id="newsEditorCover" class="chat-text-input news-editor-field" placeholder="Ссылка на обложку (заполнится автоматически или введите вручную)">
-                <div id="bulkUploadProgress" style="font-size: 0.8rem; color: #38bdf8; margin-top: 6px;"></div>
-            </div>
-            <div style="margin-bottom:20px;">
-                <label style="color: var(--text-muted); font-size: 0.8rem;">Теги</label>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" id="newsEditorTagsInput" class="chat-text-input news-editor-field" placeholder="например: приём, ИИ, событие" onkeydown="if(event.key==='Enter'){event.preventDefault();addNewsEditorTag();}">
-                    <button class="chat-opt-btn" type="button" onclick="addNewsEditorTag()" style="color:var(--text-main); flex-shrink:0;">Добавить</button>
-                </div>
-                <div id="newsEditorTagsList" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
-            </div>
-
-            <label style="font-size:0.72rem; text-transform:uppercase; font-weight:800; color:var(--text-muted);">Содержание (абзацы, врезки, фото, видео)</label>
-            <div id="newsEditorBlocks" style="margin-top:10px;"></div>
-            <div class="news-add-block-row">
-                <button type="button" onclick="addNewsBlock('text')">+ Абзац текста</button>
-                <button type="button" onclick="addNewsBlock('insert')">+ Врезка</button>
-                <button type="button" onclick="addNewsBlock('image')">+ Фото</button>
-                <button type="button" onclick="addNewsBlock('video')">+ Видео</button>
-            </div>
-
-            <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer;">
-                <input type="checkbox" id="newsEditorPublished" style="width:18px; height:18px;">
-                <span>Опубликовать (видно посетителям сайта)</span>
-            </label>
-
-            <button class="buy-btn" onclick="saveNewsItem()">💾 Сохранить новость</button>
-            <div class="close-modal" onclick="closeNewsEditor()" style="text-align: center;">Закрыть без сохранения</div>
-        </div>
+<div class="modal-overlay" id="newsAdminLoginModal">
+    <div class="modal-box" style="max-width:400px;">
+        <h3 style="font-family:var(--font-display); margin-top:0;">Вход для администратора</h3>
+        <p style="color:var(--text-muted); margin-bottom:10px;">Введите пароль редактора новостей</p>
+        <input type="password" id="newsAdminPassInput" class="chat-text-input" autocomplete="current-password">
+        <div id="newsAdminLoginError" style="display:none; color:var(--ranepa-red); font-weight:700; margin-bottom:14px;"></div>
+        <button class="buy-btn" id="loginSubmitBtn">Войти</button>
+        <div class="close-modal" id="loginCancelBtn">Отмена</div>
     </div>
+</div>
 
-    <!-- ЛАЙТБОКС -->
-    <div id="mediaLightbox">
-        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-        <div id="lightboxNav" style="display:none;">
-            <button onclick="navLightbox(-1)">‹</button>
-            <button onclick="navLightbox(1)">›</button>
+<div class="modal-overlay" id="newsEditorModal">
+    <div class="modal-box chrome-glass" style="max-width:780px;" id="newsEditorBox">
+        <h3 id="newsEditorHeading" style="font-family:var(--font-display); margin-top:0;">Новость</h3>
+        <div class="draft-note" id="draftNote"></div>
+
+        <label class="field-label" for="newsEditorTitle">Заголовок</label>
+        <input type="text" id="newsEditorTitle" class="chat-text-input news-editor-field" style="margin-bottom:14px;">
+
+        <label class="field-label" for="newsEditorLead">Краткий анонс</label>
+        <textarea id="newsEditorLead" class="chat-text-input news-editor-field" style="min-height:60px; margin-bottom:18px;"></textarea>
+
+        <label class="field-label">Фото и видео</label>
+        <div class="storage-status">
+            <span class="storage-dot" id="storageDot"></span>
+            <span id="storageStatusText">Проверяем хранилище</span>
+            <button class="chat-opt-btn" id="recheckStorageBtn" style="margin-left:auto; padding:5px 10px; font-size:.75rem;">Проверить</button>
         </div>
-        <div id="lightboxContent"></div>
+        <div class="dropzone" id="newsDropzone" tabindex="0" role="button">
+            <div class="dropzone-title">Перетащите файлы сюда</div>
+            <div class="dropzone-hint">
+                Или нажмите, чтобы выбрать. Картинку можно вставить из буфера сочетанием Ctrl+V.<br>
+                До 10 файлов за раз, первое фото станет обложкой.
+            </div>
+            <input type="file" id="newsBulkUpload" multiple accept="image/*,video/*" hidden>
+        </div>
+        <div class="upload-queue" id="uploadQueue"></div>
+        <div class="media-library" id="mediaLibrary"></div>
+
+        <label class="field-label" style="margin-top:18px;" for="newsEditorCover">Ссылка на обложку</label>
+        <input type="text" id="newsEditorCover" class="chat-text-input news-editor-field" placeholder="Заполнится сама при загрузке фото">
+        <img id="coverPreview" class="cover-preview" alt="" style="display:none;">
+
+        <label class="field-label" style="margin-top:18px;" for="newsEditorTagsInput">Теги</label>
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="newsEditorTagsInput" class="chat-text-input news-editor-field" placeholder="приём, ИИ, событие">
+            <button class="chat-opt-btn" type="button" id="addTagBtn" style="flex-shrink:0; height:42px;">Добавить</button>
+        </div>
+        <div id="newsEditorTagsList" style="display:flex; gap:6px; flex-wrap:wrap; margin:8px 0 20px;"></div>
+
+        <label class="field-label">Содержание</label>
+        <div id="newsEditorBlocks" style="margin-top:10px;"></div>
+        <div class="news-add-block-row" id="addBlockRow">
+            <button type="button" data-add="text">Абзац текста</button>
+            <button type="button" data-add="insert">Врезка</button>
+            <button type="button" data-add="image">Фото по ссылке</button>
+            <button type="button" data-add="video">Видео</button>
+        </div>
+
+        <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer;">
+            <input type="checkbox" id="newsEditorPublished" style="width:18px; height:18px;">
+            <span>Показывать на сайте</span>
+        </label>
+
+        <button class="buy-btn" id="saveNewsBtn">Сохранить новость</button>
+        <div class="close-modal" id="closeEditorBtn">Закрыть без сохранения</div>
     </div>
+</div>
+
+<div id="mediaLightbox">
+    <button class="lightbox-close" id="lightboxCloseBtn" aria-label="Закрыть">✕</button>
+    <div id="lightboxNav" style="display:none;">
+        <button data-nav="-1" aria-label="Предыдущее">‹</button>
+        <button data-nav="1" aria-label="Следующее">›</button>
+    </div>
+    <div id="lightboxContent"></div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
-    
-    let newsItems = [];
-    let newsAdminToken = sessionStorage.getItem('newsAdminToken') || null;
-    let activeNewsTagFilter = null;
-    let editingNewsId = null;
-    let currentArticleMedia = [];
-    let currentLightboxMedia = [];
-    let currentLightboxIndex = 0;
-    
-    // Переменные для конструктора
-    let newsEditorBlocks = [];
-    let newsEditorTags = [];
-    const NEWS_BLOCK_LABELS = { text: 'Абзац', insert: 'Врезка', image: 'Фото', video: 'Видео' };
+/* ============================================================================
+   БЛОК 1. НАСТРОЙКИ — единственное место, где нужно что-то менять
+   ============================================================================ */
+const CONFIG = {
+    // Бэкенд новостей: тексты, список, вход. Может остаться прежним.
+    api: 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec',
 
-    function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-    function formatNewsDate(iso) {
-        if (!iso) return '';
-        const d = new Date(iso);
-        return isNaN(d) ? String(iso) : d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-    }
-    function convertDriveUrl(url) {
-        if (url && url.includes('drive.google.com') && url.includes('id=')) {
-            const idMatch = url.match(/id=([^&]+)/);
-            if (idMatch) return `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w1600`;
-        }
-        return url;
-    }
+    storage: {
+        // Цепочка хранилищ, пробуются сверху вниз.
+        // Первое рабочее, второе — запасное на случай аварии в первом.
+        providers: [
+            { id:'yandex',  label:'Yandex Object Storage', signUrl:'https://functions.yandexcloud.net/d4ejfbsrku9a7pv25b9j', enabled:true },
+            { id:'reserve', label:'Резервное хранилище',   signUrl:'', enabled:false }
+        ],
+        // Тот же секрет, что в переменной ADMIN_TOKEN функции-подписанта.
+        uploadToken: 'ak-news-9f3k2m8x7q1w',
 
-    async function fetchNews() {
+        maxFiles: 10,
+        concurrency: 3,
+        retries: 3,
+        retryDelayMs: 1200,
+        imageMaxSide: 1920,
+        imageQuality: 0.82,
+        maxImageBytes: 30 * 1024 * 1024,
+        maxVideoBytes: 500 * 1024 * 1024,
+        // Видео тяжелее этого порога лучше класть на VK Видео или RuTube
+        videoAdviceBytes: 60 * 1024 * 1024
+    },
+
+    drafts: { key:'ak-news-draft-', autosaveMs: 2500 },
+    cache:  { key:'ak-news-cache', ttlMs: 24*60*60*1000 }
+};
+
+/* ============================================================================
+   БЛОК 2. СОСТОЯНИЕ
+   ============================================================================ */
+let newsItems = [], adminToken = sessionStorage.getItem('newsAdminToken') || null;
+let activeTagFilter = null, editingNewsId = null;
+let articleMedia = [], lightboxIndex = 0;
+let editorBlocks = [], editorTags = [], uploadJobs = [];
+let dragIndex = null, draftTimer = null;
+let storageHealth = { state:'unknown', message:'' };
+const uploadedHashes = new Map();
+
+const BLOCK_LABELS = { text:'Абзац', insert:'Врезка', image:'Фото', video:'Видео' };
+const $ = id => document.getElementById(id);
+
+/* ============================================================================
+   БЛОК 3. УТИЛИТЫ
+   ============================================================================ */
+const escapeHtml = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function formatDate(iso){
+    if (!iso) return '';
+    const d = new Date(iso);
+    return isNaN(d) ? String(iso) : d.toLocaleDateString('ru-RU',{ day:'numeric', month:'long', year:'numeric' });
+}
+function humanSize(b){
+    if (b < 1024) return b + ' Б';
+    if (b < 1048576) return Math.round(b/1024) + ' КБ';
+    return (b/1048576).toFixed(1) + ' МБ';
+}
+function toast(message, kind, code){
+    const el = document.createElement('div');
+    el.className = 'toast' + (kind ? ' is-' + kind : '');
+    el.innerHTML = escapeHtml(message) + (code ? `<br><code>код: ${escapeHtml(code)}</code>` : '');
+    $('toastStack').appendChild(el);
+    setTimeout(() => el.remove(), kind === 'error' ? 10000 : 5000);
+}
+
+/* Наследие Google Drive: старые новости продолжат показываться корректно */
+function driveId(url){
+    if (!url || !url.includes('drive.google.com')) return null;
+    const m = url.match(/\/file\/d\/([\w-]+)/) || url.match(/[?&]id=([\w-]+)/);
+    return m ? m[1] : null;
+}
+function imageUrl(url){
+    const id = driveId(url);
+    return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1600` : url;
+}
+
+/* Обычная ссылка на видео превращается в ссылку для встраивания сама */
+function toEmbedUrl(url){
+    if (!url) return null;
+    let m;
+    if ((m = url.match(/rutube\.ru\/video\/([\w-]+)/))) return `https://rutube.ru/play/embed/${m[1]}`;
+    if ((m = url.match(/vk(?:video)?\.(?:com|ru)\/video(-?\d+)_(\d+)/))) return `https://vk.com/video_ext.php?oid=${m[1]}&id=${m[2]}&hd=2`;
+    if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/))) return `https://www.youtube.com/embed/${m[1]}`;
+    if (url.includes('/embed') || url.includes('video_ext.php')) return url;
+    const gid = driveId(url);
+    if (gid) return `https://drive.google.com/file/d/${gid}/preview`;
+    return null;
+}
+
+/* ============================================================================
+   БЛОК 4. СЕТЬ С ПОВТОРНЫМИ ПОПЫТКАМИ
+   Страховка от разовых сбоев: три захода с нарастающей паузой.
+   ============================================================================ */
+async function requestJson(url, options, attempts){
+    attempts = attempts || CONFIG.storage.retries;
+    let lastError;
+    for (let i = 0; i < attempts; i++){
         try {
-            let url = API_URL + '?type=news';
-            if (newsAdminToken) url += '&admin=1&token=' + encodeURIComponent(newsAdminToken);
-            const res = await fetch(url);
-            const data = await res.json();
-            newsItems = data.items || [];
-            
-            renderNewsGrid();
-            if (newsAdminToken) {
-                document.getElementById('newsAdminBar').style.display = 'flex';
-                renderAdminNewsList();
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 30000);
+            const res = await fetch(url, Object.assign({ signal: controller.signal }, options || {}));
+            clearTimeout(timer);
+            const raw = await res.text();
+            try { return JSON.parse(raw); }
+            catch(e){
+                throw new Error(res.status >= 400
+                    ? `Сервер ответил ошибкой ${res.status}`
+                    : 'Сервер вернул страницу вместо данных. Проверьте развёртывание бэкенда.');
             }
-
-            const hash = window.location.hash.replace('#', '').replace('news=', '');
-            if (hash && newsItems.find(n => n.id === hash)) {
-                openNewsDetail(hash);
-            }
-        } catch (e) {
-            console.error('Ошибка загрузки новостей', e);
-            document.getElementById('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Ошибка подключения к базе. Обновите страницу.</div>`;
+        } catch(e){
+            lastError = (e.name === 'AbortError') ? new Error('Сервер не ответил за 30 секунд') : e;
+            if (i < attempts - 1) await sleep(CONFIG.storage.retryDelayMs * Math.pow(2, i));
         }
     }
+    throw lastError;
+}
 
-    function showNewsListView() {
-        document.getElementById('newsListView').style.display = 'block';
-        document.getElementById('newsDetailView').style.display = 'none';
-        window.history.replaceState(null, null, window.location.pathname);
-        window.scrollTo({top: 0, behavior: 'smooth'});
+/* ============================================================================
+   БЛОК 5. ПРОВЕРКА ФАЙЛА И СЖАТИЕ
+   ============================================================================ */
+const SIGNATURES = [
+    { offset:0, bytes:[0xFF,0xD8,0xFF] },            // jpeg
+    { offset:0, bytes:[0x89,0x50,0x4E,0x47] },       // png
+    { offset:0, bytes:[0x47,0x49,0x46,0x38] },       // gif
+    { offset:8, bytes:[0x57,0x45,0x42,0x50] },       // webp
+    { offset:4, bytes:[0x66,0x74,0x79,0x70] },       // mp4 / mov
+    { offset:0, bytes:[0x1A,0x45,0xDF,0xA3] }        // webm
+];
+
+/* Проверяем по первым байтам, а не по расширению:
+   переименованный исполняемый файл дальше не пройдёт. */
+async function verifySignature(file){
+    try {
+        const head = new Uint8Array(await file.slice(0,16).arrayBuffer());
+        const ok = SIGNATURES.some(sig => sig.bytes.every((b,i) => head[sig.offset + i] === b));
+        if (!ok) throw Object.assign(new Error('Это не похоже на картинку или видео'), { code:'BAD_SIGNATURE' });
+    } catch(e){
+        if (e.code === 'BAD_SIGNATURE') throw e;
+        // Не смогли прочитать заголовок — не блокируем, доверимся типу файла
     }
+}
 
-    function renderNewsGrid() {
-        const grid = document.getElementById('newsGrid');
-        const tagsBar = document.getElementById('newsTagsBar');
-        if (!grid) return;
+/* Отпечаток: один и тот же снимок не уедет в хранилище дважды */
+async function fileHash(file){
+    if (!crypto.subtle) return null;
+    try {
+        const buf = await file.slice(0, 2*1024*1024).arrayBuffer();
+        const digest = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2,'0')).join('') + '-' + file.size;
+    } catch(e){ return null; }
+}
 
-        const allTags = [...new Set(newsItems.flatMap(n => n.tags || []))];
-        tagsBar.innerHTML = allTags.map(t =>
-            `<div class="filter-sector-chip ${activeNewsTagFilter === t ? 'active' : ''}" onclick="toggleNewsTagFilter('${t.replace(/'/g, "\\'")}')">${escapeHtml(t)}</div>`
-        ).join('');
+/* Снимок на 6 МБ превращается в ~250 КБ WebP без видимой потери качества */
+async function compressImage(file){
+    const skip = ['image/gif','image/svg+xml'];
+    if (!file.type.startsWith('image/') || skip.includes(file.type)) return file;
+    if (typeof createImageBitmap !== 'function') return file;
 
-        let items = newsItems;
-        if (!newsAdminToken) items = items.filter(n => n.status === 'published');
-        if (activeNewsTagFilter) items = items.filter(n => (n.tags || []).includes(activeNewsTagFilter));
+    let bitmap;
+    try { bitmap = await createImageBitmap(file); } catch(e){ return file; }
 
-        if (!items.length) {
-            grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Новостей пока нет.</div>`;
-            return;
-        }
+    const scale = Math.min(1, CONFIG.storage.imageMaxSide / Math.max(bitmap.width, bitmap.height));
+    const w = Math.round(bitmap.width*scale), h = Math.round(bitmap.height*scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    if (bitmap.close) bitmap.close();
 
-        grid.innerHTML = items.map(n => {
-            const coverBlock = (n.blocks || []).find(b => b.type === 'image' && !b.hidden && b.url);
-            const cover = convertDriveUrl(n.coverImage || (coverBlock ? coverBlock.url : ''));
-            const hiddenBadge = n.status !== 'published' ? '<span style="background:#f59e0b; color:#000; padding:3px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">СКРЫТО</span>' : '';
-            return `
-            <div class="card news-card" onclick="openNewsDetail('${n.id}')">
-                ${cover ? `<div class="news-card-cover" style="background-image:url('${String(cover).replace(/'/g, '%27')}')"></div>` : ''}
-                <div class="card-meta"><span style="font-size:0.8rem; color:var(--text-muted);">${formatNewsDate(n.createdAt)}</span>${hiddenBadge}</div>
-                <h3>${escapeHtml(n.title)}</h3>
-                <p>${escapeHtml(n.lead || '')}</p>
-                <div class="news-card-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
-            </div>`;
-        }).join('');
+    let blob = await new Promise(r => canvas.toBlob(r, 'image/webp', CONFIG.storage.imageQuality));
+    // Если браузер не умеет WebP, откатываемся на JPEG
+    if (!blob) blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', CONFIG.storage.imageQuality));
+    if (!blob || blob.size >= file.size) return file;
+
+    const ext = blob.type === 'image/webp' ? '.webp' : '.jpg';
+    return new File([blob], file.name.replace(/\.[^.]+$/,'') + ext, { type: blob.type });
+}
+
+/* ============================================================================
+   БЛОК 6. ЗАГРУЗКА В ХРАНИЛИЩЕ
+   Цепочка страховок: основное хранилище → резервное → диск браузера
+   ============================================================================ */
+const activeProviders = () => CONFIG.storage.providers.filter(p => p.enabled && p.signUrl);
+
+async function checkStorageHealth(){
+    const list = activeProviders();
+    if (!list.length){
+        storageHealth = { state:'unconfigured', message:'Хранилище не подключено. Медиа можно добавлять только ссылкой.' };
+        return renderStorageStatus();
     }
-
-    function toggleNewsTagFilter(tag) {
-        activeNewsTagFilter = (activeNewsTagFilter === tag) ? null : tag;
-        renderNewsGrid();
-    }
-
-    function openNewsDetail(id) {
-        const n = newsItems.find(x => x.id === id);
-        if (!n) return;
-        
-        document.getElementById('newsListView').style.display = 'none';
-        const view = document.getElementById('newsDetailView');
-        view.style.display = 'block';
-        window.history.replaceState(null, null, `#${id}`);
-        window.scrollTo({top: 0, behavior: 'smooth'});
-
-        const visibleBlocks = (n.blocks || []).filter(b => !b.hidden);
-        currentArticleMedia = visibleBlocks.filter(b => (b.type === 'image' || b.type === 'video') && b.url);
-
-        const bodyHtml = visibleBlocks.map(b => {
-            if (b.type === 'text') return `<p class="news-body-text">${escapeHtml(b.content)}</p>`;
-            if (b.type === 'insert') return `<div class="news-insert">${escapeHtml(b.content)}</div>`;
-            if (b.type === 'image' && b.url) {
-                const mi = currentArticleMedia.indexOf(b);
-                return `<figure class="news-media-figure"><img src="${convertDriveUrl(b.url)}" onclick="openLightboxAt(${mi})">${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
-            }
-            if (b.type === 'video' && b.url) {
-                if (b.provider === 'embed') return `<figure class="news-media-figure"><div class="news-video-embed-wrap"><iframe src="${b.url}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
-                return `<figure class="news-media-figure"><video src="${b.url}" controls></video>${b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : ''}</figure>`;
-            }
-            return '';
-        }).join('');
-
-        view.innerHTML = `
-            <button class="accordion-btn" onclick="showNewsListView()">← Назад к новостям</button>
-            <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
-            <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
-            <div class="news-detail-date">${formatNewsDate(n.createdAt)}</div>
-            ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
-            <div class="news-detail-body">${bodyHtml}</div>
-        `;
-    }
-
-    function openLightboxAt(index) {
-        currentLightboxMedia = currentArticleMedia;
-        currentLightboxIndex = index;
-        renderLightbox();
-        document.getElementById('mediaLightbox').classList.add('active');
-    }
-    function closeLightbox() { document.getElementById('mediaLightbox').classList.remove('active'); }
-    function navLightbox(delta) {
-        currentLightboxIndex = (currentLightboxIndex + delta + currentLightboxMedia.length) % currentLightboxMedia.length;
-        renderLightbox();
-    }
-    function renderLightbox() {
-        const m = currentLightboxMedia[currentLightboxIndex];
-        const box = document.getElementById('lightboxContent');
-        if (!m) return;
-        if (m.type === 'video') {
-            box.innerHTML = m.provider === 'embed' ? `<div class="news-video-embed-wrap" style="width:80vw; max-width:960px;"><iframe src="${m.url}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>` : `<video src="${m.url}" controls autoplay></video>`;
-        } else {
-            box.innerHTML = `<img src="${convertDriveUrl(m.url)}">`;
-        }
-        document.getElementById('lightboxNav').style.display = currentLightboxMedia.length > 1 ? 'flex' : 'none';
-    }
-
-    function openNewsAdminLogin() { document.getElementById('newsAdminLoginModal').classList.add('active'); }
-    function closeNewsAdminLogin() { document.getElementById('newsAdminLoginModal').classList.remove('active'); document.getElementById('newsAdminPassInput').value = ''; }
-    
-    async function submitNewsAdminLogin() {
-        const pass = document.getElementById('newsAdminPassInput').value;
-        const errEl = document.getElementById('newsAdminLoginError');
-        errEl.style.display = 'none';
+    for (const p of list){
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsLogin', password: pass }) });
-            const data = await res.json();
-            if (data.ok) {
-                newsAdminToken = data.token; sessionStorage.setItem('newsAdminToken', newsAdminToken);
-                closeNewsAdminLogin(); document.getElementById('newsAdminBar').style.display = 'flex'; fetchNews();
-            } else { errEl.textContent = 'Неверный пароль'; errEl.style.display = 'block'; }
-        } catch (e) { errEl.textContent = 'Ошибка сервера'; errEl.style.display = 'block'; }
-    }
-    
-    function newsAdminLogout() { newsAdminToken = null; sessionStorage.removeItem('newsAdminToken'); document.getElementById('newsAdminBar').style.display = 'none'; fetchNews(); }
-
-    function renderAdminNewsList() {
-        const list = document.getElementById('newsAdminList');
-        if (!list) return;
-        list.innerHTML = newsItems.map(n => `
-            <div class="news-admin-row">
-                <div style="color:var(--text-main); font-weight:700;">${n.status==='published'?'✅':'🚫'} ${escapeHtml(n.title)}</div>
-                <div style="display:flex; gap:8px;">
-                    <button class="chat-opt-btn" onclick="openNewsEditor('${n.id}')">Редактировать</button>
-                    <button class="chat-opt-btn" style="background:#881337;" onclick="deleteNewsItem('${n.id}')">Удалить</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    /* ФУНКЦИОНАЛ ПОЛНОГО РЕДАКТОРА (С КОНСТРУКТОРОМ БЛОКОВ) */
-    function openNewsEditor(id) {
-        editingNewsId = id || null;
-        const n = id ? newsItems.find(x => x.id === id) : null;
-
-        document.getElementById('newsEditorHeading').textContent = id ? 'Редактирование новости' : 'Новая новость';
-        document.getElementById('newsEditorTitle').value = n ? n.title || '' : '';
-        document.getElementById('newsEditorLead').value = n ? n.lead || '' : '';
-        document.getElementById('newsEditorCover').value = n ? n.coverImage || '' : '';
-        document.getElementById('newsEditorTagsInput').value = '';
-        document.getElementById('newsEditorPublished').checked = n ? n.status === 'published' : false;
-        document.getElementById('bulkUploadProgress').textContent = '';
-
-        newsEditorTags = n ? [...(n.tags || [])] : [];
-        newsEditorBlocks = n ? JSON.parse(JSON.stringify(n.blocks || [])) : [];
-
-        renderNewsEditorTags();
-        renderNewsEditorBlocks();
-        document.getElementById('newsEditorModal').classList.add('active');
-    }
-    function closeNewsEditor() { document.getElementById('newsEditorModal').classList.remove('active'); }
-
-    function addNewsEditorTag() {
-        const input = document.getElementById('newsEditorTagsInput');
-        const val = input.value.trim();
-        if (val && !newsEditorTags.includes(val)) { newsEditorTags.push(val); renderNewsEditorTags(); }
-        input.value = '';
-    }
-    function removeNewsEditorTag(t) { newsEditorTags = newsEditorTags.filter(x => x !== t); renderNewsEditorTags(); }
-    function renderNewsEditorTags() {
-        document.getElementById('newsEditorTagsList').innerHTML = newsEditorTags.map(t =>
-            `<span class="filter-sector-chip active" style="cursor:pointer;" onclick="removeNewsEditorTag('${t.replace(/'/g, "\\'")}')">${escapeHtml(t)} ✕</span>`
-        ).join('');
-    }
-
-    function addNewsBlock(type) {
-        newsEditorBlocks.push({ type, content: '', url: '', caption: '', hidden: false, provider: type === 'video' ? 'upload' : undefined });
-        renderNewsEditorBlocks();
-    }
-    function removeNewsBlock(idx) { newsEditorBlocks.splice(idx, 1); renderNewsEditorBlocks(); }
-    function moveNewsBlock(idx, dir) {
-        const j = idx + dir;
-        if (j < 0 || j >= newsEditorBlocks.length) return;
-        const tmp = newsEditorBlocks[idx]; newsEditorBlocks[idx] = newsEditorBlocks[j]; newsEditorBlocks[j] = tmp;
-        renderNewsEditorBlocks();
-    }
-    function toggleNewsBlockHidden(idx) { newsEditorBlocks[idx].hidden = !newsEditorBlocks[idx].hidden; renderNewsEditorBlocks(); }
-    function updateNewsBlockField(idx, field, value) { newsEditorBlocks[idx][field] = value; }
-
-    function renderNewsEditorBlocks() {
-        const box = document.getElementById('newsEditorBlocks');
-        box.innerHTML = newsEditorBlocks.map((b, idx) => {
-            let fieldHtml = '';
-            if (b.type === 'text' || b.type === 'insert') {
-                fieldHtml = `<textarea class="chat-text-input news-editor-field" style="min-height:80px;" placeholder="${b.type === 'insert' ? 'Текст врезки...' : 'Текст абзаца...'}" oninput="updateNewsBlockField(${idx},'content',this.value)">${escapeHtml(b.content)}</textarea>`;
-            } else if (b.type === 'image') {
-                fieldHtml = `
-                    <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="или вставьте ссылку на изображение" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">
-                    <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="подпись (необязательно)" value="${escapeHtml(b.caption)}" oninput="updateNewsBlockField(${idx},'caption',this.value)">
-                    ${b.url ? `<img src="${convertDriveUrl(b.url)}" style="max-width:160px; border-radius:8px; margin-top:8px; display:block;">` : ''}`;
-            } else if (b.type === 'video') {
-                fieldHtml = `
-                    <select class="chat-text-input news-editor-field" style="margin-bottom:6px;" onchange="updateNewsBlockField(${idx},'provider',this.value); renderNewsEditorBlocks();">
-                        <option value="upload" ${b.provider !== 'embed' ? 'selected' : ''}>Загруженное видео (из галереи выше)</option>
-                        <option value="embed" ${b.provider === 'embed' ? 'selected' : ''}>Ссылка для встраивания (YouTube/VK/RuTube)</option>
-                    </select>
-                    <input type="text" class="chat-text-input news-editor-field" placeholder="Прямая или embed-ссылка на видео" value="${escapeHtml(b.url)}" oninput="updateNewsBlockField(${idx},'url',this.value)">
-                    <input type="text" class="chat-text-input news-editor-field" style="margin-top:6px;" placeholder="подпись (необязательно)" value="${escapeHtml(b.caption)}" oninput="updateNewsBlockField(${idx},'caption',this.value)">`;
+            const data = await requestJson(p.signUrl + (p.signUrl.includes('?') ? '&' : '?') + 'health=1', { method:'GET' }, 1);
+            if (data.ok){
+                storageHealth = { state:'ok', message: p.label + ' на связи' };
+                return renderStorageStatus();
             }
-            return `
-            <div class="news-block-editor ${b.hidden ? 'is-hidden-block' : ''}">
-                <div class="news-block-editor-head">
-                    <b>${NEWS_BLOCK_LABELS[b.type] || b.type}</b>
-                    <div class="news-block-editor-controls">
-                        <button type="button" onclick="moveNewsBlock(${idx},-1)" title="Переместить вверх">↑</button>
-                        <button type="button" onclick="moveNewsBlock(${idx},1)" title="Переместить вниз">↓</button>
-                        <button type="button" onclick="toggleNewsBlockHidden(${idx})" title="Скрыть/показать блок">${b.hidden ? '🚫' : '👁'}</button>
-                        <button type="button" onclick="removeNewsBlock(${idx})" title="Удалить блок">✕</button>
-                    </div>
-                </div>
-                ${fieldHtml}
-            </div>`;
-        }).join('') || '<div style="color:var(--text-muted); padding:10px 0;">Блоков пока нет — загрузите файлы через кнопку "Медиа" или добавьте текст ниже.</div>';
-    }
-
-    async function handleBulkMediaUpload(evt) {
-        const files = Array.from(evt.target.files);
-        if (!files.length) return;
-        
-        if (files.length > 10) {
-            alert('Можно загрузить не более 10 файлов за один раз.');
-            evt.target.value = '';
-            return;
+            storageHealth = { state:'bad', message: data.error || (p.label + ' отвечает с ошибкой') };
+        } catch(e){
+            storageHealth = { state:'bad', message: p.label + ' недоступно: ' + e.message };
         }
+    }
+    renderStorageStatus();
+}
 
-        const progressEl = document.getElementById('bulkUploadProgress');
-        progressEl.textContent = `Подготовка к загрузке: 0 / ${files.length}...`;
-        let uploadedCount = 0;
+function renderStorageStatus(){
+    const dot = $('storageDot'), text = $('storageStatusText');
+    if (!dot) return;
+    dot.className = 'storage-dot ' + ({ ok:'is-ok', bad:'is-bad', unconfigured:'is-warn', unknown:'' }[storageHealth.state] || '');
+    text.textContent = storageHealth.message || 'Проверяем хранилище';
+}
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            if (file.size > 40 * 1024 * 1024) {
-                alert(`Файл ${file.name} слишком большой (>40 МБ) и пропущен.`);
-                continue;
-            }
+async function uploadToProvider(provider, file, onProgress, signal){
+    const signed = await requestJson(provider.signUrl, {
+        method:'POST',
+        body: JSON.stringify({
+            token: CONFIG.storage.uploadToken,
+            filename: file.name, contentType: file.type, size: file.size
+        })
+    }, 2);
 
-            const base64 = await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.readAsDataURL(file);
-            });
+    if (!signed.ok || !signed.uploadUrl){
+        throw Object.assign(new Error(signed.error || 'Хранилище не выдало ссылку на загрузку'), { code: signed.code || 'NO_SIGNED_URL' });
+    }
 
+    await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', signed.uploadUrl);
+        xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+        xhr.upload.onprogress = e => { if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
+        xhr.onload  = () => xhr.status < 300 ? resolve()
+            : reject(Object.assign(new Error('Хранилище отклонило файл, ответ ' + xhr.status), { code:'PUT_' + xhr.status }));
+        xhr.onerror = () => reject(Object.assign(new Error('Обрыв связи при передаче файла'), { code:'NETWORK' }));
+        xhr.ontimeout = () => reject(Object.assign(new Error('Передача заняла слишком долго'), { code:'TIMEOUT' }));
+        xhr.onabort = () => reject(Object.assign(new Error('Отменено'), { code:'ABORTED' }));
+        xhr.timeout = 600000;
+        if (signal) signal.addEventListener('abort', () => xhr.abort());
+        xhr.send(file);
+    });
+
+    return signed.publicUrl;
+}
+
+async function uploadWithFallback(file, job){
+    const providers = activeProviders();
+    if (!providers.length){
+        throw Object.assign(new Error('Хранилище не подключено. Вставьте медиа ссылкой через кнопку «Фото по ссылке».'), { code:'NO_STORAGE' });
+    }
+    let lastError;
+    for (const provider of providers){
+        for (let attempt = 1; attempt <= CONFIG.storage.retries; attempt++){
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({
-                    action: 'newsUpload', token: newsAdminToken, filename: file.name, mimeType: file.type, dataBase64: base64
-                })});
-                const data = await res.json();
-                
-                if (data.ok) {
-                    const coverInput = document.getElementById('newsEditorCover');
-                    if (!coverInput.value && file.type.startsWith('image/')) {
-                        coverInput.value = data.url;
-                    } else {
-                        const blockType = file.type.startsWith('video/') ? 'video' : 'image';
-                        newsEditorBlocks.push({ type: blockType, content: '', url: data.url, caption: '', hidden: false, provider: 'upload' });
-                    }
-                    uploadedCount++;
-                    progressEl.textContent = `Загрузка: ${uploadedCount} / ${files.length}...`;
-                    renderNewsEditorBlocks();
-                } else {
-                    console.error('Ошибка сервера при загрузке:', file.name);
+                job.note = providers.length > 1 ? provider.label : '';
+                return await uploadToProvider(provider, file, p => { job.progress = p; renderUploadQueue(); }, job.controller.signal);
+            } catch(e){
+                lastError = e;
+                if (e.code === 'ABORTED') throw e;
+                // Права, тип и размер повторной попыткой не лечатся
+                if (['FORBIDDEN','BAD_TYPE','TOO_BIG'].includes(e.code)) break;
+                if (attempt < CONFIG.storage.retries){
+                    job.status = 'retrying';
+                    job.attemptLabel = `попытка ${attempt + 1} из ${CONFIG.storage.retries}`;
+                    renderUploadQueue();
+                    await sleep(CONFIG.storage.retryDelayMs * Math.pow(2, attempt - 1));
                 }
-            } catch (e) {
-                console.error('Сетевая ошибка при загрузке:', file.name, e);
             }
         }
-        
-        progressEl.textContent = `Успешно загружено файлов: ${uploadedCount}.`;
-        evt.target.value = '';
-        setTimeout(() => { progressEl.textContent = ''; }, 4000);
     }
+    throw lastError;
+}
 
-    async function saveNewsItem() {
-        const item = {
-            id: editingNewsId,
-            title: document.getElementById('newsEditorTitle').value.trim(),
-            lead: document.getElementById('newsEditorLead').value.trim(),
-            coverImage: document.getElementById('newsEditorCover').value.trim(),
-            tags: newsEditorTags,
-            blocks: newsEditorBlocks,
-            status: document.getElementById('newsEditorPublished').checked ? 'published' : 'hidden'
-        };
-        if (!item.title) { alert('Укажите заголовок новости'); return; }
+/* ============================================================================
+   БЛОК 7. ОЧЕРЕДЬ НА ДИСКЕ БРАУЗЕРА
+   Если связь пропала совсем, файл не теряется: он лежит в IndexedDB
+   и доезжает сам, как только сеть вернётся.
+   ============================================================================ */
+const DB_NAME = 'ak-news-uploads', DB_STORE = 'pending';
+
+function openDb(){
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = () => req.result.createObjectStore(DB_STORE, { keyPath:'id', autoIncrement:true });
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(new Error('Локальное хранилище браузера недоступно'));
+    });
+}
+async function dbAdd(record){
+    const db = await openDb();
+    return new Promise((res, rej) => {
+        const tx = db.transaction(DB_STORE,'readwrite');
+        tx.objectStore(DB_STORE).add(record);
+        tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+    });
+}
+async function dbAll(){
+    const db = await openDb();
+    return new Promise((res, rej) => {
+        const req = db.transaction(DB_STORE,'readonly').objectStore(DB_STORE).getAll();
+        req.onsuccess = () => res(req.result || []);
+        req.onerror = () => rej(req.error);
+    });
+}
+async function dbDelete(id){
+    const db = await openDb();
+    return new Promise(res => {
+        const tx = db.transaction(DB_STORE,'readwrite');
+        tx.objectStore(DB_STORE).delete(id);
+        tx.oncomplete = res;
+    });
+}
+
+async function flushPendingUploads(){
+    if (!navigator.onLine || !activeProviders().length) return;
+    let items = [];
+    try { items = await dbAll(); } catch(e){ return; }
+    if (!items.length) return;
+
+    toast(`Возобновляем отложенную загрузку: ${items.length} файл(ов)`, 'warn');
+    for (const rec of items){
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsSave', token: newsAdminToken, item }) });
-            const data = await res.json();
-            if (data.ok) { closeNewsEditor(); fetchNews(); }
-            else alert('Не удалось сохранить новость. Возможно, истекла сессия — войдите заново.');
-        } catch (e) { alert('Ошибка сохранения новости'); }
+            const job = { progress:0, controller:new AbortController() };
+            const url = await uploadWithFallback(rec.file, job);
+            await dbDelete(rec.id);
+            try { await navigator.clipboard.writeText(url); } catch(e){}
+            toast(`Файл ${rec.name} догружен, ссылка скопирована в буфер обмена`, 'ok');
+        } catch(e){ /* остаётся в очереди до следующего раза */ }
+    }
+    renderPendingNote();
+}
+
+async function renderPendingNote(){
+    const note = $('pendingQueueNote');
+    if (!note) return;
+    try {
+        const items = await dbAll();
+        note.style.display = items.length ? 'block' : 'none';
+        if (items.length) note.textContent = `В отложенной очереди ${items.length} файл(ов). Догрузятся сами при появлении связи.`;
+    } catch(e){ note.style.display = 'none'; }
+}
+
+/* ============================================================================
+   БЛОК 8. ОБРАБОТКА ВЫБРАННЫХ ФАЙЛОВ
+   ============================================================================ */
+function renderUploadQueue(){
+    $('uploadQueue').innerHTML = uploadJobs.map((j, i) => {
+        const cls = j.status === 'error' ? ' is-error'
+                  : j.status === 'done' ? ' is-done'
+                  : j.status === 'offline' ? ' is-queued-offline' : '';
+        const state = ({
+            queued:'в очереди', checking:'проверяем', compressing:'сжимаем',
+            uploading: Math.round(j.progress*100) + '%',
+            retrying: j.attemptLabel || 'повтор', done:'готово',
+            error:'ошибка', offline:'отложено', duplicate:'уже загружен'
+        })[j.status] || j.status;
+        const busy = ['uploading','retrying','compressing','checking'].includes(j.status);
+        return `<div class="upload-row${cls}">
+            <span class="upload-row-name" title="${escapeHtml(j.name)}">${escapeHtml(j.name)}${j.note ? ' · ' + escapeHtml(j.note) : ''}</span>
+            ${busy ? `<span class="upload-bar"><i style="width:${Math.round(j.progress*100)}%"></i></span>` : ''}
+            <span class="upload-row-state">${state}</span>
+            ${busy ? `<button class="upload-row-cancel" data-cancel="${i}" title="Отменить">✕</button>` : ''}
+        </div>${j.error ? `<div class="upload-error-detail">${escapeHtml(j.error)}</div>` : ''}`;
+    }).join('');
+}
+
+async function processFiles(fileList){
+    let files = Array.from(fileList).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+    const rejected = fileList.length - files.length;
+    if (rejected > 0) toast(`Пропущено файлов неподходящего типа: ${rejected}`, 'warn');
+    if (!files.length) return;
+
+    if (files.length > CONFIG.storage.maxFiles){
+        toast(`Берём первые ${CONFIG.storage.maxFiles} из ${files.length}. Остальные загрузите следующим заходом.`, 'warn');
+        files = files.slice(0, CONFIG.storage.maxFiles);
     }
 
-    async function deleteNewsItem(id) {
-        if (!confirm('Удалить новость безвозвратно?')) return;
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'newsDelete', token: newsAdminToken, id }) });
-            const data = await res.json();
-            if (data.ok) fetchNews();
-            else alert('Не удалось удалить новость.');
-        } catch (e) { alert('Ошибка удаления новости'); }
+    const jobs = files.map(f => ({ name:f.name, file:f, progress:0, status:'queued', error:null, note:'', controller:new AbortController() }));
+    uploadJobs = uploadJobs.filter(j => ['uploading','retrying','compressing','checking','offline'].includes(j.status)).concat(jobs);
+    renderUploadQueue();
+
+    let cursor = 0;
+    const worker = async () => {
+        while (cursor < jobs.length){
+            await runJob(jobs[cursor++]);
+            renderUploadQueue();
+        }
+    };
+    await Promise.all(Array.from({ length: Math.min(CONFIG.storage.concurrency, jobs.length) }, worker));
+
+    const done = jobs.filter(j => j.status === 'done').length;
+    const failed = jobs.filter(j => j.status === 'error').length;
+    if (done) toast(`Загружено файлов: ${done}`, 'ok');
+    if (failed) toast(`Не удалось загрузить: ${failed}. Подробности в списке над дропзоной.`, 'error');
+
+    setTimeout(() => {
+        uploadJobs = uploadJobs.filter(j => j.status !== 'done' && j.status !== 'duplicate');
+        renderUploadQueue();
+    }, 4000);
+    renderPendingNote();
+}
+
+async function runJob(job){
+    const isVideo = job.file.type.startsWith('video/');
+    try {
+        job.status = 'checking'; renderUploadQueue();
+
+        const limit = isVideo ? CONFIG.storage.maxVideoBytes : CONFIG.storage.maxImageBytes;
+        if (job.file.size > limit)
+            throw Object.assign(new Error(`Файл ${humanSize(job.file.size)}, предел ${humanSize(limit)}`), { code:'TOO_BIG' });
+        if (isVideo && job.file.size > CONFIG.storage.videoAdviceBytes)
+            toast(`Видео ${job.name} весит ${humanSize(job.file.size)}. Загрузим, но на сайте оно будет открываться медленно — надёжнее положить его на VK Видео или RuTube и вставить ссылкой.`, 'warn');
+
+        await verifySignature(job.file);
+
+        const hash = await fileHash(job.file);
+        if (hash && uploadedHashes.has(hash)){
+            job.status = 'duplicate';
+            attachMedia(uploadedHashes.get(hash), job.file.type);
+            return;
+        }
+
+        job.status = 'compressing'; renderUploadQueue();
+        const prepared = await compressImage(job.file);
+
+        if (!navigator.onLine) throw Object.assign(new Error('Нет связи'), { code:'OFFLINE' });
+
+        job.status = 'uploading'; renderUploadQueue();
+        const url = await uploadWithFallback(prepared, job);
+
+        job.status = 'done'; job.progress = 1; job.note = '';
+        if (hash) uploadedHashes.set(hash, url);
+        attachMedia(url, prepared.type);
+
+    } catch(e){
+        if (e.code === 'ABORTED'){ job.status = 'error'; job.error = 'Отменено вами'; return; }
+
+        // Последний рубеж: кладём файл на диск браузера и догрузим позже
+        if (['OFFLINE','NETWORK','TIMEOUT'].includes(e.code)){
+            try {
+                await dbAdd({ name: job.name, file: job.file, savedAt: Date.now() });
+                job.status = 'offline';
+                job.error = 'Связи нет. Файл сохранён в браузере и уйдёт сам, когда сеть вернётся.';
+                renderPendingNote();
+                return;
+            } catch(dbErr){ /* если и это не вышло — покажем обычную ошибку */ }
+        }
+        job.status = 'error';
+        job.error = e.message + (e.code ? ` (код ${e.code})` : '');
+    }
+}
+
+function attachMedia(url, mime){
+    const isVideo = String(mime).startsWith('video/');
+    const coverInput = $('newsEditorCover');
+    if (!isVideo && !coverInput.value.trim()){
+        coverInput.value = url;
+        renderCoverPreview();
+    } else {
+        editorBlocks.push({ type: isVideo ? 'video' : 'image', content:'', url, caption:'', hidden:false, provider: isVideo ? 'upload' : undefined });
+    }
+    renderMediaLibrary(); renderEditorBlocks(); scheduleDraftSave();
+}
+
+/* ============================================================================
+   БЛОК 9. ЧЕРНОВИКИ И РЕЗЕРВНАЯ КОПИЯ
+   ============================================================================ */
+const draftKey = () => CONFIG.drafts.key + (editingNewsId || 'new');
+
+function scheduleDraftSave(){
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(saveDraft, CONFIG.drafts.autosaveMs);
+}
+function saveDraft(){
+    if (!$('newsEditorModal').classList.contains('active')) return;
+    try {
+        localStorage.setItem(draftKey(), JSON.stringify({
+            savedAt: Date.now(),
+            title: $('newsEditorTitle').value,
+            lead: $('newsEditorLead').value,
+            coverImage: $('newsEditorCover').value,
+            tags: editorTags, blocks: editorBlocks,
+            published: $('newsEditorPublished').checked
+        }));
+        $('draftNote').textContent = 'Черновик сохранён в браузере в ' + new Date().toLocaleTimeString('ru-RU');
+    } catch(e){ /* переполнение localStorage не критично */ }
+}
+const loadDraft = () => { try { return JSON.parse(localStorage.getItem(draftKey()) || 'null'); } catch(e){ return null; } };
+const clearDraft = () => { try { localStorage.removeItem(draftKey()); } catch(e){} };
+
+const cacheNews = items => { try { localStorage.setItem(CONFIG.cache.key, JSON.stringify({ at:Date.now(), items })); } catch(e){} };
+function readCachedNews(){
+    try {
+        const c = JSON.parse(localStorage.getItem(CONFIG.cache.key) || 'null');
+        if (c && Date.now() - c.at < CONFIG.cache.ttlMs) return c.items;
+    } catch(e){}
+    return null;
+}
+
+function exportBackup(){
+    const blob = new Blob([JSON.stringify({ exportedAt:new Date().toISOString(), items:newsItems }, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `news-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('Резервная копия скачана', 'ok');
+}
+
+/* ============================================================================
+   БЛОК 10. СПИСОК И ДЕТАЛЬНАЯ СТРАНИЦА
+   ============================================================================ */
+async function fetchNews(){
+    try {
+        let url = CONFIG.api + '?type=news';
+        if (adminToken) url += '&admin=1&token=' + encodeURIComponent(adminToken);
+        const data = await requestJson(url, { method:'GET' });
+        newsItems = data.items || [];
+        cacheNews(newsItems);
+        renderGrid();
+        if (adminToken){ $('newsAdminBar').style.display = 'flex'; renderAdminList(); renderPendingNote(); }
+        const hash = location.hash.replace('#','').replace('news=','');
+        if (hash && newsItems.find(n => n.id === hash)) openDetail(hash);
+    } catch(e){
+        const cached = readCachedNews();
+        if (cached){
+            newsItems = cached;
+            renderGrid();
+            toast('Сервер не отвечает, показываем сохранённую копию новостей', 'warn');
+        } else {
+            $('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Не удалось связаться с базой. Обновите страницу или попробуйте позже.</div>`;
+        }
+    }
+}
+
+function renderGrid(){
+    const grid = $('newsGrid');
+    const allTags = [...new Set(newsItems.flatMap(n => n.tags || []))];
+    $('newsTagsBar').innerHTML = allTags.map((t,i) =>
+        `<div class="filter-sector-chip ${activeTagFilter === t ? 'active' : ''}" data-tagindex="${i}">${escapeHtml(t)}</div>`).join('');
+    $('newsTagsBar').dataset.tags = JSON.stringify(allTags);
+
+    let items = newsItems;
+    if (!adminToken) items = items.filter(n => n.status === 'published');
+    if (activeTagFilter) items = items.filter(n => (n.tags || []).includes(activeTagFilter));
+
+    if (!items.length){
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">${activeTagFilter ? 'По этому тегу новостей нет' : 'Новостей пока нет'}</div>`;
+        return;
+    }
+    grid.innerHTML = items.map(n => {
+        const cb = (n.blocks || []).find(b => b.type === 'image' && !b.hidden && b.url);
+        const cover = imageUrl(n.coverImage || (cb ? cb.url : ''));
+        const badge = n.status !== 'published' ? '<span style="background:var(--warn); color:#000; padding:3px 8px; border-radius:6px; font-size:.7rem; font-weight:800;">Скрыто</span>' : '';
+        return `<div class="card" data-openid="${escapeHtml(n.id)}">
+            ${cover ? `<div class="news-card-cover" style="background-image:url('${String(cover).replace(/'/g,'%27')}')"></div>` : ''}
+            <div class="card-meta"><span style="font-size:.8rem; color:var(--text-muted);">${formatDate(n.createdAt)}</span>${badge}</div>
+            <h3>${escapeHtml(n.title)}</h3>
+            <p>${escapeHtml(n.lead || '')}</p>
+            <div class="news-card-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+        </div>`;
+    }).join('');
+}
+
+function showListView(){
+    $('newsListView').style.display = 'block';
+    $('newsDetailView').style.display = 'none';
+    history.replaceState(null, null, location.pathname);
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function openDetail(id){
+    const n = newsItems.find(x => x.id === id);
+    if (!n) return;
+    $('newsListView').style.display = 'none';
+    const view = $('newsDetailView');
+    view.style.display = 'block';
+    history.replaceState(null, null, '#' + id);
+    window.scrollTo({ top:0, behavior:'smooth' });
+
+    const visible = (n.blocks || []).filter(b => !b.hidden);
+    articleMedia = visible.filter(b => (b.type === 'image' || b.type === 'video') && b.url);
+
+    const body = visible.map(b => {
+        const cap = b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : '';
+        if (b.type === 'text')   return `<p class="news-body-text">${escapeHtml(b.content)}</p>`;
+        if (b.type === 'insert') return `<div class="news-insert">${escapeHtml(b.content)}</div>`;
+        if (b.type === 'image' && b.url){
+            const mi = articleMedia.indexOf(b);
+            return `<figure class="news-media-figure"><img src="${escapeHtml(imageUrl(b.url))}" loading="lazy" alt="${escapeHtml(b.caption || '')}" data-lightbox="${mi}" data-fallback="1">${cap}</figure>`;
+        }
+        if (b.type === 'video' && b.url){
+            const embed = toEmbedUrl(b.url);
+            if (embed) return `<figure class="news-media-figure"><div class="news-video-embed-wrap"><iframe src="${escapeHtml(embed)}" allow="autoplay; fullscreen; encrypted-media" allowfullscreen loading="lazy"></iframe></div>${cap}</figure>`;
+            return `<figure class="news-media-figure"><video src="${escapeHtml(b.url)}" controls playsinline preload="metadata"></video>${cap}</figure>`;
+        }
+        return '';
+    }).join('');
+
+    view.innerHTML = `
+        <button class="accordion-btn" id="backToListBtn">Назад к новостям</button>
+        <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+        <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
+        <div class="news-detail-date">${formatDate(n.createdAt)}</div>
+        ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
+        <div>${body}</div>`;
+    $('backToListBtn').addEventListener('click', showListView);
+
+    // Битая картинка не оставляет пустую дыру в статье
+    view.querySelectorAll('img[data-fallback]').forEach(img => {
+        img.addEventListener('error', () => {
+            const fig = img.closest('figure');
+            if (fig) fig.innerHTML = '<div style="color:var(--text-muted); font-size:.85rem; padding:20px; border:1px dashed var(--border-glass); border-radius:12px;">Изображение недоступно</div>';
+        });
+    });
+}
+
+/* ============================================================================
+   БЛОК 11. ЛАЙТБОКС
+   ============================================================================ */
+function openLightboxAt(i){ lightboxIndex = i; renderLightbox(); $('mediaLightbox').classList.add('active'); }
+function closeLightbox(){ $('mediaLightbox').classList.remove('active'); $('lightboxContent').innerHTML = ''; }
+function navLightbox(d){ lightboxIndex = (lightboxIndex + d + articleMedia.length) % articleMedia.length; renderLightbox(); }
+function renderLightbox(){
+    const m = articleMedia[lightboxIndex];
+    if (!m) return;
+    const box = $('lightboxContent');
+    if (m.type === 'video'){
+        const embed = toEmbedUrl(m.url);
+        box.innerHTML = embed
+            ? `<div class="news-video-embed-wrap" style="width:80vw; max-width:960px;"><iframe src="${escapeHtml(embed)}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>`
+            : `<video src="${escapeHtml(m.url)}" controls autoplay playsinline></video>`;
+    } else box.innerHTML = `<img src="${escapeHtml(imageUrl(m.url))}" alt="">`;
+    $('lightboxNav').style.display = articleMedia.length > 1 ? 'flex' : 'none';
+}
+
+/* ============================================================================
+   БЛОК 12. АДМИНКА И РЕДАКТОР
+   ============================================================================ */
+async function submitLogin(){
+    const err = $('newsAdminLoginError');
+    err.style.display = 'none';
+    try {
+        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsLogin', password: $('newsAdminPassInput').value }) });
+        if (data.ok){
+            adminToken = data.token;
+            sessionStorage.setItem('newsAdminToken', adminToken);
+            $('newsAdminLoginModal').classList.remove('active');
+            $('newsAdminPassInput').value = '';
+            $('newsAdminBar').style.display = 'flex';
+            fetchNews();
+            flushPendingUploads();
+        } else { err.textContent = 'Пароль не подошёл'; err.style.display = 'block'; }
+    } catch(e){ err.textContent = e.message; err.style.display = 'block'; }
+}
+
+function renderAdminList(){
+    $('newsAdminList').innerHTML = newsItems.map(n => `
+        <div class="news-admin-row">
+            <div style="font-weight:700;">${n.status === 'published' ? 'Опубликовано' : 'Скрыто'} — ${escapeHtml(n.title)}</div>
+            <div style="display:flex; gap:8px;">
+                <button class="chat-opt-btn" data-editid="${escapeHtml(n.id)}">Редактировать</button>
+                <button class="chat-opt-btn" style="background:var(--ranepa-burgundy);" data-deleteid="${escapeHtml(n.id)}">Удалить</button>
+            </div>
+        </div>`).join('') || '<div style="color:var(--text-muted);">Новостей ещё нет. Создайте первую.</div>';
+}
+
+function openEditor(id){
+    editingNewsId = id || null;
+    const n = id ? newsItems.find(x => x.id === id) : null;
+
+    $('newsEditorHeading').textContent = id ? 'Редактирование новости' : 'Новая новость';
+    $('newsEditorTitle').value = n ? n.title || '' : '';
+    $('newsEditorLead').value = n ? n.lead || '' : '';
+    $('newsEditorCover').value = n ? n.coverImage || '' : '';
+    $('newsEditorTagsInput').value = '';
+    $('newsEditorPublished').checked = n ? n.status === 'published' : false;
+    editorTags = n ? [...(n.tags || [])] : [];
+    editorBlocks = n ? JSON.parse(JSON.stringify(n.blocks || [])) : [];
+    uploadJobs = [];
+    $('draftNote').textContent = '';
+
+    // Недописанный черновик предлагаем вернуть
+    const draft = loadDraft();
+    if (draft && confirm(`Найден несохранённый черновик от ${new Date(draft.savedAt).toLocaleString('ru-RU')}. Восстановить его?`)){
+        $('newsEditorTitle').value = draft.title || '';
+        $('newsEditorLead').value = draft.lead || '';
+        $('newsEditorCover').value = draft.coverImage || '';
+        $('newsEditorPublished').checked = !!draft.published;
+        editorTags = draft.tags || [];
+        editorBlocks = draft.blocks || [];
     }
 
-    window.addEventListener('DOMContentLoaded', fetchNews);
+    renderUploadQueue(); renderCoverPreview(); renderMediaLibrary();
+    renderEditorTags(); renderEditorBlocks();
+    $('newsEditorModal').classList.add('active');
+    checkStorageHealth();
+}
+
+function renderCoverPreview(){
+    const url = $('newsEditorCover').value.trim(), img = $('coverPreview');
+    if (url){ img.src = imageUrl(url); img.style.display = 'block'; }
+    else { img.removeAttribute('src'); img.style.display = 'none'; }
+}
+
+function renderMediaLibrary(){
+    const cover = $('newsEditorCover').value.trim();
+    const items = [];
+    if (cover) items.push({ url:cover, type:'image', isCover:true, idx:-1 });
+    editorBlocks.forEach((b, idx) => {
+        if ((b.type === 'image' || b.type === 'video') && b.url) items.push({ url:b.url, type:b.type, isCover:false, idx });
+    });
+    $('mediaLibrary').innerHTML = items.map(m => `
+        <div class="media-thumb ${m.isCover ? 'is-cover' : ''}">
+            ${m.type === 'video'
+                ? `<video src="${escapeHtml(m.url)}" muted preload="metadata"></video>`
+                : `<img src="${escapeHtml(imageUrl(m.url))}" alt="" loading="lazy">`}
+            ${m.isCover ? '<span class="media-thumb-badge">Обложка</span>' : ''}
+            <div class="media-thumb-actions">
+                ${m.isCover ? '' : `<button type="button" data-makecover="${m.idx}">Обложка</button>`}
+                <button type="button" data-removemedia="${m.idx}">Убрать</button>
+            </div>
+        </div>`).join('');
+}
+
+function renderEditorTags(){
+    $('newsEditorTagsList').innerHTML = editorTags.map((t,i) =>
+        `<span class="filter-sector-chip active" style="cursor:pointer;" data-removetag="${i}">${escapeHtml(t)} ✕</span>`).join('');
+}
+function addTag(){
+    const input = $('newsEditorTagsInput');
+    input.value.split(',').map(s => s.trim()).filter(Boolean).forEach(v => { if (!editorTags.includes(v)) editorTags.push(v); });
+    input.value = '';
+    renderEditorTags(); scheduleDraftSave();
+}
+
+function renderEditorBlocks(){
+    const box = $('newsEditorBlocks');
+    if (!editorBlocks.length){
+        box.innerHTML = '<div style="color:var(--text-muted); padding:10px 0;">Пока пусто. Загрузите файлы выше или добавьте текст кнопками ниже.</div>';
+        return;
+    }
+    box.innerHTML = editorBlocks.map((b, idx) => {
+        let field = '';
+        if (b.type === 'text' || b.type === 'insert'){
+            field = `<textarea class="chat-text-input news-editor-field" style="min-height:90px;" placeholder="${b.type === 'insert' ? 'Текст врезки' : 'Текст абзаца'}" data-field="content" data-idx="${idx}">${escapeHtml(b.content)}</textarea>`;
+        } else if (b.type === 'image'){
+            field = `<input type="text" class="chat-text-input news-editor-field" placeholder="Ссылка на изображение" value="${escapeHtml(b.url)}" data-field="url" data-idx="${idx}">
+                <input type="text" class="chat-text-input news-editor-field" placeholder="Подпись, если нужна" value="${escapeHtml(b.caption)}" data-field="caption" data-idx="${idx}">
+                ${b.url ? `<img src="${escapeHtml(imageUrl(b.url))}" style="max-width:170px; border-radius:8px; display:block;" alt="">` : ''}`;
+        } else if (b.type === 'video'){
+            field = `<select class="chat-text-input news-editor-field" data-field="provider" data-idx="${idx}" data-rerender="1">
+                    <option value="upload" ${b.provider !== 'embed' ? 'selected' : ''}>Файл в хранилище</option>
+                    <option value="embed" ${b.provider === 'embed' ? 'selected' : ''}>Ссылка на VK Видео или RuTube</option>
+                </select>
+                <input type="text" class="chat-text-input news-editor-field" placeholder="${b.provider === 'embed' ? 'Вставьте обычную ссылку, встраивание соберётся само' : 'Ссылка на файл'}" value="${escapeHtml(b.url)}" data-field="url" data-idx="${idx}">
+                <input type="text" class="chat-text-input news-editor-field" placeholder="Подпись, если нужна" value="${escapeHtml(b.caption)}" data-field="caption" data-idx="${idx}">`;
+        }
+        return `<div class="news-block-editor ${b.hidden ? 'is-hidden-block' : ''}" draggable="true" data-blockidx="${idx}">
+            <div class="news-block-editor-head">
+                <b><span class="news-block-grip">⠿</span>${BLOCK_LABELS[b.type] || b.type}</b>
+                <div class="news-block-editor-controls">
+                    <button type="button" data-move="${idx}" data-dir="-1" title="Выше">↑</button>
+                    <button type="button" data-move="${idx}" data-dir="1" title="Ниже">↓</button>
+                    <button type="button" data-togglehide="${idx}" title="Показать или скрыть">${b.hidden ? '🚫' : '👁'}</button>
+                    <button type="button" data-removeblock="${idx}" title="Удалить">✕</button>
+                </div>
+            </div>${field}</div>`;
+    }).join('');
+}
+
+function moveBlock(idx, dir){
+    const j = idx + dir;
+    if (j < 0 || j >= editorBlocks.length) return;
+    [editorBlocks[idx], editorBlocks[j]] = [editorBlocks[j], editorBlocks[idx]];
+    renderEditorBlocks(); renderMediaLibrary(); scheduleDraftSave();
+}
+
+async function saveNews(){
+    const btn = $('saveNewsBtn');
+    const item = {
+        id: editingNewsId,
+        title: $('newsEditorTitle').value.trim(),
+        lead: $('newsEditorLead').value.trim(),
+        coverImage: $('newsEditorCover').value.trim(),
+        tags: editorTags, blocks: editorBlocks,
+        status: $('newsEditorPublished').checked ? 'published' : 'hidden'
+    };
+    if (!item.title){ toast('Впишите заголовок новости', 'error'); return; }
+    if (uploadJobs.some(j => ['uploading','retrying','compressing','checking'].includes(j.status))){
+        toast('Дождитесь окончания загрузки файлов', 'warn'); return;
+    }
+    const stuck = uploadJobs.filter(j => j.status === 'offline').length;
+    if (stuck && !confirm(`${stuck} файл(ов) ещё не уехали в хранилище и догрузятся позже. Сохранить новость сейчас?`)) return;
+
+    btn.disabled = true; btn.textContent = 'Сохраняем';
+    try {
+        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsSave', token: adminToken, item }) });
+        if (data.ok){
+            clearDraft();
+            $('newsEditorModal').classList.remove('active');
+            toast('Новость сохранена', 'ok');
+            fetchNews();
+        } else toast(data.error || 'Сохранить не удалось. Возможно, истекла сессия — войдите заново.', 'error', data.code);
+    } catch(e){
+        saveDraft();
+        toast('Сервер не принял новость: ' + e.message + ' Черновик сохранён в браузере, попробуйте ещё раз.', 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Сохранить новость';
+}
+
+async function deleteNews(id){
+    const n = newsItems.find(x => x.id === id);
+    if (!confirm(`Удалить новость «${n ? n.title : id}» безвозвратно?`)) return;
+    if (!confirm('Это действие нельзя отменить. Точно удаляем?')) return;
+    try {
+        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsDelete', token: adminToken, id }) });
+        if (data.ok){ toast('Новость удалена', 'ok'); fetchNews(); }
+        else toast(data.error || 'Удалить не удалось', 'error', data.code);
+    } catch(e){ toast('Сервер не отвечает: ' + e.message, 'error'); }
+}
+
+/* ============================================================================
+   БЛОК 13. СОБЫТИЯ
+   ============================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+    fetchNews();
+    renderPendingNote();
+
+    const setOnline = () => {
+        $('offlineBanner').classList.toggle('is-on', !navigator.onLine);
+        if (navigator.onLine) flushPendingUploads();
+    };
+    window.addEventListener('online', setOnline);
+    window.addEventListener('offline', setOnline);
+    setOnline();
+
+    $('adminGearBtn').onclick   = () => $('newsAdminLoginModal').classList.add('active');
+    $('loginCancelBtn').onclick = () => $('newsAdminLoginModal').classList.remove('active');
+    $('loginSubmitBtn').onclick = submitLogin;
+    $('newsAdminPassInput').onkeydown = e => { if (e.key === 'Enter') submitLogin(); };
+
+    $('addNewsBtn').onclick = () => openEditor(null);
+    $('exportBtn').onclick  = exportBackup;
+    $('logoutBtn').onclick  = () => {
+        adminToken = null;
+        sessionStorage.removeItem('newsAdminToken');
+        $('newsAdminBar').style.display = 'none';
+        fetchNews();
+    };
+
+    $('closeEditorBtn').onclick = () => {
+        if (uploadJobs.some(j => ['uploading','retrying'].includes(j.status)) && !confirm('Файлы ещё загружаются. Точно закрыть?')) return;
+        saveDraft();
+        $('newsEditorModal').classList.remove('active');
+    };
+    $('saveNewsBtn').onclick = saveNews;
+    $('addTagBtn').onclick = addTag;
+    $('recheckStorageBtn').onclick = checkStorageHealth;
+    $('newsEditorTagsInput').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); addTag(); } };
+    $('newsEditorCover').oninput = () => { renderCoverPreview(); renderMediaLibrary(); scheduleDraftSave(); };
+    ['newsEditorTitle','newsEditorLead','newsEditorPublished'].forEach(id => {
+        $(id).addEventListener('input', scheduleDraftSave);
+        $(id).addEventListener('change', scheduleDraftSave);
+    });
+
+    const dz = $('newsDropzone'), input = $('newsBulkUpload');
+    dz.onclick = () => input.click();
+    dz.onkeydown = e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); input.click(); } };
+    input.onchange = e => { processFiles(e.target.files); e.target.value = ''; };
+    ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('is-over'); }));
+    ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('is-over'); }));
+    dz.addEventListener('drop', e => { if (e.dataTransfer && e.dataTransfer.files.length) processFiles(e.dataTransfer.files); });
+    $('newsEditorBox').addEventListener('paste', e => {
+        const files = Array.from((e.clipboardData && e.clipboardData.files) || []);
+        if (files.length){ e.preventDefault(); processFiles(files); }
+    });
+
+    $('uploadQueue').addEventListener('click', e => {
+        const b = e.target.closest('[data-cancel]');
+        if (b && uploadJobs[+b.dataset.cancel]) uploadJobs[+b.dataset.cancel].controller.abort();
+    });
+
+    $('mediaLibrary').addEventListener('click', e => {
+        const mk = e.target.closest('[data-makecover]'), rm = e.target.closest('[data-removemedia]');
+        if (mk){
+            const i = +mk.dataset.makecover, old = $('newsEditorCover').value.trim(), block = editorBlocks[i];
+            $('newsEditorCover').value = block.url;
+            if (old) block.url = old; else editorBlocks.splice(i,1);
+        } else if (rm){
+            const i = +rm.dataset.removemedia;
+            if (i === -1) $('newsEditorCover').value = ''; else editorBlocks.splice(i,1);
+        } else return;
+        renderCoverPreview(); renderMediaLibrary(); renderEditorBlocks(); scheduleDraftSave();
+    });
+
+    $('newsEditorTagsList').addEventListener('click', e => {
+        const el = e.target.closest('[data-removetag]');
+        if (el){ editorTags.splice(+el.dataset.removetag, 1); renderEditorTags(); scheduleDraftSave(); }
+    });
+
+    $('addBlockRow').addEventListener('click', e => {
+        const btn = e.target.closest('[data-add]');
+        if (!btn) return;
+        const type = btn.dataset.add;
+        editorBlocks.push({ type, content:'', url:'', caption:'', hidden:false, provider: type === 'video' ? 'embed' : undefined });
+        renderEditorBlocks(); scheduleDraftSave();
+    });
+
+    const bb = $('newsEditorBlocks');
+    bb.addEventListener('click', e => {
+        const mv = e.target.closest('[data-move]'), hd = e.target.closest('[data-togglehide]'), rb = e.target.closest('[data-removeblock]');
+        if (mv) moveBlock(+mv.dataset.move, +mv.dataset.dir);
+        else if (hd){ const i = +hd.dataset.togglehide; editorBlocks[i].hidden = !editorBlocks[i].hidden; renderEditorBlocks(); scheduleDraftSave(); }
+        else if (rb){ editorBlocks.splice(+rb.dataset.removeblock, 1); renderEditorBlocks(); renderMediaLibrary(); scheduleDraftSave(); }
+    });
+    bb.addEventListener('input', e => {
+        const el = e.target.closest('[data-field]');
+        if (!el) return;
+        editorBlocks[+el.dataset.idx][el.dataset.field] = el.value;
+        if (el.dataset.rerender) renderEditorBlocks();
+        scheduleDraftSave();
+    });
+    bb.addEventListener('dragstart', e => {
+        const c = e.target.closest('[data-blockidx]');
+        if (!c) return;
+        dragIndex = +c.dataset.blockidx;
+        c.classList.add('is-dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    });
+    bb.addEventListener('dragover', e => {
+        e.preventDefault();
+        const c = e.target.closest('[data-blockidx]');
+        bb.querySelectorAll('.is-drop-target').forEach(el => el.classList.remove('is-drop-target'));
+        if (c) c.classList.add('is-drop-target');
+    });
+    bb.addEventListener('drop', e => {
+        e.preventDefault();
+        const c = e.target.closest('[data-blockidx]');
+        if (c && dragIndex !== null){
+            const to = +c.dataset.blockidx;
+            const [moved] = editorBlocks.splice(dragIndex, 1);
+            editorBlocks.splice(to, 0, moved);
+            renderEditorBlocks(); renderMediaLibrary(); scheduleDraftSave();
+        }
+        dragIndex = null;
+    });
+    bb.addEventListener('dragend', () => {
+        dragIndex = null;
+        bb.querySelectorAll('.is-dragging, .is-drop-target').forEach(el => el.classList.remove('is-dragging','is-drop-target'));
+    });
+
+    $('newsGrid').addEventListener('click', e => {
+        const c = e.target.closest('[data-openid]');
+        if (c) openDetail(c.dataset.openid);
+    });
+    $('newsTagsBar').addEventListener('click', e => {
+        const chip = e.target.closest('[data-tagindex]');
+        if (!chip) return;
+        const tags = JSON.parse($('newsTagsBar').dataset.tags || '[]');
+        const t = tags[+chip.dataset.tagindex];
+        activeTagFilter = activeTagFilter === t ? null : t;
+        renderGrid();
+    });
+    $('newsAdminList').addEventListener('click', e => {
+        const ed = e.target.closest('[data-editid]'), dl = e.target.closest('[data-deleteid]');
+        if (ed) openEditor(ed.dataset.editid);
+        else if (dl) deleteNews(dl.dataset.deleteid);
+    });
+    $('newsDetailView').addEventListener('click', e => {
+        const img = e.target.closest('[data-lightbox]');
+        if (img) openLightboxAt(+img.dataset.lightbox);
+    });
+
+    $('lightboxCloseBtn').onclick = closeLightbox;
+    $('lightboxNav').addEventListener('click', e => {
+        const b = e.target.closest('[data-nav]');
+        if (b) navLightbox(+b.dataset.nav);
+    });
+    $('mediaLightbox').addEventListener('click', e => { if (e.target.id === 'mediaLightbox') closeLightbox(); });
+    document.addEventListener('keydown', e => {
+        if (!$('mediaLightbox').classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navLightbox(-1);
+        if (e.key === 'ArrowRight') navLightbox(1);
+    });
+
+    window.addEventListener('beforeunload', e => {
+        if (uploadJobs.some(j => ['uploading','retrying','compressing'].includes(j.status))){
+            e.preventDefault(); e.returnValue = '';
+        }
+    });
+
+    window.addEventListener('unhandledrejection', e => console.error('Необработанная ошибка:', e.reason));
+});
 </script>
 </body>
 </html>
