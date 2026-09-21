@@ -4,15 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AR-Лаборатория | Практика ИИ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112862792', 'ym');
 
-    <!-- Библиотеки Google MediaPipe (AR Жесты) -->
+    ym(112862792, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112862792" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+    
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-
-    <!-- Библиотека Three.js (3D Графика) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
@@ -22,18 +31,20 @@
             --ranepa-red: #CA0F3E;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
-
+        
         body {
             background-color: var(--bg); color: #fff;
             overflow: hidden; 
             transition: all 0.8s ease;
         }
 
+        /* 3D Фон */
         #webgl-canvas {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -3; pointer-events: none; opacity: 0.8;
         }
 
+        /* АНИМАЦИЯ ВЗРЫВА */
         body.implode { animation: blackHole 1.5s forwards cubic-bezier(0.5, 0, 0.5, 1); }
         @keyframes blackHole {
             0% { filter: brightness(1); transform: scale(1) rotate(0deg); opacity: 1; }
@@ -49,6 +60,7 @@
         .spinner { width: 60px; height: 60px; border: 4px solid rgba(56, 189, 248, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* HUD */
         .hud-top {
             position: fixed; top: 20px; right: 30px; z-index: 2000;
             display: flex; gap: 20px; align-items: center;
@@ -71,159 +83,112 @@
 
         .hand-cursor {
             position: fixed; width: 28px; height: 28px; border: 2px solid var(--accent);
-            border-radius: 50%; pointer-events: none; z-index: 1000;
+            border-radius: 50%; pointer-events: none; z-index: 10000;
             transform: translate(-50%, -50%); transition: background 0.1s, transform 0.1s, border-color 0.1s;
             box-shadow: 0 0 15px var(--accent); opacity: 0;
         }
         .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
 
-        #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; }
+        #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; z-index: 10;}
 
+        /* ПАЗЛЫ */
         .screen-puzzle { height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-        .header { 
-            position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: 20px; z-index: 10;
-            background: linear-gradient(to bottom, rgba(5,8,14,0.95), transparent);
-        }
-        .header h1 { font-size: 1.8rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 10px; color: #fff; }
-        
-        /* ПАНЕЛЬ НАСТРОЕК УРОВНЕЙ И КАРТИНОК */
-        .settings-panel {
-            display: flex; gap: 15px; justify-content: center; align-items: center; margin-bottom: 10px; z-index: 20; position: relative;
-        }
-        .settings-group { display: flex; gap: 5px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
-        .settings-btn {
-            background: transparent; border: none; color: #94A3B8; padding: 6px 12px; font-weight: 700; font-size: 0.85rem; border-radius: 8px; cursor: pointer; transition: 0.2s;
-        }
-        .settings-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 10px rgba(56,189,248,0.4); }
-
-        .header .instructions { 
-            display: flex; gap: 20px; justify-content: center; max-width: 1000px; margin: 0 auto;
-        }
-        .header .instr-block {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 15px;
-            border-radius: 12px; backdrop-filter: blur(10px); color: #cbd5e1; font-size: 0.85rem; line-height: 1.4; flex: 1;
-        }
+        .header { position: absolute; top: 0; left: 0; width: 100%; text-align: center; padding: 30px 20px; z-index: 10; background: linear-gradient(to bottom, rgba(5,8,14,0.95), transparent); }
+        .header h1 { font-size: 2.2rem; text-shadow: 0 0 20px rgba(56, 189, 248, 0.6); margin-bottom: 15px; color: #fff; }
+        .header .instructions { display: flex; gap: 30px; justify-content: center; max-width: 1000px; margin: 0 auto; }
+        .header .instr-block { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 15px 20px; border-radius: 15px; backdrop-filter: blur(10px); color: #cbd5e1; font-size: 0.95rem; line-height: 1.5; flex: 1; }
         .header .instr-block b { color: var(--accent); }
 
-        .puzzle-area {
-            position: relative; width: 600px; height: 400px; margin-top: 120px;
-            border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(15px);
-            transition: all 0.5s ease;
-        }
-        .puzzle-grid { display: grid; width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
+        .puzzle-area { position: relative; width: 600px; height: 400px; margin-top: 80px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px; background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); transition: all 0.5s ease; }
+        .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
         .grid-slot { border: 1px dashed rgba(255,255,255,0.05); }
 
         @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
         @keyframes neonSnake { to { --angle: 360deg; } }
-        .puzzle-area.completed {
-            border: 2px solid transparent; border-radius: 20px;
-            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), conic-gradient(from var(--angle), transparent 70%, var(--accent) 100%);
-            background-origin: border-box; background-clip: padding-box, border-box;
-            animation: neonSnake 2.5s linear infinite; box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
-        }
+        .puzzle-area.completed { border: 2px solid transparent; border-radius: 20px; background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), conic-gradient(from var(--angle), transparent 70%, var(--accent) 100%); background-origin: border-box; background-clip: padding-box, border-box; animation: neonSnake 2.5s linear infinite; box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
 
-        .puzzle-piece {
-            position: absolute;
-            background-size: 600px 400px;
-            cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            transition: box-shadow 0.1s, filter 0.1s; 
-        }
+        .puzzle-piece { position: absolute; width: 200px; height: 200px; background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop'); background-size: 600px 400px; cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6); transition: box-shadow 0.1s, filter 0.1s; }
         .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
-        .piece-num { position: absolute; top: 6px; left: 10px; font-size: 12px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-
+        .piece-num { position: absolute; top: 8px; left: 12px; font-size: 16px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
         .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
         .puzzle-piece.locked { filter: brightness(1); box-shadow: none; z-index: 1; clip-path: none !important; }
-        .puzzle-piece.locked::after { opacity: 0; }
-        .puzzle-piece.locked .piece-num { opacity: 0; }
+        .puzzle-piece.locked::after, .puzzle-piece.locked .piece-num { opacity: 0; }
 
         .screen-terms { width: 100vw; min-height: 100vh; padding: 100px 50px; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 30px; background: linear-gradient(to bottom, transparent, rgba(5,8,14,0.95) 20%); }
-        .term-card {
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content;
-            transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s ease-out; 
-        }
+        .term-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; width: 280px; text-align: center; height: fit-content; transform-origin: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s ease-out; }
         .term-card.hovered { border-color: var(--accent); box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); z-index: 10; }
         .term-card h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--accent); }
         .term-card p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; }
 
-        /* КНОПКА ОТКРЫТИЯ ГАЙДОВ */
-        .open-guides-btn {
-            position: fixed; left: 30px; top: 50%; transform: translateY(-50%);
-            z-index: 3000; background: linear-gradient(135deg, #0284c7, #38bdf8);
-            border: 2px solid #fff; padding: 20px 30px; border-radius: 20px;
-            font-size: 1.2rem; font-weight: 900; color: #fff; cursor: pointer;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.6); transition: 0.3s;
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        .open-guides-btn:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 0 50px #38bdf8; }
-
-        /* МОДАЛКА ГАЙДОВ */
-        .guides-modal {
-            position: fixed; inset: 0; z-index: 10000; background: rgba(5, 8, 14, 0.95);
-            backdrop-filter: blur(20px); display: none; grid-template-columns: 280px 1fr;
-            opacity: 0; transition: opacity 0.4s ease;
-        }
-        .guides-modal.active { display: grid; opacity: 1; }
-        .guides-sidebar { border-right: 1px solid rgba(255,255,255,0.1); padding: 40px 20px; display: flex; flex-direction: column; gap: 15px; background: rgba(0,0,0,0.3); }
-        .guides-sidebar h2 { font-size: 1.8rem; color: var(--accent); margin-bottom: 20px; }
-        .guide-tab {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px 20px; border-radius: 12px; color: #fff; font-weight: 700; cursor: pointer;
-            transition: 0.2s; text-align: left;
-        }
-        .guide-tab:hover, .guide-tab.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 20px rgba(56,189,248,0.4); }
-
-        .guides-content { padding: 50px; overflow-y: auto; position: relative; height: 100vh; }
-        .guide-panel { display: none; max-width: 800px; }
-        .guide-panel.active { display: block; }
-        .guide-panel h2 { font-size: 2.2rem; color: var(--accent); margin-bottom: 25px; }
-        .guide-panel h3 { font-size: 1.3rem; color: #fff; margin: 20px 0 10px 0; }
-        .guide-panel p, .guide-panel li { color: #cbd5e1; font-size: 1.05rem; line-height: 1.7; margin-bottom: 15px; }
-        .guide-panel ul { padding-left: 20px; }
-        .code-snippet { background: rgba(0,0,0,0.6); border: 1px solid rgba(56,189,248,0.3); padding: 15px; border-radius: 10px; font-family: monospace; color: #38bdf8; margin: 15px 0; }
-
-        .close-guides { position: absolute; top: 30px; right: 40px; background: #ef4444; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 900; color: #fff; cursor: pointer; transition: 0.2s; }
-        .close-guides:hover { transform: scale(1.05); box-shadow: 0 0 20px #ef4444; }
-
-        /* ИНТЕРАКТИВНЫЙ ГЕНЕРАТОР КАРТИНОК */
-        .gen-container { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; margin-top: 20px; display: flex; flex-direction: column; gap: 20px; }
-        .prompt-box { background: rgba(0,0,0,0.5); border: 1px solid var(--accent); padding: 15px; border-radius: 12px; color: #38bdf8; font-weight: 700; font-family: monospace; }
-        .gen-btn { background: linear-gradient(135deg, #8b5cf6, #38bdf8); border: none; padding: 15px; border-radius: 12px; font-weight: 900; color: #fff; cursor: pointer; transition: 0.2s; font-size: 1.1rem; }
-        .gen-btn:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(56,189,248,0.5); }
-        .result-img-box { width: 100%; height: 350px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 15px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background: #000; }
-        .result-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .result-img-box span { color: #64748b; font-weight: 700; }
-
-        /* ЧАТ С ИИ */
-        .chat-container { display: flex; flex-direction: column; height: calc(100vh - 150px); background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; }
-        .chat-history { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 15px 20px; border-radius: 15px; font-size: 1rem; line-height: 1.5; word-break: break-word; }
-        .msg-user { align-self: flex-end; background: var(--accent); color: #000; font-weight: 600; border-bottom-right-radius: 2px; }
-        .msg-ai { align-self: flex-start; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-bottom-left-radius: 2px; }
-        .chat-input-area { display: flex; padding: 20px; background: rgba(0,0,0,0.6); border-top: 1px solid rgba(255,255,255,0.1); gap: 15px; }
-        .chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 15px 20px; border-radius: 12px; color: #fff; font-size: 1rem; outline: none; transition: 0.2s; }
-        .chat-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(56,189,248,0.3); }
-        .chat-send-btn { background: var(--accent); border: none; padding: 0 30px; border-radius: 12px; font-weight: 900; color: #000; cursor: pointer; transition: 0.2s; font-size: 1rem; }
-        .chat-send-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10000; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; pointer-events: auto; }
         .modal-box { background: rgba(17, 24, 39, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; padding: 40px; text-align: center; width: 90%; max-width: 450px; box-shadow: 0 0 50px rgba(56, 189, 248, 0.2); transform: scale(0.9); transition: transform 0.3s; }
         .modal-overlay.active .modal-box { transform: scale(1); }
-        .save-btn { background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; font-family: 'Montserrat', sans-serif; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
+        .save-btn { background: var(--accent); border: none; padding: 15px 30px; border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; width: 100%; font-size: 1.1rem; margin-top: 25px; color: #000; }
         .save-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
 
-        .toast {
-            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-            background: rgba(202, 15, 62, 0.9); color: #fff; font-weight: 800; padding: 15px 30px;
-            border-radius: 30px; box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5);
-            transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 3000; letter-spacing: 1px;
-        }
+        .toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: rgba(202, 15, 62, 0.9); color: #fff; font-weight: 800; padding: 15px 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(202, 15, 62, 0.5); transition: bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 15000; letter-spacing: 1px; }
         .toast.show { bottom: 40px; }
         .toast.success { background: #10b981; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
+
+        /* КНОПКА ГАЙДОВ (Новая, объемная) */
+        .open-guides-btn {
+            position: fixed; left: 30px; top: 50%; transform: translateY(-50%); z-index: 5000;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            border: 2px solid #fff; padding: 25px 20px; border-radius: 20px;
+            color: #fff; font-weight: 900; font-size: 1.2rem; text-transform: uppercase;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.6), inset 0 0 15px rgba(255,255,255,0.4);
+            cursor: pointer; transition: all 0.3s ease; text-align: center;
+            line-height: 1.2; text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .open-guides-btn:hover, .open-guides-btn.hovered { transform: translateY(-50%) scale(1.1); box-shadow: 0 0 50px rgba(56, 189, 248, 0.9); }
+        .open-guides-btn span { display: block; font-size: 0.8rem; opacity: 0.8; margin-top: 5px; font-weight: 600; }
+
+        .guides-panel {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5,8,14,0.95);
+            z-index: 8000; display: flex; opacity: 0; pointer-events: none; transition: opacity 0.4s;
+            backdrop-filter: blur(20px);
+        }
+        .guides-panel.active { opacity: 1; pointer-events: auto; }
+        
+        .guides-sidebar { width: 300px; background: rgba(255,255,255,0.03); border-right: 1px solid rgba(255,255,255,0.1); padding: 30px 20px; display: flex; flex-direction: column; gap: 15px; }
+        .guide-tab { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: left; position: relative; overflow: hidden; }
+        .guide-tab:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
+        .guide-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 800; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
+        
+        .guides-content { flex: 1; padding: 40px 60px; overflow-y: auto; position: relative; }
+        .guide-section { display: none; max-width: 900px; margin: 0 auto; animation: fadeIn 0.4s ease; }
+        .guide-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .interactive-block { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 15px; margin-bottom: 20px; }
+        .interactive-block h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.3rem; }
+        .interactive-block p { color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
+        .prompt-example { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; border-left: 4px solid var(--accent); font-family: monospace; color: #34d399; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; }
+
+        .close-guides { position: absolute; top: 30px; right: 40px; background: rgba(202, 15, 62, 0.2); color: #ff4d4d; border: 1px solid #ff4d4d; padding: 10px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; z-index: 100; }
+        .close-guides:hover { background: #CA0F3E; color: #fff; box-shadow: 0 0 20px #CA0F3E; }
+
+        /* Генератор картинок */
+        .gen-btn { background: linear-gradient(45deg, #8b5cf6, #38bdf8); border: none; padding: 15px 30px; border-radius: 12px; color: #fff; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4); margin-top: 10px; width: 100%; text-transform: uppercase; }
+        .gen-btn:hover { transform: scale(1.02); box-shadow: 0 10px 30px rgba(56, 189, 248, 0.6); }
+        .image-result-box { width: 100%; height: 400px; background: rgba(0,0,0,0.5); border: 2px dashed rgba(255,255,255,0.2); border-radius: 15px; margin-top: 20px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; }
+        .image-result-box img { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
+        .gen-loader { display: none; color: var(--accent); font-weight: bold; font-size: 1.2rem; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        /* Чат с ИИ */
+        .chat-box { background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); height: 500px; display: flex; flex-direction: column; overflow: hidden; margin-top: 20px;}
+        .chat-history { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .chat-msg { max-width: 85%; padding: 12px 18px; border-radius: 15px; line-height: 1.5; font-size: 0.95rem; word-wrap: break-word; }
+        .msg-user { align-self: flex-end; background: var(--accent); color: #000; font-weight: 600; border-bottom-right-radius: 2px; }
+        .msg-ai { align-self: flex-start; background: rgba(255,255,255,0.1); color: #fff; border-bottom-left-radius: 2px; border: 1px solid rgba(255,255,255,0.05); }
+        .chat-input-wrapper { display: flex; padding: 15px; background: rgba(0,0,0,0.6); border-top: 1px solid rgba(255,255,255,0.1); gap: 10px; }
+        .chat-input { flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 15px; border-radius: 10px; outline: none; transition: 0.3s; font-size: 1rem; }
+        .chat-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+        .chat-send-btn { background: var(--accent); color: #000; border: none; padding: 0 25px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; font-size: 1rem;}
+        .chat-send-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+        .typing-indicator { font-size: 0.8rem; color: #94A3B8; margin-left: 10px; font-style: italic; display: none; padding-bottom: 10px;}
     </style>
 </head>
 <body>
@@ -231,82 +196,9 @@
     <div id="loader">
         <div class="spinner"></div>
         <h2 style="margin-bottom: 10px;">Инициализация AR-ядра...</h2>
-        <p style="color: #94A3B8;">Предоставьте доступ к камере. Включен 3D-движок и Распознавание речи.</p>
+        <p style="color: #94A3B8;">Предоставьте доступ к камере.</p>
     </div>
 
-    <!-- КНОПКА ОТКРЫТИЯ ГАЙДОВ -->
-    <button class="open-guides-btn" onclick="toggleGuides(true)">
-        <span>📖 ГАЙДЫ ИИ</span>
-        <span style="font-size: 0.75rem; color: #cbd5e1; font-weight: normal;">(Клик / Щипок)</span>
-    </button>
-
-    <!-- МОДАЛКА ГАЙДОВ -->
-    <div class="guides-modal" id="guidesModal">
-        <button class="close-guides" onclick="toggleGuides(false)">✕ ЗАКРЫТЬ</button>
-        <div class="guides-sidebar">
-            <h2>Меню</h2>
-            <div class="guide-tab active" onclick="switchGuide(0)">Промпт-инжиниринг</div>
-            <div class="guide-tab" onclick="switchGuide(1)">Работа с LLM</div>
-            <div class="guide-tab" onclick="switchGuide(2)">Генерация картинок</div>
-            <div class="guide-tab" onclick="switchGuide(3)">Чат с ИИ</div>
-        </div>
-        <div class="guides-content">
-            <div class="guide-panel active">
-                <h2>Секреты Промпт-инжиниринга</h2>
-                <h3>1. Ролевая модель (Persona)</h3>
-                <p>Задавайте нейросети конкретную роль. Это меняет стиль, словарный запас и глубину ответов.</p>
-                <div class="code-snippet">"Действуй как усталый, но гениальный профессор физики. Объясни мне квантовую запутаность так, будто я 10-летний ребенок."</div>
-
-                <h3>2. Контекст и Ограничения</h3>
-                <p>ИИ не умеет читать мысли. Давайте ему вводные данные и жесткие рамки форматов, иначе он нальет "воды".</p>
-                <div class="code-snippet">"Контекст: Я готовлюсь к собеседованию на Junior Аналитика.<br>Ограничения: Не пиши ответы сразу. Выдавай по одному вопросу и жди моего ответа."</div>
-
-                <h3>3. Обучение на примерах (Few-Shot)</h3>
-                <p>Покажите нейросети 2-3 примера того, что вы хотите получить, прежде чем давать основное задание. Это повышает точность на 80%.</p>
-            </div>
-
-            <div class="guide-panel">
-                <h2>Основы работы с LLM</h2>
-                <h3>Токены и Контекстное окно</h3>
-                <p>Большие языковые моделни обрабатывают текст не словами, а токенами (кусками слов). Контекстное окно — это объем памяти нейросети в рамках одного диалога.</p>
-
-                <h3>Температура (Temperature)</h3>
-                <p>Параметр креативности:</p>
-                <ul>
-                    <li><b>0.1 - 0.3</b> — для строгих фактов, кода, анализа данных.</li>
-                    <li><b>0.7 - 1.0</b> — для генерации идей, сказок и брейнштормов.</li>
-                </ul>
-            </div>
-
-            <div class="guide-panel">
-                <h2>Безлимитный Генератор Изображений</h2>
-                <p>Нажмите кнопку, чтобы сгенерировать случайный промпт через Pollinations API.</p>
-                <div class="gen-container">
-                    <div class="prompt-box" id="currentPromptDisplay">Промпт: "Cyberpunk city at night, neon lights, flying cars, 8k"</div>
-                    <button class="gen-btn" onclick="generateNewImage()">✨ Сгенерировать случайно</button>
-                    <div class="result-img-box" id="imageResultBox">
-                        <span>Нажмите кнопку генерации</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="guide-panel" style="height: 100%; display: flex; flex-direction: column;">
-                <h2>Нейро-Терминал (Gemma 2)</h2>
-                <p style="margin-bottom: 15px;">Встроенный чат через защищенный бэкенд. Практикуйте промпты прямо здесь!</p>
-                <div class="chat-container">
-                    <div class="chat-history" id="chatHistory">
-                        <div class="msg msg-ai">Приветствую в Лаборатории! Я модель Gemma 2. Жду ваших задач и промптов.</div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" class="chat-input" id="chatInput" placeholder="Введите ваш промпт..." onkeypress="if(event.key==='Enter') sendChatMessage()">
-                        <button class="chat-send-btn" onclick="sendChatMessage()">Отправить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- HUD: Таймер и Голосовой статус -->
     <div class="hud-top">
         <div class="hud-mic">
             <div class="mic-dot"></div> Голосовой ИИ активен
@@ -314,9 +206,14 @@
         <div class="hud-timer" id="timerDisplay">00:00</div>
     </div>
 
-    <!-- 3D Фон -->
-    <canvas id="webgl-canvas"></canvas>
+    <!-- КНОПКА ОТКРЫТИЯ ГАЙДОВ (Слева) -->
+    <div class="open-guides-btn" id="openGuidesBtn">
+        ГАЙДЫ<br>ИИ
+        <span>(Щипок)</span>
+    </div>
 
+    <!-- 3D Фон и Камера -->
+    <canvas id="webgl-canvas"></canvas>
     <video id="webcam" class="video-feed" autoplay playsinline></video>
     <canvas id="output_canvas" class="canvas-overlay"></canvas>
 
@@ -328,28 +225,12 @@
         <div class="screen-puzzle">
             <div class="header">
                 <h1>Практика ИИ</h1>
-                
-                <!-- ПАНЕЛЬ ВЫБОРА КАРТИНОК И УРОВНЕЙ -->
-                <div class="settings-panel">
-                    <div class="settings-group" id="imgSelector">
-                        <button class="settings-btn active" onclick="changeImage(0)">Изображение 1</button>
-                        <button class="settings-btn" onclick="changeImage(1)">Изображение 2</button>
-                        <button class="settings-btn" onclick="changeImage(2)">Изображение 3</button>
-                    </div>
-                    <div class="settings-group" id="diffSelector">
-                        <button class="settings-btn active" onclick="changeDifficulty(3, 2, 'easy')">Лёгкий (3×2)</button>
-                        <button class="settings-btn" onclick="changeDifficulty(4, 3, 'medium')">Средний (4×3)</button>
-                        <button class="settings-btn" onclick="changeDifficulty(5, 4, 'hard')">Сложный (5×4)</button>
-                    </div>
-                </div>
-
                 <div class="instructions">
                     <div class="instr-block"><b>1.</b> Берите осколки <b>щипком</b> руки и ставьте на сетку.</div>
-                    <div class="instr-block"><b>2.</b> <b>Зажмите воздух</b> щипком и тяните руку вверх для скролла.</div>
-                    <div class="instr-block"><b>3.</b> Жест ✌️ <b>«Пис»</b> — для выхода.</div>
+                    <div class="instr-block"><b>2.</b> <b>Зажмите воздух</b> щипком на пустом фоне и тяните вверх для скролла.</div>
+                    <div class="instr-block"><b>3.</b> Покажите жест ✌️ <b>«Пис»</b> для выхода.</div>
                 </div>
             </div>
-
             <div class="puzzle-area" id="puzzleArea">
                 <div class="puzzle-grid" id="grid"></div>
             </div>
@@ -359,108 +240,111 @@
         <div class="screen-terms" id="termsSection">
             <div style="width: 100%; text-align: center; margin-bottom: 20px;">
                 <h2 style="font-size: 2.2rem; color: var(--accent); margin-bottom: 10px;">База данных ИИ</h2>
-                <p style="color: #94A3B8; font-size: 1.1rem;">Масштабируйте карточки щипком <b>ОДНОЙ РУКИ (тяните вверх/вниз)</b></p>
+                <p style="color: #94A3B8; font-size: 1.1rem;">Масштабируйте карточки щипком (зажмите и тяните вверх/вниз)</p>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="victoryModal">
-        <div class="modal-box">
-            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
-            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Вы успешно восстановили структуру.<br>Затраченное время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
-            <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить изучение</button>
+    <div class="guides-panel" id="guidesPanel">
+        <button class="close-guides" id="closeGuidesBtn">✖ ЗАКРЫТЬ</button>
+        
+        <div class="guides-sidebar">
+            <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent); margin-bottom: 20px; text-align: center;">МЕНЮ</div>
+            <button class="guide-tab active" data-target="guide1">Промпт-инжиниринг</button>
+            <button class="guide-tab" data-target="guide2">Работа с LLM</button>
+            <button class="guide-tab" data-target="guide3" style="color: #c084fc; border-color: #c084fc;">🎨 Генерация картинок</button>
+            <button class="guide-tab" data-target="guide4" style="color: #10b981; border-color: #10b981;">🤖 Чат с ИИ</button>
+        </div>
+
+        <div class="guides-content">
+            <!-- ГАЙД 1: Промпты -->
+            <div class="guide-section active" id="guide1">
+                <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Секреты Промпт-инжиниринга</h2>
+                <div class="interactive-block">
+                    <h3>1. Ролевая модель (Persona)</h3>
+                    <p>Задавайте нейросети конкретную роль. Это кардинально меняет стиль, словарный запас и глубину ответов.</p>
+                    <div class="prompt-example">"Действуй как уставший, но гениальный профессор физики. Объясни мне квантовую запутанность так, будто я 10-летний ребенок."</div>
+                </div>
+                <div class="interactive-block">
+                    <h3>2. Обучение на примерах (Few-Shot)</h3>
+                    <p>Покажите ИИ 2-3 примера того, что вы хотите получить, прежде чем давать основное задание. Точность возрастает на 80%.</p>
+                    <div class="prompt-example">"Классифицируй отзывы:
+Текст: 'Все сломалось' -> Негативный
+Текст: 'Быстрая доставка' -> Позитивный
+Текст: 'Нормально работает' -> ..."</div>
+                </div>
+                <div class="interactive-block">
+                    <h3>3. Цепочка рассуждений (Chain of Thought)</h3>
+                    <p>Заставьте ИИ думать пошагово. Это критически важно для математики, логики и сложных аналитических задач.</p>
+                    <div class="prompt-example">"Реши задачу. Рассуждай шаг за шагом, вслух описывая каждый этап логики, прежде чем выдать финальный ответ."</div>
+                </div>
+            </div>
+
+            <!-- ГАЙД 2: LLM -->
+            <div class="guide-section" id="guide2">
+                <h2 style="font-size: 2.5rem; margin-bottom: 20px;">Основы работы с LLM</h2>
+                <div class="interactive-block">
+                    <h3>Токены и Контекстное окно</h3>
+                    <p>ИИ мыслит не словами, а "токенами" (кусочками слов). Контекстное окно — это объем токенов, которые ИИ может держать в "краткосрочной памяти". Если превысить лимит, модель начнет забывать начало разговора.</p>
+                </div>
+                <div class="interactive-block">
+                    <h3>Температура (Temperature)</h3>
+                    <p>Параметр "креативности" от 0 до 1.<br><b>0.1:</b> Сухой, точный ответ (кодинг, факты).<br><b>0.9:</b> Креативный, разнообразный текст (мозговой штурм, стихи).</p>
+                </div>
+                <div class="interactive-block">
+                    <h3>Галлюцинации</h3>
+                    <p>ИИ склонен уверенно выдумывать факты, если не знает ответа. Защита от этого:</p>
+                    <div class="prompt-example">"Опирайся только на предоставленный текст. Если в тексте нет ответа, прямо напиши 'Я не знаю', не пытайся угадать."</div>
+                </div>
+            </div>
+
+            <!-- ГАЙД 3: Картинки (Pollinations) -->
+            <div class="guide-section" id="guide3">
+                <h2 style="font-size: 2.5rem; margin-bottom: 5px;">Безлимитный Генератор Изображений</h2>
+                <p style="color: #94A3B8; margin-bottom: 20px;">Нажмите кнопку, чтобы сгенерировать случайный промпт (работает мгновенно и бесплатно через Pollinations API).</p>
+                
+                <div class="interactive-block">
+                    <p><b>Текущий промпт:</b> <span id="currentPromptDisplay" style="color: #c084fc; font-family: monospace;">Нажмите кнопку ниже...</span></p>
+                    <button class="gen-btn" id="randomGenBtn">✨ Сгенерировать случайно</button>
+                    
+                    <div class="image-result-box">
+                        <div class="gen-loader" id="imgLoader">Рисуем шедевр...</div>
+                        <img id="generatedImg" src="" alt="Результат">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ГАЙД 4: Чат с Gemini -->
+            <div class="guide-section" id="guide4">
+                <h2 style="font-size: 2.5rem; margin-bottom: 5px;">Нейро-Терминал (Gemini 3 Flash)</h2>
+                <p style="color: #94A3B8; margin-bottom: 10px;">Встроенный чат без ограничений. Практикуйте промпты прямо здесь!</p>
+                
+                <div class="chat-box">
+                    <div class="chat-history" id="chatHistoryBox">
+                        <div class="chat-msg msg-ai">Приветствую в Лаборатории! Я модель Gemini 3 Flash. Жду ваших задач и промптов.</div>
+                    </div>
+                    <div class="typing-indicator" id="chatTyping">Анализирую данные...</div>
+                    <div class="chat-input-wrapper">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Введите ваш промпт..." autocomplete="off">
+                        <button class="chat-send-btn" id="chatSendBtn">Отправить</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="toast" id="toast">ПОКАЖИТЕ ЖЕСТ ✌️ (ПИС) ДЛЯ ВЫХОДА</div>
+    <!-- Модалка победы (Пазлы) -->
+    <div class="modal-overlay" id="victoryModal">
+        <div class="modal-box">
+            <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
+            <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Структура восстановлена.<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
+            <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">УВЕДОМЛЕНИЕ</div>
 
     <script>
-        function toggleGuides(show) {
-            const modal = document.getElementById('guidesModal');
-            if(show) modal.classList.add('active');
-            else modal.classList.remove('active');
-        }
-
-        function switchGuide(index) {
-            const tabs = document.querySelectorAll('.guide-tab');
-            const panels = document.querySelectorAll('.guide-panel');
-            tabs.forEach((t, i) => {
-                if(i === index) t.classList.add('active');
-                else t.classList.remove('active');
-            });
-            panels.forEach((p, i) => {
-                if(i === index) p.classList.add('active');
-                else p.classList.remove('active');
-            });
-        }
-
-        const promptsList = [
-            "Cyberpunk city at night, neon lights, flying cars, 8k, highly detailed",
-            "A cute cyberpunk cat wearing glowing holographic glasses, neon background",
-            "Futuristic space station orbiting a purple gas giant, cinematic lighting",
-            "Steampunk mechanical elephant walking through a desert, masterpiece",
-            "An advanced AI core glowing with blue energy inside a high-tech lab",
-            "A majestic crystal dragon soaring through an aurora borealis",
-            "Holographic UI interface displaying data streams, dark background, sci-fi",
-            "A lone astronaut standing on an alien planet looking at twin suns"
-        ];
-
-        function generateNewImage() {
-            const randomPrompt = promptsList[Math.floor(Math.random() * promptsList.length)];
-            document.getElementById('currentPromptDisplay').innerText = `Промпт: "${randomPrompt}"`;
-            const box = document.getElementById('imageResultBox');
-            box.innerHTML = `<span>Генерация...</span>`;
-            const encoded = encodeURIComponent(randomPrompt);
-            const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=800&height=500&nologo=true&seed=${Math.floor(Math.random()*10000)}`;
-
-            const img = new Image();
-            img.src = imageUrl;
-            img.onload = () => { box.innerHTML = ''; box.appendChild(img); };
-            img.onerror = () => { box.innerHTML = `<span style="color: #ef4444;">Не удалось загрузить картинку</span>`; };
-        }
-
-        async function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            addMessage(text, 'user');
-            input.value = '';
-            const loadingId = addMessage('Думаю...', 'ai');
-
-            try {
-                const VERCEL_PROXY_URL = "https://ranepa-dpo-site.vercel.app/api/chat";
-                const response = await fetch(VERCEL_PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: "google/gemma-2-9b-it:free",
-                        messages: [{ role: "user", content: text }]
-                    })
-                });
-
-                if (!response.ok) throw new Error('Ошибка сервера');
-                const data = await response.json();
-                const reply = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "Получен пустой ответ от модели.";
-                document.getElementById(loadingId).innerText = reply;
-            } catch (e) {
-                document.getElementById(loadingId).innerText = "⚠️ Ошибка связи с сервером Vercel.";
-                document.getElementById(loadingId).style.color = "#ef4444";
-            }
-        }
-
-        function addMessage(text, sender) {
-            const history = document.getElementById('chatHistory');
-            const msg = document.createElement('div');
-            msg.className = `msg msg-${sender}`;
-            const id = 'msg_' + Math.random().toString(36.2);
-            msg.id = id;
-            msg.innerText = text;
-            history.appendChild(msg);
-            history.scrollTop = history.scrollHeight;
-            return id;
-        }
-
         let timerInterval = null;
         let timeElapsed = 0;
         let timerStarted = false;
@@ -484,170 +368,249 @@
             setTimeout(() => { document.getElementById('victoryModal').classList.add('active'); }, 1500); 
         }
 
+        function showToast(text, isSuccess = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.className = 'toast show ' + (isSuccess ? 'success' : '');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        let isImploding = false;
+        function triggerImplosion() {
+            if (isImploding) return;
+            isImploding = true;
+            showToast("ВЫХОД ИЗ СИСТЕМЫ...", true);
+            document.body.classList.add('implode');
+            // Перезагрузка страницы для имитации выхода
+            setTimeout(() => { window.location.reload(); }, 1400);
+        }
+
+        // Голосовые команды
         function initVoice() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (SpeechRecognition) {
                 const recognition = new SpeechRecognition();
                 recognition.lang = 'ru-RU';
                 recognition.continuous = true;
-                recognition.interimResults = false;
                 recognition.onresult = (event) => {
                     const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
-                    if (transcript.includes('сова') || transcript.includes('закрой') || transcript.includes('взрыв')) {
-                        triggerImplosion();
-                    }
+                    if (transcript.includes('взрыв') || transcript.includes('выход')) triggerImplosion();
                 };
                 recognition.onend = () => { if(!isImploding) recognition.start(); };
                 try { recognition.start(); } catch(e){}
+            } else {
+                document.querySelector('.hud-mic').innerHTML = "Голос не поддерживается";
             }
         }
 
-        // --- УПРАВЛЕНИЕ ПАЗЛАМИ, КАРТИНКАМИ И УРОВНЯМИ ---
         const puzzleArea = document.getElementById('puzzleArea');
         const grid = document.getElementById('grid');
-        
-        const imagesList = [
-            'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=800&auto=format&fit=crop'
-        ];
-
-        let currentImageIndex = 0;
-        let cols = 3, rows = 2;
+        const cols = 3, rows = 2;
+        const boardW = 600, boardH = 400; 
+        const pW = boardW / cols; 
+        const pH = boardH / rows; 
         let lockedCount = 0;
+
+        const pts = [];
+        for(let r = 0; r <= rows; r++) {
+            let rowPts = [];
+            for(let c = 0; c <= cols; c++) {
+                let x = c * pW; let y = r * pH;
+                if (c > 0 && c < cols) x += (Math.random() - 0.5) * 60;
+                if (r > 0 && r < rows) y += (Math.random() - 0.5) * 60;
+                rowPts.push({x, y});
+            }
+            pts.push(rowPts);
+        }
+
+        let leftCount = 0;
+        let rightCount = 0;
         let pieces = [];
 
-        function changeImage(index) {
-            currentImageIndex = index;
-            const buttons = document.querySelectorAll('#imgSelector .settings-btn');
-            buttons.forEach((btn, i) => btn.classList.toggle('active', i === index));
-            initPuzzle();
-        }
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let slot = document.createElement('div');
+                slot.className = 'grid-slot';
+                grid.appendChild(slot);
 
-        function changeDifficulty(c, r, level) {
-            cols = c; rows = r;
-            const buttons = document.querySelectorAll('#diffSelector .settings-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            initPuzzle();
-        }
+                let piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                piece.style.width = `${pW}px`;
+                piece.style.height = `${pH}px`;
+                piece.dataset.correctX = c * pW;
+                piece.dataset.correctY = r * pH;
+                piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
+                piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
 
-        function initPuzzle() {
-            grid.innerHTML = '';
-            // Удаляем старые куски
-            pieces.forEach(p => p.el.remove());
-            pieces = [];
-            lockedCount = 0;
-            puzzleArea.classList.remove('completed');
-            document.querySelector('.header h1').innerHTML = "Практика ИИ";
-            document.querySelector('.header h1').style.color = "#fff";
+                const tl = pts[r][c], tr = pts[r][c+1], br = pts[r+1][c+1], bl = pts[r+1][c];
+                const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
+                const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
+                piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
 
-            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+                const isLeft = (c < cols / 2);
+                let startX = isLeft ? -250 : boardW + 50; 
+                let startY = isLeft ? leftCount * 120 : rightCount * 120;
+                startX += (Math.random() * 30 - 15);
+                startY += (Math.random() * 30 - 15);
+                if (isLeft) leftCount++; else rightCount++;
 
-            const boardW = 600, boardH = 400; 
-            const pW = boardW / cols; 
-            const pH = boardH / rows; 
-
-            // Генерация точек для полигонов пазла
-            const pts = [];
-            for(let r = 0; r <= rows; r++) {
-                let rowPts = [];
-                for(let c = 0; c <= cols; c++) {
-                    let x = c * pW; let y = r * pH;
-                    if (c > 0 && c < cols) x += (Math.random() - 0.5) * (60 / cols);
-                    if (r > 0 && r < rows) y += (Math.random() - 0.5) * (60 / rows);
-                    rowPts.push({x, y});
-                }
-                pts.push(rowPts);
-            }
-
-            let leftCount = 0, rightCount = 0;
-            const activeImageUrl = imagesList[currentImageIndex];
-
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    let slot = document.createElement('div');
-                    slot.className = 'grid-slot';
-                    grid.appendChild(slot);
-
-                    let piece = document.createElement('div');
-                    piece.className = 'puzzle-piece';
-                    piece.style.width = `${pW}px`;
-                    piece.style.height = `${pH}px`;
-                    piece.style.backgroundImage = `url('${activeImageUrl}')`;
-                    piece.style.backgroundSize = `${boardW}px ${boardH}px`;
-
-                    piece.dataset.correctX = c * pW;
-                    piece.dataset.correctY = r * pH;
-                    piece.style.backgroundPosition = `-${c * pW}px -${r * pH}px`;
-                    piece.innerHTML = `<span class="piece-num">${r * cols + c + 1}</span>`;
-
-                    const tl = pts[r][c], tr = pts[r][c+1];
-                    const br = pts[r+1][c+1], bl = pts[r+1][c];
-
-                    const px = (p) => `${((p.x - c*pW) / pW) * 100}%`;
-                    const py = (p) => `${((p.y - r*pH) / pH) * 100}%`;
-                    piece.style.clipPath = `polygon(${px(tl)} ${py(tl)}, ${px(tr)} ${py(tr)}, ${px(br)} ${py(br)}, ${px(bl)} ${py(bl)})`;
-
-                    const isLeft = (c < cols / 2);
-                    let startX = isLeft ? -250 : boardW + 50; 
-                    let startY = isLeft ? (leftCount * (400/(rows*cols/2))) : (rightCount * (400/(rows*cols/2)));
-                    startX += (Math.random() * 30 - 15);
-                    startY += (Math.random() * 30 - 15);
-
-                    if (isLeft) leftCount++; else rightCount++;
-
-                    piece.style.left = `${startX}px`;
-                    piece.style.top = `${startY}px`;
-
-                    puzzleArea.appendChild(piece);
-                    pieces.push({ el: piece, locked: false });
-                }
+                piece.style.left = `${startX}px`;
+                piece.style.top = `${startY}px`;
+                puzzleArea.appendChild(piece);
+                pieces.push({ el: piece, locked: false });
             }
         }
-
-        // Первичная инициализация пазла
-        initPuzzle();
 
         const termsData = [
             { t: "Машинное обучение", d: "Метод, при котором ИИ сам находит закономерности в данных без жестких инструкций." },
             { t: "Нейросеть", d: "Математическая модель, имитирующая работу человеческого мозга для распознавания образов." },
             { t: "Промптинг", d: "Искусство составления точных запросов для получения идеального ответа от ИИ." },
-            { t: "Глубокое обучение", d: "Создание многослойных нейросетей для решения сверхсложных задач." },
-            { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." },
-            { t: "Компьютерное зрение", d: "Технология, позволяющая камере и ИИ распознавать объекты в реальном мире." }
+            { t: "LLM (Модели)", d: "ИИ, обученный на огромных массивах текста, способный понимать и генерировать речь." }
         ];
         const termsContainer = document.getElementById('termsSection');
-        let termCards = [];
         termsData.forEach((term) => {
             let card = document.createElement('div');
             card.className = 'term-card';
             card.innerHTML = `<h3>${term.t}</h3><p>${term.d}</p>`;
             card.dataset.scale = 1;
             termsContainer.appendChild(card);
-            termCards.push(card);
         });
 
-        // ==========================================
-        // THREE.JS
-        // ==========================================
         const scene = new THREE.Scene();
         const camera3D = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-
         const geometry = new THREE.IcosahedronGeometry(12, 1);
         const material = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.15 });
         const coreMesh = new THREE.Mesh(geometry, material);
         scene.add(coreMesh);
         camera3D.position.z = 30;
-
         let targetRotX = 0; let targetRotY = 0;
 
-        // ==========================================
-        // ДВИЖОК ЖЕСТОВ
-        // ==========================================
+        const guidesPanel = document.getElementById('guidesPanel');
+        const openGuidesBtn = document.getElementById('openGuidesBtn');
+        const closeGuidesBtn = document.getElementById('closeGuidesBtn');
+        const guideTabs = document.querySelectorAll('.guide-tab');
+        const guideSections = document.querySelectorAll('.guide-section');
+
+        function toggleGuides(show) {
+            if (show) guidesPanel.classList.add('active');
+            else guidesPanel.classList.remove('active');
+        }
+
+        openGuidesBtn.addEventListener('click', () => toggleGuides(true));
+        closeGuidesBtn.addEventListener('click', () => toggleGuides(false));
+
+        guideTabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                guideTabs.forEach(t => t.classList.remove('active'));
+                guideSections.forEach(s => s.classList.remove('active'));
+                e.target.classList.add('active');
+                document.getElementById(e.target.dataset.target).classList.add('active');
+            });
+        });
+
+        // БЕСЛИМИТНАЯ ГЕНЕРАЦИЯ КАРТИНОК (Pollinations)
+        const imgPrompts = [
+            "Cyberpunk city at night, neon lights, flying cars, highly detailed, 8k, masterpiece",
+            "Steampunk mechanical owl, intricate brass gears, glowing eyes, fantasy artwork",
+            "Futuristic AR laboratory, glowing blue holograms, high tech, sci-fi concept art",
+            "Epic space battle, massive starships, laser beams, cinematic lighting, 4k",
+            "Astronaut drinking coffee on Mars looking at earth, hyperrealistic, dramatic lighting",
+            "Floating island in the sky with waterfalls, fantasy landscape, vivid colors",
+            "Glowing magic potion bottle in a dark mystical forest, fireflies, fantasy",
+            "Portrait of an AI entity, digital glowing lines, cyberpunk face, neon",
+            "Samurai in a futuristic neon Tokyo street, cyberpunk aesthetic, rain, reflections",
+            "A cute fluffy monster with big eyes in a neon forest, 3d render, Pixar style",
+            "Giant mech robot in a hangar being repaired, cinematic lighting, sci-fi",
+            "A wizard casting a glowing blue spell, dynamic action, fantasy illustration",
+            "Synthwave grid landscape, retrowave sun, 80s aesthetic, purple neon",
+            "Post-apocalyptic nature taking over a city, lush green ruins, beautiful decay"
+        ];
+        
+        const randomGenBtn = document.getElementById('randomGenBtn');
+        const generatedImg = document.getElementById('generatedImg');
+        const imgLoader = document.getElementById('imgLoader');
+        const currentPromptDisplay = document.getElementById('currentPromptDisplay');
+
+        randomGenBtn.addEventListener('click', () => {
+            const prompt = imgPrompts[Math.floor(Math.random() * imgPrompts.length)];
+            currentPromptDisplay.innerText = prompt;
+            
+            generatedImg.style.display = 'none';
+            imgLoader.style.display = 'block';
+            
+            // Pollinations API: Прямая ссылка на генерацию (Бесплатно, без ключей)
+            const seed = Math.floor(Math.random() * 100000);
+            const url = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&nologo=true`;
+            
+            generatedImg.src = url;
+            generatedImg.onload = () => {
+                imgLoader.style.display = 'none';
+                generatedImg.style.display = 'block';
+            };
+        });
+
+        // ЧАТ GEMINI
+        const chatInput = document.getElementById('chatInput');
+        const chatSendBtn = document.getElementById('chatSendBtn');
+        const chatHistoryBox = document.getElementById('chatHistoryBox');
+        const chatTyping = document.getElementById('chatTyping');
+        let aiHistory = []; 
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            const userEl = document.createElement('div');
+            userEl.className = 'chat-msg msg-user';
+            userEl.innerText = text;
+            chatHistoryBox.appendChild(userEl);
+            chatInput.value = '';
+            chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
+
+            aiHistory.push({ role: "user", parts: [{ text: text }] });
+            chatTyping.style.display = 'block';
+            chatSendBtn.disabled = true;
+
+            try {
+                // Пустой ключ (Canvas proxy обработает запрос безопасно)
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: aiHistory,
+                        systemInstruction: { parts: [{ text: "Ты встроенный ИИ-помощник лаборатории. Отвечай кратко, умно и дружелюбно." }] }
+                    })
+                });
+
+                const res = await response.json();
+                if (res.candidates && res.candidates[0].content) {
+                    const aiText = res.candidates[0].content.parts[0].text;
+                    aiHistory.push({ role: "model", parts: [{ text: aiText }] });
+                    
+                    const aiEl = document.createElement('div');
+                    aiEl.className = 'chat-msg msg-ai';
+                    aiEl.innerText = aiText;
+                    chatHistoryBox.appendChild(aiEl);
+                }
+            } catch (err) {
+                const errEl = document.createElement('div');
+                errEl.className = 'chat-msg msg-ai';
+                errEl.style.color = '#ef4444';
+                errEl.innerText = "⚠️ Ошибка связи с нейросетью.";
+                chatHistoryBox.appendChild(errEl);
+                aiHistory.pop(); // удаляем неудачный запрос
+            } finally {
+                chatTyping.style.display = 'none';
+                chatSendBtn.disabled = false;
+                chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
+            }
+        }
+        chatSendBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
+
         const videoElement = document.getElementById('webcam');
         const canvasElement = document.getElementById('output_canvas');
         const canvasCtx = canvasElement.getContext('2d');
@@ -655,27 +618,19 @@
         const cursor0 = document.getElementById('cursor0');
         const cursor1 = document.getElementById('cursor1');
 
-        let isPinching0 = false, isPinching1 = false;
+        let isPinching0 = false, wasPinching0 = false;
+        let isPinching1 = false, wasPinching1 = false;
         let p0 = {x:0, y:0}, p1 = {x:0, y:0};
-
-        let draggedPiece = null;
-        let dragOffsetX = 0, dragOffsetY = 0;
-
-        let scrollY = 0;
-        let targetScrollY = 0;
-        let scrollVelocity = 0;
-        let lastDragY = null; 
+        let draggedPiece = null, dragOffsetX = 0, dragOffsetY = 0;
+        let scrollY = 0, targetScrollY = 0, scrollVelocity = 0, lastDragY = null; 
         const maxScroll = () => -(scrollContainer.scrollHeight - window.innerHeight);
 
-        let zoomedCard = null;
-        let zoomStartY = 0;
-        let initialCardScale = 1;
-
+        let zoomedCard = null, zoomStartY = 0, initialCardScale = 1;
         let peaceFrames = 0;
-
-        function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
+        
         let smoothP0 = {x: window.innerWidth/2, y: window.innerHeight/2};
         let smoothP1 = {x: window.innerWidth/2, y: window.innerHeight/2};
+        function lerp(start, end, amt) { return (1 - amt) * start + amt * end; }
 
         function physicsLoop() {
             if (lastDragY === null && Math.abs(scrollVelocity) > 0.1) {
@@ -686,12 +641,9 @@
             scrollY = lerp(scrollY, targetScrollY, 0.2);
             scrollContainer.style.transform = `translateY(${scrollY}px)`;
 
-            coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
-            coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
-            coreMesh.rotation.x += 0.001; 
-            coreMesh.rotation.y += 0.002;
+            coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05 + 0.001;
+            coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05 + 0.002;
             renderer.render(scene, camera3D);
-
             requestAnimationFrame(physicsLoop);
         }
         physicsLoop();
@@ -713,19 +665,15 @@
         cameraFeed.start().then(() => { 
             document.getElementById('loader').style.display = 'none'; 
             initVoice(); 
-        }).catch(err => {
-            document.getElementById('loader').style.display = 'none';
-            showToast("Камера недоступна. Используйте мышь.", false);
         });
 
         function onResults(results) {
-            canvasElement.width = window.innerWidth;
-            canvasElement.height = window.innerHeight;
-            canvasCtx.save();
-            canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
+            canvasElement.width = window.innerWidth; canvasElement.height = window.innerHeight;
+            canvasCtx.save(); canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
             cursor0.style.opacity = 0; cursor1.style.opacity = 0;
-            let pinch0 = false, pinch1 = false;
+            
+            wasPinching0 = isPinching0;
+            wasPinching1 = isPinching1;
 
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                 for (const landmarks of results.multiHandLandmarks) {
@@ -734,144 +682,122 @@
                 }
 
                 const h1 = results.multiHandLandmarks[0][0];
-                targetRotX = (h1.y - 0.5) * 2;
-                targetRotY = (h1.x - 0.5) * 2;
+                targetRotX = (h1.y - 0.5) * 2; targetRotY = (h1.x - 0.5) * 2;
 
+                // Жест PEACE (Выход)
                 let isPeace = false;
-                if (!draggedPiece && zoomedCard === null && lastDragY === null) {
-                    for (const lm of results.multiHandLandmarks) {
-                        const indexUp = lm[8].y < lm[6].y;
-                        const middleUp = lm[12].y < lm[10].y;
-                        const ringDown = lm[16].y > lm[14].y;
-                        const pinkyDown = lm[20].y > lm[18].y;
-
-                        if (indexUp && middleUp && ringDown && pinkyDown) {
-                            isPeace = true;
-                            break;
-                        }
+                if (!draggedPiece && !guidesPanel.classList.contains('active')) {
+                    const lm = results.multiHandLandmarks[0];
+                    if (lm[8].y < lm[6].y && lm[12].y < lm[10].y && lm[16].y > lm[14].y && lm[20].y > lm[18].y) {
+                        isPeace = true;
                     }
                 }
-
                 if (isPeace) {
                     peaceFrames++;
-                    if (peaceFrames > 15) {
-                        triggerImplosion();
-                        return;
-                    }
-                } else {
-                    peaceFrames = 0;
-                }
+                    if (peaceFrames > 15) { triggerImplosion(); return; }
+                } else peaceFrames = 0;
 
+                // Вычисление координат и щипков
                 results.multiHandLandmarks.forEach((landmarks, index) => {
-                    const tip = landmarks[8];   
-                    const thumb = landmarks[4]; 
-
+                    const tip = landmarks[8]; const thumb = landmarks[4];
                     const px = window.innerWidth - (tip.x * window.innerWidth);
                     const py = tip.y * window.innerHeight;
                     const dist2D = Math.hypot(tip.x - thumb.x, tip.y - thumb.y);
 
                     if (index === 0) { 
-                        smoothP0.x = lerp(smoothP0.x, px, 0.5);
-                        smoothP0.y = lerp(smoothP0.y, py, 0.5);
+                        smoothP0.x = lerp(smoothP0.x, px, 0.5); smoothP0.y = lerp(smoothP0.y, py, 0.5);
                         p0 = {x: smoothP0.x, y: smoothP0.y}; 
                         isPinching0 = dist2D < (isPinching0 ? 0.09 : 0.05);
-                        pinch0 = isPinching0;
-                        updateCursor(cursor0, p0, pinch0); 
+                        cursor0.style.opacity = 1; cursor0.style.left = `${p0.x}px`; cursor0.style.top = `${p0.y}px`;
+                        if (isPinching0) cursor0.classList.add('pinched'); else cursor0.classList.remove('pinched');
                     }
                     if (index === 1) { 
-                        smoothP1.x = lerp(smoothP1.x, px, 0.5);
-                        smoothP1.y = lerp(smoothP1.y, py, 0.5);
+                        smoothP1.x = lerp(smoothP1.x, px, 0.5); smoothP1.y = lerp(smoothP1.y, py, 0.5);
                         p1 = {x: smoothP1.x, y: smoothP1.y}; 
                         isPinching1 = dist2D < (isPinching1 ? 0.09 : 0.05);
-                        pinch1 = isPinching1;
-                        updateCursor(cursor1, p1, pinch1); 
+                        cursor1.style.opacity = 1; cursor1.style.left = `${p1.x}px`; cursor1.style.top = `${p1.y}px`;
+                        if (isPinching1) cursor1.classList.add('pinched'); else cursor1.classList.remove('pinched');
                     }
                 });
 
-                const activePinch = pinch0 ? p0 : (pinch1 ? p1 : null);
-
-                if (activePinch) {
-                    if (zoomedCard !== null) {
-                        const deltaY = zoomStartY - activePinch.y; 
-                        let targetScale = initialCardScale + (deltaY * 0.005); 
-                        targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
-                        zoomedCard.style.transform = `scale(${targetScale})`;
-                        zoomedCard.dataset.scale = targetScale;
-                    } 
-                    else if (draggedPiece !== null) {
-                        const containerRect = puzzleArea.getBoundingClientRect();
-                        let newX = activePinch.x - dragOffsetX - containerRect.left;
-                        let newY = activePinch.y - dragOffsetY - containerRect.top;
-                        draggedPiece.style.left = `${newX}px`;
-                        draggedPiece.style.top = `${newY}px`;
-                    } 
-                    else if (lastDragY !== null) {
-                        const deltaY = activePinch.y - lastDragY;
-                        targetScrollY += deltaY * 2.5; 
-                        scrollVelocity = deltaY * 0.5; 
-                        lastDragY = activePinch.y;
-                    } 
-                    else {
-                        const el = document.elementFromPoint(activePinch.x, activePinch.y);
-
-                        if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
-                            startTimer(); 
-                            draggedPiece = el;
-                            const rect = el.getBoundingClientRect();
-                            dragOffsetX = activePinch.x - rect.left;
-                            dragOffsetY = activePinch.y - rect.top;
-                            el.classList.add('dragging');
-                        } 
-                        else if (el && el.closest('.term-card')) {
-                            zoomedCard = el.closest('.term-card');
-                            zoomedCard.classList.add('hovered');
-                            zoomStartY = activePinch.y;
-                            initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
-                        } 
-                        else {
-                            lastDragY = activePinch.y;
-                            scrollVelocity = 0;
+                const activePinch = isPinching0 ? p0 : (isPinching1 ? p1 : null);
+                
+                // СИМУЛЯЦИЯ КЛИКА ПРИ ЩИПКЕ (Для Гайдов и кнопок)
+                if (isPinching0 && !wasPinching0) {
+                    const el = document.elementFromPoint(p0.x, p0.y);
+                    if (el) {
+                        // Если кликнули по кнопке Гайдов
+                        if (el.closest('#openGuidesBtn')) toggleGuides(true);
+                        // Если панель гайдов открыта, кликаем по интерфейсу
+                        else if (guidesPanel.classList.contains('active')) {
+                            el.click();
+                            if(el.tagName === 'INPUT') el.focus();
                         }
                     }
-                } else {
-                    if (draggedPiece) {
-                        draggedPiece.classList.remove('dragging');
-                        checkSnap(draggedPiece);
-                        draggedPiece = null;
-                    }
-                    if (zoomedCard) {
-                        zoomedCard.classList.remove('hovered');
-                        zoomedCard = null;
-                    }
-                    lastDragY = null;
                 }
 
+                // Логика Пазлов и Скролла (работает только если гайды ЗАКРЫТЫ)
+                if (!guidesPanel.classList.contains('active')) {
+                    if (activePinch) {
+                        if (zoomedCard !== null) {
+                            const deltaY = zoomStartY - activePinch.y; 
+                            let targetScale = initialCardScale + (deltaY * 0.005); 
+                            targetScale = Math.max(0.8, Math.min(targetScale, 2.5));
+                            zoomedCard.style.transform = `scale(${targetScale})`;
+                            zoomedCard.dataset.scale = targetScale;
+                        } 
+                        else if (draggedPiece !== null) {
+                            const containerRect = puzzleArea.getBoundingClientRect();
+                            draggedPiece.style.left = `${activePinch.x - dragOffsetX - containerRect.left}px`;
+                            draggedPiece.style.top = `${activePinch.y - dragOffsetY - containerRect.top}px`;
+                        } 
+                        else if (lastDragY !== null) {
+                            const deltaY = activePinch.y - lastDragY;
+                            targetScrollY += deltaY * 2.5; 
+                            scrollVelocity = deltaY * 0.5; 
+                            lastDragY = activePinch.y;
+                        } 
+                        else {
+                            const el = document.elementFromPoint(activePinch.x, activePinch.y);
+                            if (el && el.classList.contains('puzzle-piece') && !el.classList.contains('locked')) {
+                                startTimer(); 
+                                draggedPiece = el;
+                                const rect = el.getBoundingClientRect();
+                                dragOffsetX = activePinch.x - rect.left; dragOffsetY = activePinch.y - rect.top;
+                                el.classList.add('dragging');
+                            } 
+                            else if (el && el.closest('.term-card')) {
+                                zoomedCard = el.closest('.term-card');
+                                zoomedCard.classList.add('hovered');
+                                zoomStartY = activePinch.y;
+                                initialCardScale = parseFloat(zoomedCard.dataset.scale) || 1;
+                            } 
+                            else {
+                                lastDragY = activePinch.y; scrollVelocity = 0;
+                            }
+                        }
+                    } else {
+                        if (draggedPiece) {
+                            draggedPiece.classList.remove('dragging');
+                            checkSnap(draggedPiece);
+                            draggedPiece = null;
+                        }
+                        if (zoomedCard) { zoomedCard.classList.remove('hovered'); zoomedCard = null; }
+                        lastDragY = null;
+                    }
+                }
             } else {
-                lastDragY = null;
-                peaceFrames = 0;
-                targetRotX = 0; targetRotY = 0; 
+                lastDragY = null; peaceFrames = 0; targetRotX = 0; targetRotY = 0; 
             }
-
             canvasCtx.restore();
         }
 
-        function updateCursor(cursorEl, p, isPinched) {
-            cursorEl.style.opacity = 1; cursorEl.style.left = `${p.x}px`; cursorEl.style.top = `${p.y}px`;
-            if (isPinched) cursorEl.classList.add('pinched'); else cursorEl.classList.remove('pinched');
-        }
-
         function checkSnap(piece) {
-            const currentX = parseInt(piece.style.left);
-            const currentY = parseInt(piece.style.top);
-            const targetX = parseInt(piece.dataset.correctX);
-            const targetY = parseInt(piece.dataset.correctY);
-
+            const currentX = parseInt(piece.style.left), currentY = parseInt(piece.style.top);
+            const targetX = parseInt(piece.dataset.correctX), targetY = parseInt(piece.dataset.correctY);
             if (Math.abs(currentX - targetX) < 70 && Math.abs(currentY - targetY) < 70) {
-                piece.style.left = `${targetX}px`;
-                piece.style.top = `${targetY}px`;
-                piece.classList.add('locked');
-                lockedCount++;
-
+                piece.style.left = `${targetX}px`; piece.style.top = `${targetY}px`;
+                piece.classList.add('locked'); lockedCount++;
                 if (lockedCount === cols * rows) {
                     document.querySelector('.header h1').innerHTML = "✨ ЯДРО ИИ АКТИВИРОВАНО ✨";
                     document.querySelector('.header h1').style.color = "#10b981";
@@ -881,29 +807,8 @@
             }
         }
 
-        let isImploding = false;
-        function triggerImplosion() {
-            if (isImploding) return;
-            isImploding = true;
-
-            showToast("СИНХРОНИЗАЦИЯ... ВОЗВРАТ", true);
-            document.body.classList.add('implode');
-            setTimeout(() => { window.location.href = 'index.html'; }, 1400);
-        }
-
-        function showToast(text, isSuccess = false) {
-            const toast = document.getElementById('toast');
-            toast.innerText = text;
-            if (isSuccess) toast.classList.add('success');
-            else toast.classList.remove('success');
-
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 2500);
-        }
-
         window.addEventListener('resize', () => {
-            camera3D.aspect = window.innerWidth / window.innerHeight;
-            camera3D.updateProjectionMatrix();
+            camera3D.aspect = window.innerWidth / window.innerHeight; camera3D.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
