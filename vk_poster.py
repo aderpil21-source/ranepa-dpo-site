@@ -129,16 +129,20 @@ def auto_post_latest_news():
     title = item.get('title', 'Новость Центра')
     lead = item.get('lead', '')
     real_url = f"{SITE_URL}news.html#{news_id}" if news_id else f"{SITE_URL}news.html"
+    
     message = f"🔥 {title}\n\n{lead}\n\nЧитать подробнее на сайте: {real_url}"
 
-    attachments_list = []
+    # Сначала пытаемся загрузить картинку через нашу функцию
+    attachment_str = ""
     cover_url = get_cover_image_url(item)
     if cover_url:
+        print(f"Найдена обложка: {cover_url}, загружаем в ВК...")
         photo_attachment = upload_photo_to_vk(cover_url, TOKEN)
         if photo_attachment:
-            attachments_list.append(photo_attachment)
-    else:
-        print("DEBUG: Картинки в новости нет.")
+            attachment_str = photo_attachment
+            print(f"Картинка успешно прикрепится к посту: {attachment_str}")
+        else:
+            print("Не удалось загрузить картинку, постим без неё.")
 
     group_post_id = OWNER_ID if str(OWNER_ID).startswith('-') else f"-{OWNER_ID}"
 
@@ -146,9 +150,7 @@ def auto_post_latest_news():
         'owner_id': group_post_id,
         'from_group': 1,
         'message': message,
-        'attachments': ','.join(attachments_list),
-        'lat': 54.7335,
-        'long': 20.5284,
+        'attachments': attachment_str, # Передаем ID загруженной картинки
         'access_token': TOKEN,
         'v': API_VERSION
     }
@@ -163,6 +165,3 @@ def auto_post_latest_news():
             f.write(news_id)
     else:
         print(f"Ошибка публикации в ВК: {result}")
-
-if __name__ == "__main__":
-    auto_post_latest_news()
