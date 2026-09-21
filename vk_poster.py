@@ -1,202 +1,166 @@
 import os
-import re
 import requests
+from io import BytesIO
+from PIL import Image
 from dotenv import load_dotenv, find_dotenv
 
-# Принудительно ищем и загружаем .env файл в директории проекта
 dotenv_path = find_dotenv()
 if dotenv_path:
     load_dotenv(dotenv_path)
-    print(f"Найден и загружен файл конфигурации: {dotenv_path}")
-else:
-    print("ВНИМАНИЕ: Файл .env не найден! Проверь его наличие в папке проекта.")
 
-# Загружаем ключи и жестко очищаем их от мусора
 TOKEN = os.getenv("VK_TOKEN", "").strip(" '\"\n\r")
 OWNER_ID = os.getenv("VK_OWNER_ID", "").strip(" '\"\n\r")
-
-print(f"DEBUG -> TOKEN загружен: {'ДА (длина ' + str(len(TOKEN)) + ')' if TOKEN else 'НЕТ (пусто)'}")
-print(f"DEBUG -> OWNER_ID загружен: {OWNER_ID}")
-
-API_VERSION = "5.131"
+API_VERSION = "5.199"
 SITE_URL = "https://ranepa-dpo39.ru/"
-API_BACKEND_URL = "https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec?type=news"
+API_BASE = "https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec"
+STATE_FILE = "last_news_id.txt"
 
-def fetch_latest_news_from_api():
+def fetch_latest_news():
     try:
-        response = requests.get(API_BACKEND_URL, timeout=10)
+        response = requests.get(API_BASE, params={"type": "news"}, timeout=10)
         data = response.json()
-        items = data.get('items', [])
-        
-        published_items = [item for item in items if item.get('status') == 'published']
-        if not published_items:
-            print("Нет опубликованных новостей в базе.")
-            return None, None, None, None
-
-        latest = published_items[0]
-        title = latest.get('title', 'Новость Центра')
-        lead = latest.get('lead', '')
-        news_id = latest.get('id', '')
-        
-        cover_image = latest.get('coverImage', '')
-        if not cover_image and latest.get('blocks'):
-            for block in latest.get('blocks', []):
-                if block.get('type') == 'image' and not block.get('hidden') and block.get('url'):
-                    cover_image = block.get('url')
-                    break
-                    
-        if cover_image:
-            if cover_image.startswith('./'):
-                cover_image = SITE_URL.rstrip('/') + '/' + cover_image.lstrip('./')
-            elif not cover_image.startswith('http'):
-                cover_image = SITE_URL.rstrip('/') + '/' + cover_image.lstrip('/')
-
-        news_url = f"{SITE_URL}news.html#{news_id}" if news_id else f"{SITE_URL}news.html"
-        
-        return title, lead, cover_image, news_url
+        published = [i for i in data.get('items', []) if i.get('status') == 'published']
+        return published[0] if published else None
     except Exception as e:
         print(f"Ошибка при запросе к API сайта: {e}")
-        return None, None, None, None
+        return None
 
-def download_image(image_url, save_path="temp_news_img.jpg"):
-    """Скачивает картинку, обходя страницу проверки на вирусы от Google Drive"""
-    try:
-        session = requests.Session()
-        
-        if "drive.google.com" in image_url:
-            match = re.search(r'id=([a-zA-Z0-9_-]+)', image_url)
-            if match:
-                file_id = match.group(1)
-                download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
-                response = session.get(download_url, stream=True, timeout=15)
-                
-                for key, value in response.cookies.items():
-                    if key.startswith('download_warning'):
-                        print("Обход защиты Google Drive от вирусов...")
-                        response = session.get(download_url + f"&confirm={value}", stream=True, timeout=15)
-                        break
-            else:
-                response = session.get(image_url, stream=True, timeout=15)
-        else:
-            response = session.get(image_url, stream=True, timeout=15)
-            
-        content_type = response.headers.get('Content-Type', '')
-        if 'text/html' in content_type:
-            print(f"[!] Гугл не отдал картинку. По ссылке находится веб-страница (HTML).")
-            return None
-
-        if response.status_code == 200:
-            with open(save_path, 'wb') as f:
-                for chunk in response.iter_content(1024):
-                    f.write(chunk)
-                    
-            file_size = os.path.getsize(save_path)
-            if file_size < 2000:  
-                print(f"[!] Скачанный файл слишком мал ({file_size} байт). Это не изображение.")
-                return None
-                
-            print(f"Картинка успешно скачана (размер: {file_size // 1024} КБ)")
-            return save_path
-    except Exception as e:
-        print(f"Ошибка скачивания картинки: {e}")
+def get_cover_image_url(item):
+    cover = (item.get('coverImage') or '').strip()
+    if cover:
+        return normalize_image_url(cover)
+    for b in item.get('blocks', []) or []:
+        if b.get('type') == 'image' and b.get('url') and not b.get('hidden'):
+            return normalize_image_url(b['url'])
     return None
 
-def upload_photo_to_vk(image_path):
-    """
-    ИСПРАВЛЕНО: раньше здесь использовались docs.getWallUploadServer / docs.save —
-    это метод загрузки ДОКУМЕНТОВ, а не фото. Из-за этого:
-      1) ловилась ошибка 15 "Access denied: User can't upload docs to this group"
-         (у токена сообщества просто нет прав на загрузку документов),
-      2) даже если бы загрузка прошла, attachments=doc... не показывается
-         как картинка/обложка поста — ВК рендерит его как файл, а не фото.
-    Правильный путь для фото на стене — photos.getWallUploadServer +
-    photos.saveWallPhoto, вложение вида photo{owner_id}_{id}.
-    """
-    group_id = str(OWNER_ID).lstrip('-')
+def normalize_image_url(url):
+    if 'drive.google.com' in url:
+        import re
+        m = re.search(r'[?&]id=([\w-]+)', url) or re.search(r'/file/d/([\w-]+)', url)
+        if m:
+            return f"https://drive.google.com/uc?export=view&id={m.group(1)}"
+    return url
 
-    url_server = requests.get(
+def upload_photo_to_vk(image_url, token):
+    print(f"DEBUG: Пробуем скачать обложку: {image_url}")
+    try:
+        img_resp = requests.get(image_url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        img_resp.raise_for_status()
+        
+        img = Image.open(BytesIO(img_resp.content))
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+            
+        output_buffer = BytesIO()
+        img.save(output_buffer, format="JPEG", quality=95)
+        image_bytes = output_buffer.getvalue()
+        
+        print(f"DEBUG: Картинка готова, {len(image_bytes)} байт")
+    except Exception as e:
+        print(f"DEBUG: Ошибка работы с картинкой: {e}")
+        return None
+
+    print("DEBUG: Получаем сервер загрузки ВК...")
+    
+    # ИСПРАВЛЕНИЕ: Для токена группы НЕ передаем group_id
+    upload_server_resp = requests.get(
         "https://api.vk.com/method/photos.getWallUploadServer",
-        params={
-            'group_id': group_id,
-            'access_token': TOKEN,
-            'v': API_VERSION
-        }
+        params={"access_token": token, "v": API_VERSION},
+        timeout=15
     ).json()
 
-    if 'response' not in url_server:
-        print(f"Ошибка сервера загрузки фото ВК: {url_server}")
+    if 'response' not in upload_server_resp:
+        print(f"DEBUG: Ошибка сервера: {upload_server_resp}")
         return None
 
-    upload_url = url_server['response']['upload_url']
-
-    # Поле в multipart-запросе должно называться именно 'photo'
-    with open(image_path, 'rb') as file:
-        files = {'photo': ('cover.jpg', file, 'image/jpeg')}
-        upload_response = requests.post(upload_url, files=files).json()
-
-    if not upload_response.get('photo') or upload_response['photo'] in ('', '[]'):
-        print(f"[!] ВК сервер отклонил файл: {upload_response}")
+    print("DEBUG: Загружаем файл...")
+    try:
+        upload_resp = requests.post(
+            upload_server_resp['response']['upload_url'],
+            files={"photo": ("cover.jpg", image_bytes)},
+            timeout=30
+        ).json()
+    except Exception as e:
+        print(f"DEBUG: Ошибка POST-запроса: {e}")
         return None
 
-    save_response = requests.post(
+    if not upload_resp.get('photo') or upload_resp.get('photo') == '[]':
+        print(f"DEBUG: Файл отклонен: {upload_resp}")
+        return None
+
+    print("DEBUG: Сохраняем фото...")
+    
+    # ИСПРАВЛЕНИЕ: Для токена группы НЕ передаем group_id
+    save_resp = requests.post(
         "https://api.vk.com/method/photos.saveWallPhoto",
         data={
-            'group_id': group_id,
-            'photo': upload_response['photo'],
-            'server': upload_response['server'],
-            'hash': upload_response['hash'],
-            'access_token': TOKEN,
-            'v': API_VERSION
-        }
+            "photo": upload_resp['photo'],
+            "server": upload_resp['server'],
+            "hash": upload_resp['hash'],
+            "access_token": token,
+            "v": API_VERSION
+        },
+        timeout=15
     ).json()
 
-    if 'response' in save_response and save_response['response']:
-        photo_data = save_response['response'][0]
-        return f"photo{photo_data['owner_id']}_{photo_data['id']}"
-
-    print(f"Ошибка сохранения фото в ВК: {save_response}")
+    if 'response' in save_resp and save_resp['response']:
+        photo = save_resp['response'][0]
+        print("DEBUG: Фото успешно прикреплено!")
+        return f"photo{photo['owner_id']}_{photo['id']}"
+        
+    print(f"DEBUG: Ошибка saveWallPhoto: {save_resp}")
     return None
 
 def auto_post_latest_news():
-    print("Получаем свежую новость с бэкенда сайта...")
-    title, lead, image_url, news_url = fetch_latest_news_from_api()
-    
-    if not title:
-        print("Не удалось получить новость.")
+    item = fetch_latest_news()
+    if not item:
+        print("Нет опубликованных новостей.")
         return
 
-    message = f"🔥 {title}\n\n{lead}\n\nЧитать подробнее на сайте: {news_url}"
-    attachments = []
+    news_id = str(item.get('id', ''))
     
-    if image_url:
-        print(f"Скачиваем обложку: {image_url}")
-        local_img = download_image(image_url)
-        if local_img:
-            print("Загружаем картинку в ВК...")
-            photo_att = upload_photo_to_vk(local_img)
-            if photo_att:
-                attachments.append(photo_att)
-            if os.path.exists(local_img):
-                os.remove(local_img)
+    if os.path.exists(STATE_FILE):
+        with open(STATE_FILE, "r", encoding="utf-8") as f:
+            if f.read().strip() == news_id:
+                print(f"Новость {news_id} уже опубликована. Пропуск.")
+                return
 
-    url = "https://api.vk.com/method/wall.post"
+    title = item.get('title', 'Новость Центра')
+    lead = item.get('lead', '')
+    real_url = f"{SITE_URL}news.html#{news_id}" if news_id else f"{SITE_URL}news.html"
+    message = f"🔥 {title}\n\n{lead}\n\nЧитать подробнее на сайте: {real_url}"
+
+    attachments_list = []
+    cover_url = get_cover_image_url(item)
+    if cover_url:
+        photo_attachment = upload_photo_to_vk(cover_url, TOKEN)
+        if photo_attachment:
+            attachments_list.append(photo_attachment)
+    else:
+        print("DEBUG: Картинки в новости нет.")
+
+    group_post_id = OWNER_ID if str(OWNER_ID).startswith('-') else f"-{OWNER_ID}"
+
     payload = {
-        'owner_id': OWNER_ID,
+        'owner_id': group_post_id,
         'from_group': 1,
         'message': message,
-        'attachments': ','.join(attachments) if attachments else '',
+        'attachments': ','.join(attachments_list),
         'lat': 54.7335,
         'long': 20.5284,
-        'place_str': 'Западный филиал РАНХиГС, ул. Артиллерийская, 62',
         'access_token': TOKEN,
         'v': API_VERSION
     }
-    
-    response = requests.post(url, data=payload)
+
+    print("DEBUG: Отправляем пост на стену...")
+    response = requests.post("https://api.vk.com/method/wall.post", data=payload)
     result = response.json()
-    
+
     if 'response' in result:
-        print(f"Успешно! Пост с картинкой и уникальной ссылкой опубликован. ID записи: {result['response']['post_id']}")
+        print(f"Успешно! ID записи: {result['response']['post_id']}")
+        with open(STATE_FILE, "w", encoding="utf-8") as f:
+            f.write(news_id)
     else:
         print(f"Ошибка публикации в ВК: {result}")
 
