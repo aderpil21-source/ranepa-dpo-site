@@ -1276,6 +1276,21 @@
             <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
         </button>
     </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const fakeFieldName = 'hp_' + Math.random().toString(36).substring(2, 8);
+            sessionStorage.setItem('trap_field', fakeFieldName);
+
+            const targetForm = document.querySelector('#enrollModal .modal-box');
+            if (targetForm) {
+                const wrap = document.createElement('div');
+                wrap.style.display = 'none';
+                wrap.innerHTML = `<input type="text" name="${fakeFieldName}" id="dynamicTrap" value="">`;
+                targetForm.appendChild(wrap);
+            }
+        });
+    </script>
+</body>
 
     <script>
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
