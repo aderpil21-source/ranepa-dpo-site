@@ -638,11 +638,52 @@
             .news-grid { grid-template-columns: 1fr; }
             .news-admin-bar-top { flex-direction: column; align-items: stretch; }
         }
+
+        /* ===== COOKIE CONSENT BANNER ===== */
+        .cookie-consent-banner {
+            position: fixed; left: 0; bottom: -160px; width: 100%; max-width: 480px;
+            background: rgba(15, 15, 20, 0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            color: #fff; padding: 18px 22px; z-index: 24000;
+            border-top-right-radius: 14px; box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
+            display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+            transition: bottom 0.55s var(--bezier-bounce);
+            border: 1px solid rgba(255,255,255,0.08); border-left: none; border-bottom: none;
+        }
+        .cookie-consent-banner.show { bottom: 0; }
+        .cookie-consent-text { flex: 1; min-width: 220px; font-size: 0.86rem; line-height: 1.55; color: #e2e8f0; }
+        .cookie-consent-text a { color: #38bdf8; text-decoration: underline; cursor: pointer; }
+        .cookie-consent-btn { background: var(--ranepa-red); color: #fff; border: none; padding: 11px 26px; border-radius: 9px; font-weight: 800; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.25s var(--bezier-bounce); white-space: nowrap; box-shadow: 0 6px 16px rgba(202,15,62,0.4); }
+        .cookie-consent-btn:hover { background: #e11d48; transform: translateY(-2px); box-shadow: 0 10px 22px rgba(202,15,62,0.6); }
+        @media (max-width: 768px) {
+            .cookie-consent-banner { max-width: 100%; flex-direction: column; align-items: stretch; text-align: left; border-radius: 0; padding: 16px; }
+            .cookie-consent-btn { width: 100%; }
+        }
+
+        /* ===== СОГЛАСИЕ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ ===== */
+        .consent-block { margin-top: 20px; text-align: left; }
+        .consent-checkbox-label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.92rem; color: var(--text-main); font-weight: 700; line-height: 1.4; }
+        .consent-checkbox-label input[type="checkbox"] { width: 19px; height: 19px; margin-top: 2px; accent-color: var(--ranepa-red); cursor: pointer; flex-shrink: 0; }
+        .consent-toggle-btn { background: none; border: none; color: var(--text-muted); font-size: 0.78rem; text-decoration: underline; cursor: pointer; padding: 8px 0 4px; font-family: 'Manrope', sans-serif; }
+        .consent-toggle-btn:hover { color: var(--ranepa-red); }
+        .consent-details-text { display: none; font-size: 0.74rem; line-height: 1.65; color: var(--text-muted); opacity: 0.8; max-height: 220px; overflow-y: auto; padding: 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); border-radius: 10px; margin-top: 6px; }
+        .consent-details-text.show { display: block; }
+        .ranepa-policy-link { color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700; }
+        .disabled-link { pointer-events: none; opacity: 0.4; filter: grayscale(0.4); cursor: not-allowed !important; }
+
+        .leaving-site-url-box {
+            background: rgba(255,204,0,0.08); border: 1px solid rgba(255,204,0,0.35); border-radius: 10px;
+            padding: 14px; margin-bottom: 20px; word-break: break-all; font-size: 0.85rem; color: var(--text-main);
+        }
     </style>
 </head>
 <body>
 
     <div id="progress-bar"></div>
+
+    <div class="cookie-consent-banner" id="cookieConsentBanner">
+        <div class="cookie-consent-text" data-i18n="cookieConsentText">Данный сайт использует файлы Cookie в порядке и целях, указанных по <a href="https://www.ranepa.ru/politika-obrabotki-faylov-cookies/" target="_blank" rel="noopener">ссылке</a>.</div>
+        <button class="cookie-consent-btn" onclick="acceptCookieConsent()" data-i18n="cookieConsentBtn">Согласен</button>
+    </div>
 
     <div class="bg-tags-container" id="bgTags">
         <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
@@ -1001,21 +1042,40 @@
     <input type="text" name="website" id="honeypotField" tabindex="-1" autocomplete="off">
 </div>
             <p data-i18n="modDesc">Выберите удобный способ регистрации на программу обучения:</p>
-            <a href="https://trudvsem.ru/?region=3900000000000" target="_blank" class="modal-btn modal-btn-trudvsem" data-i18n="modTrud">Записаться через «Работа России» (Калининград)</a>
-            <a href="https://forms.yandex.ru" target="_blank" class="modal-btn modal-btn-yandex" data-i18n="modYan">Записаться через Яндекс.Форму</a>
-            <div class="compliance-text" data-i18n="complianceText">Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.</div>
+            <a href="https://trudvsem.ru/?region=3900000000000" target="_blank" id="modTrudBtn" class="modal-btn modal-btn-trudvsem" onclick="return checkConsentBeforeEnroll()" data-i18n="modTrud">Записаться через «Работа России» (Калининград)</a>
+            <a href="https://forms.yandex.ru" target="_blank" id="modYanBtn" class="modal-btn modal-btn-yandex" onclick="return checkConsentBeforeEnroll()" data-i18n="modYan">Записаться через Яндекс.Форму</a>
+
+            <div class="consent-block">
+                <label class="consent-checkbox-label">
+                    <input type="checkbox" id="consentCheckbox" checked onchange="toggleEnrollButtons()">
+                    <span data-i18n="consentCheckboxText">Даю согласие на обработку персональных данных <span style="color: var(--ranepa-red);">*</span></span>
+                </label>
+                <button type="button" class="consent-toggle-btn" id="consentToggleBtn" onclick="toggleConsentDetails(this)" data-i18n="consentToggleShow">Показать текст согласия и политику обработки персональных данных</button>
+                <div class="consent-details-text" id="consentDetailsText" data-i18n="consentFullText">
+                    Физическое лицо (далее - Субъект), заполнив форму, размещенную на сайте ranepa-dpo39.ru в сети Интернет и нажимая на кнопку «Отправить», действуя свободно, своей волей и в своем интересе, а также подтверждая свою дееспособность, предоставляет свое согласие на обработку персональных данных (далее – Согласие) федеральному государственному бюджетному учреждению высшего образования «Российская академия народного хозяйства и государственной службы при Президенте Российской Федерации», ИНН 7729050901, место нахождения: 119571, г. Москва, вн. тер. г. муниципальный округ Тропарево-Никулино, пр-кт Вернадского, д. 82, стр. 1. (далее – Оператор), в указанном ниже порядке, целях и объеме.<br><br>
+                    1. Согласие дается на обработку персональных данных, как без использования средств автоматизации, так и с их использованием.<br>
+                    2. Согласие дается на обработку следующих моих персональных данных:<br>
+                    — фамилия, имя, отчество;<br>
+                    — адрес электронной почты;<br>
+                    — номер телефона;<br>
+                    — данные, которые сообщаются мною в обращении к Оператору.<br>
+                    3. Цель обработки персональных данных: рассмотрение обращения, поданное через электронную приёмную Оператора, и предоставление Оператором ответа на обращение.<br>
+                    4. Обработка персональных данных Субъекта будет осуществляться следующими способами: сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, обезличивание, блокирование, удаление, уничтожение персональных данных, а также передачу (предоставление, доступ), за исключением распространения.<br>
+                    5. Согласие действует в течение 1 (одного) года с момента его предоставления. Для отзыва согласия необходимо обратиться к Оператору письменно по адресу: 119571, г. Москва, вн. тер. г. муниципальный округ Тропарево-Никулино, пр-кт Вернадского, д. 82, стр. 1., либо по адресу электронной почты: personaldata@ranepa.ru.<br>
+                    6. Я предупрежден(а) о последствиях отказа от предоставления Согласия.<br><br>
+                    <span class="ranepa-policy-link" onclick="openLeavingSiteModal('https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf')">Политика РАНХиГС в отношении обработки персональных данных</span>
+                </div>
+            </div>
+
             <div class="close-modal" onclick="closeModal()" data-i18n="modClose">Закрыть окно</div>
         </div>
     </div>
 
     <div class="modal-overlay" id="policyModal">
         <div class="modal-box" style="text-align: left; max-width: 650px;">
-            <h3 data-i18n="polModTitle">Политика обработки персональных данных</h3>
-            <p style="font-size: 0.85rem; line-height: 1.6; max-height: 50vh; overflow-y: auto;" data-i18n="polModText">
-                В соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных» в редакции 2026 года и актуальными нормативными актами Роскомнадзора, Западный филиал РАНХиГС осуществляет сбор, хранение и обработку информации о Пользователе исключительно в образовательных целях.<br><br>
-                1. Пользователь выражает прямое информированное согласие на обработку ПДн, использование файлов cookie и метрических систем при использовании сайта.<br>
-                2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>
-                3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.
+            <h3 data-i18n="polModTitle">Политика РАНХиГС в отношении обработки персональных данных</h3>
+            <p style="font-size: 0.9rem; line-height: 1.7;" data-i18n="polModText">
+                Обработка персональных данных пользователей сайта осуществляется в соответствии с <span class="ranepa-policy-link" onclick="openLeavingSiteModal('https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf')">Политикой РАНХиГС в отношении обработки персональных данных</span>, а также в соответствии с <span class="ranepa-policy-link" onclick="openLeavingSiteModal('https://www.ranepa.ru/politika-obrabotki-faylov-cookies/')">Политикой в отношении использования файлов Cookie</span>.
             </p>
             <div class="close-modal" onclick="closePolicyModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
         </div>
@@ -1031,6 +1091,19 @@
                 3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.
             </p>
             <div class="close-modal" onclick="closeTermsModal()" style="text-align: center;" data-i18n="modOk">Понятно</div>
+        </div>
+    </div>
+
+    <!-- ОКНО "ВЫ ПОКИДАЕТЕ САЙТ" -->
+    <div class="modal-overlay" id="leavingSiteModal" style="z-index: 26000;">
+        <div class="modal-box" style="text-align: left; max-width: 480px;">
+            <h3 data-i18n="leaveTitle">Вы покидаете ranepa-dpo39.ru</h3>
+            <div class="leaving-site-url-box" id="leavingSiteUrl"></div>
+            <p data-i18n="leaveText">Эта ссылка ведет на сторонний ресурс. Вы действительно хотите туда перейти?</p>
+            <div style="display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap;">
+                <button class="modal-btn" style="background: linear-gradient(135deg, #0ea5a0, #0d9488); flex: 1; margin-bottom: 0; min-width: 140px;" onclick="confirmLeavingSite()" data-i18n="leaveContinue">Продолжить</button>
+                <button class="modal-btn" style="background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); flex: 1; margin-bottom: 0; min-width: 140px;" onclick="closeLeavingSiteModal()" data-i18n="leaveCancel">Отмена</button>
+            </div>
         </div>
     </div>
 
@@ -1306,6 +1379,7 @@
     let globalPrograms = [];
     let currentLang = 'ru';
     let globalAlert = null;
+    let leavingSiteTargetUrl = '';
 
     const SECTOR_NAMES = {
         'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
@@ -1339,6 +1413,68 @@
             : 'The official VK community is under development. A link will appear here soon!');
     }
 
+    /* ===== COOKIE CONSENT ===== */
+    function acceptCookieConsent() {
+        try { localStorage.setItem('cookieConsentAccepted', '1'); } catch (e) {}
+        const banner = document.getElementById('cookieConsentBanner');
+        if (banner) banner.classList.remove('show');
+    }
+    function checkCookieConsent() {
+        let accepted = false;
+        try { accepted = !!localStorage.getItem('cookieConsentAccepted'); } catch (e) {}
+        if (!accepted) {
+            setTimeout(() => {
+                const banner = document.getElementById('cookieConsentBanner');
+                if (banner) banner.classList.add('show');
+            }, 500);
+        }
+    }
+
+    /* ===== "ВЫ ПОКИДАЕТЕ САЙТ" МОДАЛЬНОЕ ОКНО ===== */
+    function openLeavingSiteModal(url) {
+        leavingSiteTargetUrl = url;
+        const urlBox = document.getElementById('leavingSiteUrl');
+        if (urlBox) urlBox.textContent = url;
+        document.getElementById('leavingSiteModal').classList.add('active');
+    }
+    function closeLeavingSiteModal() {
+        document.getElementById('leavingSiteModal').classList.remove('active');
+        leavingSiteTargetUrl = '';
+    }
+    function confirmLeavingSite() {
+        if (leavingSiteTargetUrl) {
+            window.open(leavingSiteTargetUrl, '_blank', 'noopener');
+        }
+        closeLeavingSiteModal();
+    }
+
+    /* ===== СОГЛАСИЕ НА ОБРАБОТКУ ПЕРСОНАЛЬНЫХ ДАННЫХ ===== */
+    function toggleConsentDetails(btn) {
+        const details = document.getElementById('consentDetailsText');
+        const isShown = details.classList.toggle('show');
+        btn.textContent = isShown
+            ? translationsHTML[currentLang].consentToggleHide
+            : translationsHTML[currentLang].consentToggleShow;
+    }
+    function toggleEnrollButtons() {
+        const checked = document.getElementById('consentCheckbox').checked;
+        ['modTrudBtn', 'modYanBtn'].forEach(id => {
+            const link = document.getElementById(id);
+            if (!link) return;
+            link.classList.toggle('disabled-link', !checked);
+        });
+    }
+    function checkConsentBeforeEnroll() {
+        const checkbox = document.getElementById('consentCheckbox');
+        if (checkbox && !checkbox.checked) {
+            alert(currentLang === 'ru'
+                ? 'Для записи на программу необходимо дать согласие на обработку персональных данных.'
+                : 'You must consent to personal data processing in order to sign up.');
+            return false;
+        }
+        return true;
+    }
+
     const translationsHTML = {
         ru: {
             pageTitle: "Академия Кадров | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
@@ -1365,8 +1501,8 @@
             modTrud: "Записаться через «Работа России» (Калининград)", modYan: "Записаться через Яндекс.Форму",
             complianceText: "Нажимая кнопку, вы даете прямое информированное согласие на обработку персональных данных в соответствии с ФЗ-152 и актуальными требованиями Роскомнадзора (2026 г.), а также принимаете условия Пользовательского соглашения.",
             modClose: "Закрыть окно", modOk: "Понятно", qcTitle: "Быстрый контакт", qcAll: "Все контакты и сотрудники",
-            polModTitle: "Политика обработки персональных данных",
-            polModText: "В соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных» в редакции 2026 года и актуальными нормативными актами Роскомнадзора, Западный филиал РАНХиГС осуществляет сбор, хранение и обработку информации о Пользователе исключительно в образовательных целях.<br><br>1. Пользователь выражает прямое информированное согласие на обработку ПДн, использование файлов cookie и метрических систем при использовании сайта.<br>2. Оператор применяет сертифицированные криптографические протоколы защиты. Скрытый сбор биометрических данных строго запрещен.<br>3. Трансграничная передача данных не осуществляется. Данные хранятся на серверах, физически расположенных на территории Российской Федерации.",
+            polModTitle: "Политика РАНХиГС в отношении обработки персональных данных",
+            polModText: "Обработка персональных данных пользователей сайта осуществляется в соответствии с <span class=\"ranepa-policy-link\" onclick=\"openLeavingSiteModal('https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf')\">Политикой РАНХиГС в отношении обработки персональных данных</span>, а также в соответствии с <span class=\"ranepa-policy-link\" onclick=\"openLeavingSiteModal('https://www.ranepa.ru/politika-obrabotki-faylov-cookies/')\">Политикой в отношении использования файлов Cookie</span>.",
             termModTitle: "Пользовательское соглашение и оферта",
             termModText: "Использование цифровых сервисов регулируется актуальным законодательством РФ.<br><br>1. Материалы сайта носят информационный характер и не являются публичной офертой, если иное не указано явно.<br>2. Все интеллектуальные права на дизайн, графические элементы и тексты принадлежат Западному филиалу РАНХиГС.<br>3. Отправляя заявку, пользователь подтверждает полное ознакомление с правилами приема и зачисления на программы ДПО.",
             owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
@@ -1374,7 +1510,17 @@
             owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся.",
             goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?",
             schTitleMain: "Лента", schTitleSub: "Занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
-            schLoading: "Загружаем расписание... ⏳", schEmpty: "Расписание пока формируется... Загляните позже! 🦉"
+            schLoading: "Загружаем расписание... ⏳", schEmpty: "Расписание пока формируется... Загляните позже! 🦉",
+            cookieConsentText: "Данный сайт использует файлы Cookie в порядке и целях, указанных по <a href=\"https://www.ranepa.ru/politika-obrabotki-faylov-cookies/\" target=\"_blank\" rel=\"noopener\">ссылке</a>.",
+            cookieConsentBtn: "Согласен",
+            consentCheckboxText: "Даю согласие на обработку персональных данных <span style=\"color: var(--ranepa-red);\">*</span>",
+            consentToggleShow: "Показать текст согласия и политику обработки персональных данных",
+            consentToggleHide: "Скрыть текст согласия",
+            consentFullText: "Физическое лицо (далее - Субъект), заполнив форму, размещенную на сайте ranepa-dpo39.ru в сети Интернет и нажимая на кнопку «Отправить», действуя свободно, своей волей и в своем интересе, а также подтверждая свою дееспособность, предоставляет свое согласие на обработку персональных данных (далее – Согласие) федеральному государственному бюджетному учреждению высшего образования «Российская академия народного хозяйства и государственной службы при Президенте Российской Федерации», ИНН 7729050901, место нахождения: 119571, г. Москва, вн. тер. г. муниципальный округ Тропарево-Никулино, пр-кт Вернадского, д. 82, стр. 1. (далее – Оператор), в указанном ниже порядке, целях и объеме.<br><br>1. Согласие дается на обработку персональных данных, как без использования средств автоматизации, так и с их использованием.<br>2. Согласие дается на обработку следующих моих персональных данных:<br>— фамилия, имя, отчество;<br>— адрес электронной почты;<br>— номер телефона;<br>— данные, которые сообщаются мною в обращении к Оператору.<br>3. Цель обработки персональных данных: рассмотрение обращения, поданное через электронную приёмную Оператора, и предоставление Оператором ответа на обращение.<br>4. Обработка персональных данных Субъекта будет осуществляться следующими способами: сбор, запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, обезличивание, блокирование, удаление, уничтожение персональных данных, а также передачу (предоставление, доступ), за исключением распространения.<br>5. Согласие действует в течение 1 (одного) года с момента его предоставления. Для отзыва согласия необходимо обратиться к Оператору письменно по адресу: 119571, г. Москва, вн. тер. г. муниципальный округ Тропарево-Никулино, пр-кт Вернадского, д. 82, стр. 1., либо по адресу электронной почты: personaldata@ranepa.ru.<br>6. Я предупрежден(а) о последствиях отказа от предоставления Согласия.<br><br><span class=\"ranepa-policy-link\" onclick=\"openLeavingSiteModal('https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf')\">Политика РАНХиГС в отношении обработки персональных данных</span>",
+            leaveTitle: "Вы покидаете ranepa-dpo39.ru",
+            leaveText: "Эта ссылка ведет на сторонний ресурс. Вы действительно хотите туда перейти?",
+            leaveContinue: "Продолжить",
+            leaveCancel: "Отмена"
         },
         en: {
             pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
@@ -1400,8 +1546,8 @@
             modTrud: "Apply via \"Work of Russia\" (Kaliningrad)", modYan: "Apply via Yandex Form",
             complianceText: "By clicking the button, you give direct informed consent to the processing of personal data in accordance with Federal Law 152-FZ and current Roskomnadzor requirements (2026), and accept the Terms of Use.",
             modClose: "Close", modOk: "Got it", qcTitle: "Quick Contact", qcAll: "All contacts and staff",
-            polModTitle: "Personal Data Processing Policy",
-            polModText: "In accordance with Federal Law No. 152-FZ \"On Personal Data\" (2026 edition) and current Roskomnadzor regulations, RANEPA Western Branch collects, stores and processes User information solely for educational purposes.<br><br>1. The User gives direct informed consent to the processing of personal data and the use of cookies and analytics on the site.<br>2. Operator uses certified cryptographic protection protocols. Covert collection of biometric data is strictly prohibited.<br>3. No cross-border data transfer takes place. Data is stored on servers physically located in the Russian Federation.",
+            polModTitle: "RANEPA Personal Data Processing Policy",
+            polModText: "The processing of website users' personal data is carried out in accordance with the <span class=\"ranepa-policy-link\" onclick=\"openLeavingSiteModal('https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf')\">RANEPA Personal Data Processing Policy</span>, as well as the <span class=\"ranepa-policy-link\" onclick=\"openLeavingSiteModal('https://www.ranepa.ru/politika-obrabotki-faylov-cookies/')\">Cookie Files Policy</span>.",
             termModTitle: "Terms of Use & Public Offer",
             termModText: "Use of digital services is governed by applicable Russian law.<br><br>1. Site materials are informational and do not constitute a public offer unless explicitly stated.<br>2. All intellectual property rights to the design, graphics and text belong to RANEPA Western Branch.<br>3. By submitting an application, the User confirms full awareness of the admission and enrollment rules for continuing-education programs.",
             owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
@@ -1409,7 +1555,17 @@
             owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon.",
             goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?",
             schTitleMain: "Class", schTitleSub: "Schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
-            schLoading: "Loading schedule... ⏳", schEmpty: "Schedule is currently being compiled... Check back later! 🦉"
+            schLoading: "Loading schedule... ⏳", schEmpty: "Schedule is currently being compiled... Check back later! 🦉",
+            cookieConsentText: "This website uses Cookie files in the manner and for the purposes specified via the <a href=\"https://www.ranepa.ru/politika-obrabotki-faylov-cookies/\" target=\"_blank\" rel=\"noopener\">link</a>.",
+            cookieConsentBtn: "Accept",
+            consentCheckboxText: "I consent to the processing of personal data <span style=\"color: var(--ranepa-red);\">*</span>",
+            consentToggleShow: "Show consent text and personal data processing policy",
+            consentToggleHide: "Hide consent text",
+            consentFullText: "An individual (hereinafter the Subject), by filling out the form posted on the ranepa-dpo39.ru website and clicking the \"Submit\" button, acting freely, of their own will and in their own interest, and confirming their legal capacity, hereby gives consent to the processing of personal data (hereinafter Consent) to the Federal State Budgetary Educational Institution of Higher Education \"Russian Presidential Academy of National Economy and Public Administration\", TIN 7729050901, located at: 119571, Moscow, Vernadskogo Ave., 82, bldg. 1 (hereinafter the Operator), in the manner, for the purposes and to the extent specified below.<br><br>1. Consent is given to the processing of personal data, both without and with the use of automation tools.<br>2. Consent is given to the processing of the following personal data:<br>— last name, first name, patronymic;<br>— email address;<br>— phone number;<br>— data provided by me when contacting the Operator.<br>3. Purpose of processing personal data: reviewing the request submitted through the Operator's electronic reception desk and providing the Operator's response to the request.<br>4. The Subject's personal data will be processed by the following means: collection, recording, systematization, accumulation, storage, clarification (updating, changing), retrieval, use, depersonalization, blocking, deletion, destruction of personal data, as well as transfer (provision, access), excluding dissemination.<br>5. Consent is valid for 1 (one) year from the date it is given. To withdraw consent, please contact the Operator in writing at: 119571, Moscow, Vernadskogo Ave., 82, bldg. 1, or by email at: personaldata@ranepa.ru.<br>6. I have been informed of the consequences of refusing to give Consent.<br><br><span class=\"ranepa-policy-link\" onclick=\"openLeavingSiteModal('https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf')\">RANEPA Personal Data Processing Policy</span>",
+            leaveTitle: "You are leaving ranepa-dpo39.ru",
+            leaveText: "This link leads to a third-party resource. Are you sure you want to go there?",
+            leaveContinue: "Continue",
+            leaveCancel: "Cancel"
         }
     };
 
@@ -1432,6 +1588,14 @@
                 }
             }
         });
+
+        const consentToggleBtn = document.getElementById('consentToggleBtn');
+        if (consentToggleBtn) {
+            const isShown = document.getElementById('consentDetailsText').classList.contains('show');
+            consentToggleBtn.textContent = isShown
+                ? translationsHTML[lang].consentToggleHide
+                : translationsHTML[lang].consentToggleShow;
+        }
 
         document.querySelectorAll('.accordion-btn').forEach(btn => {
             const card = btn.closest('.card');
@@ -2367,6 +2531,8 @@ function injectCourseSchema(programName, programDesc) {
         fetchPrograms();
         armRevealTargets();
         updateScrollNav();
+        checkCookieConsent();
+        toggleEnrollButtons();
     });
        // Добавь этот кусочек в секцию <script> твоего index.html
 window.addEventListener('DOMContentLoaded', () => {
@@ -2384,4 +2550,4 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 200);
     }
 });
-</script>
+</script></html>
