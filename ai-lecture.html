@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Открытая лекция по нейросетям и ИИ | Западный филиал РАНХиГС</title>
-<meta name="description" content="Практическая лекция по применению искусственного интеллекта в работе. Разбор кейсов, автоматизация задач и генерация контента с помощью нейросетей.">
+    <title>AR-Лаборатория | Практика ИИ</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
     <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -78,6 +77,13 @@
         }
         .mic-dot { width: 12px; height: 12px; border-radius: 50%; background: #ef4444; animation: pulseMic 1.5s infinite; }
         @keyframes pulseMic { 0%, 100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 10px #ef4444; } 50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 20px #ef4444; } }
+        .hud-exit-btn {
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
+            border: 1px solid rgba(239, 68, 68, 0.5); color: #ef4444;
+            width: 44px; height: 44px; border-radius: 15px; cursor: pointer;
+            font-size: 1.1rem; font-weight: 900; transition: 0.2s; line-height: 1;
+        }
+        .hud-exit-btn:hover { background: rgba(239, 68, 68, 0.2); box-shadow: 0 0 15px rgba(239,68,68,0.4); }
 
         .video-feed { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; opacity: 0.15; z-index: -2; pointer-events: none; transform: scaleX(-1); }
         .canvas-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 100; pointer-events: none; transform: scaleX(-1); }
@@ -90,7 +96,7 @@
         }
         .hand-cursor.pinched { background: var(--accent); border-color: #fff; box-shadow: 0 0 25px #fff; width: 20px; height: 20px; }
 
-        #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; z-index: 10;}
+        #scroll-container { width: 100vw; display: flex; flex-direction: column; position: absolute; top: 0; left: 0; will-change: transform; z-index: 10; touch-action: none;}
 
         /* ПАЗЛЫ */
         .screen-puzzle { height: 100vh; width: 100vw; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -108,7 +114,7 @@
         @keyframes neonSnake { to { --angle: 360deg; } }
         .puzzle-area.completed { border: 2px solid transparent; border-radius: 20px; background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), conic-gradient(from var(--angle), transparent 70%, var(--accent) 100%); background-origin: border-box; background-clip: padding-box, border-box; animation: neonSnake 2.5s linear infinite; box-shadow: 0 0 40px rgba(56, 189, 248, 0.4); }
 
-        .puzzle-piece { position: absolute; width: 200px; height: 200px; background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop'); background-size: 600px 400px; cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6); transition: box-shadow 0.1s, filter 0.1s; }
+        .puzzle-piece { position: absolute; width: 200px; height: 200px; background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop'); background-size: 600px 400px; cursor: grab; box-shadow: 0 10px 20px rgba(0,0,0,0.6); transition: box-shadow 0.1s, filter 0.1s; touch-action: none; }
         .puzzle-piece::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,0.4); transition: opacity 0.5s; }
         .piece-num { position: absolute; top: 8px; left: 12px; font-size: 16px; font-weight: 900; color: #fff; opacity: 0.7; pointer-events: none; transition: opacity 0.5s; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
         .puzzle-piece.dragging { z-index: 50; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 30px var(--accent); filter: brightness(1.3); }
@@ -201,10 +207,11 @@
     </div>
 
     <div class="hud-top">
-        <div class="hud-mic">
+        <div class="hud-mic" id="hudMic">
             <div class="mic-dot"></div> Голосовой ИИ активен
         </div>
         <div class="hud-timer" id="timerDisplay">00:00</div>
+        <button class="hud-exit-btn" id="hudExitBtn" title="Выйти из лаборатории">✖</button>
     </div>
 
     <!-- КНОПКА ОТКРЫТИЯ ГАЙДОВ (Слева) -->
@@ -340,6 +347,15 @@
             <h2 style="color: #10b981; margin-bottom: 15px; font-size: 2rem;">Ядро собрано!</h2>
             <p style="color: #cbd5e1; font-size: 1.1rem; line-height: 1.6;">Структура восстановлена.<br>Время: <b id="finalTimeResult" style="color: var(--accent); font-size: 1.4rem;">00:00</b></p>
             <button class="save-btn" onclick="document.getElementById('victoryModal').classList.remove('active')">Продолжить</button>
+        </div>
+    </div>
+
+    <!-- Модалка отказа камеры / распознавания -->
+    <div class="modal-overlay" id="cameraErrorModal">
+        <div class="modal-box" style="border-color: rgba(202,15,62,0.5); box-shadow: 0 0 50px rgba(202,15,62,0.25);">
+            <h2 style="color: var(--ranepa-red); margin-bottom: 15px; font-size: 1.6rem;">Камера недоступна</h2>
+            <p style="color: #cbd5e1; font-size: 1rem; line-height: 1.6;" id="cameraErrorText"></p>
+            <button class="save-btn" id="continueWithoutCameraBtn" style="background: var(--ranepa-red); color: #fff;">Продолжить без камеры</button>
         </div>
     </div>
 
@@ -501,6 +517,7 @@
 
         openGuidesBtn.addEventListener('click', () => toggleGuides(true));
         closeGuidesBtn.addEventListener('click', () => toggleGuides(false));
+        document.getElementById('hudExitBtn').addEventListener('click', triggerImplosion);
 
         guideTabs.forEach(tab => {
             tab.addEventListener('click', (e) => {
@@ -559,9 +576,24 @@
         const chatTyping = document.getElementById('chatTyping');
         let aiHistory = []; 
 
+        const CHAT_ENDPOINT = '/api/chat'; // свой бэкенд-прокси — ключ живёт там, не в браузере
+        const MAX_CHAT_TURNS = 20;
+        const MAX_CHAT_CHARS = 2000;
+        const CHAT_ERROR_MESSAGES = {
+            RATE_LIMIT: '⚠️ Слишком много сообщений подряд — подождите немного.',
+            TIMEOUT: '⚠️ Сервер лаборатории не ответил вовремя, попробуйте ещё раз.',
+            SERVER: '⚠️ Сервер лаборатории сейчас недоступен, попробуйте через минуту.',
+            BAD_REQUEST: '⚠️ Не получилось отправить сообщение.',
+            EMPTY: '⚠️ Нейросеть не смогла ответить на этот запрос — попробуйте переформулировать.'
+        };
+
         async function sendChatMessage() {
             const text = chatInput.value.trim();
             if (!text) return;
+            if (text.length > MAX_CHAT_CHARS) {
+                showToast(`Сообщение длиннее ${MAX_CHAT_CHARS} символов — сократите его`, false);
+                return;
+            }
 
             const userEl = document.createElement('div');
             userEl.className = 'chat-msg msg-user';
@@ -571,41 +603,59 @@
             chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
 
             aiHistory.push({ role: "user", parts: [{ text: text }] });
+            if (aiHistory.length > MAX_CHAT_TURNS) aiHistory = aiHistory.slice(-MAX_CHAT_TURNS);
+
             chatTyping.style.display = 'block';
             chatSendBtn.disabled = true;
+            chatInput.disabled = true;
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 20000); // не вешаем UI навечно, если бэкенд не отвечает
+
+            let errorKey = null;
             try {
-                // Пустой ключ (Canvas proxy обработает запрос безопасно)
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=`;
-                const response = await fetch(apiUrl, {
+                const response = await fetch(CHAT_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: aiHistory,
-                        systemInstruction: { parts: [{ text: "Ты встроенный ИИ-помощник лаборатории. Отвечай кратко, умно и дружелюбно." }] }
-                    })
+                    body: JSON.stringify({ contents: aiHistory }),
+                    signal: controller.signal
                 });
 
-                const res = await response.json();
-                if (res.candidates && res.candidates[0].content) {
-                    const aiText = res.candidates[0].content.parts[0].text;
-                    aiHistory.push({ role: "model", parts: [{ text: aiText }] });
-                    
-                    const aiEl = document.createElement('div');
-                    aiEl.className = 'chat-msg msg-ai';
-                    aiEl.innerText = aiText;
-                    chatHistoryBox.appendChild(aiEl);
+                if (!response.ok) {
+                    if (response.status === 429) throw new Error('RATE_LIMIT');
+                    if (response.status >= 500) throw new Error('SERVER');
+                    throw new Error('BAD_REQUEST');
                 }
+
+                const res = await response.json();
+                const aiText = res && res.candidates && res.candidates[0] && res.candidates[0].content
+                    && res.candidates[0].content.parts && res.candidates[0].content.parts[0]
+                    ? res.candidates[0].content.parts[0].text
+                    : null;
+
+                if (!aiText) throw new Error('EMPTY'); // модель ответила, но без текста — например, сработал safety-фильтр
+
+                aiHistory.push({ role: "model", parts: [{ text: aiText }] });
+                const aiEl = document.createElement('div');
+                aiEl.className = 'chat-msg msg-ai';
+                aiEl.innerText = aiText;
+                chatHistoryBox.appendChild(aiEl);
+
             } catch (err) {
+                aiHistory.pop(); // неудачный запрос не остаётся в истории
+                errorKey = err.name === 'AbortError' ? 'TIMEOUT' : (CHAT_ERROR_MESSAGES[err.message] ? err.message : 'BAD_REQUEST');
+
                 const errEl = document.createElement('div');
                 errEl.className = 'chat-msg msg-ai';
                 errEl.style.color = '#ef4444';
-                errEl.innerText = "⚠️ Ошибка связи с нейросетью.";
+                errEl.innerText = CHAT_ERROR_MESSAGES[errorKey];
                 chatHistoryBox.appendChild(errEl);
-                aiHistory.pop(); // удаляем неудачный запрос
             } finally {
+                clearTimeout(timeoutId);
                 chatTyping.style.display = 'none';
                 chatSendBtn.disabled = false;
+                chatInput.disabled = false;
+                chatInput.focus();
                 chatHistoryBox.scrollTop = chatHistoryBox.scrollHeight;
             }
         }
@@ -655,18 +705,159 @@
             scrollVelocity = 0; 
         });
 
-        const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-        hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
-        hands.onResults(onResults);
+        // ===== ФОЛБЭК БЕЗ КАМЕРЫ/ЖЕСТОВ =====
+        // Каждый шаг инициализации AR может подвести по-своему: доступ к камере
+        // не дали, камеры физически нет, она занята другим приложением, страница
+        // открыта не по https, или сами библиотеки распознавания не загрузились
+        // с CDN. Ни один из этих случаев не должен оставлять человека перед
+        // вечным лоадером без объяснения и без пути вперёд.
+        let noCameraMode = false;
+        let handDetectedOnce = false;
 
-        const cameraFeed = new Camera(videoElement, {
-            onFrame: async () => { await hands.send({image: videoElement}); },
-            width: 1280, height: 720
+        function describeCameraError(err) {
+            switch (err && err.name) {
+                case 'NotAllowedError':
+                case 'PermissionDeniedError':
+                    return 'Доступ к камере запрещён. Разрешите его в настройках браузера (значок камеры в адресной строке) и обновите страницу — либо продолжайте без неё: пазлы и гайды доступны и на мыши/таче.';
+                case 'NotFoundError':
+                case 'DevicesNotFoundError':
+                    return 'На этом устройстве не нашлось камеры. Продолжайте без неё — управление мышью или тачем работает так же.';
+                case 'NotReadableError':
+                case 'TrackStartError':
+                    return 'Камера занята другим приложением (звонок, другая вкладка и т.п.). Закройте его и обновите страницу — либо продолжайте без камеры.';
+                case 'SecurityError':
+                    return 'Камера доступна только по защищённому соединению (https). Откройте страницу по https или продолжайте без камеры.';
+                case 'MediaPipeLoadError':
+                    return 'Не удалось загрузить модуль распознавания жестов (возможно, заблокирована CDN-сеть). Продолжайте без AR-режима — остальной функционал доступен.';
+                case 'NoHandsDetected':
+                    return 'Камера включена, но руки не распознаются — возможно, не хватает освещения или заблокирована загрузка модели. Можно продолжить без AR-режима на мыши/таче.';
+                default:
+                    return 'Не удалось включить AR-режим с распознаванием жестов. Можно продолжить без него — на мыши и таче всё работает.';
+            }
+        }
+
+        function handleCameraFailure(err) {
+            console.error('AR init failed:', err);
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('cameraErrorText').innerText = describeCameraError(err);
+            document.getElementById('cameraErrorModal').classList.add('active');
+        }
+
+        function enablePointerFallback() {
+            noCameraMode = true;
+            document.getElementById('cameraErrorModal').classList.remove('active');
+
+            // Элементы, завязанные на реальную камеру, больше не нужны
+            videoElement.style.display = 'none';
+            canvasElement.style.display = 'none';
+            cursor0.style.display = 'none';
+            cursor1.style.display = 'none';
+            document.getElementById('hudMic').style.display = 'none'; // голосовой ИИ не запущен без камеры
+
+            // Инструкции меняются на мышь/тач-версию, чтобы не врать про щипки
+            const instrBlocks = document.querySelectorAll('.instr-block');
+            if (instrBlocks[0]) instrBlocks[0].innerHTML = '<b>1.</b> Берите осколки, <b>зажав кнопку мыши</b> (или пальцем), и ставьте на сетку.';
+            if (instrBlocks[1]) instrBlocks[1].innerHTML = '<b>2.</b> Прокручивайте <b>колесом мыши</b> или свайпом по фону.';
+            if (instrBlocks[2]) instrBlocks[2].innerHTML = '<b>3.</b> Кнопка <b>✖ в углу</b> — для выхода.';
+
+            document.querySelectorAll('.puzzle-piece').forEach(piece => {
+                piece.addEventListener('pointerdown', onPiecePointerDown);
+            });
+            document.querySelectorAll('.term-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const cur = parseFloat(card.dataset.scale) || 1;
+                    const next = cur > 1.3 ? 1 : 1.8; // клик — простой тоггл увеличения вместо драг-зума
+                    card.style.transform = `scale(${next})`;
+                    card.dataset.scale = next;
+                    card.classList.toggle('hovered', next > 1);
+                });
+            });
+        }
+
+        let pointerDraggedPiece = null, pointerDragOffsetX = 0, pointerDragOffsetY = 0;
+
+        function onPiecePointerDown(e) {
+            const piece = e.currentTarget;
+            if (piece.classList.contains('locked')) return;
+            startTimer();
+            pointerDraggedPiece = piece;
+            const rect = piece.getBoundingClientRect();
+            pointerDragOffsetX = e.clientX - rect.left;
+            pointerDragOffsetY = e.clientY - rect.top;
+            piece.classList.add('dragging');
+            piece.setPointerCapture(e.pointerId);
+            piece.addEventListener('pointermove', onPiecePointerMove);
+            piece.addEventListener('pointerup', onPiecePointerUp);
+            piece.addEventListener('pointercancel', onPiecePointerUp);
+        }
+        function onPiecePointerMove(e) {
+            if (!pointerDraggedPiece) return;
+            const containerRect = puzzleArea.getBoundingClientRect();
+            pointerDraggedPiece.style.left = `${e.clientX - pointerDragOffsetX - containerRect.left}px`;
+            pointerDraggedPiece.style.top = `${e.clientY - pointerDragOffsetY - containerRect.top}px`;
+        }
+        function onPiecePointerUp(e) {
+            if (!pointerDraggedPiece) return;
+            const piece = pointerDraggedPiece;
+            piece.classList.remove('dragging');
+            piece.removeEventListener('pointermove', onPiecePointerMove);
+            piece.removeEventListener('pointerup', onPiecePointerUp);
+            piece.removeEventListener('pointercancel', onPiecePointerUp);
+            checkSnap(piece);
+            pointerDraggedPiece = null;
+        }
+
+        // Скролл фона перетаскиванием — без него на тач-устройстве без камеры
+        // невозможно было бы вообще долистать от пазла до терминов.
+        let bgDragActive = false, bgDragLastY = null;
+        document.addEventListener('pointerdown', (e) => {
+            if (!noCameraMode) return;
+            if (e.target.closest('.puzzle-piece, .term-card, .guides-panel, .hud-top, .open-guides-btn, .modal-overlay')) return;
+            bgDragActive = true; bgDragLastY = e.clientY;
         });
-        cameraFeed.start().then(() => { 
-            document.getElementById('loader').style.display = 'none'; 
-            initVoice(); 
+        document.addEventListener('pointermove', (e) => {
+            if (!bgDragActive) return;
+            const deltaY = e.clientY - bgDragLastY;
+            targetScrollY = Math.max(maxScroll(), Math.min(0, targetScrollY + deltaY));
+            bgDragLastY = e.clientY;
+            scrollVelocity = 0;
         });
+        document.addEventListener('pointerup', () => { bgDragActive = false; bgDragLastY = null; });
+        document.addEventListener('pointercancel', () => { bgDragActive = false; bgDragLastY = null; });
+
+        document.getElementById('continueWithoutCameraBtn').addEventListener('click', enablePointerFallback);
+
+        // ===== ИНИЦИАЛИЗАЦИЯ AR =====
+        try {
+            if (typeof Hands === 'undefined' || typeof Camera === 'undefined') {
+                throw Object.assign(new Error('MediaPipe not loaded'), { name: 'MediaPipeLoadError' });
+            }
+
+            const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+            hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
+            hands.onResults(onResults);
+
+            const cameraFeed = new Camera(videoElement, {
+                onFrame: async () => { await hands.send({image: videoElement}); },
+                width: 1280, height: 720
+            });
+
+            cameraFeed.start().then(() => {
+                document.getElementById('loader').style.display = 'none';
+                initVoice();
+                // Камера включилась, но это не значит, что руки реально распознаются
+                // (модель могла не подгрузиться, свет может быть неподходящим) —
+                // даём 12 секунд, прежде чем предложить фолбэк.
+                setTimeout(() => {
+                    if (!handDetectedOnce && !noCameraMode) {
+                        handleCameraFailure({ name: 'NoHandsDetected' });
+                    }
+                }, 12000);
+            }).catch(handleCameraFailure);
+
+        } catch (err) {
+            handleCameraFailure(err);
+        }
 
         function onResults(results) {
             canvasElement.width = window.innerWidth; canvasElement.height = window.innerHeight;
@@ -676,7 +867,10 @@
             wasPinching0 = isPinching0;
             wasPinching1 = isPinching1;
 
+            if (noCameraMode) { canvasCtx.restore(); return; } // пользователь явно выбрал управление мышью/тачем
+
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                handDetectedOnce = true;
                 for (const landmarks of results.multiHandLandmarks) {
                     drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {color: 'rgba(56, 189, 248, 0.4)', lineWidth: 3});
                     drawLandmarks(canvasCtx, landmarks, {color: '#CA0F3E', lineWidth: 1, radius: 2});
