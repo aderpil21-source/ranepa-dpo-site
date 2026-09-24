@@ -447,6 +447,7 @@ async function fileHash(file){
 }
 
 /* Снимок на 6 МБ превращается в ~250 КБ WebP без видимой потери качества */
+/* Сжатие картинок строго в JPG (ВК не переваривает WebP) */
 async function compressImage(file){
     const skip = ['image/gif','image/svg+xml'];
     if (!file.type.startsWith('image/') || skip.includes(file.type)) return file;
@@ -460,17 +461,20 @@ async function compressImage(file){
     const canvas = document.createElement('canvas');
     canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext('2d');
+    
+    // Обязательно белый фон, чтобы прозрачные PNG не чернели
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(bitmap, 0, 0, w, h);
     if (bitmap.close) bitmap.close();
 
-    let blob = await new Promise(r => canvas.toBlob(r, 'image/webp', CONFIG.storage.imageQuality));
-    // Если браузер не умеет WebP, откатываемся на JPEG
-    if (!blob) blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', CONFIG.storage.imageQuality));
+    // Форсируем сохранение ИСКЛЮЧИТЕЛЬНО в JPEG
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', CONFIG.storage.imageQuality));
     if (!blob || blob.size >= file.size) return file;
 
-    const ext = blob.type === 'image/webp' ? '.webp' : '.jpg';
-    return new File([blob], file.name.replace(/\.[^.]+$/,'') + ext, { type: blob.type });
+    return new File([blob], file.name.replace(/\.[^.]+$/,'') + '.jpg', { type: 'image/jpeg' });
 }
 
 /* ============================================================================
