@@ -1346,6 +1346,13 @@
 </div>
 
   <div class="scroll-nav" id="scrollNav">
+     .scroll-nav {
+    position: fixed; /* Либо absolute, в зависимости от твоей верстки */
+    bottom: 20px;    /* Отступ снизу (подгони под свой дизайн) */
+    left: 20px;      /* Прижимаем к левому краю */
+    right: auto;     /* Сбрасываем правый отступ, чтобы блок не растягивался */
+    z-index: 1000;   /* Чтобы стрелки были поверх остальных элементов, если перекрываются */
+}
     <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
         <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
     </button>
