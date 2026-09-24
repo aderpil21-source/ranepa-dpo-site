@@ -2559,23 +2559,16 @@ if (newsOverlay) {
     if (lbNav) lbNav.style.display = 'none';
     document.getElementById('mediaLightbox').classList.add('active');
 }
-function injectCourseSchema(programName, programDesc) {
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Course",
-        "name": programName,
-        "description": programDesc || "Программа профессиональной переподготовки или повышения квалификации.",
-        "provider": {
-            "@type": "CollegeOrUniversity",
-            "name": "Западный филиал РАНХиГС",
-            "url": "https://ranepa-dpo39.ru/"
-        },
-        "educationalCredentialAwarded": "Документ установленного образца с внесением в ФИС ФРДО"
-    });
-    document.head.appendChild(script);
+
+function closeLightbox() {
+    document.getElementById('mediaLightbox').classList.remove('active');
 }
+
+document.getElementById('mediaLightbox').addEventListener('click', function(e) {
+    if (e.target.id === 'mediaLightbox') {
+        closeLightbox();
+    }
+});
     window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -2588,7 +2581,6 @@ function injectCourseSchema(programName, programDesc) {
         checkCookieConsent();
         toggleEnrollButtons();
     });
-       // Добавь этот кусочек в секцию <script> твоего index.html
 window.addEventListener('DOMContentLoaded', () => {
     // Проверяем, есть ли в ссылке якорь новости (например, #news=123)
     const hash = window.location.hash;
