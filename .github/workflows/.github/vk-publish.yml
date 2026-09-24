@@ -65,7 +65,6 @@ jobs:
           VK_OWNER_ID: ${{ secrets.VK_OWNER_ID }}
           VK_API_VERSION: "5.199"
 
-          NEWS_API_URL: ${{ secrets.NEWS_API_URL }}
 
         run: |
           python vk_poster.py
