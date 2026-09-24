@@ -1345,14 +1345,14 @@
     </a>
 </div>
 
-   <div class="scroll-nav" id="scrollNav">
-        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
-            <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
-        </button>
-        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
-            <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
-        </button>
-    </div>
+  <div class="scroll-nav" id="scrollNav">
+    <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
+        <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
+    </button>
+    <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
+        <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
+    </button>
+</div>
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const fakeFieldName = 'hp_' + Math.random().toString(36).substring(2, 8);
