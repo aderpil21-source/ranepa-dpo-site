@@ -2164,81 +2164,24 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         addUserMsg(text);
         input.value = '';
 
-        // --- СЕКРЕТНЫЙ ВХОД В АДМИНКУ ---
+        // --- СЕКРЕТНЫЙ ВХОД ДЛЯ ПРЕПОДАВАТЕЛЕЙ ---
         if (text.toLowerCase().includes('служебный вход')) {
             setTimeout(() => {
                 const portalUrl = API_URL + "?page=upload";
                 addBotMsg(currentLang === 'ru'
-                    ? "🔒 <b>Служебный портал.</b> Для работы с программами перейдите по ссылке ниже. Вам потребуется ввести ПИН-код сотрудника."
+                    ? "🔒 <b>Служебный портал.</b> Для загрузки учебных планов перейдите по ссылке ниже. Вам потребуется ввести ПИН-код сотрудника."
                     : "🔒 <b>Staff Portal.</b> Click the link below to access the curriculum upload portal. A staff PIN code will be required.");
                 setOptions(`
                     <button class="chat-opt-btn" onclick="window.open('${portalUrl}', '_blank')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; font-size: 1rem; border: none; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);">
-                        📂 Открыть портал загрузки программ
+                        📂 Открыть портал загрузки
                     </button>
                     <button class="chat-opt-btn" onclick="resetMenu()">⬅️ Вернуться в меню</button>
                 `);
             }, 400);
             return;
         }
-
-        if (text.toLowerCase() === 'сова, опубликовать новость') {
-            setTimeout(() => {
-                addBotMsg("🦉 <b>Режим редактора.</b> Введите пароль для доступа к публикации новостей:");
-                
-                // Временно переопределяем действие кнопки отправки и клавиши Enter
-                const inputField = document.getElementById('chatUserInput');
-                const btn = document.querySelector('.chat-send-btn');
-                
-                const oldOnkeydown = inputField.onkeydown;
-                const oldOnclick = btn.onclick;
-                
-                inputField.type = 'password';
-                inputField.placeholder = "Введите пароль...";
-                
-                const checkPass = () => {
-                    const pass = inputField.value.trim();
-                    inputField.value = '';
-                    inputField.type = 'text';
-                    inputField.placeholder = "Введите код лекции, название программы или вопрос...";
-                    inputField.onkeydown = oldOnkeydown;
-                    btn.onclick = oldOnclick;
-                    
-                    if (!pass) {
-                        addBotMsg("Отмена входа.");
-                        resetMenu();
-                        return;
-                    }
-                    
-                    addUserMsg("******");
-                    
-                    // Делаем запрос к API для проверки пароля и получения токена
-                    fetch(API_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'newsLogin', password: pass })
-                    }).then(res => res.json()).then(data => {
-                        if (data.ok) {
-                            sessionStorage.setItem('newsAdminToken', data.token);
-                            addBotMsg("✅ Пароль принят. Перенаправляю в панель управления новостями...");
-                            setTimeout(() => {
-                                window.location.href = 'news.html';
-                            }, 1500);
-                        } else {
-                            addBotMsg("❌ Неверный пароль. Доступ запрещен.");
-                            setTimeout(resetMenu, 1000);
-                        }
-                    }).catch(e => {
-                        addBotMsg("❌ Ошибка связи с сервером.");
-                        setTimeout(resetMenu, 1000);
-                    });
-                };
-                
-                inputField.onkeydown = (e) => { if (e.key === 'Enter') checkPass(); };
-                btn.onclick = checkPass;
-                
-            }, 400);
-            return;
-        }
         // --- КОНЕЦ СЕКРЕТНОГО ВХОДА ---
+
         const cleanCode = text.toUpperCase();
         const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
 
