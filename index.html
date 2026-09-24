@@ -525,7 +525,7 @@
         }
         .owl-ticker-shout.show { opacity: 1; }
 
-        .scroll-nav { position: fixed !important; left: 22px !important; right: auto !important; bottom: 24px !important; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
+        .scroll-nav { position: fixed; left: 22px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
         .scroll-nav-btn {
             width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-glass);
             background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -999,7 +999,7 @@
                 </div> <div style="flex: 1; visibility: hidden;"></div>
             </div>
 
-          <div class="main-contact-box" style="margin-top: 40px; margin-bottom: 15px;">
+           <div class="main-contact-box" style="margin-bottom: 15px;">
     <h3 data-i18n="addressLabel">Адрес:</h3>
     <p><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" style="text-decoration: underline;" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
 </div>
@@ -1033,7 +1033,7 @@
     <div class="modal-overlay" id="quickContactsModal">
         <div class="modal-box chrome-glass" style="text-align: left; max-width: 560px;">
             <h3 data-i18n="qcTitle">Быстрый контакт</h3>
-            <p style="margin-bottom: 28px;"><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
+            <p style="margin-bottom: 18px;"><b style="color: var(--ranepa-red);" data-i18n="telLabel">Телефоны:</b> <a href="tel:+74012972379" class="contact-link">+7 (4012) 97-23-79</a></p>
             <p style="margin-bottom: 18px;"><b style="color: var(--ranepa-red);">E-mail:</b> <a href="mailto:cdo-zf@ranepa.ru" class="contact-link">cdo-zf@ranepa.ru</a></p>
             <p style="margin-bottom: 28px;"><b style="color: var(--ranepa-red);" data-i18n="addressLabel">Адрес:</b> <span data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</span></p>
             <div class="modal-btn modal-btn-trudvsem" style="background: linear-gradient(135deg, var(--ranepa-red), #e11d48);" onclick="closeQuickContacts(); document.getElementById('contactsSection').scrollIntoView({behavior:'smooth'});" data-i18n="qcAll">Все контакты и сотрудники</div>
@@ -1327,39 +1327,34 @@
         </div>
 
         <div class="chat-options" id="chatOptions">
-    <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
-    <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
+            <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
+            <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
 
-    <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
-        📰 Новости центра
-    </button>
-    
-    <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-        📅 <span data-i18n="schBtnText">Расписание занятий</span>
-    </button>
+            <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
+                📰 ${currentLang === 'ru' ? 'Новости центра' : 'Center news'}
+            </button>
+            
+            <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
+                📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
+            </button>
 
-    <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
-    
-    <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
-        🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
-    </a>
-</div>
+            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+            
+            <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
+            <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+                🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
+            </a>
+        </div>
+    </div>
 
-  <div class="scroll-nav" id="scrollNav">
-     .scroll-nav {
-    position: fixed; /* Либо absolute, в зависимости от твоей верстки */
-    bottom: 20px;    /* Отступ снизу (подгони под свой дизайн) */
-    left: 20px;      /* Прижимаем к левому краю */
-    right: auto;     /* Сбрасываем правый отступ, чтобы блок не растягивался */
-    z-index: 1000;   /* Чтобы стрелки были поверх остальных элементов, если перекрываются */
-}
-    <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
-        <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
-    </button>
-    <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
-        <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
-    </button>
-</div>
+    <div class="scroll-nav" id="scrollNav">
+        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
+            <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
+        </button>
+        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
+            <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
+        </button>
+    </div>
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const fakeFieldName = 'hp_' + Math.random().toString(36).substring(2, 8);
@@ -2545,5 +2540,20 @@ function injectCourseSchema(programName, programDesc) {
         checkCookieConsent();
         toggleEnrollButtons();
     });
-      
+       // Добавь этот кусочек в секцию <script> твоего index.html
+window.addEventListener('DOMContentLoaded', () => {
+    // Проверяем, есть ли в ссылке якорь новости (например, #news=123)
+    const hash = window.location.hash;
+    if (hash.startsWith('#news=')) {
+        const newsId = hash.replace('#news=', '');
+        // Ждем секунду пока подгружаются новости из API, затем открываем нужную
+        const checkNewsLoaded = setInterval(() => {
+            if (newsItems && newsItems.length > 0) {
+                clearInterval(checkNewsLoaded);
+                openNews(); // Открываем оверлей новостей
+                openNewsDetail(newsId); // Открываем конкретную новость по ID
+            }
+        }, 200);
+    }
+});
 </script></html>
