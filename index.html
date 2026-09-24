@@ -627,13 +627,72 @@
         .sch-bottom span { display: flex; align-items: center; gap: 6px; }
 
 
-        #mediaLightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 30000; display: none; align-items: center; justify-content: center; padding: 30px; }
-        #mediaLightbox.active { display: flex; }
-        #lightboxContent img, #lightboxContent video { max-width: 90vw; max-height: 85vh; border-radius: 10px; display: block; margin: 0 auto; }
-        .lightbox-close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 2rem; cursor: pointer; background: none; border: none; line-height: 1; }
-        #lightboxNav { position: absolute; top: 50%; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 20px; transform: translateY(-50%); pointer-events: none; }
-        #lightboxNav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; pointer-events: auto; }
-
+       #mediaLightbox { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.92); 
+            z-index: 30000; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 30px; 
+        }
+        #mediaLightbox.active { 
+            display: flex; 
+        }
+        #lightboxContent img, #lightboxContent video { 
+            max-width: 90vw; 
+            max-height: 85vh; 
+            border-radius: 10px; 
+            display: block; 
+            margin: 0 auto; 
+            object-fit: contain; 
+        }
+        .lightbox-close { 
+            position: absolute; 
+            top: 25px; 
+            right: 35px; 
+            color: #fff; 
+            font-size: 2.2rem; 
+            cursor: pointer; 
+            background: rgba(255,255,255,0.15); 
+            border: 1px solid rgba(255,255,255,0.3); 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 30005; 
+            transition: background 0.2s; 
+            line-height: 1; 
+        }
+        .lightbox-close:hover { 
+            background: var(--ranepa-red); 
+            border-color: var(--ranepa-red); 
+        }
+        #lightboxNav { 
+            position: absolute; 
+            top: 50%; 
+            left: 0; 
+            right: 0; 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 0 20px; 
+            transform: translateY(-50%); 
+            pointer-events: none; 
+        }
+        #lightboxNav button { 
+            background: rgba(255,255,255,0.1); 
+            border: 1px solid rgba(255,255,255,0.3); 
+            color: #fff; 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%; 
+            font-size: 1.4rem; 
+            cursor: pointer; 
+            pointer-events: auto; 
+        }
         @media (max-width: 768px) {
             .news-grid { grid-template-columns: 1fr; }
             .news-admin-bar-top { flex-direction: column; align-items: stretch; }
