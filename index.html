@@ -1327,25 +1327,23 @@
         </div>
 
         <div class="chat-options" id="chatOptions">
-            <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
-            <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
+    <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
+    <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
 
-            <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
-                📰 ${currentLang === 'ru' ? 'Новости центра' : 'Center news'}
-            </button>
-            
-            <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-                📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
-            </button>
+    <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
+        📰 Новости центра
+    </button>
+    
+    <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
+        📅 <span data-i18n="schBtnText">Расписание занятий</span>
+    </button>
 
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
-            
-            <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
-            <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
-                🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
-            </a>
-        </div>
-    </div>
+    <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
+    
+    <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+        🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
+    </a>
+</div>
 
     <div class="scroll-nav" id="scrollNav">
         <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
@@ -2540,20 +2538,5 @@ function injectCourseSchema(programName, programDesc) {
         checkCookieConsent();
         toggleEnrollButtons();
     });
-       // Добавь этот кусочек в секцию <script> твоего index.html
-window.addEventListener('DOMContentLoaded', () => {
-    // Проверяем, есть ли в ссылке якорь новости (например, #news=123)
-    const hash = window.location.hash;
-    if (hash.startsWith('#news=')) {
-        const newsId = hash.replace('#news=', '');
-        // Ждем секунду пока подгружаются новости из API, затем открываем нужную
-        const checkNewsLoaded = setInterval(() => {
-            if (newsItems && newsItems.length > 0) {
-                clearInterval(checkNewsLoaded);
-                openNews(); // Открываем оверлей новостей
-                openNewsDetail(newsId); // Открываем конкретную новость по ID
-            }
-        }, 200);
-    }
-});
+      
 </script></html>
