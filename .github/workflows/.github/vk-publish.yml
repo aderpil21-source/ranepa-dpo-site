@@ -4,13 +4,10 @@ on:
   workflow_dispatch:
 
   schedule:
-    # Каждые 5 минут.
-    # GitHub использует UTC.
+    # Проверять сайт каждые 5 минут
     - cron: "*/5 * * * *"
 
   push:
-    branches:
-      - main
     paths:
       - "vk_poster.py"
       - ".github/workflows/vk-publish.yml"
@@ -19,51 +16,81 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: vk-news-publisher
-  cancel-in-progress: false
-
 jobs:
-  publish:
-    name: Publish new news to VK
-    runs-on: self-hosted
+  publish-to-vk:
+
+    runs-on: ubuntu-latest
 
     steps:
+
+      # ------------------------------------------------------
+      # Получаем репозиторий
+      # ------------------------------------------------------
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Python
+      # ------------------------------------------------------
+      # Python
+      # ------------------------------------------------------
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
+
+      # ------------------------------------------------------
+      # Зависимости
+      # ------------------------------------------------------
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests Pillow python-dotenv
 
-      - name: Run VK publisher
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            pip install requests
+          fi
+
+      # ------------------------------------------------------
+      # Публикация
+      # ------------------------------------------------------
+
+      - name: Publish news to VK
         env:
           VK_TOKEN: ${{ secrets.VK_TOKEN }}
           VK_OWNER_ID: ${{ secrets.VK_OWNER_ID }}
           VK_API_VERSION: "5.199"
+
+          NEWS_API_URL: ${{ secrets.NEWS_API_URL }}
+
         run: |
           python vk_poster.py
 
-      - name: Save publication state
-        if: success()
+      # ------------------------------------------------------
+      # Сохраняем состояние опубликованных новостей
+      # ------------------------------------------------------
+
+      - name: Save VK publication state
+        if: always()
         run: |
-          if git diff --quiet -- vk_published.json; then
-            echo "Publication state did not change."
-            exit 0
+          if [ -f vk_published.json ]; then
+
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git add vk_published.json
+
+            if ! git diff --cached --quiet; then
+              git commit -m "chore: update VK publication state"
+              git push
+            else
+              echo "Изменений в vk_published.json нет."
+            fi
+
+          else
+            echo "vk_published.json ещё не создан."
           fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add vk_published.json
-          git commit -m "chore: update VK publication state"
-          git push
