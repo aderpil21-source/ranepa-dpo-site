@@ -11,9 +11,10 @@ import requests
 # CONFIG
 # ============================================================
 
-NEWS_API_URL = os.getenv(
-    "NEWS_API_URL",
-    "https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec"
+NEWS_API_URL = (
+    "https://script.google.com/macros/s/"
+    "AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk"
+    "/exec"
 )
 
 VK_TOKEN = os.getenv("VK_TOKEN")
