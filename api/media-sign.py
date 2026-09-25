@@ -73,7 +73,6 @@ def editor_token_is_valid(token):
         return None
 
 
-@app.route("/", methods=["POST", "OPTIONS"])
 @app.route("/api/media-sign", methods=["POST", "OPTIONS"])
 def media_sign():
     if request.method == "OPTIONS":
