@@ -1540,18 +1540,18 @@
             <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
 
             <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
-                📰 ${currentLang === 'ru' ? 'Новости центра' : 'Center news'}
+                📰 Новости центра
             </button>
             
             <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
-                📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
+                📅 <span data-i18n="schBtnText">Расписание занятий</span>
             </button>
 
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();" data-i18n="owlOpt3">📞 Открыть контакты руководства</button>
             
             <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
             <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
-                🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
+                🔮 <span data-i18n="aiLabText">AR-Лаборатория: Практика ИИ</span>
             </a>
         </div>
     </div>
