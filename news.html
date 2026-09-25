@@ -322,6 +322,7 @@ const CONFIG = {
    БЛОК 2. СОСТОЯНИЕ
    ============================================================================ */
 let newsItems = [], adminToken = sessionStorage.getItem('newsAdminToken') || null;
+let vkState = { version:2, items:{} };
 let visitorPreview = false;
 let activeTagFilter = null, editingNewsId = null;
 let articleMedia = [], lightboxIndex = 0;
@@ -819,7 +820,12 @@ async function fetchNews(){
         newsItems = data.items || [];
         cacheNews(newsItems);
         renderGrid();
-        if (adminToken){ $('newsAdminBar').style.display = 'flex'; renderAdminList(); renderPendingNote(); }
+        if (adminToken){
+            $('newsAdminBar').style.display = 'flex';
+            await fetchVkState();
+            renderAdminList();
+            renderPendingNote();
+        }
         const hash = location.hash.replace('#','').replace('news=','');
         if (hash && newsItems.find(n => n.id === hash)) openDetail(hash);
     } catch(e){
@@ -990,10 +996,43 @@ async function submitLogin(){
     } catch(e){ err.textContent = e.message; err.style.display = 'block'; }
 }
 
+async function fetchVkState(){
+    try {
+        const res = await fetch('/vk_published.json?ts=' + Date.now(), { cache:'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (Array.isArray(data)){
+            const items = {};
+            data.forEach(id => { items[String(id)] = { status:'published' }; });
+            vkState = { version:1, items };
+        } else {
+            vkState = { version:data.version || 2, items:data.items || {} };
+        }
+    } catch(e){
+        vkState = { version:2, items:{} };
+    }
+}
+
+function vkStatusHtml(news){
+    if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — не отправляется</span>';
+    const item = (vkState.items || {})[String(news.id)] || null;
+    if (!item) return '<span style="color:var(--warn);">VK ⏳ ожидает</span>';
+    if (item.status === 'published'){
+        const media = item.media_status === 'failed' ? ' · фото ⚠' : '';
+        return '<span style="color:var(--ok);">VK ✓ опубликовано' + media + '</span>';
+    }
+    if (item.status === 'publishing') return '<span style="color:var(--warn);">VK ⏳ отправляется</span>';
+    if (item.status === 'error') return '<span style="color:#fb7185;">VK ⚠ ошибка</span>';
+    return '<span style="color:var(--warn);">VK ⏳ ожидает</span>';
+}
+
 function renderAdminList(){
     $('newsAdminList').innerHTML = newsItems.map(n => `
         <div class="news-admin-row">
-            <div style="font-weight:700;">${n.status === 'published' ? 'Опубликовано' : 'Скрыто'} — ${escapeHtml(n.title)}</div>
+            <div style="min-width:0; flex:1;">
+                <div style="font-weight:700;">${n.status === 'published' ? 'Опубликовано' : 'Скрыто'} — ${escapeHtml(n.title)}</div>
+                <div style="font-size:.78rem; margin-top:5px;">${vkStatusHtml(n)}</div>
+            </div>
             <div style="display:flex; gap:8px;">
                 <button class="chat-opt-btn" data-editid="${escapeHtml(n.id)}">Редактировать</button>
                 <button class="chat-opt-btn" style="background:var(--ranepa-burgundy);" data-deleteid="${escapeHtml(n.id)}">Удалить</button>
