@@ -1605,8 +1605,16 @@
                     if (!response.ok) throw new Error('API HTTP ' + response.status);
                     return response.json();
                 })
+                .catch(async error => {
+                    console.warn('Основной API недоступен, используем резервный снимок данных:', error);
+                    const fallbackResponse = await fetch('./portal-data.json', { cache: 'no-store' });
+                    if (!fallbackResponse.ok) {
+                        portalDataPromise = null;
+                        throw new Error('Fallback HTTP ' + fallbackResponse.status);
+                    }
+                    return fallbackResponse.json();
+                })
                 .catch(error => {
-                    // После ошибки разрешаем следующему открытию расписания повторить запрос.
                     portalDataPromise = null;
                     throw error;
                 });
