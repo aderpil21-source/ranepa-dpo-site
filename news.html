@@ -303,7 +303,7 @@ const CONFIG = {
             { id:'reserve', label:'Резервное хранилище',   signUrl:'', enabled:false }
         ],
         // Тот же секрет, что в переменной ADMIN_TOKEN функции-подписанта.
-        uploadToken: 'ak-news-9f3k2m8x7q1w',
+        uploadToken: '',
 
         maxFiles: 10,
         concurrency: 3,
@@ -808,7 +808,7 @@ function saveDraft(){
 const loadDraft = () => { try { return JSON.parse(localStorage.getItem(draftKey()) || 'null'); } catch(e){ return null; } };
 const clearDraft = () => { try { localStorage.removeItem(draftKey()); } catch(e){} };
 
-const cacheNews = items => { try { localStorage.setItem(CONFIG.cache.key, JSON.stringify({ at:Date.now(), items })); } catch(e){} };
+const cacheNews = items => { try { const publicItems = (items || []).filter(n => n.status === 'published'); localStorage.setItem(CONFIG.cache.key, JSON.stringify({ at:Date.now(), items:publicItems })); } catch(e){} };
 function readCachedNews(){
     try {
         const c = JSON.parse(localStorage.getItem(CONFIG.cache.key) || 'null');
@@ -861,7 +861,7 @@ function renderGrid(){
     $('newsTagsBar').dataset.tags = JSON.stringify(allTags);
 
     let items = newsItems;
-    if (!adminToken) items = items.filter(n => n.status === 'published');
+    if (!adminToken || visitorPreview) items = items.filter(n => n.status === 'published');
     if (activeTagFilter) items = items.filter(n => (n.tags || []).includes(activeTagFilter));
 
     if (!items.length){
@@ -957,6 +957,41 @@ function renderLightbox(){
 /* ============================================================================
    БЛОК 12. АДМИНКА И РЕДАКТОР
    ============================================================================ */
+function setVisitorPreview(enabled){
+    if (!adminToken) enabled = false;
+    visitorPreview = !!enabled;
+
+    const bar = $('newsAdminBar');
+    let returnBtn = document.getElementById('editorReturnBtn');
+
+    if (visitorPreview) {
+        if (bar) bar.style.display = 'none';
+        if (!returnBtn) {
+            returnBtn = document.createElement('button');
+            returnBtn.id = 'editorReturnBtn';
+            returnBtn.type = 'button';
+            returnBtn.textContent = '← Вернуться в редактор';
+            returnBtn.className = 'chat-opt-btn';
+            returnBtn.style.cssText = 'position:fixed;right:20px;bottom:20px;z-index:19000;background:#29345B;color:#fff;border:1px solid rgba(255,255,255,.25);box-shadow:0 12px 35px rgba(0,0,0,.35);';
+            returnBtn.onclick = () => {
+                if (!adminToken) {
+                    returnBtn.remove();
+                    visitorPreview = false;
+                    $('newsAdminLoginModal').classList.add('active');
+                    return;
+                }
+                setVisitorPreview(false);
+            };
+            document.body.appendChild(returnBtn);
+        }
+    } else {
+        if (returnBtn) returnBtn.remove();
+        if (bar && adminToken) bar.style.display = 'flex';
+    }
+
+    renderGrid();
+}
+
 async function submitLogin(){
     const err = $('newsAdminLoginError');
     err.style.display = 'none';
