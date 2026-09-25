@@ -21,7 +21,7 @@ ALLOWED_ORIGINS = {
     origin.strip()
     for origin in os.getenv(
         "MEDIA_ALLOWED_ORIGINS",
-        "https://ranepa-dpo39.ru,https://www.ranepa-dpo39.ru",
+        "https://ranepa-dpo39.ru,https://www.ranepa-dpo39.ru,https://ranepa-dpo-site.vercel.app",
     ).split(",")
     if origin.strip()
 }
