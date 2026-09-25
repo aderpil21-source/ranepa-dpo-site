@@ -1475,9 +1475,7 @@ async function saveNews(){
     btn.textContent = 'Сохраняем';
 
     try {
-        const data = await requestJson(CONFIG.api, {
-            method:'POST',
-            body: JSON.stringify({ action:'newsSave', token:adminToken, item })
+        const data = await requestJson(CONFIG.editorApi, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'newsSave', token:adminToken, item })
         });
 
         if (!data.ok){
