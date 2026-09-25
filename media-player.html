@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Фоновый плеер | Центр ДПО</title>
+<style>
+:root{--bg:#05080e;--panel:#111827;--text:#f8fafc;--muted:#94a3b8;--red:#ca0f3e;--border:rgba(255,255,255,.12)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:Segoe UI,Arial,sans-serif}
+body{display:flex;flex-direction:column;overflow:hidden}
+.bar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(5,8,14,.96);border-bottom:1px solid var(--border)}
+.title{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+button{background:rgba(255,255,255,.08);border:1px solid var(--border);color:#fff;border-radius:8px;padding:7px 9px;cursor:pointer;font-weight:700}
+button:hover{background:var(--red);border-color:var(--red)}
+.player{position:relative;flex:1;min-height:0;background:#000}
+.player iframe,.player video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.msg{padding:16px;color:var(--muted);font-size:14px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="title" id="title">Фоновый плеер</div>
+  <button id="smallBtn" type="button">Компактно</button>
+  <button id="largeBtn" type="button">Крупнее</button>
+  <button id="closeBtn" type="button">Закрыть</button>
+</div>
+<div class="player" id="player"><div class="msg">Загружаем видео…</div></div>
+<script>
+(function(){
+  const qs=new URLSearchParams(location.search);
+  const src=qs.get('src')||'';
+  const kind=qs.get('type')||'embed';
+  const title=qs.get('title')||'Фоновый плеер';
+  document.getElementById('title').textContent=title;
+
+  function safeMediaUrl(value){
+    try{
+      const u=new URL(value,location.origin);
+      if(u.protocol!=='https:' && u.protocol!=='http:') return '';
+      return u.href;
+    }catch(e){ return ''; }
+  }
+
+  const safe=safeMediaUrl(src);
+  const box=document.getElementById('player');
+  if(!safe){
+    box.innerHTML='<div class="msg">Не удалось открыть видео. Вернитесь к новости и запустите фоновый режим ещё раз.</div>';
+    return;
+  }
+
+  if(kind==='video'){
+    const v=document.createElement('video');
+    v.src=safe;
+    v.controls=true;
+    v.autoplay=true;
+    v.playsInline=true;
+    box.replaceChildren(v);
+  }else{
+    const f=document.createElement('iframe');
+    f.src=safe;
+    f.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+    f.allowFullscreen=true;
+    f.referrerPolicy='strict-origin-when-cross-origin';
+    box.replaceChildren(f);
+  }
+
+  document.getElementById('smallBtn').onclick=()=>{ try{ window.resizeTo(430,330); }catch(e){} };
+  document.getElementById('largeBtn').onclick=()=>{ try{ window.resizeTo(760,520); }catch(e){} };
+  document.getElementById('closeBtn').onclick=()=>window.close();
+})();
+</script>
+</body>
+</html>
