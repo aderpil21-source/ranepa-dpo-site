@@ -287,8 +287,8 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
         <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:20px; cursor:pointer;">
             <input type="checkbox" id="newsEditorPublishToVk" style="width:18px; height:18px; margin-top:2px;">
             <span>
-                <b>Открыть ВКонтакте после сохранения</b><br>
-                <small style="color:var(--text-muted);">Если выключено, новость сохраняется только на сайте. Автопубликации в VK нет.</small>
+                <b>Опубликовать во ВКонтакте</b><br>
+                <small style="color:var(--text-muted);">Если выключено, новость останется только на сайте.</small>
             </span>
         </label>
 
@@ -356,11 +356,8 @@ const BLOCK_LABELS = { text:'Абзац', insert:'Врезка', image:'Фото
 const VK_META_TYPE = '__system_vk';
 
 function newsWantsVk(news){
-    if (!news) return false;
-    if (news.publishToVk === true || news.publishToVk === 'true') return true;
-    const blocks = Array.isArray(news.blocks) ? news.blocks : [];
-    if (blocks.some(b => b && b.type === VK_META_TYPE && b.publishToVk === true)) return true;
-    return rememberedVkChoice(news.id);
+    const blocks = Array.isArray(news && news.blocks) ? news.blocks : [];
+    return blocks.some(b => b && b.type === VK_META_TYPE && b.publishToVk === true);
 }
 function editorBlocksOnly(blocks){
     return (Array.isArray(blocks) ? blocks : []).filter(b => !(b && b.type === VK_META_TYPE));
@@ -369,37 +366,6 @@ function blocksWithVkPreference(blocks, enabled){
     const clean = editorBlocksOnly(blocks).map(b => ({ ...b }));
     if (enabled) clean.push({ type:VK_META_TYPE, publishToVk:true, hidden:true });
     return clean;
-}
-
-const VK_GROUP_URL = 'https://vk.ru/ranepa_dpo39';
-const VK_GROUP_OWNER_ID = '-241627750';
-
-function vkPostUrl(postId){
-    return postId ? `https://vk.com/wall${VK_GROUP_OWNER_ID}_${postId}` : VK_GROUP_URL;
-}
-
-function openVkWindowForManualPhoto(){
-    // Открываем сразу нужную группу по клику, чтобы пользователь не видел пустую about:blank.
-    return window.open(VK_GROUP_URL, 'ranepaVkManualPhoto');
-}
-
-function rememberVkChoice(id, enabled){
-    if (!id) return;
-    try {
-        const key = 'ak-vk-choice';
-        const data = JSON.parse(localStorage.getItem(key) || '{}');
-        if (enabled) data[String(id)] = true;
-        else delete data[String(id)];
-        localStorage.setItem(key, JSON.stringify(data));
-    } catch(e){}
-}
-
-function rememberedVkChoice(id){
-    if (!id) return false;
-    try {
-        const data = JSON.parse(localStorage.getItem('ak-vk-choice') || '{}');
-        return data[String(id)] === true;
-    } catch(e){ return false; }
 }
 
 const $ = id => document.getElementById(id);
@@ -1184,10 +1150,28 @@ async function fetchVkState(){
 }
 
 function vkStatusHtml(news){
+    const live = news && news.vk && news.vk.status && news.vk.status !== 'missing'
+        ? news.vk
+        : null;
+    const legacy = (vkState.items || {})[String(news && news.id)] || null;
+    const item = live || legacy;
+
+    if (item && item.status === 'published'){
+        const mediaStatus = item.mediaStatus || item.media_status || '';
+        const media = mediaStatus === 'failed' ? ' · фото ⚠' : '';
+        return '<span style="color:var(--ok);">VK ✓ опубликовано' + media + '</span>';
+    }
+
     const wantsVk = newsWantsVk(news);
     if (!wantsVk) return '<span style="color:var(--text-muted);">VK — не выбрано</span>';
-    if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — откроется после публикации на сайте</span>';
-    return '<span style="color:var(--warn);">VK — вручную: откройте группу и добавьте фото</span>';
+    if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — после публикации на сайте</span>';
+
+    if (!item || item.status === 'not_requested') {
+        return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
+    }
+    if (item.status === 'publishing') return '<span style="color:var(--warn);">VK ⏳ отправляется</span>';
+    if (item.status === 'error') return '<span style="color:#fb7185;">VK ⚠ ошибка</span>';
+    return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
 }
 
 function renderAdminList(){
@@ -1227,8 +1211,7 @@ function openEditor(id){
         $('newsEditorLead').value = draft.lead || '';
         $('newsEditorCover').value = draft.coverImage || '';
         $('newsEditorPublished').checked = !!draft.published;
-        // VK is an explicit one-time action: never restore it from an autosaved draft.
-        $('newsEditorPublishToVk').checked = false;
+        $('newsEditorPublishToVk').checked = !!draft.publishToVk;
         editorTags = draft.tags || [];
         editorBlocks = editorBlocksOnly(draft.blocks || []);
     }
@@ -1320,71 +1303,35 @@ function moveBlock(idx, dir){
 
 async function saveNews(){
     const btn = $('saveNewsBtn');
-    const wantsVkNow = $('newsEditorPublished').checked && $('newsEditorPublishToVk').checked;
-
     const item = {
         id: editingNewsId,
         title: $('newsEditorTitle').value.trim(),
         lead: $('newsEditorLead').value.trim(),
         coverImage: $('newsEditorCover').value.trim(),
-        tags: editorTags,
-        blocks: blocksWithVkPreference(editorBlocks, wantsVkNow),
-        publishToVk: wantsVkNow,
+        tags: editorTags, blocks: editorBlocks,
         status: $('newsEditorPublished').checked ? 'published' : 'hidden'
     };
-
-    if (!item.title){
-        toast('Впишите заголовок новости', 'error');
-        return;
-    }
+    if (!item.title){ toast('Впишите заголовок новости', 'error'); return; }
     if (uploadJobs.some(j => ['uploading','retrying','compressing','checking'].includes(j.status))){
-        toast('Дождитесь окончания загрузки файлов', 'warn');
-        return;
+        toast('Дождитесь окончания загрузки файлов', 'warn'); return;
     }
-
     const stuck = uploadJobs.filter(j => j.status === 'offline').length;
     if (stuck && !confirm(`${stuck} файл(ов) ещё не уехали в хранилище и догрузятся позже. Сохранить новость сейчас?`)) return;
 
-    // Открываем VK только если галочка включена.
-    // Никаких wall.post / newsRetryVk сайт больше не вызывает.
-    const vkWindow = wantsVkNow ? window.open(VK_GROUP_URL, 'ranepaVkManualPhoto') : null;
-
-    btn.disabled = true;
-    btn.textContent = 'Сохраняем';
-
+    btn.disabled = true; btn.textContent = 'Сохраняем';
     try {
-        const data = await requestJson(CONFIG.api, {
-            method:'POST',
-            body: JSON.stringify({ action:'newsSave', token:adminToken, item })
-        });
-
-        if (!data.ok){
-            if (vkWindow && !vkWindow.closed) vkWindow.close();
-            toast(data.error || 'Сохранить не удалось. Возможно, истекла сессия — войдите заново.', 'error', data.code);
-            return;
-        }
-
-        rememberVkChoice(data.id, wantsVkNow);
-
-        clearDraft();
-        $('newsEditorModal').classList.remove('active');
-
-        if (wantsVkNow){
-            toast('Новость сохранена. Группа VK открыта — добавьте пост и фото вручную.', 'ok');
-        } else {
-            toast('Новость сохранена только на сайте', 'ok');
-        }
-
-        fetchNews();
-
+        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsSave', token: adminToken, item }) });
+        if (data.ok){
+            clearDraft();
+            $('newsEditorModal').classList.remove('active');
+            toast('Новость сохранена', 'ok');
+            fetchNews();
+        } else toast(data.error || 'Сохранить не удалось. Возможно, истекла сессия — войдите заново.', 'error', data.code);
     } catch(e){
-        if (vkWindow && !vkWindow.closed) vkWindow.close();
         saveDraft();
         toast('Сервер не принял новость: ' + e.message + ' Черновик сохранён в браузере, попробуйте ещё раз.', 'error');
-    } finally {
-        btn.disabled = false;
-        btn.textContent = 'Сохранить новость';
     }
+    btn.disabled = false; btn.textContent = 'Сохранить новость';
 }
 
 async function deleteNews(id){
