@@ -573,7 +573,9 @@
 
         /* ===== СТИЛИ ДЛЯ РАСПИСАНИЯ (ТАЙМЛАЙН) ===== */
         .schedule-overlay {
-            position: fixed; inset: var(--header-h) 0 0 0; z-index: 10000;
+            /* Выше срочного тикера (10045), но ниже основного header (10050):
+               при открытом расписании тикер не перекрывает заголовок и кнопку закрытия. */
+            position: fixed; inset: var(--header-h) 0 0 0; z-index: 10047;
             background: var(--bg-deep); backdrop-filter: blur(15px);
             display: none; overflow-y: auto; padding: 40px 20px 80px 20px;
             opacity: 0; transition: opacity 0.3s ease;
