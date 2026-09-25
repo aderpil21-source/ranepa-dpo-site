@@ -1,0 +1,22 @@
+[Unit]
+Description=RANEPA DPO VK publication worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ranepa-vk
+Group=ranepa-vk
+WorkingDirectory=/opt/ranepa-vk-worker
+EnvironmentFile=/etc/ranepa-vk-worker.env
+ExecStart=/opt/ranepa-vk-worker/.venv/bin/gunicorn -w 2 -b 127.0.0.1:8080 vk_worker:app
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/ranepa-vk-worker
+
+[Install]
+WantedBy=multi-user.target
