@@ -1227,7 +1227,8 @@ function openEditor(id){
         $('newsEditorLead').value = draft.lead || '';
         $('newsEditorCover').value = draft.coverImage || '';
         $('newsEditorPublished').checked = !!draft.published;
-        $('newsEditorPublishToVk').checked = !!draft.publishToVk;
+        // VK is an explicit one-time action: never restore it from an autosaved draft.
+        $('newsEditorPublishToVk').checked = false;
         editorTags = draft.tags || [];
         editorBlocks = editorBlocksOnly(draft.blocks || []);
     }
@@ -1327,8 +1328,8 @@ async function saveNews(){
         lead: $('newsEditorLead').value.trim(),
         coverImage: $('newsEditorCover').value.trim(),
         tags: editorTags,
-        blocks: blocksWithVkPreference(editorBlocks, $('newsEditorPublishToVk').checked),
-        publishToVk: $('newsEditorPublishToVk').checked,
+        blocks: blocksWithVkPreference(editorBlocks, wantsVkNow),
+        publishToVk: wantsVkNow,
         status: $('newsEditorPublished').checked ? 'published' : 'hidden'
     };
 
