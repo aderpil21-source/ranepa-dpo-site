@@ -315,6 +315,7 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 const CONFIG = {
     // Бэкенд новостей: тексты, список, вход. Может остаться прежним.
     api: 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec',
+    editorApi: 'https://ranepa-dpo-site.vercel.app/api/news-backend',
 
     storage: {
         // Цепочка хранилищ, пробуются сверху вниз.
@@ -434,33 +435,20 @@ function driveId(url){
     const m = url.match(/\/file\/d\/([\w-]+)/) || url.match(/[?&]id=([\w-]+)/);
     return m ? m[1] : null;
 }
+const LEGACY_NEWS_DRIVE_IDS = new Set([
+    '1rM-29CE3Y34YY7R9somR41N3mDNhjtjJ',
+    '1NR1WULHHEGn-Jweo_51J-HLxwWC6vwQ5',
+    '1CzeO6rilqlxiStr4Rgnn8huQxppOdZ6J',
+    '1qS3zmdzgMfBcIIVNXGGbaonBpShbs_IZ'
+]);
+
 function imageUrl(url){
     const id = driveId(url);
-    return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1600` : url;
-}
-
-/* Обычная ссылка на видео превращается в ссылку для встраивания сама */
-function toEmbedUrl(url){
-    if (!url) return null;
-    let m;
-
-    // VK: поддерживаем и прямые ссылки /video-123_456,
-    // и ссылки сообщества вида https://vk.ru/club?...&z=video-123_456
-    try {
-        const u = new URL(url, location.origin);
-        if (/^(?:www\.)?vk\.(?:com|ru)$/i.test(u.hostname)) {
-            const candidate = (u.searchParams.get('z') || '') + ' ' + u.pathname;
-            m = candidate.match(/video(-?\d+)_(\d+)/i);
-            if (m) return `https://vk.com/video_ext.php?oid=${m[1]}&id=${m[2]}&hd=2`;
-        }
-    } catch(e){}
-
-    if ((m = url.match(/rutube\.ru\/video\/([\w-]+)/))) return `https://rutube.ru/play/embed/${m[1]}`;
-    if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/))) return `https://www.youtube.com/embed/${m[1]}`;
-    if (url.includes('/embed') || url.includes('video_ext.php')) return url;
-    const gid = driveId(url);
-    if (gid) return `https://drive.google.com/file/d/${gid}/preview`;
-    return null;
+    if (!id) return url;
+    if (LEGACY_NEWS_DRIVE_IDS.has(id)) {
+        return 'https://ranepa-dpo-site.vercel.app/api/legacy-news-image?id=' + encodeURIComponent(id);
+    }
+    return `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
 }
 
 /* ============================================================================
@@ -988,7 +976,7 @@ async function fetchNews(){
     if (adminToken){
         stopPublicNewsPolling();
         try {
-            const url = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
+            const url = CONFIG.editorApi + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
             const data = await requestJson(url, { method:'GET' });
             newsItems = data.items || [];
             cacheNews(newsItems);
@@ -1285,7 +1273,7 @@ async function submitLogin(){
     const err = $('newsAdminLoginError');
     err.style.display = 'none';
     try {
-        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsLogin', password: $('newsAdminPassInput').value }) });
+        const data = await requestJson(CONFIG.editorApi, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'newsLogin', password: $('newsAdminPassInput').value }) });
         if (data.ok){
             adminToken = data.token;
             sessionStorage.setItem('newsAdminToken', adminToken);
@@ -1526,7 +1514,7 @@ async function deleteNews(id){
     if (!confirm(`Удалить новость «${n ? n.title : id}» безвозвратно?`)) return;
     if (!confirm('Это действие нельзя отменить. Точно удаляем?')) return;
     try {
-        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsDelete', token: adminToken, id }) });
+        const data = await requestJson(CONFIG.editorApi, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'newsDelete', token: adminToken, id }) });
         if (data.ok){ toast('Новость удалена', 'ok'); fetchNews(); }
         else toast(data.error || 'Удалить не удалось', 'error', data.code);
     } catch(e){ toast('Сервер не отвечает: ' + e.message, 'error'); }
