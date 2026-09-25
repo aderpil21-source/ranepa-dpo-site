@@ -1582,8 +1582,10 @@
 
     <script>
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-    if (location.hash) { history.replaceState(null, '', location.pathname + location.search); }
-    window.scrollTo(0, 0);
+    const initialHash = window.location.hash;
+    if (!initialHash) {
+        window.scrollTo(0, 0);
+    }
 
     const _p1 = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6bmp2V0RseHh4bEFOa3pUQ0NobnZseUViVzNONzR2cE9FRThwSmFjY0V4aVhRRzdEWlUxU2doUUFwRHNsTU5FT2svZXhlYw==';
     let API_URL;
@@ -3182,7 +3184,7 @@ document.getElementById('mediaLightbox').addEventListener('click', function(e) {
     });
 // Совместимость со старыми ссылками вида index.html#news=ID.
 // Старый обработчик ждал несуществующий новостной оверлей и мог работать бесконечно.
-const legacyNewsHash = window.location.hash;
+const legacyNewsHash = initialHash;
 if (legacyNewsHash.startsWith('#news=')) {
     const legacyNewsId = legacyNewsHash.slice('#news='.length).trim();
     if (legacyNewsId) {
