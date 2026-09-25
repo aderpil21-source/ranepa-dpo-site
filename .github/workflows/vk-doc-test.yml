@@ -1,20 +1,22 @@
 name: VK image document test
 
 on:
-  push:
-    paths:
-      - "vk_doc_test.py"
-      - ".github/workflows/vk-doc-test.yml"
+  # Диагностический тест VK. Никогда не запускать автоматически по push.
+  workflow_dispatch:
 
 jobs:
-  test:
+  test-vk-document:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
+
       - run: pip install requests
+
       - name: Test VK document image upload
         env:
           VK_TOKEN: ${{ secrets.VK_TOKEN }}
