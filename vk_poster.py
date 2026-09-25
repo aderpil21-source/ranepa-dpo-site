@@ -20,6 +20,7 @@ VK_API_URL = "https://api.vk.com/method/"
 VK_API_VERSION = os.getenv("VK_API_VERSION", "5.199")
 
 VK_TOKEN = os.getenv("VK_TOKEN")
+VK_UPLOAD_TOKEN = os.getenv("VK_UPLOAD_TOKEN")
 VK_OWNER_ID = os.getenv("VK_OWNER_ID")
 
 STATE_FILE = Path("vk_published.json")
@@ -62,10 +63,10 @@ def get_json(url, params=None):
     return response.json()
 
 
-def vk_api(method, params):
+def vk_api_with_token(method, params, token):
     request_params = {
         **params,
-        "access_token": VK_TOKEN,
+        "access_token": token,
         "v": VK_API_VERSION,
     }
 
@@ -90,6 +91,118 @@ def vk_api(method, params):
         )
 
     return data["response"]
+
+
+def vk_api(method, params):
+    return vk_api_with_token(method, params, VK_TOKEN)
+
+
+def get_news_image(news):
+    value = (
+        news.get("coverImage")
+        or news.get("cover_image")
+        or news.get("image")
+        or news.get("imageUrl")
+        or news.get("image_url")
+    )
+    value = safe_text(value)
+
+    if value:
+        return value
+
+    blocks = news.get("blocks")
+    if isinstance(blocks, list):
+        for block in blocks:
+            if not isinstance(block, dict):
+                continue
+            if block.get("hidden"):
+                continue
+            if safe_text(block.get("type")).lower() != "image":
+                continue
+            value = safe_text(block.get("url"))
+            if value:
+                return value
+
+    return ""
+
+
+def upload_image_to_vk(image_url):
+    if not VK_UPLOAD_TOKEN:
+        print("VK_UPLOAD_TOKEN не задан — публикуем без изображения.")
+        return None
+
+    group_id = safe_text(VK_OWNER_ID).lstrip("-")
+    if not group_id.isdigit():
+        raise RuntimeError("VK_OWNER_ID должен содержать числовой ID сообщества")
+
+    print(f"Загружаем изображение в VK: {image_url}")
+
+    image_response = requests.get(image_url, timeout=60)
+    image_response.raise_for_status()
+
+    content_type = image_response.headers.get("Content-Type", "").split(";", 1)[0].lower()
+    if not content_type.startswith("image/"):
+        raise RuntimeError(
+            f"URL обложки вернул не изображение: {content_type or 'неизвестный тип'}"
+        )
+
+    upload_server = vk_api_with_token(
+        "photos.getWallUploadServer",
+        {"group_id": group_id},
+        VK_UPLOAD_TOKEN,
+    )
+    upload_url = upload_server.get("upload_url")
+    if not upload_url:
+        raise RuntimeError("VK не вернул upload_url для изображения")
+
+    filename = image_url.split("?", 1)[0].rsplit("/", 1)[-1] or "news.jpg"
+    if "." not in filename:
+        filename = "news.jpg"
+
+    upload_response = requests.post(
+        upload_url,
+        files={"photo": (filename, image_response.content, content_type)},
+        timeout=90,
+    )
+    upload_response.raise_for_status()
+    upload_data = upload_response.json()
+
+    if "error" in upload_data:
+        error = upload_data["error"]
+        raise RuntimeError(
+            f"Ошибка загрузки изображения: {error.get('error_code')} "
+            f"{error.get('error_msg', '')}"
+        )
+
+    save_params = {
+        "group_id": group_id,
+        "server": upload_data.get("server"),
+        "photo": upload_data.get("photo"),
+        "hash": upload_data.get("hash"),
+    }
+
+    if not all(save_params.get(key) for key in ("server", "photo", "hash")):
+        raise RuntimeError("VK не вернул server/photo/hash после загрузки изображения")
+
+    saved = vk_api_with_token(
+        "photos.saveWallPhoto",
+        save_params,
+        VK_UPLOAD_TOKEN,
+    )
+
+    if not isinstance(saved, list) or not saved:
+        raise RuntimeError("VK не вернул сохранённую фотографию")
+
+    photo = saved[0]
+    photo_owner_id = photo.get("owner_id")
+    photo_id = photo.get("id")
+
+    if photo_owner_id is None or photo_id is None:
+        raise RuntimeError("VK не вернул owner_id/id сохранённой фотографии")
+
+    attachment = f"photo{photo_owner_id}_{photo_id}"
+    print(f"Изображение загружено: {attachment}")
+    return attachment
 
 
 # =========================
@@ -248,10 +361,20 @@ def publish_to_vk(news):
         owner_id = "-" + owner_id
 
     params = {
-    "owner_id": owner_id,
-    "from_group": 1,
-    "message": message,
-}
+        "owner_id": owner_id,
+        "from_group": 1,
+        "message": message,
+    }
+
+    image_url = get_news_image(news)
+    if image_url:
+        try:
+            attachment = upload_image_to_vk(image_url)
+            if attachment:
+                params["attachments"] = attachment
+        except Exception as error:
+            print(f"Не удалось прикрепить изображение: {error}")
+            print("Продолжаем публикацию без изображения.")
 
     print(f"Публикуем в VK: {title}")
 
