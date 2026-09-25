@@ -2,7 +2,7 @@ name: Refresh public news
 
 on:
   schedule:
-    - cron: '23 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -29,16 +29,28 @@ jobs:
 
           tmp_file="$(mktemp)"
 
-          curl             --fail             --silent             --show-error             --location             --retry 2             --retry-delay 2             --connect-timeout 10             --max-time 45             "$API_URL"             --output "$tmp_file"
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 2 \
+            --retry-delay 2 \
+            --connect-timeout 10 \
+            --max-time 45 \
+            "$API_URL" \
+            --output "$tmp_file"
 
-          python - "$tmp_file" <<'PY'
+          python - "$tmp_file" news-data.json <<'PY'
           import json
           import sys
           from datetime import datetime, timezone
           from pathlib import Path
 
-          path = Path(sys.argv[1])
-          data = json.loads(path.read_text(encoding="utf-8"))
+          api_path = Path(sys.argv[1])
+          snapshot_path = Path(sys.argv[2])
+
+          data = json.loads(api_path.read_text(encoding="utf-8"))
 
           if not isinstance(data, dict):
               raise SystemExit("News API response is not a JSON object")
@@ -52,18 +64,33 @@ jobs:
               if isinstance(item, dict) and item.get("status") == "published"
           ]
 
+          current_items = None
+          if snapshot_path.exists():
+              try:
+                  current = json.loads(snapshot_path.read_text(encoding="utf-8"))
+                  if isinstance(current, dict) and isinstance(current.get("items"), list):
+                      current_items = current["items"]
+              except (json.JSONDecodeError, OSError):
+                  pass
+
+          if current_items == public_items:
+              print("Published news are unchanged")
+              raise SystemExit(0)
+
           output = {
               "generatedAt": datetime.now(timezone.utc).isoformat(),
               "items": public_items,
           }
 
-          path.write_text(
+          snapshot_path.write_text(
               json.dumps(output, ensure_ascii=False, indent=2) + "\n",
               encoding="utf-8",
           )
+
+          print(f"Updated public snapshot: {len(public_items)} published item(s)")
           PY
 
-          mv "$tmp_file" news-data.json
+          rm -f "$tmp_file"
 
       - name: Commit only when news changed
         shell: bash
