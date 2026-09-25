@@ -1597,28 +1597,130 @@
     let portalDataPromise = null;
     let scheduleDataLoaded = false;
     let scheduleRefreshTimer = null;
+    let portalRefreshStarted = false;
+
+    const PORTAL_BROWSER_CACHE_KEY = 'ranepa_portal_data_v1';
+    const PORTAL_BROWSER_CACHE_TTL = 60 * 60 * 1000;
+
+    function isValidPortalData(data) {
+        return !!data &&
+            typeof data === 'object' &&
+            Array.isArray(data.programs) &&
+            data.programs.length > 0;
+    }
+
+    function readPortalBrowserCache() {
+        try {
+            const raw = localStorage.getItem(PORTAL_BROWSER_CACHE_KEY);
+            if (!raw) return null;
+
+            const cached = JSON.parse(raw);
+            if (!cached || !cached.savedAt || !isValidPortalData(cached.data)) return null;
+
+            const age = Date.now() - Number(cached.savedAt);
+            if (age < 0 || age > PORTAL_BROWSER_CACHE_TTL) return null;
+
+            return cached.data;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    function writePortalBrowserCache(data) {
+        if (!isValidPortalData(data)) return;
+        try {
+            localStorage.setItem(PORTAL_BROWSER_CACHE_KEY, JSON.stringify({
+                savedAt: Date.now(),
+                data
+            }));
+        } catch (error) {}
+    }
+
+    function applyFreshPortalState(data) {
+        if (!data || typeof data !== 'object') return;
+
+        if (Array.isArray(data.owlFiles)) {
+            globalOwlFiles = data.owlFiles;
+        }
+
+        if (Array.isArray(data.schedules)) {
+            window.schedules = data.schedules;
+            scheduleDataLoaded = true;
+        }
+
+        globalAlert = data.currentAlert && data.currentAlert.text
+            ? data.currentAlert
+            : null;
+    }
+
+    function refreshPortalDataInBackground() {
+        if (portalRefreshStarted) return;
+        portalRefreshStarted = true;
+
+        fetch(API_URL, { cache: 'no-store' })
+            .then(response => {
+                if (!response.ok) throw new Error('API HTTP ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if (!isValidPortalData(data)) {
+                    throw new Error('API returned invalid portal data');
+                }
+
+                writePortalBrowserCache(data);
+                applyFreshPortalState(data);
+            })
+            .catch(error => {
+                console.warn('Фоновое обновление данных недоступно:', error);
+            });
+    }
 
     function loadPortalData() {
         if (!portalDataPromise) {
-            portalDataPromise = fetch(API_URL)
+            const cachedData = readPortalBrowserCache();
+
+            if (cachedData) {
+                applyFreshPortalState(cachedData);
+                portalDataPromise = Promise.resolve(cachedData);
+                setTimeout(refreshPortalDataInBackground, 0);
+                return portalDataPromise;
+            }
+
+            portalDataPromise = fetch('./portal-data.json')
                 .then(response => {
-                    if (!response.ok) throw new Error('API HTTP ' + response.status);
+                    if (!response.ok) throw new Error('Local data HTTP ' + response.status);
                     return response.json();
                 })
-                .catch(async error => {
-                    console.warn('Основной API недоступен, используем резервный снимок данных:', error);
-                    const fallbackResponse = await fetch('./portal-data.json', { cache: 'no-store' });
-                    if (!fallbackResponse.ok) {
-                        portalDataPromise = null;
-                        throw new Error('Fallback HTTP ' + fallbackResponse.status);
+                .then(data => {
+                    if (!isValidPortalData(data)) {
+                        throw new Error('Local portal-data.json is invalid');
                     }
-                    return fallbackResponse.json();
+
+                    applyFreshPortalState(data);
+                    setTimeout(refreshPortalDataInBackground, 0);
+                    return data;
+                })
+                .catch(async localError => {
+                    console.warn('Локальный снимок недоступен, обращаемся к API:', localError);
+
+                    const response = await fetch(API_URL, { cache: 'no-store' });
+                    if (!response.ok) throw new Error('API HTTP ' + response.status);
+
+                    const data = await response.json();
+                    if (!isValidPortalData(data)) {
+                        throw new Error('API returned invalid portal data');
+                    }
+
+                    writePortalBrowserCache(data);
+                    applyFreshPortalState(data);
+                    return data;
                 })
                 .catch(error => {
                     portalDataPromise = null;
                     throw error;
                 });
         }
+
         return portalDataPromise;
     }
 
