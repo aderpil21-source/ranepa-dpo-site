@@ -1696,6 +1696,7 @@
                         throw new Error('Local portal-data.json is invalid');
                     }
 
+                    writePortalBrowserCache(data);
                     applyFreshPortalState(data);
                     setTimeout(refreshPortalDataInBackground, 0);
                     return data;
