@@ -1536,6 +1536,20 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchNews();
     renderPendingNote();
 
+    document.addEventListener('visibilitychange', () => {
+        if (adminToken) {
+            stopPublicNewsPolling();
+            return;
+        }
+
+        if (document.visibilityState === 'visible') {
+            refreshPublicNewsSnapshot({ silent:true });
+            startPublicNewsPolling();
+        } else {
+            stopPublicNewsPolling();
+        }
+    });
+
     const setOnline = () => {
         $('offlineBanner').classList.toggle('is-on', !navigator.onLine);
         if (navigator.onLine) flushPendingUploads();
