@@ -872,8 +872,8 @@ function exportBackup(){
    БЛОК 10. СПИСОК И ДЕТАЛЬНАЯ СТРАНИЦА
    ============================================================================ */
 const PUBLIC_NEWS_REFRESH_COOLDOWN_MS = 60 * 1000;
+const PUBLIC_NEWS_SNAPSHOT_BUCKET_MS = 60 * 1000;
 let publicNewsLastRefreshAt = 0;
-let publicNewsPollTimer = null;
 let publicNewsRefreshInFlight = null;
 
 function openHashNewsIfPresent(){
@@ -890,7 +890,7 @@ function publicNewsFingerprint(items){
 }
 
 function publicNewsSnapshotUrl(){
-    const minuteBucket = Math.floor(Date.now() / PUBLIC_NEWS_POLL_MS);
+    const minuteBucket = Math.floor(Date.now() / PUBLIC_NEWS_SNAPSHOT_BUCKET_MS);
     return './news-data.json?v=' + minuteBucket;
 }
 
