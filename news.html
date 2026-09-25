@@ -1163,6 +1163,21 @@ if (editorRequested && !adminToken) {
     $('newsAdminPassInput').onkeydown = e => { if (e.key === 'Enter') submitLogin(); };
 
     $('addNewsBtn').onclick = () => openEditor(null);
+    $('visitorPreviewBtn').onclick = () => {
+    const bar = $('newsAdminBar');
+    const btn = $('visitorPreviewBtn');
+
+    if (bar.dataset.preview === '1') {
+        bar.dataset.preview = '0';
+        bar.style.display = 'flex';
+        btn.textContent = '👁 Посмотреть как посетитель';
+        fetchNews();
+    } else {
+        bar.dataset.preview = '1';
+        bar.style.display = 'none';
+        renderGrid();
+    }
+};
     $('exportBtn').onclick  = exportBackup;
     $('logoutBtn').onclick  = () => {
         adminToken = null;
