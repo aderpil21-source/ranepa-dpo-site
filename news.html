@@ -871,8 +871,8 @@ function exportBackup(){
 /* ============================================================================
    БЛОК 10. СПИСОК И ДЕТАЛЬНАЯ СТРАНИЦА
    ============================================================================ */
-const PUBLIC_NEWS_POLL_MS = 30 * 1000;
-const PUBLIC_NEWS_LIVE_URL = 'https://ranepa-dpo-site.vercel.app/api/news-live';
+const PUBLIC_NEWS_REFRESH_COOLDOWN_MS = 60 * 1000;
+let publicNewsLastRefreshAt = 0;
 let publicNewsPollTimer = null;
 let publicNewsRefreshInFlight = null;
 
@@ -917,21 +917,22 @@ async function refreshPublicNewsSnapshot(options){
     if (adminToken || document.visibilityState === 'hidden') return false;
     if (publicNewsRefreshInFlight) return publicNewsRefreshInFlight;
 
+    const now = Date.now();
+    if (!opts.force && now - publicNewsLastRefreshAt < PUBLIC_NEWS_REFRESH_COOLDOWN_MS) {
+        return false;
+    }
+    publicNewsLastRefreshAt = now;
+
     publicNewsRefreshInFlight = (async () => {
         try {
-            const response = await fetch(PUBLIC_NEWS_LIVE_URL, { mode:'cors' });
-            if (!response.ok) throw new Error('Live news HTTP ' + response.status);
-
-            const data = await response.json();
+            const data = await requestJson(CONFIG.api + '?type=news&_cb=' + now, { method:'GET' }, 1);
             if (!data || !Array.isArray(data.items)) {
-                throw new Error('Live news feed has invalid format');
+                throw new Error('Public news API returned invalid format');
             }
 
             return applyPublicNewsItems(data.items, { openHash: !!opts.openHash });
-        } catch(liveError){
-            // Live-канал — источник свежести, но его сбой не должен ломать страницу.
-            // Последний статический снимок уже показан пользователю.
-            if (!opts.silent) console.warn('Live-обновление новостей недоступно:', liveError);
+        } catch(error){
+            if (!opts.silent) console.warn('Не удалось обновить свежие новости:', error);
             return false;
         } finally {
             publicNewsRefreshInFlight = null;
@@ -940,26 +941,13 @@ async function refreshPublicNewsSnapshot(options){
 
     return publicNewsRefreshInFlight;
 }
-
 function stopPublicNewsPolling(){
-    if (publicNewsPollTimer){
-        clearInterval(publicNewsPollTimer);
-        publicNewsPollTimer = null;
-    }
+    // Постоянный polling отключён: свежесть проверяется один раз при открытии
+    // и при возврате пользователя на вкладку.
 }
 
 function startPublicNewsPolling(){
-    stopPublicNewsPolling();
-
-    if (adminToken || document.visibilityState !== 'visible') return;
-
-    publicNewsPollTimer = setInterval(() => {
-        if (adminToken || document.visibilityState !== 'visible'){
-            stopPublicNewsPolling();
-            return;
-        }
-        refreshPublicNewsSnapshot({ silent:true });
-    }, PUBLIC_NEWS_POLL_MS);
+    // Намеренно пусто — не создаём постоянную нагрузку на Apps Script.
 }
 
 async function fetchNews(){
@@ -999,7 +987,7 @@ async function fetchNews(){
         renderGrid();
         openHashNewsIfPresent();
 
-        // Сразу после мгновенного рендера проверяем свежий CDN-feed; Apps Script посетитель не опрашивает.
+        // Сразу после мгновенного рендера один раз проверяем свежие данные в фоне.
         refreshPublicNewsSnapshot({ silent:true });
         startPublicNewsPolling();
         return;
