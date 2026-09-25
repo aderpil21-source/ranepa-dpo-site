@@ -391,6 +391,21 @@ def get_news_id(news):
     return safe_text(value)
 
 
+def wants_vk_publish(news):
+    """Явное согласие редактора на публикацию этой новости во VK."""
+    blocks = news.get("blocks")
+    if not isinstance(blocks, list):
+        return False
+
+    for block in blocks:
+        if not isinstance(block, dict):
+            continue
+        if block.get("type") == "__system_vk" and block.get("publishToVk") is True:
+            return True
+
+    return False
+
+
 def get_news_title(news):
     value = (
         news.get("title")
@@ -541,6 +556,11 @@ def main():
 
         if is_published(state, news_id):
             print(f"Уже опубликовано, пропускаем: {title}")
+            skipped_count += 1
+            continue
+
+        if not wants_vk_publish(news):
+            print(f"VK не выбран редактором, пропускаем: {title}")
             skipped_count += 1
             continue
 

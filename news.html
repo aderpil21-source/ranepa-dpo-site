@@ -279,9 +279,17 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
             <button type="button" data-add="video">Видео</button>
         </div>
 
-        <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px; cursor:pointer;">
+        <label style="display:flex; align-items:center; gap:10px; margin-bottom:12px; cursor:pointer;">
             <input type="checkbox" id="newsEditorPublished" style="width:18px; height:18px;">
             <span>Показывать на сайте</span>
+        </label>
+
+        <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:20px; cursor:pointer;">
+            <input type="checkbox" id="newsEditorPublishToVk" style="width:18px; height:18px; margin-top:2px;">
+            <span>
+                <b>Опубликовать во ВКонтакте</b><br>
+                <small style="color:var(--text-muted);">Если выключено, новость останется только на сайте.</small>
+            </span>
         </label>
 
         <button class="buy-btn" id="saveNewsBtn">Сохранить новость</button>
@@ -345,6 +353,21 @@ let storageHealth = { state:'unknown', message:'' };
 const uploadedHashes = new Map();
 
 const BLOCK_LABELS = { text:'Абзац', insert:'Врезка', image:'Фото', video:'Видео' };
+const VK_META_TYPE = '__system_vk';
+
+function newsWantsVk(news){
+    const blocks = Array.isArray(news && news.blocks) ? news.blocks : [];
+    return blocks.some(b => b && b.type === VK_META_TYPE && b.publishToVk === true);
+}
+function editorBlocksOnly(blocks){
+    return (Array.isArray(blocks) ? blocks : []).filter(b => !(b && b.type === VK_META_TYPE));
+}
+function blocksWithVkPreference(blocks, enabled){
+    const clean = editorBlocksOnly(blocks).map(b => ({ ...b }));
+    if (enabled) clean.push({ type:VK_META_TYPE, publishToVk:true, hidden:true });
+    return clean;
+}
+
 const $ = id => document.getElementById(id);
 
 /* ============================================================================
@@ -805,8 +828,10 @@ function saveDraft(){
             title: $('newsEditorTitle').value,
             lead: $('newsEditorLead').value,
             coverImage: $('newsEditorCover').value,
-            tags: editorTags, blocks: editorBlocks,
-            published: $('newsEditorPublished').checked
+            tags: editorTags,
+        blocks: blocksWithVkPreference(editorBlocks, $('newsEditorPublishToVk').checked),
+            published: $('newsEditorPublished').checked,
+            publishToVk: $('newsEditorPublishToVk').checked
         }));
         $('draftNote').textContent = 'Черновик сохранён в браузере в ' + new Date().toLocaleTimeString('ru-RU');
     } catch(e){ /* переполнение localStorage не критично */ }
@@ -1105,6 +1130,23 @@ async function submitLogin(){
 }
 
 async function fetchVkState(){
+    const ids = (newsItems || []).map(n => String(n.id || '')).filter(Boolean);
+
+    // Новый событийный worker — основной источник статусов.
+    if (ids.length){
+        try {
+            const res = await fetch('/api/vk-status?ids=' + encodeURIComponent(ids.join(',')), { cache:'no-store' });
+            if (res.ok){
+                const data = await res.json();
+                if (data && data.ok){
+                    vkState = { version:3, items:data.items || {} };
+                    return;
+                }
+            }
+        } catch(e){}
+    }
+
+    // Переходный резерв: старый файл состояния GitHub.
     try {
         const res = await fetch('/vk_published.json?ts=' + Date.now(), { cache:'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1117,21 +1159,25 @@ async function fetchVkState(){
             vkState = { version:data.version || 2, items:data.items || {} };
         }
     } catch(e){
-        vkState = { version:2, items:{} };
+        vkState = { version:3, items:{} };
     }
 }
 
 function vkStatusHtml(news){
-    if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — не отправляется</span>';
-    const item = (vkState.items || {})[String(news.id)] || null;
-    if (!item) return '<span style="color:var(--warn);">VK ⏳ ожидает</span>';
-    if (item.status === 'published'){
+    const item = (vkState.items || {})[String(news && news.id)] || null;
+
+    if (item && item.status === 'published'){
         const media = item.media_status === 'failed' ? ' · фото ⚠' : '';
         return '<span style="color:var(--ok);">VK ✓ опубликовано' + media + '</span>';
     }
+
+    const wantsVk = newsWantsVk(news);
+    if (!wantsVk) return '<span style="color:var(--text-muted);">VK — не выбрано</span>';
+    if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — после публикации на сайте</span>';
+    if (!item) return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
     if (item.status === 'publishing') return '<span style="color:var(--warn);">VK ⏳ отправляется</span>';
     if (item.status === 'error') return '<span style="color:#fb7185;">VK ⚠ ошибка</span>';
-    return '<span style="color:var(--warn);">VK ⏳ ожидает</span>';
+    return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
 }
 
 function renderAdminList(){
@@ -1158,8 +1204,9 @@ function openEditor(id){
     $('newsEditorCover').value = n ? n.coverImage || '' : '';
     $('newsEditorTagsInput').value = '';
     $('newsEditorPublished').checked = n ? n.status === 'published' : false;
+    $('newsEditorPublishToVk').checked = n ? newsWantsVk(n) : false;
     editorTags = n ? [...(n.tags || [])] : [];
-    editorBlocks = n ? JSON.parse(JSON.stringify(n.blocks || [])) : [];
+    editorBlocks = n ? JSON.parse(JSON.stringify(editorBlocksOnly(n.blocks || []))) : [];
     uploadJobs = [];
     $('draftNote').textContent = '';
 
@@ -1170,8 +1217,9 @@ function openEditor(id){
         $('newsEditorLead').value = draft.lead || '';
         $('newsEditorCover').value = draft.coverImage || '';
         $('newsEditorPublished').checked = !!draft.published;
+        $('newsEditorPublishToVk').checked = !!draft.publishToVk;
         editorTags = draft.tags || [];
-        editorBlocks = draft.blocks || [];
+        editorBlocks = editorBlocksOnly(draft.blocks || []);
     }
 
     renderUploadQueue(); renderCoverPreview(); renderMediaLibrary();
@@ -1350,7 +1398,7 @@ if (editorRequested && !adminToken) {
     $('recheckStorageBtn').onclick = checkStorageHealth;
     $('newsEditorTagsInput').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); addTag(); } };
     $('newsEditorCover').oninput = () => { renderCoverPreview(); renderMediaLibrary(); scheduleDraftSave(); };
-    ['newsEditorTitle','newsEditorLead','newsEditorPublished'].forEach(id => {
+    ['newsEditorTitle','newsEditorLead','newsEditorPublished','newsEditorPublishToVk'].forEach(id => {
         $(id).addEventListener('input', scheduleDraftSave);
         $(id).addEventListener('change', scheduleDraftSave);
     });
