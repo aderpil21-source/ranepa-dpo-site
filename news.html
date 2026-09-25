@@ -895,37 +895,95 @@ function exportBackup(){
 /* ============================================================================
    БЛОК 10. СПИСОК И ДЕТАЛЬНАЯ СТРАНИЦА
    ============================================================================ */
-let publicNewsRefreshStarted = false;
+const PUBLIC_NEWS_POLL_MS = 60 * 1000;
+let publicNewsPollTimer = null;
+let publicNewsRefreshInFlight = null;
 
 function openHashNewsIfPresent(){
     const hash = location.hash.replace('#','').replace('news=','');
     if (hash && newsItems.find(n => n.id === hash)) openDetail(hash);
 }
 
-async function refreshPublicNewsInBackground(){
-    if (publicNewsRefreshStarted || adminToken) return;
-    publicNewsRefreshStarted = true;
-
+function publicNewsFingerprint(items){
     try {
-        const data = await requestJson(CONFIG.api + '?type=news', { method:'GET' }, 1);
-        const freshItems = Array.isArray(data.items)
-            ? data.items.filter(n => n && n.status === 'published')
-            : [];
+        return JSON.stringify(items || []);
+    } catch(e){
+        return '';
+    }
+}
 
-        if (!freshItems.length) return;
+function applyPublicNewsItems(items, options){
+    const opts = options || {};
+    const freshItems = Array.isArray(items)
+        ? items.filter(n => n && n.status === 'published')
+        : [];
 
+    const changed = publicNewsFingerprint(freshItems) !== publicNewsFingerprint(newsItems);
+    if (changed){
         newsItems = freshItems;
         cacheNews(newsItems);
         renderGrid();
-        openHashNewsIfPresent();
-    } catch(e){
-        console.warn('Фоновое обновление новостей недоступно:', e);
     }
+
+    if (opts.openHash) openHashNewsIfPresent();
+    return changed;
+}
+
+async function refreshPublicNewsSnapshot(options){
+    const opts = options || {};
+
+    if (adminToken || document.visibilityState === 'hidden') return false;
+    if (publicNewsRefreshInFlight) return publicNewsRefreshInFlight;
+
+    publicNewsRefreshInFlight = (async () => {
+        try {
+            const separator = './news-data.json'.includes('?') ? '&' : '?';
+            const url = './news-data.json' + separator + 'v=' + Date.now();
+            const response = await fetch(url, { cache:'no-store' });
+            if (!response.ok) throw new Error('Local news HTTP ' + response.status);
+
+            const data = await response.json();
+            if (!data || !Array.isArray(data.items)) {
+                throw new Error('Local news snapshot has invalid format');
+            }
+
+            return applyPublicNewsItems(data.items, { openHash: !!opts.openHash });
+        } catch(e){
+            if (!opts.silent) console.warn('Не удалось обновить локальный снимок новостей:', e);
+            return false;
+        } finally {
+            publicNewsRefreshInFlight = null;
+        }
+    })();
+
+    return publicNewsRefreshInFlight;
+}
+
+function stopPublicNewsPolling(){
+    if (publicNewsPollTimer){
+        clearInterval(publicNewsPollTimer);
+        publicNewsPollTimer = null;
+    }
+}
+
+function startPublicNewsPolling(){
+    stopPublicNewsPolling();
+
+    if (adminToken || document.visibilityState !== 'visible') return;
+
+    publicNewsPollTimer = setInterval(() => {
+        if (adminToken || document.visibilityState !== 'visible'){
+            stopPublicNewsPolling();
+            return;
+        }
+        refreshPublicNewsSnapshot({ silent:true });
+    }, PUBLIC_NEWS_POLL_MS);
 }
 
 async function fetchNews(){
     // Администратор всегда получает свежий полный набор напрямую с бэкенда.
     if (adminToken){
+        stopPublicNewsPolling();
         try {
             const url = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
             const data = await requestJson(url, { method:'GET' });
@@ -952,45 +1010,46 @@ async function fetchNews(){
         }
     }
 
-    // Для посетителя сначала используем браузерный кэш — без ожидания сети.
+    // Посетителю сразу показываем браузерный кэш, если он есть.
     const cached = readCachedNews();
-    if (cached && cached.length){
+    if (cached){
         newsItems = cached;
         renderGrid();
         openHashNewsIfPresent();
-        setTimeout(refreshPublicNewsInBackground, 0);
+
+        // Проверяем только статический JSON, Apps Script посетитель не опрашивает.
+        refreshPublicNewsSnapshot({ silent:true });
+        startPublicNewsPolling();
         return;
     }
 
-    // Первый визит: маленький JSON с того же сайта загружается быстрее Apps Script.
+    // Первый визит: читаем маленький JSON с того же сайта.
     try {
-        const localResponse = await fetch('./news-data.json');
-        if (!localResponse.ok) throw new Error('Local news HTTP ' + localResponse.status);
+        const response = await fetch('./news-data.json?v=' + Date.now(), { cache:'no-store' });
+        if (!response.ok) throw new Error('Local news HTTP ' + response.status);
 
-        const localData = await localResponse.json();
-        const localItems = Array.isArray(localData.items)
-            ? localData.items.filter(n => n && n.status === 'published')
-            : [];
+        const data = await response.json();
+        if (!data || !Array.isArray(data.items)) {
+            throw new Error('Local news snapshot has invalid format');
+        }
 
-        if (!localItems.length) throw new Error('Local news snapshot is empty');
-
-        newsItems = localItems;
-        cacheNews(newsItems);
-        renderGrid();
-        openHashNewsIfPresent();
-        setTimeout(refreshPublicNewsInBackground, 0);
+        applyPublicNewsItems(data.items, { openHash:true });
+        startPublicNewsPolling();
         return;
     } catch(localError){
         console.warn('Локальный снимок новостей недоступен, обращаемся к API:', localError);
     }
 
-    // Последний резерв — прямой запрос к Apps Script.
+    // Аварийный резерв для первого визита: прямой API только если статический JSON недоступен.
     try {
         const data = await requestJson(CONFIG.api + '?type=news', { method:'GET' });
-        newsItems = data.items || [];
+        newsItems = Array.isArray(data.items)
+            ? data.items.filter(n => n && n.status === 'published')
+            : [];
         cacheNews(newsItems);
         renderGrid();
         openHashNewsIfPresent();
+        startPublicNewsPolling();
     } catch(e){
         $('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Не удалось связаться с базой. Обновите страницу или попробуйте позже.</div>`;
     }
