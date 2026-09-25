@@ -299,11 +299,8 @@ const CONFIG = {
         // Цепочка хранилищ, пробуются сверху вниз.
         // Первое рабочее, второе — запасное на случай аварии в первом.
         providers: [
-            { id:'yandex',  label:'Yandex Object Storage', signUrl:'https://functions.yandexcloud.net/d4ejfbsrku9a7pv25b9j', enabled:true },
-            { id:'reserve', label:'Резервное хранилище',   signUrl:'', enabled:false }
+            { id:'yandex', label:'Медиахранилище', signUrl:'/api/media-sign', enabled:true }
         ],
-        // Тот же секрет, что в переменной ADMIN_TOKEN функции-подписанта.
-        uploadToken: '',
 
         maxFiles: 10,
         concurrency: 3,
@@ -485,22 +482,12 @@ async function compressImage(file){
 const activeProviders = () => CONFIG.storage.providers.filter(p => p.enabled && p.signUrl);
 
 async function checkStorageHealth(){
-    const list = activeProviders();
-    if (!list.length){
+    if (!activeProviders().length){
         storageHealth = { state:'unconfigured', message:'Хранилище не подключено. Медиа можно добавлять только ссылкой.' };
-        return renderStorageStatus();
-    }
-    for (const p of list){
-        try {
-            const data = await requestJson(p.signUrl + (p.signUrl.includes('?') ? '&' : '?') + 'health=1', { method:'GET' }, 1);
-            if (data.ok){
-                storageHealth = { state:'ok', message: p.label + ' на связи' };
-                return renderStorageStatus();
-            }
-            storageHealth = { state:'bad', message: data.error || (p.label + ' отвечает с ошибкой') };
-        } catch(e){
-            storageHealth = { state:'bad', message: p.label + ' недоступно: ' + e.message };
-        }
+    } else if (!adminToken) {
+        storageHealth = { state:'unconfigured', message:'Войдите в режим редактора для загрузки медиа.' };
+    } else {
+        storageHealth = { state:'ok', message:'Защищённая загрузка готова' };
     }
     renderStorageStatus();
 }
@@ -513,33 +500,13 @@ function renderStorageStatus(){
 }
 
 async function uploadToProvider(provider, file, onProgress, signal){
-    const signed = await requestJson(provider.signUrl, {
-        method:'POST',
-        body: JSON.stringify({
-            token: CONFIG.storage.uploadToken,
-            filename: file.name, contentType: file.type, size: file.size
-        })
-    }, 2);
-
+    if (!adminToken) throw Object.assign(new Error('Сессия редактора истекла. Войдите снова — файл останется в очереди.'), { code:'SESSION_EXPIRED' });
+    const signed = await requestJson(provider.signUrl, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ editorToken:adminToken, filename:file.name, contentType:file.type, size:file.size }) }, 2);
     if (!signed.ok || !signed.uploadUrl){
-        throw Object.assign(new Error(signed.error || 'Хранилище не выдало ссылку на загрузку'), { code: signed.code || 'NO_SIGNED_URL' });
+        if (signed.code === 'SESSION_EXPIRED' || signed.code === 'UNAUTHORIZED'){ adminToken=null; sessionStorage.removeItem('newsAdminToken'); throw Object.assign(new Error('Сессия редактора истекла. Войдите снова — файл останется в очереди.'), { code:'SESSION_EXPIRED' }); }
+        throw Object.assign(new Error(signed.error || 'Хранилище не выдало ссылку на загрузку'), { code:signed.code || 'NO_SIGNED_URL' });
     }
-
-    await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('PUT', signed.uploadUrl);
-        xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
-        xhr.upload.onprogress = e => { if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total); };
-        xhr.onload  = () => xhr.status < 300 ? resolve()
-            : reject(Object.assign(new Error('Хранилище отклонило файл, ответ ' + xhr.status), { code:'PUT_' + xhr.status }));
-        xhr.onerror = () => reject(Object.assign(new Error('Обрыв связи при передаче файла'), { code:'NETWORK' }));
-        xhr.ontimeout = () => reject(Object.assign(new Error('Передача заняла слишком долго'), { code:'TIMEOUT' }));
-        xhr.onabort = () => reject(Object.assign(new Error('Отменено'), { code:'ABORTED' }));
-        xhr.timeout = 600000;
-        if (signal) signal.addEventListener('abort', () => xhr.abort());
-        xhr.send(file);
-    });
-
+    await new Promise((resolve,reject)=>{ const xhr=new XMLHttpRequest(); xhr.open('PUT',signed.uploadUrl); xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream'); xhr.upload.onprogress=e=>{if(e.lengthComputable&&onProgress)onProgress(e.loaded/e.total)}; xhr.onload=()=>xhr.status<300?resolve():reject(Object.assign(new Error('Хранилище отклонило файл, ответ '+xhr.status),{code:'PUT_'+xhr.status})); xhr.onerror=()=>reject(Object.assign(new Error('Обрыв связи при передаче файла'),{code:'NETWORK'})); xhr.ontimeout=()=>reject(Object.assign(new Error('Передача заняла слишком долго'),{code:'TIMEOUT'})); xhr.onabort=()=>reject(Object.assign(new Error('Отменено'),{code:'ABORTED'})); xhr.timeout=600000; if(signal)signal.addEventListener('abort',()=>xhr.abort(),{once:true}); xhr.send(file); });
     return signed.publicUrl;
 }
 
@@ -558,7 +525,7 @@ async function uploadWithFallback(file, job){
                 lastError = e;
                 if (e.code === 'ABORTED') throw e;
                 // Права, тип и размер повторной попыткой не лечатся
-                if (['FORBIDDEN','BAD_TYPE','TOO_BIG'].includes(e.code)) break;
+                if (['FORBIDDEN','BAD_TYPE','TOO_BIG','BAD_FILE','SESSION_EXPIRED'].includes(e.code)) break;
                 if (attempt < CONFIG.storage.retries){
                     job.status = 'retrying';
                     job.attemptLabel = `попытка ${attempt + 1} из ${CONFIG.storage.retries}`;
