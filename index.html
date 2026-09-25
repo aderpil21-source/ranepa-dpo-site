@@ -1599,15 +1599,19 @@
     let scheduleDataLoaded = false;
     let scheduleRefreshTimer = null;
 
-    function loadPortalData() {
+    function loadPortalData(forceRefresh = false) {
+        if (forceRefresh) {
+            portalDataPromise = null;
+        }
+
         if (!portalDataPromise) {
-            portalDataPromise = fetch(API_URL)
+            portalDataPromise = fetch(API_URL, forceRefresh ? { cache: 'no-store' } : undefined)
                 .then(response => {
                     if (!response.ok) throw new Error('API HTTP ' + response.status);
                     return response.json();
                 })
                 .catch(error => {
-                    // После ошибки разрешаем следующему открытию расписания повторить запрос.
+                    // После ошибки разрешаем следующей попытке повторить запрос.
                     portalDataPromise = null;
                     throw error;
                 });
@@ -3078,9 +3082,17 @@ if (wantsNewsEditor || wantsStaffPortal) {
             ? cutoffSeconds - secondsNow
             : (24 * 3600 - secondsNow) + cutoffSeconds;
 
-        scheduleRefreshTimer = setTimeout(() => {
+        scheduleRefreshTimer = setTimeout(async () => {
             const overlay = document.getElementById('scheduleOverlay');
             if (overlay && overlay.classList.contains('active')) {
+                try {
+                    const data = await loadPortalData(true);
+                    window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
+                    scheduleDataLoaded = true;
+                } catch (error) {
+                    console.error('Ошибка обновления расписания в 21:00', error);
+                }
+
                 renderSchedule();
                 scheduleNextCutoffRefresh();
             }
@@ -3094,10 +3106,24 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
         overlay.classList.add('active');
 
-        // Если расписание уже приехало вместе с программами — открываем мгновенно, без второго fetch.
+        // Если данные уже есть, показываем их мгновенно, но всё равно проверяем свежую версию.
         if (scheduleDataLoaded) {
             renderSchedule();
             scheduleNextCutoffRefresh();
+
+            try {
+                const data = await loadPortalData(true);
+                window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
+                scheduleDataLoaded = true;
+
+                if (overlay.classList.contains('active')) {
+                    renderSchedule();
+                    scheduleNextCutoffRefresh();
+                }
+            } catch (error) {
+                // При временной ошибке оставляем пользователю последнюю успешно загруженную версию.
+                console.error('Ошибка фонового обновления расписания', error);
+            }
             return;
         }
 
