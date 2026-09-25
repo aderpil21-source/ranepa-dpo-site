@@ -1601,6 +1601,84 @@
 
     const PORTAL_BROWSER_CACHE_KEY = 'ranepa_portal_data_v1';
     const PORTAL_BROWSER_CACHE_TTL = 5 * 60 * 1000;
+    const OWL_FILES_SNAPSHOT_POLL_MS = 60 * 1000;
+
+    let owlFilesSnapshotPollTimer = null;
+    let owlFilesSnapshotRefreshInFlight = null;
+
+    function owlFilesSnapshotUrl() {
+        const minuteBucket = Math.floor(Date.now() / OWL_FILES_SNAPSHOT_POLL_MS);
+        return './owl-files.json?v=' + minuteBucket;
+    }
+
+    function isOwlChatActive() {
+        const chat = document.getElementById('owlChat');
+        return !!(chat && chat.classList.contains('active'));
+    }
+
+    function owlFilesFingerprint(items) {
+        try {
+            return JSON.stringify(Array.isArray(items) ? items : []);
+        } catch (error) {
+            return '';
+        }
+    }
+
+    async function refreshOwlFilesSnapshot(options) {
+        const opts = options || {};
+
+        if (!isOwlChatActive() || document.visibilityState === 'hidden') return false;
+        if (owlFilesSnapshotRefreshInFlight) return owlFilesSnapshotRefreshInFlight;
+
+        owlFilesSnapshotRefreshInFlight = (async () => {
+            try {
+                const response = await fetch(owlFilesSnapshotUrl());
+                if (!response.ok) throw new Error('Owl files snapshot HTTP ' + response.status);
+
+                const data = await response.json();
+                if (!data || !Array.isArray(data.owlFiles)) {
+                    throw new Error('Owl files snapshot has invalid format');
+                }
+
+                const changed = owlFilesFingerprint(data.owlFiles) !== owlFilesFingerprint(globalOwlFiles);
+                if (changed) {
+                    globalOwlFiles = data.owlFiles;
+                }
+
+                return changed;
+            } catch (error) {
+                if (!opts.silent) {
+                    console.warn('Не удалось обновить статический снимок материалов Совы:', error);
+                }
+                return false;
+            } finally {
+                owlFilesSnapshotRefreshInFlight = null;
+            }
+        })();
+
+        return owlFilesSnapshotRefreshInFlight;
+    }
+
+    function stopOwlFilesSnapshotPolling() {
+        if (owlFilesSnapshotPollTimer) {
+            clearInterval(owlFilesSnapshotPollTimer);
+            owlFilesSnapshotPollTimer = null;
+        }
+    }
+
+    function startOwlFilesSnapshotPolling() {
+        stopOwlFilesSnapshotPolling();
+
+        if (!isOwlChatActive() || document.visibilityState !== 'visible') return;
+
+        owlFilesSnapshotPollTimer = setInterval(() => {
+            if (!isOwlChatActive() || document.visibilityState !== 'visible') {
+                stopOwlFilesSnapshotPolling();
+                return;
+            }
+            refreshOwlFilesSnapshot({ silent: true });
+        }, OWL_FILES_SNAPSHOT_POLL_MS);
+    }
 
     function isValidPortalData(data) {
         return !!data &&
