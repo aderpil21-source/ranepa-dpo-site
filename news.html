@@ -359,7 +359,8 @@ function newsWantsVk(news){
     if (!news) return false;
     if (news.publishToVk === true || news.publishToVk === 'true') return true;
     const blocks = Array.isArray(news.blocks) ? news.blocks : [];
-    return blocks.some(b => b && b.type === VK_META_TYPE && b.publishToVk === true);
+    if (blocks.some(b => b && b.type === VK_META_TYPE && b.publishToVk === true)) return true;
+    return rememberedVkChoice(news.id);
 }
 function editorBlocksOnly(blocks){
     return (Array.isArray(blocks) ? blocks : []).filter(b => !(b && b.type === VK_META_TYPE));
@@ -368,6 +369,43 @@ function blocksWithVkPreference(blocks, enabled){
     const clean = editorBlocksOnly(blocks).map(b => ({ ...b }));
     if (enabled) clean.push({ type:VK_META_TYPE, publishToVk:true, hidden:true });
     return clean;
+}
+
+const VK_GROUP_URL = 'https://vk.com/ranepa_dpo39';
+const VK_GROUP_OWNER_ID = '-241627750';
+
+function vkPostUrl(postId){
+    return postId ? `https://vk.com/wall${VK_GROUP_OWNER_ID}_${postId}` : VK_GROUP_URL;
+}
+
+function openVkWindowForManualPhoto(){
+    const popup = window.open('about:blank', 'ranepaVkManualPhoto');
+    if (popup){
+        try {
+            popup.document.title = 'Открываем ВКонтакте…';
+            popup.document.body.innerHTML = '<p style="font-family:Arial,sans-serif;padding:20px">Сохраняем новость и открываем пост во ВКонтакте…</p>';
+        } catch(e){}
+    }
+    return popup;
+}
+
+function rememberVkChoice(id, enabled){
+    if (!id) return;
+    try {
+        const key = 'ak-vk-choice';
+        const data = JSON.parse(localStorage.getItem(key) || '{}');
+        if (enabled) data[String(id)] = true;
+        else delete data[String(id)];
+        localStorage.setItem(key, JSON.stringify(data));
+    } catch(e){}
+}
+
+function rememberedVkChoice(id){
+    if (!id) return false;
+    try {
+        const data = JSON.parse(localStorage.getItem('ak-vk-choice') || '{}');
+        return data[String(id)] === true;
+    } catch(e){ return false; }
 }
 
 const $ = id => document.getElementById(id);
@@ -1305,6 +1343,11 @@ function moveBlock(idx, dir){
 
 async function saveNews(){
     const btn = $('saveNewsBtn');
+    const wantsVkNow = $('newsEditorPublished').checked && $('newsEditorPublishToVk').checked;
+
+    // Открываем окно сразу по клику, до сетевых запросов, чтобы браузер не заблокировал popup.
+    const vkWindow = wantsVkNow ? openVkWindowForManualPhoto() : null;
+
     const item = {
         id: editingNewsId,
         title: $('newsEditorTitle').value.trim(),
@@ -1315,44 +1358,88 @@ async function saveNews(){
         publishToVk: $('newsEditorPublishToVk').checked,
         status: $('newsEditorPublished').checked ? 'published' : 'hidden'
     };
-    if (!item.title){ toast('Впишите заголовок новости', 'error'); return; }
-    if (uploadJobs.some(j => ['uploading','retrying','compressing','checking'].includes(j.status))){
-        toast('Дождитесь окончания загрузки файлов', 'warn'); return;
+
+    if (!item.title){
+        if (vkWindow) vkWindow.close();
+        toast('Впишите заголовок новости', 'error');
+        return;
     }
+
+    if (uploadJobs.some(j => ['uploading','retrying','compressing','checking'].includes(j.status))){
+        if (vkWindow) vkWindow.close();
+        toast('Дождитесь окончания загрузки файлов', 'warn');
+        return;
+    }
+
     const stuck = uploadJobs.filter(j => j.status === 'offline').length;
-    if (stuck && !confirm(`${stuck} файл(ов) ещё не уехали в хранилище и догрузятся позже. Сохранить новость сейчас?`)) return;
+    if (stuck && !confirm(`${stuck} файл(ов) ещё не уехали в хранилище и догрузятся позже. Сохранить новость сейчас?`)){
+        if (vkWindow) vkWindow.close();
+        return;
+    }
 
-    btn.disabled = true; btn.textContent = 'Сохраняем';
+    btn.disabled = true;
+    btn.textContent = 'Сохраняем';
+
     try {
-        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsSave', token: adminToken, item }) });
-        if (data.ok){
-            const wantsVkNow = item.status === 'published' && $('newsEditorPublishToVk').checked;
+        const data = await requestJson(CONFIG.api, {
+            method:'POST',
+            body: JSON.stringify({ action:'newsSave', token:adminToken, item })
+        });
 
-            if (wantsVkNow && data.id){
-                try {
-                    const vk = await requestJson(CONFIG.api, {
-                        method:'POST',
-                        body: JSON.stringify({ action:'newsRetryVk', token:adminToken, id:data.id })
-                    }, 2);
+        if (!data.ok){
+            if (vkWindow) vkWindow.close();
+            toast(data.error || 'Сохранить не удалось. Возможно, истекла сессия — войдите заново.', 'error', data.code);
+            return;
+        }
 
-                    if (!vk.ok && vk.error !== 'vk_not_requested'){
-                        toast('Новость сохранена, но VK вернул ошибку. Статус показан в редакторе.', 'warn');
-                    }
-                } catch(e){
-                    toast('Новость сохранена. VK временно не ответил — публикацию можно повторить позже.', 'warn');
-                }
+        rememberVkChoice(data.id, wantsVkNow);
+
+        let vkResult = data.vk || null;
+
+        if (wantsVkNow && data.id && (!vkResult || vkResult.status !== 'published')){
+            try {
+                vkResult = await requestJson(CONFIG.api, {
+                    method:'POST',
+                    body: JSON.stringify({ action:'newsRetryVk', token:adminToken, id:data.id })
+                }, 2);
+            } catch(e){}
+        }
+
+        if (wantsVkNow){
+            const postId =
+                (vkResult && (vkResult.postId || vkResult.post_id)) ||
+                (data.vk && (data.vk.postId || data.vk.post_id)) ||
+                null;
+
+            const target = vkPostUrl(postId);
+
+            if (vkWindow && !vkWindow.closed){
+                vkWindow.location.replace(target);
+            } else {
+                toast('Браузер заблокировал окно VK. Разрешите всплывающие окна для сайта и сохраните ещё раз.', 'warn');
             }
 
-            clearDraft();
-            $('newsEditorModal').classList.remove('active');
-            toast('Новость сохранена', 'ok');
-            fetchNews();
-        } else toast(data.error || 'Сохранить не удалось. Возможно, истекла сессия — войдите заново.', 'error', data.code);
+            if (postId){
+                toast('Новость сохранена. Открываю готовый пост VK — добавьте фото вручную через редактирование поста.', 'ok');
+            } else {
+                toast('Новость сохранена. Открываю группу VK — найдите свежий пост и добавьте фото вручную.', 'warn');
+            }
+        } else {
+            toast('Новость сохранена только на сайте', 'ok');
+        }
+
+        clearDraft();
+        $('newsEditorModal').classList.remove('active');
+        fetchNews();
+
     } catch(e){
+        if (vkWindow) vkWindow.close();
         saveDraft();
         toast('Сервер не принял новость: ' + e.message + ' Черновик сохранён в браузере, попробуйте ещё раз.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Сохранить новость';
     }
-    btn.disabled = false; btn.textContent = 'Сохранить новость';
 }
 
 async function deleteNews(id){
