@@ -1685,6 +1685,40 @@
         });
     }
 
+    // Генерирует безопасную JSON-LD разметку Course для каждой программы.
+    // Нужна потому, что buildPrograms() уже вызывает injectCourseSchema(),
+    // но раньше самой функции в файле не было — это обрывало JS при построении каталога.
+    function injectCourseSchema(title, description) {
+        const safeTitle = String(title || '').trim();
+        if (!safeTitle) return;
+
+        // Повторная загрузка API не должна плодить одинаковые <script> в <head>.
+        const existing = Array.from(
+            document.querySelectorAll('script[data-generated-course-schema="1"]')
+        ).some(script => script.dataset.courseTitle === safeTitle);
+
+        if (existing) return;
+
+        const schema = {
+            "@context": "https://schema.org",
+            "@type": "Course",
+            "name": safeTitle,
+            "description": String(description || '').trim(),
+            "provider": {
+                "@type": "CollegeOrUniversity",
+                "name": "Западный филиал РАНХиГС",
+                "url": "https://ranepa-dpo39.ru/"
+            }
+        };
+
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        script.dataset.generatedCourseSchema = '1';
+        script.dataset.courseTitle = safeTitle;
+        script.textContent = JSON.stringify(schema);
+        document.head.appendChild(script);
+    }
+
     async function fetchPrograms() {
         try {
             const response = await fetch(API_URL);
