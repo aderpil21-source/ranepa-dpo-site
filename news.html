@@ -326,7 +326,6 @@ const CONFIG = {
    ============================================================================ */
 let newsItems = [], adminToken = sessionStorage.getItem('newsAdminToken') || null;
 let visitorPreview = false;
-let visitorPreview = false;
 let activeTagFilter = null, editingNewsId = null;
 let articleMedia = [], lightboxIndex = 0;
 let editorBlocks = [], editorTags = [], uploadJobs = [];
@@ -1200,8 +1199,12 @@ if (editorRequested && !adminToken) {
     $('newsAdminPassInput').onkeydown = e => { if (e.key === 'Enter') submitLogin(); };
 
     $('addNewsBtn').onclick = () => openEditor(null);
+    $('visitorPreviewBtn').onclick = () => setVisitorPreview(true);
     $('exportBtn').onclick  = exportBackup;
-    $('logoutBtn').onclick  = () => {
+    $('logoutBtn').onclick = () => {
+        visitorPreview = false;
+        const returnBtn = document.getElementById('editorReturnBtn');
+        if (returnBtn) returnBtn.remove();
         adminToken = null;
         sessionStorage.removeItem('newsAdminToken');
         $('newsAdminBar').style.display = 'none';
