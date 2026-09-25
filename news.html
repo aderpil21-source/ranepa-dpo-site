@@ -1152,7 +1152,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('offline', setOnline);
     setOnline();
 
-    $('adminGearBtn').onclick   = () => $('newsAdminLoginModal').classList.add('active');
+    const editorRequested = new URLSearchParams(window.location.search).get('editor') === '1';
+
+if (editorRequested && !adminToken) {
+    $('newsAdminLoginModal').classList.add('active');
+}
     $('loginCancelBtn').onclick = () => $('newsAdminLoginModal').classList.remove('active');
     $('loginSubmitBtn').onclick = submitLogin;
     $('newsAdminPassInput').onkeydown = e => { if (e.key === 'Enter') submitLogin(); };
