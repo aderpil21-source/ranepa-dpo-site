@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 import requests
@@ -51,16 +52,72 @@ def safe_text(value, default=""):
     return str(value).strip()
 
 
-def get_json(url, params=None):
-    response = requests.get(
-        url,
-        params=params,
-        timeout=30,
+def get_json(url, params=None, attempts=4):
+    """
+    GET JSON with recovery from transient Google Apps Script redirect failures.
+
+    Apps Script web apps redirect to a short-lived script.googleusercontent.com URL.
+    GitHub-hosted runners occasionally receive a stale/failed redirect (often 404).
+    Each retry therefore starts again from the canonical script.google.com URL with
+    a cache-busting query parameter instead of retrying the redirected URL.
+    """
+    base_params = dict(params or {})
+    last_error = None
+
+    for attempt in range(1, attempts + 1):
+        request_params = {
+            **base_params,
+            "_cb": f"{int(time.time() * 1000)}-{attempt}",
+        }
+        try:
+            response = requests.get(
+                url,
+                params=request_params,
+                headers={
+                    "Accept": "application/json,text/plain,*/*",
+                    "Cache-Control": "no-cache",
+                    "Pragma": "no-cache",
+                    "User-Agent": (
+                        "Mozilla/5.0 (X11; Linux x86_64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/153 Safari/537.36"
+                    ),
+                },
+                timeout=(10, 45),
+                allow_redirects=True,
+            )
+
+            response.raise_for_status()
+
+            try:
+                return response.json()
+            except ValueError as error:
+                preview = response.text[:180].replace("\n", " ")
+                raise RuntimeError(
+                    f"API вернул не JSON (HTTP {response.status_code}): {preview}"
+                ) from error
+
+        except (requests.RequestException, RuntimeError) as error:
+            last_error = error
+            final_url = ""
+            try:
+                final_url = response.url
+            except Exception:
+                pass
+
+            print(
+                f"Попытка {attempt}/{attempts} получить API не удалась: "
+                f"{type(error).__name__}: {error}"
+            )
+            if final_url and "googleusercontent.com" in final_url:
+                print("Сбой произошёл после временного редиректа Google; запрашиваем исходный URL заново.")
+
+            if attempt < attempts:
+                time.sleep(min(2 ** attempt, 8))
+
+    raise RuntimeError(
+        f"Не удалось получить данные API после {attempts} попыток: {last_error}"
     )
-
-    response.raise_for_status()
-
-    return response.json()
 
 
 def vk_api_with_token(method, params, token):
