@@ -2469,9 +2469,12 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (chat.classList.contains('active')) {
             chat.classList.remove('active');
             ecosystem.classList.remove('chat-opened');
+            stopOwlFilesSnapshotPolling();
         } else {
             chat.classList.add('active');
             ecosystem.classList.add('chat-opened');
+            refreshOwlFilesSnapshot({ silent: true });
+            startOwlFilesSnapshotPolling();
         }
     }
 
@@ -2571,7 +2574,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         return hits / qWords.length;
     }
 
-    function handleUserMessage() {
+    async function handleUserMessage() {
         const input = document.getElementById('chatUserInput');
         const text = input.value.trim();
         if (!text) return;
@@ -2628,7 +2631,14 @@ if (wantsNewsEditor || wantsStaffPortal) {
 // --- КОНЕЦ СКРЫТОГО СЛУЖЕБНОГО ВХОДА ---
 
         const cleanCode = text.toUpperCase();
-        const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
+        let foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
+
+        // Если кода ещё нет в локальном списке, один раз тихо перепроверяем
+        // свежий статический снимок, прежде чем считать код неизвестным.
+        if (!foundFile) {
+            await refreshOwlFilesSnapshot({ silent: true });
+            foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
+        }
 
         if (foundFile) {
             setTimeout(() => {
