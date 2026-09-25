@@ -287,8 +287,8 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
         <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:20px; cursor:pointer;">
             <input type="checkbox" id="newsEditorPublishToVk" style="width:18px; height:18px; margin-top:2px;">
             <span>
-                <b>Опубликовать во ВКонтакте</b><br>
-                <small style="color:var(--text-muted);">Если выключено, новость останется только на сайте.</small>
+                <b>Открыть ВКонтакте после сохранения</b><br>
+                <small style="color:var(--text-muted);">Если выключено, новость сохраняется только на сайте. Автопубликации в VK нет.</small>
             </span>
         </label>
 
@@ -1184,28 +1184,10 @@ async function fetchVkState(){
 }
 
 function vkStatusHtml(news){
-    const live = news && news.vk && news.vk.status && news.vk.status !== 'missing'
-        ? news.vk
-        : null;
-    const legacy = (vkState.items || {})[String(news && news.id)] || null;
-    const item = live || legacy;
-
-    if (item && item.status === 'published'){
-        const mediaStatus = item.mediaStatus || item.media_status || '';
-        const media = mediaStatus === 'failed' ? ' · фото ⚠' : '';
-        return '<span style="color:var(--ok);">VK ✓ опубликовано' + media + '</span>';
-    }
-
     const wantsVk = newsWantsVk(news);
     if (!wantsVk) return '<span style="color:var(--text-muted);">VK — не выбрано</span>';
-    if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — после публикации на сайте</span>';
-
-    if (!item || item.status === 'not_requested') {
-        return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
-    }
-    if (item.status === 'publishing') return '<span style="color:var(--warn);">VK ⏳ отправляется</span>';
-    if (item.status === 'error') return '<span style="color:#fb7185;">VK ⚠ ошибка</span>';
-    return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
+    if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — откроется после публикации на сайте</span>';
+    return '<span style="color:var(--warn);">VK — вручную: откройте группу и добавьте фото</span>';
 }
 
 function renderAdminList(){
@@ -1339,9 +1321,6 @@ async function saveNews(){
     const btn = $('saveNewsBtn');
     const wantsVkNow = $('newsEditorPublished').checked && $('newsEditorPublishToVk').checked;
 
-    // Открываем окно сразу по клику, до сетевых запросов, чтобы браузер не заблокировал popup.
-    const vkWindow = wantsVkNow ? openVkWindowForManualPhoto() : null;
-
     const item = {
         id: editingNewsId,
         title: $('newsEditorTitle').value.trim(),
@@ -1354,22 +1333,20 @@ async function saveNews(){
     };
 
     if (!item.title){
-        if (vkWindow) vkWindow.close();
         toast('Впишите заголовок новости', 'error');
         return;
     }
-
     if (uploadJobs.some(j => ['uploading','retrying','compressing','checking'].includes(j.status))){
-        if (vkWindow) vkWindow.close();
         toast('Дождитесь окончания загрузки файлов', 'warn');
         return;
     }
 
     const stuck = uploadJobs.filter(j => j.status === 'offline').length;
-    if (stuck && !confirm(`${stuck} файл(ов) ещё не уехали в хранилище и догрузятся позже. Сохранить новость сейчас?`)){
-        if (vkWindow) vkWindow.close();
-        return;
-    }
+    if (stuck && !confirm(`${stuck} файл(ов) ещё не уехали в хранилище и догрузятся позже. Сохранить новость сейчас?`)) return;
+
+    // Открываем VK только если галочка включена.
+    // Никаких wall.post / newsRetryVk сайт больше не вызывает.
+    const vkWindow = wantsVkNow ? window.open(VK_GROUP_URL, 'ranepaVkManualPhoto') : null;
 
     btn.disabled = true;
     btn.textContent = 'Сохраняем';
@@ -1381,53 +1358,26 @@ async function saveNews(){
         });
 
         if (!data.ok){
-            if (vkWindow) vkWindow.close();
+            if (vkWindow && !vkWindow.closed) vkWindow.close();
             toast(data.error || 'Сохранить не удалось. Возможно, истекла сессия — войдите заново.', 'error', data.code);
             return;
         }
 
         rememberVkChoice(data.id, wantsVkNow);
 
-        let vkResult = data.vk || null;
-
-        if (wantsVkNow && data.id && (!vkResult || vkResult.status !== 'published')){
-            try {
-                vkResult = await requestJson(CONFIG.api, {
-                    method:'POST',
-                    body: JSON.stringify({ action:'newsRetryVk', token:adminToken, id:data.id })
-                }, 2);
-            } catch(e){}
-        }
+        clearDraft();
+        $('newsEditorModal').classList.remove('active');
 
         if (wantsVkNow){
-            const postId =
-                (vkResult && (vkResult.postId || vkResult.post_id)) ||
-                (data.vk && (data.vk.postId || data.vk.post_id)) ||
-                null;
-
-            const target = vkPostUrl(postId);
-
-            if (vkWindow && !vkWindow.closed){
-                vkWindow.location.replace(target);
-            } else {
-                toast('Браузер заблокировал окно VK. Разрешите всплывающие окна для сайта и сохраните ещё раз.', 'warn');
-            }
-
-            if (postId){
-                toast('Новость сохранена. Открываю готовый пост VK — добавьте фото вручную через редактирование поста.', 'ok');
-            } else {
-                toast('Новость сохранена. Открываю группу VK — найдите свежий пост и добавьте фото вручную.', 'warn');
-            }
+            toast('Новость сохранена. Группа VK открыта — добавьте пост и фото вручную.', 'ok');
         } else {
             toast('Новость сохранена только на сайте', 'ok');
         }
 
-        clearDraft();
-        $('newsEditorModal').classList.remove('active');
         fetchNews();
 
     } catch(e){
-        if (vkWindow) vkWindow.close();
+        if (vkWindow && !vkWindow.closed) vkWindow.close();
         saveDraft();
         toast('Сервер не принял новость: ' + e.message + ' Черновик сохранён в браузере, попробуйте ещё раз.', 'error');
     } finally {
