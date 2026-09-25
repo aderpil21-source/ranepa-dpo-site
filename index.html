@@ -1601,6 +1601,44 @@
     let scheduleDataLoaded = false;
     let scheduleRefreshTimer = null;
 
+    const SCHEDULE_CACHE_KEY = 'ranepa_schedule_cache_v1';
+    const SCHEDULE_CACHE_TTL_MS = 60 * 60 * 1000;
+
+    function readScheduleCache() {
+        try {
+            const raw = localStorage.getItem(SCHEDULE_CACHE_KEY);
+            if (!raw) return null;
+
+            const cached = JSON.parse(raw);
+            if (!cached || !Array.isArray(cached.schedules) || !cached.savedAt) return null;
+
+            const age = Date.now() - Number(cached.savedAt);
+            if (age < 0 || age > SCHEDULE_CACHE_TTL_MS) return null;
+
+            return cached.schedules;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function writeScheduleCache(schedules) {
+        try {
+            localStorage.setItem(SCHEDULE_CACHE_KEY, JSON.stringify({
+                savedAt: Date.now(),
+                schedules: Array.isArray(schedules) ? schedules : []
+            }));
+        } catch (e) {}
+    }
+
+    function hydrateScheduleFromCache() {
+        const cachedSchedules = readScheduleCache();
+        if (!cachedSchedules) return false;
+
+        window.schedules = cachedSchedules;
+        scheduleDataLoaded = true;
+        return true;
+    }
+
     function loadPortalData(forceRefresh = false) {
         if (forceRefresh) {
             portalDataPromise = null;
@@ -1910,6 +1948,7 @@
             if (Array.isArray(data.schedules)) {
                 window.schedules = data.schedules;
                 scheduleDataLoaded = true;
+                writeScheduleCache(data.schedules);
             }
 
             const tickerEl = document.getElementById('globalAlertTicker');
@@ -3090,17 +3129,11 @@ if (wantsNewsEditor || wantsStaffPortal) {
             ? cutoffSeconds - secondsNow
             : (24 * 3600 - secondsNow) + cutoffSeconds;
 
-        scheduleRefreshTimer = setTimeout(async () => {
+        scheduleRefreshTimer = setTimeout(() => {
             const overlay = document.getElementById('scheduleOverlay');
             if (overlay && overlay.classList.contains('active')) {
-                try {
-                    const data = await loadPortalData(true);
-                    window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
-                    scheduleDataLoaded = true;
-                } catch (error) {
-                    console.error('Ошибка обновления расписания в 21:00', error);
-                }
-
+                // В 21:00 достаточно пересчитать видимость локально.
+                // Сетевой запрос выполняется только после истечения часового кэша.
                 renderSchedule();
                 scheduleNextCutoffRefresh();
             }
@@ -3114,24 +3147,14 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
         overlay.classList.add('active');
 
-        // Если данные уже есть, показываем их мгновенно, но всё равно проверяем свежую версию.
+        // Свежий часовой кэш открывается мгновенно и не запускает лишний запрос.
+        if (!scheduleDataLoaded) {
+            hydrateScheduleFromCache();
+        }
+
         if (scheduleDataLoaded) {
             renderSchedule();
             scheduleNextCutoffRefresh();
-
-            try {
-                const data = await loadPortalData(true);
-                window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
-                scheduleDataLoaded = true;
-
-                if (overlay.classList.contains('active')) {
-                    renderSchedule();
-                    scheduleNextCutoffRefresh();
-                }
-            } catch (error) {
-                // При временной ошибке оставляем пользователю последнюю успешно загруженную версию.
-                console.error('Ошибка фонового обновления расписания', error);
-            }
             return;
         }
 
@@ -3141,6 +3164,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
             const data = await loadPortalData();
             window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
             scheduleDataLoaded = true;
+            writeScheduleCache(window.schedules);
             renderSchedule();
             scheduleNextCutoffRefresh();
         } catch (error) {
@@ -3194,6 +3218,7 @@ document.getElementById('mediaLightbox').addEventListener('click', function(e) {
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
         window.scrollTo(0, 0);
 
+        hydrateScheduleFromCache();
         fetchPrograms();
         armRevealTargets();
         updateScrollNav();
