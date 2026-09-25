@@ -248,11 +248,10 @@ def publish_to_vk(news):
         owner_id = "-" + owner_id
 
     params = {
-        "owner_id": owner_id,
-        "from_group": 1,
-        "message": message,
-        "attachments": news_url,
-    }
+    "owner_id": owner_id,
+    "from_group": 1,
+    "message": message,
+}
 
     print(f"Публикуем в VK: {title}")
 
