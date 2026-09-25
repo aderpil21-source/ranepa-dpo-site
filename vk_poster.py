@@ -479,6 +479,8 @@ def publish_to_vk(news):
         "owner_id": owner_id,
         "from_group": 1,
         "message": message,
+        # VK uses guid to suppress accidental duplicate wall.post calls.
+        "guid": "ranepa-news-" + news_id,
     }
 
     image_url = get_news_image(news)
@@ -493,17 +495,32 @@ def publish_to_vk(news):
             else:
                 media_status = "skipped"
         except Exception as error:
-            media_status = "failed"
+            media_status = "preview"
             media_error = safe_text(error)
-            print(f"Не удалось прикрепить изображение: {error}")
-            print("Продолжаем публикацию без изображения.")
+            print(f"Не удалось загрузить фото в VK: {error}")
+            print("Пробуем бесплатную карточку-ссылку с обложкой.")
+            params["attachments"] = (
+                "https://ranepa-dpo-site.vercel.app/api/share-news?id="
+                + news_id
+            )
 
     print(f"Публикуем в VK: {title}")
 
-    response = vk_api(
-        "wall.post",
-        params,
-    )
+    try:
+        response = vk_api(
+            "wall.post",
+            params,
+        )
+    except Exception as error:
+        if media_status == "preview" and params.get("attachments"):
+            print(f"VK отклонил карточку-ссылку: {error}")
+            print("Повторяем публикацию только с текстом; guid защитит от дубля.")
+            params.pop("attachments", None)
+            media_status = "failed"
+            media_error = (media_error + " | preview: " + safe_text(error)).strip(" |")
+            response = vk_api("wall.post", params)
+        else:
+            raise
 
     post_id = response.get("post_id")
     if post_id is None:
