@@ -1,29 +1,31 @@
 name: VK Auto Poster
 
 on:
-  # Только аварийный ручной запуск.
-  # Никаких cron/schedule: публикацией управляет редактор новостей.
+  # Проверка новых новостей каждые 30 минут
+  schedule:
+    - cron: '*/30 * * * *'
+  
+  # Возможность запустить скрипт вручную в любой момент из интерфейса GitHub
   workflow_dispatch:
 
 jobs:
   post-to-vk:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      - run: pip install requests
+      - name: Install dependencies
+        run: |
+          pip install requests Pillow python-dotenv
 
       - name: Run vk_poster.py
         env:
           VK_TOKEN: ${{ secrets.VK_TOKEN }}
-          VK_UPLOAD_TOKEN: ${{ secrets.VK_UPLOAD_TOKEN }}
           VK_OWNER_ID: ${{ secrets.VK_OWNER_ID }}
-          VK_API_VERSION: "5.199"
         run: python vk_poster.py
