@@ -2478,6 +2478,20 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         }
     }
 
+    document.addEventListener('visibilitychange', () => {
+        if (!isOwlChatActive()) {
+            stopOwlFilesSnapshotPolling();
+            return;
+        }
+
+        if (document.visibilityState === 'visible') {
+            refreshOwlFilesSnapshot({ silent: true });
+            startOwlFilesSnapshotPolling();
+        } else {
+            stopOwlFilesSnapshotPolling();
+        }
+    });
+
     function updateScrollNav() {
         const scrollY = window.scrollY || document.documentElement.scrollTop;
         const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
