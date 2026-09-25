@@ -2810,6 +2810,97 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
     const SCHEDULE_TIME_ZONE = 'Europe/Kaliningrad';
     const SCHEDULE_CUTOFF_HOUR = 21;
+    const SCHEDULE_SNAPSHOT_POLL_MS = 60 * 1000;
+
+    let scheduleSnapshotPollTimer = null;
+    let scheduleSnapshotRefreshInFlight = null;
+
+    function scheduleSnapshotUrl() {
+        const minuteBucket = Math.floor(Date.now() / SCHEDULE_SNAPSHOT_POLL_MS);
+        return './schedule-data.json?v=' + minuteBucket;
+    }
+
+    function scheduleFingerprint(items) {
+        try {
+            return JSON.stringify(Array.isArray(items) ? items : []);
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function isScheduleOverlayActive() {
+        const overlay = document.getElementById('scheduleOverlay');
+        return !!(overlay && overlay.classList.contains('active'));
+    }
+
+    async function refreshScheduleSnapshot(options) {
+        const opts = options || {};
+
+        if (!isScheduleOverlayActive() || document.visibilityState === 'hidden') return false;
+        if (scheduleSnapshotRefreshInFlight) return scheduleSnapshotRefreshInFlight;
+
+        scheduleSnapshotRefreshInFlight = (async () => {
+            try {
+                const response = await fetch(scheduleSnapshotUrl());
+                if (!response.ok) throw new Error('Schedule snapshot HTTP ' + response.status);
+
+                const data = await response.json();
+                if (!data || !Array.isArray(data.schedules)) {
+                    throw new Error('Schedule snapshot has invalid format');
+                }
+
+                const freshSchedules = data.schedules;
+                const changed = scheduleFingerprint(freshSchedules) !== scheduleFingerprint(window.schedules);
+
+                if (changed) {
+                    const overlay = document.getElementById('scheduleOverlay');
+                    const previousScrollTop = overlay ? overlay.scrollTop : 0;
+
+                    window.schedules = freshSchedules;
+                    scheduleDataLoaded = true;
+                    renderSchedule();
+
+                    if (overlay) {
+                        requestAnimationFrame(() => {
+                            overlay.scrollTop = previousScrollTop;
+                        });
+                    }
+                }
+
+                return changed;
+            } catch (error) {
+                if (!opts.silent) {
+                    console.warn('Не удалось обновить статический снимок расписания:', error);
+                }
+                return false;
+            } finally {
+                scheduleSnapshotRefreshInFlight = null;
+            }
+        })();
+
+        return scheduleSnapshotRefreshInFlight;
+    }
+
+    function stopScheduleSnapshotPolling() {
+        if (scheduleSnapshotPollTimer) {
+            clearInterval(scheduleSnapshotPollTimer);
+            scheduleSnapshotPollTimer = null;
+        }
+    }
+
+    function startScheduleSnapshotPolling() {
+        stopScheduleSnapshotPolling();
+
+        if (!isScheduleOverlayActive() || document.visibilityState !== 'visible') return;
+
+        scheduleSnapshotPollTimer = setInterval(() => {
+            if (!isScheduleOverlayActive() || document.visibilityState !== 'visible') {
+                stopScheduleSnapshotPolling();
+                return;
+            }
+            refreshScheduleSnapshot({ silent: true });
+        }, SCHEDULE_SNAPSHOT_POLL_MS);
+    }
 
     function getKaliningradParts(date = new Date()) {
         const formatter = new Intl.DateTimeFormat('en-CA', {
@@ -3208,6 +3299,8 @@ if (wantsNewsEditor || wantsStaffPortal) {
         if (scheduleDataLoaded) {
             renderSchedule();
             scheduleNextCutoffRefresh();
+            refreshScheduleSnapshot({ silent: true });
+            startScheduleSnapshotPolling();
             return;
         }
 
@@ -3219,6 +3312,8 @@ if (wantsNewsEditor || wantsStaffPortal) {
             scheduleDataLoaded = true;
             renderSchedule();
             scheduleNextCutoffRefresh();
+            refreshScheduleSnapshot({ silent: true });
+            startScheduleSnapshotPolling();
         } catch (error) {
             console.error('Ошибка загрузки расписания', error);
             container.replaceChildren(makeScheduleState(translationsHTML[currentLang].schError));
@@ -3232,8 +3327,23 @@ if (wantsNewsEditor || wantsStaffPortal) {
             clearTimeout(scheduleRefreshTimer);
             scheduleRefreshTimer = null;
         }
+        stopScheduleSnapshotPolling();
         disconnectScheduleObservers();
     }
+
+    document.addEventListener('visibilitychange', () => {
+        if (!isScheduleOverlayActive()) {
+            stopScheduleSnapshotPolling();
+            return;
+        }
+
+        if (document.visibilityState === 'visible') {
+            refreshScheduleSnapshot({ silent: true });
+            startScheduleSnapshotPolling();
+        } else {
+            stopScheduleSnapshotPolling();
+        }
+    });
 
     function openDocLightbox(imgUrl, title) {
     const box = document.getElementById('lightboxContent');
