@@ -2,11 +2,6 @@ name: Publish news to VK
 
 on:
   workflow_dispatch:
-
-  schedule:
-    # Проверять сайт каждые 5 минут
-    - cron: "3,8,13,18,23,28,33,38,43,48,53,58 * * * *"
-
   push:
     paths:
       - "vk_poster.py"
