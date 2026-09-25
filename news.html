@@ -1130,6 +1130,23 @@ async function submitLogin(){
 }
 
 async function fetchVkState(){
+    const ids = (newsItems || []).map(n => String(n.id || '')).filter(Boolean);
+
+    // Новый событийный worker — основной источник статусов.
+    if (ids.length){
+        try {
+            const res = await fetch('/api/vk-status?ids=' + encodeURIComponent(ids.join(',')), { cache:'no-store' });
+            if (res.ok){
+                const data = await res.json();
+                if (data && data.ok){
+                    vkState = { version:3, items:data.items || {} };
+                    return;
+                }
+            }
+        } catch(e){}
+    }
+
+    // Переходный резерв: старый файл состояния GitHub.
     try {
         const res = await fetch('/vk_published.json?ts=' + Date.now(), { cache:'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1142,7 +1159,7 @@ async function fetchVkState(){
             vkState = { version:data.version || 2, items:data.items || {} };
         }
     } catch(e){
-        vkState = { version:2, items:{} };
+        vkState = { version:3, items:{} };
     }
 }
 
