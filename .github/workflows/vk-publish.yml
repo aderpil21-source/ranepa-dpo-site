@@ -1,12 +1,9 @@
 name: Publish news to VK
 
 on:
+  # Резервный ручной запуск. Автоматический VK-постинг теперь делает Apps Script
+  # только при явной галочке редактора.
   workflow_dispatch:
-  push:
-    paths:
-      - "vk_poster.py"
-      - ".github/workflows/vk-publish.yml"
-      - "requirements.txt"
 
 permissions:
   contents: write
