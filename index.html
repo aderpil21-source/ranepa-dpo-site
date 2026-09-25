@@ -1600,7 +1600,7 @@
     let portalRefreshStarted = false;
 
     const PORTAL_BROWSER_CACHE_KEY = 'ranepa_portal_data_v1';
-    const PORTAL_BROWSER_CACHE_TTL = 60 * 60 * 1000;
+    const PORTAL_BROWSER_CACHE_TTL = 5 * 60 * 1000;
 
     function isValidPortalData(data) {
         return !!data &&
@@ -1657,21 +1657,23 @@
         if (portalRefreshStarted) return;
         portalRefreshStarted = true;
 
-        fetch(API_URL, { cache: 'no-store' })
+        const fiveMinuteBucket = Math.floor(Date.now() / (5 * 60 * 1000));
+
+        fetch('./portal-data.json?v=' + fiveMinuteBucket)
             .then(response => {
-                if (!response.ok) throw new Error('API HTTP ' + response.status);
+                if (!response.ok) throw new Error('Local data HTTP ' + response.status);
                 return response.json();
             })
             .then(data => {
                 if (!isValidPortalData(data)) {
-                    throw new Error('API returned invalid portal data');
+                    throw new Error('Local portal-data.json is invalid');
                 }
 
                 writePortalBrowserCache(data);
                 applyFreshPortalState(data);
             })
             .catch(error => {
-                console.warn('Фоновое обновление данных недоступно:', error);
+                console.warn('Фоновое обновление локального снимка недоступно:', error);
             });
     }
 
