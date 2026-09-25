@@ -315,7 +315,6 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 const CONFIG = {
     // Бэкенд новостей: тексты, список, вход. Может остаться прежним.
     api: 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec',
-    editorApi: 'https://ranepa-dpo-site.vercel.app/api/news-backend',
 
     storage: {
         // Цепочка хранилищ, пробуются сверху вниз.
@@ -435,20 +434,9 @@ function driveId(url){
     const m = url.match(/\/file\/d\/([\w-]+)/) || url.match(/[?&]id=([\w-]+)/);
     return m ? m[1] : null;
 }
-const LEGACY_NEWS_DRIVE_IDS = new Set([
-    '1rM-29CE3Y34YY7R9somR41N3mDNhjtjJ',
-    '1NR1WULHHEGn-Jweo_51J-HLxwWC6vwQ5',
-    '1CzeO6rilqlxiStr4Rgnn8huQxppOdZ6J',
-    '1qS3zmdzgMfBcIIVNXGGbaonBpShbs_IZ'
-]);
-
 function imageUrl(url){
     const id = driveId(url);
-    if (!id) return url;
-    if (LEGACY_NEWS_DRIVE_IDS.has(id)) {
-        return 'https://ranepa-dpo-site.vercel.app/api/legacy-news-image?id=' + encodeURIComponent(id);
-    }
-    return `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+    return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1600` : url;
 }
 
 /* ============================================================================
@@ -976,7 +964,7 @@ async function fetchNews(){
     if (adminToken){
         stopPublicNewsPolling();
         try {
-            const url = CONFIG.editorApi + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
+            const url = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
             const data = await requestJson(url, { method:'GET' });
             newsItems = data.items || [];
             cacheNews(newsItems);
@@ -1273,7 +1261,7 @@ async function submitLogin(){
     const err = $('newsAdminLoginError');
     err.style.display = 'none';
     try {
-        const data = await requestJson(CONFIG.editorApi, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'newsLogin', password: $('newsAdminPassInput').value }) });
+        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsLogin', password: $('newsAdminPassInput').value }) });
         if (data.ok){
             adminToken = data.token;
             sessionStorage.setItem('newsAdminToken', adminToken);
@@ -1475,7 +1463,7 @@ async function saveNews(){
     btn.textContent = 'Сохраняем';
 
     try {
-        const data = await requestJson(CONFIG.editorApi, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'newsSave', token:adminToken, item })
+        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsSave', token:adminToken, item })
         });
 
         if (!data.ok){
@@ -1512,7 +1500,7 @@ async function deleteNews(id){
     if (!confirm(`Удалить новость «${n ? n.title : id}» безвозвратно?`)) return;
     if (!confirm('Это действие нельзя отменить. Точно удаляем?')) return;
     try {
-        const data = await requestJson(CONFIG.editorApi, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ action:'newsDelete', token: adminToken, id }) });
+        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsDelete', token: adminToken, id }) });
         if (data.ok){ toast('Новость удалена', 'ok'); fetchNews(); }
         else toast(data.error || 'Удалить не удалось', 'error', data.code);
     } catch(e){ toast('Сервер не отвечает: ' + e.message, 'error'); }
