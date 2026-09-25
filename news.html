@@ -356,7 +356,9 @@ const BLOCK_LABELS = { text:'Абзац', insert:'Врезка', image:'Фото
 const VK_META_TYPE = '__system_vk';
 
 function newsWantsVk(news){
-    const blocks = Array.isArray(news && news.blocks) ? news.blocks : [];
+    if (!news) return false;
+    if (news.publishToVk === true || news.publishToVk === 'true') return true;
+    const blocks = Array.isArray(news.blocks) ? news.blocks : [];
     return blocks.some(b => b && b.type === VK_META_TYPE && b.publishToVk === true);
 }
 function editorBlocksOnly(blocks){
@@ -1308,7 +1310,9 @@ async function saveNews(){
         title: $('newsEditorTitle').value.trim(),
         lead: $('newsEditorLead').value.trim(),
         coverImage: $('newsEditorCover').value.trim(),
-        tags: editorTags, blocks: editorBlocks,
+        tags: editorTags,
+        blocks: blocksWithVkPreference(editorBlocks, $('newsEditorPublishToVk').checked),
+        publishToVk: $('newsEditorPublishToVk').checked,
         status: $('newsEditorPublished').checked ? 'published' : 'hidden'
     };
     if (!item.title){ toast('Впишите заголовок новости', 'error'); return; }
@@ -1322,6 +1326,23 @@ async function saveNews(){
     try {
         const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsSave', token: adminToken, item }) });
         if (data.ok){
+            const wantsVkNow = item.status === 'published' && $('newsEditorPublishToVk').checked;
+
+            if (wantsVkNow && data.id){
+                try {
+                    const vk = await requestJson(CONFIG.api, {
+                        method:'POST',
+                        body: JSON.stringify({ action:'newsRetryVk', token:adminToken, id:data.id })
+                    }, 2);
+
+                    if (!vk.ok && vk.error !== 'vk_not_requested'){
+                        toast('Новость сохранена, но VK вернул ошибку. Статус показан в редакторе.', 'warn');
+                    }
+                } catch(e){
+                    toast('Новость сохранена. VK временно не ответил — публикацию можно повторить позже.', 'warn');
+                }
+            }
+
             clearDraft();
             $('newsEditorModal').classList.remove('active');
             toast('Новость сохранена', 'ok');
