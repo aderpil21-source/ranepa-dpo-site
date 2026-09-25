@@ -1130,27 +1130,13 @@ async function submitLogin(){
 }
 
 async function fetchVkState(){
-    const ids = (newsItems || []).map(n => String(n.id || '')).filter(Boolean);
-
-    // Новый событийный worker — основной источник статусов.
-    if (ids.length){
-        try {
-            const res = await fetch('/api/vk-status?ids=' + encodeURIComponent(ids.join(',')), { cache:'no-store' });
-            if (res.ok){
-                const data = await res.json();
-                if (data && data.ok){
-                    vkState = { version:3, items:data.items || {} };
-                    return;
-                }
-            }
-        } catch(e){}
-    }
-
-    // Переходный резерв: старый файл состояния GitHub.
+    // Резерв для старых публикаций, которые были сделаны до событийного режима.
+    // Новые статусы приходят прямо из Apps Script в поле news.vk.
     try {
         const res = await fetch('/vk_published.json?ts=' + Date.now(), { cache:'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
+
         if (Array.isArray(data)){
             const items = {};
             data.forEach(id => { items[String(id)] = { status:'published' }; });
@@ -1164,17 +1150,25 @@ async function fetchVkState(){
 }
 
 function vkStatusHtml(news){
-    const item = (vkState.items || {})[String(news && news.id)] || null;
+    const live = news && news.vk && news.vk.status && news.vk.status !== 'missing'
+        ? news.vk
+        : null;
+    const legacy = (vkState.items || {})[String(news && news.id)] || null;
+    const item = live || legacy;
 
     if (item && item.status === 'published'){
-        const media = item.media_status === 'failed' ? ' · фото ⚠' : '';
+        const mediaStatus = item.mediaStatus || item.media_status || '';
+        const media = mediaStatus === 'failed' ? ' · фото ⚠' : '';
         return '<span style="color:var(--ok);">VK ✓ опубликовано' + media + '</span>';
     }
 
     const wantsVk = newsWantsVk(news);
     if (!wantsVk) return '<span style="color:var(--text-muted);">VK — не выбрано</span>';
     if (!news || news.status !== 'published') return '<span style="color:var(--text-muted);">VK — после публикации на сайте</span>';
-    if (!item) return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
+
+    if (!item || item.status === 'not_requested') {
+        return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
+    }
     if (item.status === 'publishing') return '<span style="color:var(--warn);">VK ⏳ отправляется</span>';
     if (item.status === 'error') return '<span style="color:#fb7185;">VK ⚠ ошибка</span>';
     return '<span style="color:var(--warn);">VK ⏳ ожидает отправки</span>';
