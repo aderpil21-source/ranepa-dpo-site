@@ -895,31 +895,104 @@ function exportBackup(){
 /* ============================================================================
    БЛОК 10. СПИСОК И ДЕТАЛЬНАЯ СТРАНИЦА
    ============================================================================ */
-async function fetchNews(){
+let publicNewsRefreshStarted = false;
+
+function openHashNewsIfPresent(){
+    const hash = location.hash.replace('#','').replace('news=','');
+    if (hash && newsItems.find(n => n.id === hash)) openDetail(hash);
+}
+
+async function refreshPublicNewsInBackground(){
+    if (publicNewsRefreshStarted || adminToken) return;
+    publicNewsRefreshStarted = true;
+
     try {
-        let url = CONFIG.api + '?type=news';
-        if (adminToken) url += '&admin=1&token=' + encodeURIComponent(adminToken);
-        const data = await requestJson(url, { method:'GET' });
-        newsItems = data.items || [];
+        const data = await requestJson(CONFIG.api + '?type=news', { method:'GET' }, 1);
+        const freshItems = Array.isArray(data.items)
+            ? data.items.filter(n => n && n.status === 'published')
+            : [];
+
+        if (!freshItems.length) return;
+
+        newsItems = freshItems;
         cacheNews(newsItems);
         renderGrid();
-        if (adminToken){
+        openHashNewsIfPresent();
+    } catch(e){
+        console.warn('Фоновое обновление новостей недоступно:', e);
+    }
+}
+
+async function fetchNews(){
+    // Администратор всегда получает свежий полный набор напрямую с бэкенда.
+    if (adminToken){
+        try {
+            const url = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
+            const data = await requestJson(url, { method:'GET' });
+            newsItems = data.items || [];
+            cacheNews(newsItems);
+            renderGrid();
+
             $('newsAdminBar').style.display = 'flex';
             await fetchVkState();
             renderAdminList();
             renderPendingNote();
+            openHashNewsIfPresent();
+            return;
+        } catch(e){
+            const cached = readCachedNews();
+            if (cached){
+                newsItems = cached;
+                renderGrid();
+                toast('Сервер не отвечает, показываем сохранённую копию новостей', 'warn');
+            } else {
+                $('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Не удалось связаться с базой. Обновите страницу или попробуйте позже.</div>`;
+            }
+            return;
         }
-        const hash = location.hash.replace('#','').replace('news=','');
-        if (hash && newsItems.find(n => n.id === hash)) openDetail(hash);
+    }
+
+    // Для посетителя сначала используем браузерный кэш — без ожидания сети.
+    const cached = readCachedNews();
+    if (cached && cached.length){
+        newsItems = cached;
+        renderGrid();
+        openHashNewsIfPresent();
+        setTimeout(refreshPublicNewsInBackground, 0);
+        return;
+    }
+
+    // Первый визит: маленький JSON с того же сайта загружается быстрее Apps Script.
+    try {
+        const localResponse = await fetch('./news-data.json');
+        if (!localResponse.ok) throw new Error('Local news HTTP ' + localResponse.status);
+
+        const localData = await localResponse.json();
+        const localItems = Array.isArray(localData.items)
+            ? localData.items.filter(n => n && n.status === 'published')
+            : [];
+
+        if (!localItems.length) throw new Error('Local news snapshot is empty');
+
+        newsItems = localItems;
+        cacheNews(newsItems);
+        renderGrid();
+        openHashNewsIfPresent();
+        setTimeout(refreshPublicNewsInBackground, 0);
+        return;
+    } catch(localError){
+        console.warn('Локальный снимок новостей недоступен, обращаемся к API:', localError);
+    }
+
+    // Последний резерв — прямой запрос к Apps Script.
+    try {
+        const data = await requestJson(CONFIG.api + '?type=news', { method:'GET' });
+        newsItems = data.items || [];
+        cacheNews(newsItems);
+        renderGrid();
+        openHashNewsIfPresent();
     } catch(e){
-        const cached = readCachedNews();
-        if (cached){
-            newsItems = cached;
-            renderGrid();
-            toast('Сервер не отвечает, показываем сохранённую копию новостей', 'warn');
-        } else {
-            $('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Не удалось связаться с базой. Обновите страницу или попробуйте позже.</div>`;
-        }
+        $('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Не удалось связаться с базой. Обновите страницу или попробуйте позже.</div>`;
     }
 }
 
