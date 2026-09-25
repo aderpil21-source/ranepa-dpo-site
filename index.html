@@ -1601,46 +1601,64 @@
     let scheduleDataLoaded = false;
     let scheduleRefreshTimer = null;
 
-    const SCHEDULE_CACHE_KEY = 'ranepa_schedule_cache_v1';
-    const SCHEDULE_CACHE_TTL_MS = 60 * 60 * 1000;
+    const PORTAL_CACHE_KEY = 'ranepa_portal_cache_v1';
+    const PORTAL_CACHE_TTL_MS = 60 * 60 * 1000;
 
-    function readScheduleCache() {
+    function readPortalCache() {
         try {
-            const raw = localStorage.getItem(SCHEDULE_CACHE_KEY);
+            const raw = localStorage.getItem(PORTAL_CACHE_KEY);
             if (!raw) return null;
 
             const cached = JSON.parse(raw);
-            if (!cached || !Array.isArray(cached.schedules) || !cached.savedAt) return null;
+            if (!cached || !cached.savedAt || !cached.data) return null;
 
             const age = Date.now() - Number(cached.savedAt);
-            if (age < 0 || age > SCHEDULE_CACHE_TTL_MS) return null;
+            if (age < 0 || age > PORTAL_CACHE_TTL_MS) return null;
 
-            return cached.schedules;
+            return cached.data;
         } catch (e) {
             return null;
         }
     }
 
-    function writeScheduleCache(schedules) {
+    function writePortalCache(data) {
         try {
-            localStorage.setItem(SCHEDULE_CACHE_KEY, JSON.stringify({
+            localStorage.setItem(PORTAL_CACHE_KEY, JSON.stringify({
                 savedAt: Date.now(),
-                schedules: Array.isArray(schedules) ? schedules : []
+                data: data || {}
             }));
         } catch (e) {}
     }
 
-    function hydrateScheduleFromCache() {
-        const cachedSchedules = readScheduleCache();
-        if (!cachedSchedules) return false;
+    function hydratePortalState(data) {
+        if (!data || typeof data !== 'object') return false;
 
-        window.schedules = cachedSchedules;
-        scheduleDataLoaded = true;
+        if (Array.isArray(data.owlFiles)) {
+            globalOwlFiles = data.owlFiles;
+        }
+
+        if (Array.isArray(data.schedules)) {
+            window.schedules = data.schedules;
+            scheduleDataLoaded = true;
+        }
+
+        if (data.currentAlert && data.currentAlert.text) {
+            globalAlert = data.currentAlert;
+        } else {
+            globalAlert = null;
+        }
+
         return true;
     }
 
     function loadPortalData(forceRefresh = false) {
-        if (forceRefresh) {
+        if (!forceRefresh) {
+            const cachedData = readPortalCache();
+            if (cachedData) {
+                hydratePortalState(cachedData);
+                return Promise.resolve(cachedData);
+            }
+        } else {
             portalDataPromise = null;
         }
 
@@ -1649,6 +1667,11 @@
                 .then(response => {
                     if (!response.ok) throw new Error('API HTTP ' + response.status);
                     return response.json();
+                })
+                .then(data => {
+                    writePortalCache(data);
+                    hydratePortalState(data);
+                    return data;
                 })
                 .catch(error => {
                     // После ошибки разрешаем следующей попытке повторить запрос.
@@ -1948,7 +1971,6 @@
             if (Array.isArray(data.schedules)) {
                 window.schedules = data.schedules;
                 scheduleDataLoaded = true;
-                writeScheduleCache(data.schedules);
             }
 
             const tickerEl = document.getElementById('globalAlertTicker');
@@ -3147,9 +3169,10 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
         overlay.classList.add('active');
 
-        // Свежий часовой кэш открывается мгновенно и не запускает лишний запрос.
+        // Свежий часовой кэш портала открывается мгновенно и не запускает лишний запрос.
         if (!scheduleDataLoaded) {
-            hydrateScheduleFromCache();
+            const cachedData = readPortalCache();
+            if (cachedData) hydratePortalState(cachedData);
         }
 
         if (scheduleDataLoaded) {
@@ -3164,7 +3187,6 @@ if (wantsNewsEditor || wantsStaffPortal) {
             const data = await loadPortalData();
             window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
             scheduleDataLoaded = true;
-            writeScheduleCache(window.schedules);
             renderSchedule();
             scheduleNextCutoffRefresh();
         } catch (error) {
@@ -3218,7 +3240,10 @@ document.getElementById('mediaLightbox').addEventListener('click', function(e) {
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
         window.scrollTo(0, 0);
 
-        hydrateScheduleFromCache();
+        const cachedPortalData = readPortalCache();
+        if (cachedPortalData) {
+            hydratePortalState(cachedPortalData);
+        }
         fetchPrograms();
         armRevealTargets();
         updateScrollNav();
