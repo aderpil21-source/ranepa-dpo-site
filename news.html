@@ -919,7 +919,7 @@ function applyPublicNewsItems(items, options){
         : [];
 
     const changed = publicNewsFingerprint(freshItems) !== publicNewsFingerprint(newsItems);
-    if (changed){
+    if (changed || opts.forceRender){
         newsItems = freshItems;
         cacheNews(newsItems);
         renderGrid();
@@ -1033,7 +1033,7 @@ async function fetchNews(){
             throw new Error('Local news snapshot has invalid format');
         }
 
-        applyPublicNewsItems(data.items, { openHash:true });
+        applyPublicNewsItems(data.items, { openHash:true, forceRender:true });
         startPublicNewsPolling();
         return;
     } catch(localError){
