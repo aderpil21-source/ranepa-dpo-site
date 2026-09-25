@@ -618,6 +618,7 @@
             box-shadow: 0 18px 44px rgba(0,0,0,.18);
         }
         .schedule-month-link {
+            position: relative; overflow: hidden;
             width: 100%;
             display: flex; align-items: center; justify-content: space-between; gap: 8px;
             border: 1px solid transparent; border-radius: 12px;
@@ -625,11 +626,28 @@
             padding: 10px 12px; text-align: left;
             font: inherit; font-size: .86rem; font-weight: 800;
             cursor: pointer; touch-action: manipulation;
-            transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+            box-shadow: 0 0 0 rgba(0,0,0,0);
+            transition:
+                color .24s var(--bezier-smooth),
+                background .24s var(--bezier-smooth),
+                border-color .24s var(--bezier-smooth),
+                transform .24s var(--bezier-smooth),
+                box-shadow .24s var(--bezier-smooth);
+        }
+        .schedule-month-link::before {
+            content: '';
+            position: absolute; inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 18% 50%, rgba(202,15,62,.20), transparent 38%),
+                radial-gradient(circle at 82% 50%, rgba(56,189,248,.16), transparent 40%);
+            opacity: 0;
+            transition: opacity .24s var(--bezier-smooth);
         }
         .schedule-month-link::after {
             content: ''; width: 6px; height: 6px; border-radius: 50%;
             background: currentColor; opacity: .35; flex: 0 0 auto;
+            position: relative; z-index: 1;
         }
         .schedule-month-link.active {
             color: #fff;
@@ -637,8 +655,24 @@
             background: linear-gradient(90deg, rgba(202,15,62,.13), rgba(56,189,248,.08));
             box-shadow: inset 2px 0 0 rgba(202,15,62,.75), 0 8px 24px rgba(0,0,0,.14);
         }
+        .schedule-month-link.active::before { opacity: .55; }
+
         @media (hover:hover) and (pointer:fine) {
-            .schedule-month-link:hover { color:#fff; transform: translateX(2px); }
+            .schedule-month-link:hover,
+            .schedule-month-link.active:hover {
+                color: #fff;
+                transform: translate3d(5px,-2px,0);
+                border-color: rgba(56,189,248,.34);
+                background: linear-gradient(100deg, rgba(202,15,62,.20), rgba(56,189,248,.13));
+                box-shadow:
+                    inset 2px 0 0 rgba(202,15,62,.88),
+                    0 12px 28px rgba(0,0,0,.24),
+                    0 0 24px rgba(56,189,248,.08);
+            }
+            .schedule-month-link:hover::before,
+            .schedule-month-link.active:hover::before {
+                opacity: 1;
+            }
         }
 
         .schedule-content { min-width: 0; }
@@ -2680,22 +2714,70 @@ if (wantsNewsEditor || wantsStaffPortal) {
         return out;
     }
 
-    function parseScheduleDate(value) {
-        const match = String(value || '').trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
-        if (!match) return null;
-        const day = Number(match[1]);
-        const month = Number(match[2]);
-        const year = Number(match[3]);
+    function makeScheduleDatePoint(day, month, year) {
         const check = new Date(Date.UTC(year, month - 1, day));
         if (
             check.getUTCFullYear() !== year ||
             check.getUTCMonth() !== month - 1 ||
             check.getUTCDate() !== day
         ) return null;
+
         return {
             year, month, day,
             key: year * 10000 + month * 100 + day,
             iso: year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0')
+        };
+    }
+
+    function parseScheduleDate(value) {
+        const raw = String(value || '').trim();
+        if (!raw) return null;
+
+        // Поддерживаем и одиночную дату, и периоды:
+        // "28.09.2026", "28.09.2026 - 05.10.2026", "с 28.09.2026 по 05.10.2026".
+        const matches = Array.from(raw.matchAll(/(\d{1,2})\.(\d{1,2})\.(\d{4})/g));
+        if (!matches.length) return null;
+
+        const first = makeScheduleDatePoint(
+            Number(matches[0][1]),
+            Number(matches[0][2]),
+            Number(matches[0][3])
+        );
+        if (!first) return null;
+
+        if (matches.length === 1) {
+            return {
+                type: 'single',
+                raw: raw,
+                start: first,
+                end: first,
+                year: first.year,
+                month: first.month,
+                day: first.day,
+                key: first.key,
+                iso: first.iso
+            };
+        }
+
+        const lastMatch = matches[matches.length - 1];
+        const last = makeScheduleDatePoint(
+            Number(lastMatch[1]),
+            Number(lastMatch[2]),
+            Number(lastMatch[3])
+        );
+        if (!last || last.key < first.key) return null;
+
+        return {
+            type: 'period',
+            raw: raw,
+            start: first,
+            end: last,
+            // Совместимость с остальной логикой группировки: период относится к месяцу начала.
+            year: first.year,
+            month: first.month,
+            day: first.day,
+            key: first.key,
+            iso: first.iso + '--' + last.iso
         };
     }
 
@@ -2706,7 +2788,11 @@ if (wantsNewsEditor || wantsStaffPortal) {
     }
 
     function getScheduleDayLabel(parsed, nowParts) {
-        if (!parsed) return currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed';
+        if (!parsed) return '';
+        if (parsed.type === 'period') {
+            return currentLang === 'ru' ? 'Период проведения' : 'Training period';
+        }
+
         const todayKey = nowParts.year * 10000 + nowParts.month * 100 + nowParts.day;
         if (parsed.key === todayKey) return currentLang === 'ru' ? 'Сегодня' : 'Today';
 
@@ -2729,15 +2815,19 @@ if (wantsNewsEditor || wantsStaffPortal) {
         return (Array.isArray(items) ? items : [])
             .map(item => ({ item, parsed: parseScheduleDate(item && item.date) }))
             .filter(entry => {
-                // Некорректную дату не прячем молча: покажем её в конце как "Дата уточняется".
+                // Если строка не содержит распознаваемой даты — не скрываем её молча.
                 if (!entry.parsed) return true;
-                if (entry.parsed.key > todayKey) return true;
-                if (entry.parsed.key < todayKey) return false;
+
+                const endKey = entry.parsed.end ? entry.parsed.end.key : entry.parsed.key;
+                if (endKey > todayKey) return true;
+                if (endKey < todayKey) return false;
+
+                // Одиночная дата и период исчезают после 21:00 последнего дня.
                 return beforeCutoff;
             })
             .sort((a, b) => {
-                const aDate = a.parsed ? a.parsed.key : Number.MAX_SAFE_INTEGER;
-                const bDate = b.parsed ? b.parsed.key : Number.MAX_SAFE_INTEGER;
+                const aDate = a.parsed && a.parsed.start ? a.parsed.start.key : Number.MAX_SAFE_INTEGER;
+                const bDate = b.parsed && b.parsed.start ? b.parsed.start.key : Number.MAX_SAFE_INTEGER;
                 if (aDate !== bDate) return aDate - bDate;
                 return getScheduleTimeMinutes(a.item.time) - getScheduleTimeMinutes(b.item.time);
             });
@@ -2754,7 +2844,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
     }
 
     function getScheduleMonthLabel(parsed) {
-        if (!parsed) return currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed';
+        if (!parsed) return currentLang === 'ru' ? 'Другие даты' : 'Other dates';
 
         const monthNames = currentLang === 'ru'
             ? ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
@@ -2888,7 +2978,9 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
             const dayGroups = new Map();
             monthData.entries.forEach(entry => {
-                const dayKey = entry.parsed ? entry.parsed.iso : 'unknown-date';
+                const dayKey = entry.parsed
+                    ? (entry.parsed.type === 'period' ? 'period-' + entry.parsed.iso : entry.parsed.iso)
+                    : 'other-date';
                 if (!dayGroups.has(dayKey)) dayGroups.set(dayKey, []);
                 dayGroups.get(dayKey).push(entry);
             });
@@ -2903,10 +2995,10 @@ if (wantsNewsEditor || wantsStaffPortal) {
                 dateRow.className = 'timeline-date';
 
                 const dateText = document.createElement('span');
-                dateText.textContent = '🗓️ ' + String(
-                    first.item.date ||
-                    (currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed')
-                );
+                const rawDateText = String(first.item.date || '').trim();
+                dateText.textContent = first.parsed && first.parsed.type === 'period'
+                    ? '🗓️ ' + rawDateText
+                    : '🗓️ ' + (rawDateText || (currentLang === 'ru' ? 'Дата' : 'Date'));
                 dateRow.appendChild(dateText);
 
                 const dayLabel = getScheduleDayLabel(first.parsed, now);
