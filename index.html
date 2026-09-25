@@ -493,20 +493,6 @@
 
         .mobile-chat-icon { display: none; }
 
-        .owl-ticker-visitor {
-            position: fixed; z-index: 10046; width: 70px; height: 85px; pointer-events: none;
-            opacity: 0; transition: opacity 0.3s ease;
-        }
-        .owl-ticker-visitor.show { opacity: 1; }
-        .owl-ticker-visitor .owl-mini-svg { width: 100%; height: 100%; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.6)); }
-        .owl-ticker-shout {
-            position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-            background: #fff; color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; font-weight: 900;
-            padding: 4px 10px; border-radius: 10px 10px 10px 0; font-size: 0.72rem; white-space: nowrap;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.4); opacity: 0; transition: opacity 0.25s ease;
-        }
-        .owl-ticker-shout.show { opacity: 1; }
-
         .scroll-nav { position: fixed; left: 22px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
         .scroll-nav-btn {
             width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-glass);
@@ -563,7 +549,6 @@
             .owl-bubble.show { transform: translateX(0) scale(1); }
             .owl-chat-panel { width: calc(100vw - 24px); left: 12px; right: 12px; bottom: max(90px, calc(env(safe-area-inset-bottom) + 90px)); height: min(70vh, 520px); max-width: 100vw; }
             .owl-chat-body { height: auto; flex: 1 1 auto; }
-            .owl-ticker-visitor { display: none; }
 
             .modal-box { padding: 26px 22px; border-radius: 24px; }
 
@@ -779,17 +764,6 @@
 
     <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()">
         <div class="ticker-inner" id="tickerText">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
-    </div>
-
-    <div class="owl-ticker-visitor" id="owlTickerVisitor">
-        <div class="owl-ticker-shout" id="owlTickerShout">ВНИМАНИЕ!</div>
-        <svg class="owl-mini-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="80" cy="112" rx="50" ry="64" fill="#7a5c3a"/>
-            <ellipse cx="80" cy="122" rx="34" ry="46" fill="#d9bf95"/>
-            <circle cx="61" cy="86" r="14" fill="#ffcf40"/><circle cx="99" cy="86" r="14" fill="#ffcf40"/>
-            <circle cx="61" cy="86" r="6" fill="#1a1008"/><circle cx="99" cy="86" r="6" fill="#1a1008"/>
-            <path d="M73 96 Q 80 92 87 96 L83 116 Q 80 122 77 116 Z" fill="#0f0d0c"/>
-        </svg>
     </div>
 
     <section class="hero">
@@ -1727,7 +1701,6 @@
                     alertText +
                     '    |    🖱️ Нажмите сюда, чтобы прочитать полностью';
                 tickerEl.style.display = 'block';
-                setTimeout(owlVisitTicker, 600);
             } else {
                 globalAlert = null;
                 tickerEl.style.display = 'none';
@@ -2178,41 +2151,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             }
             requestAnimationFrame(step);
         }, 4000);
-    }
-
-    function owlVisitTicker() {
-        if (isMobile()) return;
-        const visitor = document.getElementById('owlTickerVisitor');
-        const shout = document.getElementById('owlTickerShout');
-        const ticker = document.getElementById('globalAlertTicker');
-        if (!ticker || ticker.style.display === 'none') return;
-
-        const tRect = ticker.getBoundingClientRect();
-        const targetX = tRect.left + 60 + Math.random() * 120;
-        const targetY = tRect.top - 10;
-
-        visitor.style.left = (window.innerWidth + 80) + 'px';
-        visitor.style.top = (targetY - 100 - Math.random() * 80) + 'px';
-        visitor.classList.add('show');
-
-        requestAnimationFrame(() => {
-            visitor.style.transition = 'left 0.9s cubic-bezier(0.3,0.6,0.3,1), top 0.9s cubic-bezier(0.3,0.6,0.3,1)';
-            visitor.style.left = targetX + 'px';
-            visitor.style.top = targetY + 'px';
-        });
-
-        setTimeout(() => {
-            playHoot();
-            shout.classList.add('show');
-        }, 950);
-
-        setTimeout(() => {
-            shout.classList.remove('show');
-            visitor.style.left = (window.innerWidth + 80) + 'px';
-            visitor.style.top = (targetY - 60 - Math.random() * 100) + 'px';
-        }, 5000);
-
-        setTimeout(() => { visitor.classList.remove('show'); }, 5950);
     }
 
     function normalizeText(s) {
