@@ -1719,7 +1719,11 @@
 
             if (data.currentAlert && data.currentAlert.text) {
                 globalAlert = data.currentAlert;
-                tickerTextEl.innerHTML = `⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ${globalAlert.text} &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp; 🖱️ Нажмите сюда, чтобы прочитать полностью`;
+                const alertText = String(globalAlert.text || '').replace(/\s*\n\s*/g, ' ').trim();
+                tickerTextEl.textContent =
+                    '⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ' +
+                    alertText +
+                    '    |    🖱️ Нажмите сюда, чтобы прочитать полностью';
                 tickerEl.style.display = 'block';
                 setTimeout(owlVisitTicker, 600);
             } else {
@@ -2454,8 +2458,13 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
     function showUrgentAlert() {
         if (globalAlert && globalAlert.text) {
-            document.getElementById('urgentAlertText').innerHTML = globalAlert.text.replace(/\n/g, '<br>');
-            document.getElementById('urgentAlertModal').classList.add('active');
+            const alertTextEl = document.getElementById('urgentAlertText');
+            const alertModal = document.getElementById('urgentAlertModal');
+            if (!alertTextEl || !alertModal) return;
+
+            alertTextEl.textContent = String(globalAlert.text);
+            alertTextEl.style.whiteSpace = 'pre-line';
+            alertModal.classList.add('active');
         }
     }
 
