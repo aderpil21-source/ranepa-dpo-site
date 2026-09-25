@@ -587,12 +587,27 @@ async function flushPendingUploads(){
     toast(`Возобновляем отложенную загрузку: ${items.length} файл(ов)`, 'warn');
     for (const rec of items){
         try {
+            // IndexedDB может вернуть сохранённый File как Blob. Восстанавливаем имя,
+            // иначе защищённый шлюз правильно отклонит файл как BAD_FILE.
+            const queuedFile = rec.file instanceof File
+                ? rec.file
+                : new File([rec.file], rec.name || 'recovered-upload', {
+                    type: (rec.file && rec.file.type) || rec.type || 'application/octet-stream',
+                    lastModified: rec.savedAt || Date.now()
+                });
             const job = { progress:0, controller:new AbortController() };
-            const url = await uploadWithFallback(rec.file, job);
+            const url = await uploadWithFallback(queuedFile, job);
             await dbDelete(rec.id);
             try { await navigator.clipboard.writeText(url); } catch(e){}
-            toast(`Файл ${rec.name} догружен, ссылка скопирована в буфер обмена`, 'ok');
-        } catch(e){ /* остаётся в очереди до следующего раза */ }
+            toast(`Файл ${rec.name} догружен. Ссылка скопирована в буфер обмена.`, 'ok');
+        } catch(e){
+            if (e && e.code === 'SESSION_EXPIRED') {
+                toast('Сессия редактора истекла. Войдите снова — отложенный файл сохранён.', 'warn');
+                $('newsAdminLoginModal').classList.add('active');
+                break;
+            }
+            toast(`Отложенный файл ${rec.name || ''} пока не загружен: ${e && e.message ? e.message : 'неизвестная ошибка'}`, 'error', e && e.code);
+        }
     }
     renderPendingNote();
 }
