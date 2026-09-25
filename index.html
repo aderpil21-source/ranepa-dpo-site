@@ -3299,6 +3299,8 @@ if (wantsNewsEditor || wantsStaffPortal) {
         if (scheduleDataLoaded) {
             renderSchedule();
             scheduleNextCutoffRefresh();
+            refreshScheduleSnapshot({ silent: true });
+            startScheduleSnapshotPolling();
             return;
         }
 
@@ -3310,6 +3312,8 @@ if (wantsNewsEditor || wantsStaffPortal) {
             scheduleDataLoaded = true;
             renderSchedule();
             scheduleNextCutoffRefresh();
+            refreshScheduleSnapshot({ silent: true });
+            startScheduleSnapshotPolling();
         } catch (error) {
             console.error('Ошибка загрузки расписания', error);
             container.replaceChildren(makeScheduleState(translationsHTML[currentLang].schError));
@@ -3323,8 +3327,23 @@ if (wantsNewsEditor || wantsStaffPortal) {
             clearTimeout(scheduleRefreshTimer);
             scheduleRefreshTimer = null;
         }
+        stopScheduleSnapshotPolling();
         disconnectScheduleObservers();
     }
+
+    document.addEventListener('visibilitychange', () => {
+        if (!isScheduleOverlayActive()) {
+            stopScheduleSnapshotPolling();
+            return;
+        }
+
+        if (document.visibilityState === 'visible') {
+            refreshScheduleSnapshot({ silent: true });
+            startScheduleSnapshotPolling();
+        } else {
+            stopScheduleSnapshotPolling();
+        }
+    });
 
     function openDocLightbox(imgUrl, title) {
     const box = document.getElementById('lightboxContent');
