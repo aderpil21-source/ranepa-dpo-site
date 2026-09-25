@@ -2586,7 +2586,13 @@ if (wantsNewsEditor || wantsStaffPortal) {
     const chatBody = document.getElementById('chatBody');
     const chatOptions = document.getElementById('chatOptions');
 
-    function addUserMsg(text) { chatBody.innerHTML += `<div class="msg-user">${text}</div>`; scrollToBottom(); }
+    function addUserMsg(text) {
+        const msg = document.createElement('div');
+        msg.className = 'msg-user';
+        msg.textContent = String(text || '');
+        chatBody.appendChild(msg);
+        scrollToBottom();
+    }
     function addBotMsg(text) {
         const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
         chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`;
@@ -3155,7 +3161,19 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
     function openDocLightbox(imgUrl, title) {
     const box = document.getElementById('lightboxContent');
-    box.innerHTML = `<img src="${imgUrl}" alt="${title}" style="max-width:90vw; max-height:75vh; object-fit:contain; border-radius:12px; display:block; margin:0 auto;"><div style="color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; text-align:center;">${title}</div>`;
+    if (!box) return;
+
+    const img = document.createElement('img');
+    img.src = String(imgUrl || '');
+    img.alt = String(title || '');
+    img.style.cssText = 'max-width:90vw; max-height:75vh; object-fit:contain; border-radius:12px; display:block; margin:0 auto;';
+
+    const caption = document.createElement('div');
+    caption.textContent = String(title || '');
+    caption.style.cssText = "color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; text-align:center;";
+
+    box.replaceChildren(img, caption);
+
     const lbNav = document.getElementById('lightboxNav');
     if (lbNav) lbNav.style.display = 'none';
     document.getElementById('mediaLightbox').classList.add('active');
