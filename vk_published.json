@@ -1,26 +1,36 @@
 {
-  "version": 2,
   "items": {
-    "e14085d9-a4a6-45b6-8674-e26c296c788d": {
-      "status": "published",
-      "post_id": null,
-      "updated_at": null,
-      "attempts": 1,
-      "error": null
-    },
     "409de9d3-0f6d-41f0-bc5e-df2f36c72b92": {
-      "status": "published",
-      "post_id": null,
-      "updated_at": null,
       "attempts": 1,
-      "error": null
+      "error": null,
+      "post_id": null,
+      "status": "published",
+      "updated_at": null
     },
     "6f70c10a-8079-4159-b6f5-318522d8c2da": {
-      "status": "published",
-      "post_id": null,
-      "updated_at": null,
       "attempts": 1,
-      "error": null
+      "error": null,
+      "post_id": null,
+      "status": "published",
+      "updated_at": null
+    },
+    "a474f181-8909-4bf7-8ada-15db952baf99": {
+      "attempts": 1,
+      "error": null,
+      "media_error": "VK API error 5: User authorization failed: access_token was given to another ip address",
+      "media_status": "failed",
+      "post_id": 102,
+      "status": "published",
+      "title": "Центр ДПО: обучение, развитие и новые профессиональные возможности",
+      "updated_at": "2026-09-25T11:35:48.637389+00:00"
+    },
+    "e14085d9-a4a6-45b6-8674-e26c296c788d": {
+      "attempts": 1,
+      "error": null,
+      "post_id": null,
+      "status": "published",
+      "updated_at": null
     }
-  }
+  },
+  "version": 2
 }
