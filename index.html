@@ -556,101 +556,207 @@
             .scroll-nav-btn { width: 40px; height: 40px; }
         }
 
-        /* ===== РАСПИСАНИЕ: БЫСТРОЕ И ПОНЯТНОЕ ===== */
+        /* ===== РАСПИСАНИЕ: PREMIUM / MOBILE-FIRST ===== */
         .schedule-overlay {
-            /* Выше срочного тикера (10045), но ниже основного header (10050). */
             position: fixed; inset: var(--header-h) 0 0 0; z-index: 10047;
-            background: var(--bg-deep);
+            background:
+                radial-gradient(circle at 8% 10%, rgba(202,15,62,.13), transparent 28%),
+                radial-gradient(circle at 88% 18%, rgba(56,189,248,.11), transparent 28%),
+                linear-gradient(180deg, #050811 0%, var(--bg-deep) 55%, #03060d 100%);
             display: none; overflow-y: auto;
-            padding: 28px 20px max(70px, env(safe-area-inset-bottom));
-            opacity: 0; transition: opacity 0.18s ease;
+            padding: 24px 20px max(70px, env(safe-area-inset-bottom));
+            opacity: 0; transition: opacity .18s ease;
             overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
         .schedule-overlay.active { display: block; opacity: 1; }
-        .schedule-container { max-width: 900px; margin: 0 auto; position: relative; }
+        .schedule-container { max-width: 1180px; margin: 0 auto; position: relative; }
+
         .schedule-header {
-            position: sticky; top: 0; z-index: 3;
+            position: sticky; top: 0; z-index: 6;
             display: flex; justify-content: space-between; align-items: center; gap: 16px;
-            margin-bottom: 14px; padding: 8px 0 14px;
-            background: linear-gradient(to bottom, var(--bg-deep) 78%, transparent);
+            margin-bottom: 20px; padding: 8px 0 16px;
+            background: linear-gradient(to bottom, rgba(5,8,17,.96) 76%, rgba(5,8,17,0));
         }
-        .schedule-title { font-size: clamp(1.65rem, 4vw, 2.25rem); color: var(--text-main); font-weight: 900; line-height: 1.1; }
-        .schedule-title span:last-child { color: #38bdf8; }
-        .schedule-meta {
-            color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;
-            margin: 0 0 24px; padding: 12px 14px;
-            border: 1px solid var(--border-glass); border-radius: 12px;
-            background: var(--bg-card);
+        .schedule-title {
+            font-size: clamp(1.8rem, 4vw, 2.65rem);
+            color: var(--text-main); font-weight: 900; line-height: 1.05; letter-spacing: -.025em;
+        }
+        .schedule-title span:last-child {
+            color: #38bdf8;
+            text-shadow: 0 0 22px rgba(56,189,248,.18);
         }
         .close-sch-btn {
-            flex: 0 0 auto; background: var(--btn-glass); border: 1px solid var(--border-glass);
-            color: var(--text-main); width: 44px; height: 44px; border-radius: 50%;
-            font-size: 1.45rem; cursor: pointer;
-            transition: background 0.18s ease, border-color 0.18s ease;
-            touch-action: manipulation;
+            flex: 0 0 auto;
+            background: rgba(255,255,255,.045);
+            border: 1px solid rgba(255,255,255,.11);
+            color: var(--text-main); width: 46px; height: 46px; border-radius: 50%;
+            font-size: 1.45rem; cursor: pointer; touch-action: manipulation;
+            transition: background .18s ease, border-color .18s ease, transform .18s ease;
         }
-        .close-sch-btn:hover { background: #CA0F3E; border-color: #CA0F3E; color: #fff; }
+        @media (hover:hover) and (pointer:fine) {
+            .close-sch-btn:hover {
+                background: rgba(202,15,62,.18);
+                border-color: rgba(202,15,62,.42);
+                transform: scale(1.04);
+            }
+        }
 
-        .timeline { margin: 0; padding: 0; }
-        .timeline-item { margin-bottom: 28px; }
+        .schedule-layout {
+            display: grid;
+            grid-template-columns: 210px minmax(0,1fr);
+            gap: 28px;
+            align-items: start;
+        }
+        .schedule-months {
+            position: sticky; top: 82px;
+            display: flex; flex-direction: column; gap: 9px;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 18px;
+            background: rgba(255,255,255,.025);
+            box-shadow: 0 18px 44px rgba(0,0,0,.18);
+        }
+        .schedule-month-link {
+            width: 100%;
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            border: 1px solid transparent; border-radius: 12px;
+            background: transparent; color: var(--text-muted);
+            padding: 10px 12px; text-align: left;
+            font: inherit; font-size: .86rem; font-weight: 800;
+            cursor: pointer; touch-action: manipulation;
+            transition: color .18s ease, background .18s ease, border-color .18s ease, transform .18s ease;
+        }
+        .schedule-month-link::after {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            background: currentColor; opacity: .35; flex: 0 0 auto;
+        }
+        .schedule-month-link.active {
+            color: #fff;
+            border-color: rgba(56,189,248,.18);
+            background: linear-gradient(90deg, rgba(202,15,62,.13), rgba(56,189,248,.08));
+            box-shadow: inset 2px 0 0 rgba(202,15,62,.75), 0 8px 24px rgba(0,0,0,.14);
+        }
+        @media (hover:hover) and (pointer:fine) {
+            .schedule-month-link:hover { color:#fff; transform: translateX(2px); }
+        }
+
+        .schedule-content { min-width: 0; }
+        .schedule-month-section {
+            margin-bottom: 42px;
+            scroll-margin-top: 92px;
+        }
+        .schedule-month-heading {
+            display: flex; align-items: center; gap: 12px;
+            margin: 0 0 16px;
+            color: var(--text-main);
+            font-size: 1.28rem; font-weight: 900; letter-spacing: -.01em;
+        }
+        .schedule-month-heading::before {
+            content: '';
+            width: 34px; height: 2px; border-radius: 999px;
+            background: linear-gradient(90deg, var(--ranepa-red), #38bdf8);
+            box-shadow: 0 0 14px rgba(56,189,248,.24);
+        }
+
+        .timeline-item { margin-bottom: 25px; }
         .timeline-date {
-            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-            font-weight: 900; color: var(--text-main); font-size: 1.18rem;
-            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+            margin-bottom: 11px;
+            color: var(--text-main); font-size: 1.05rem; font-weight: 900;
         }
         .schedule-day-badge {
             display: inline-flex; align-items: center;
             padding: 4px 9px; border-radius: 999px;
-            background: rgba(56, 189, 248, 0.12); color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.22);
-            font-size: 0.72rem; font-weight: 900; text-transform: uppercase; letter-spacing: .04em;
+            background: rgba(56,189,248,.10); color: #38bdf8;
+            border: 1px solid rgba(56,189,248,.20);
+            font-size: .7rem; font-weight: 900; text-transform: uppercase; letter-spacing: .04em;
         }
         .schedule-day-badge.today {
-            background: rgba(202, 15, 62, 0.14); color: #fb7185;
-            border-color: rgba(251, 113, 133, 0.28);
+            background: rgba(202,15,62,.13); color: #fb7185;
+            border-color: rgba(251,113,133,.25);
         }
+
         .timeline-card {
-            background: var(--bg-card); border: 1px solid var(--border-glass);
-            border-radius: 15px; padding: 20px; margin-bottom: 10px;
-            box-shadow: 0 8px 22px var(--shadow-color);
-            transition: border-color 0.18s ease, transform 0.18s ease;
+            position: relative; overflow: hidden;
+            background:
+                linear-gradient(180deg, rgba(14,21,35,.88), rgba(8,14,25,.88));
+            border: 1px solid rgba(255,255,255,.075);
+            border-radius: 17px; padding: 20px; margin-bottom: 11px;
+            box-shadow: 0 14px 34px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.025);
+            opacity: 0; transform: translateY(14px);
+            transition: opacity .42s var(--bezier-smooth), transform .42s var(--bezier-smooth), border-color .18s ease, box-shadow .18s ease;
             contain: content;
         }
-        @media (hover:hover) and (pointer:fine) {
-            .timeline-card:hover { transform: translateY(-2px); border-color: rgba(56, 189, 248, 0.45); }
+        .timeline-card::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background:
+                linear-gradient(135deg, rgba(202,15,62,.07), transparent 31%),
+                linear-gradient(315deg, rgba(56,189,248,.06), transparent 29%);
         }
-        .sch-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 11px; flex-wrap: wrap; gap: 10px; }
+        .timeline-card.in-view { opacity: 1; transform: translateY(0); }
+        @media (hover:hover) and (pointer:fine) {
+            .timeline-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(56,189,248,.24);
+                box-shadow: 0 18px 42px rgba(0,0,0,.28), 0 0 0 1px rgba(56,189,248,.035) inset;
+            }
+        }
+
+        .sch-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap; margin-bottom:11px; }
         .sch-program {
-            background: rgba(202, 15, 62, 0.13); color: #fb7185;
-            padding: 5px 10px; border-radius: 8px; font-size: 0.76rem;
-            font-weight: 800; text-transform: uppercase;
+            background: rgba(202,15,62,.12); color:#fb7185;
+            padding:5px 10px; border-radius:999px;
+            font-size:.75rem; font-weight:900; text-transform:uppercase; letter-spacing:.025em;
         }
         .sch-time {
-            color: #38bdf8; font-weight: 900; font-size: 1rem;
-            background: rgba(56, 189, 248, 0.10); padding: 5px 10px; border-radius: 8px;
+            color:#38bdf8; font-weight:900; font-size:.98rem;
+            background:rgba(56,189,248,.09); padding:5px 10px; border-radius:10px;
         }
-        .sch-subject { font-size: 1.08rem; color: var(--text-main); margin-bottom: 13px; font-weight: 750; line-height: 1.45; }
-        .sch-bottom { display: flex; gap: 16px; font-size: 0.88rem; color: var(--text-muted); flex-wrap: wrap; }
-        .sch-bottom span { display: inline-flex; align-items: center; gap: 6px; }
+        .sch-subject { font-size:1.08rem; color:var(--text-main); margin-bottom:13px; font-weight:800; line-height:1.45; }
+        .sch-bottom { display:flex; gap:16px; font-size:.87rem; color:var(--text-muted); flex-wrap:wrap; }
+        .sch-bottom span { display:inline-flex; align-items:center; gap:6px; }
+
         .schedule-state {
-            text-align: center; color: var(--text-muted);
-            padding: 48px 16px; font-size: 1rem; line-height: 1.6;
+            text-align:center; color:var(--text-muted);
+            padding:48px 16px; font-size:1rem; line-height:1.6;
+        }
+
+        @media (max-width: 900px) {
+            .schedule-layout { grid-template-columns: 1fr; gap: 16px; }
+            .schedule-months {
+                position: sticky; top: 72px; z-index: 5;
+                flex-direction: row; overflow-x: auto; gap: 8px;
+                padding: 8px;
+                scrollbar-width: none;
+                background: rgba(5,8,17,.92);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            .schedule-months::-webkit-scrollbar { display:none; }
+            .schedule-month-link { width:auto; flex:0 0 auto; white-space:nowrap; padding:9px 12px; }
+            .schedule-month-link::after { display:none; }
         }
 
         @media (max-width: 768px) {
-            .schedule-overlay { padding: 18px 12px max(54px, env(safe-area-inset-bottom)); }
-            .schedule-header { margin-bottom: 8px; padding-top: 4px; }
-            .schedule-meta { font-size: 0.8rem; margin-bottom: 18px; }
-            .timeline-item { margin-bottom: 22px; }
-            .timeline-card { padding: 15px; border-radius: 13px; }
-            .sch-top { display: grid; grid-template-columns: 1fr; gap: 8px; }
-            .sch-program, .sch-time { width: fit-content; max-width: 100%; }
-            .sch-subject { font-size: 1rem; }
-            .sch-bottom { flex-direction: column; gap: 7px; }
+            .schedule-overlay { padding: 16px 12px max(56px, env(safe-area-inset-bottom)); }
+            .schedule-header { margin-bottom: 12px; padding-top: 4px; }
+            .close-sch-btn { width:44px; height:44px; font-size:1.25rem; }
+            .schedule-month-section { margin-bottom:32px; }
+            .schedule-month-heading { font-size:1.13rem; margin-bottom:13px; }
+            .timeline-item { margin-bottom:21px; }
+            .timeline-card { padding:15px; border-radius:14px; }
+            .sch-top { display:grid; grid-template-columns:1fr; gap:8px; }
+            .sch-program, .sch-time { width:fit-content; max-width:100%; }
+            .sch-subject { font-size:1rem; }
+            .sch-bottom { flex-direction:column; gap:7px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .schedule-overlay, .timeline-card, .close-sch-btn { transition: none !important; }
+            .schedule-overlay, .close-sch-btn, .schedule-month-link, .timeline-card {
+                transition:none !important;
+            }
+            .timeline-card { opacity:1 !important; transform:none !important; }
         }
 
 
@@ -1213,14 +1319,12 @@
                 <h2 class="schedule-title"><span data-i18n="schTitleMain">Расписание</span> <span data-i18n="schTitleSub">занятий</span></h2>
                 <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание">✕</button>
             </div>
-            <div class="schedule-meta" id="scheduleMeta">Показываем только актуальные занятия. День автоматически скрывается после 21:00 по калининградскому времени.</div>
-            <div class="timeline" id="scheduleTimeline">
-                <!-- Сюда скрипт вставит карточки -->
+            <div class="schedule-layout">
+                <nav class="schedule-months" id="scheduleMonthsNav" aria-label="Месяцы расписания"></nav>
+                <div class="schedule-content" id="scheduleTimeline"></div>
             </div>
         </div>
     </div>
-
-    
 
     <!-- ЛАЙТБОКС ДЛЯ ФОТО/ВИДЕО -->
     <div id="mediaLightbox">
@@ -2639,6 +2743,9 @@ if (wantsNewsEditor || wantsStaffPortal) {
             });
     }
 
+    let scheduleCardObserver = null;
+    let scheduleMonthObserver = null;
+
     function makeScheduleState(message) {
         const el = document.createElement('div');
         el.className = 'schedule-state';
@@ -2646,96 +2753,223 @@ if (wantsNewsEditor || wantsStaffPortal) {
         return el;
     }
 
-    function renderSchedule() {
-        const container = document.getElementById('scheduleTimeline');
-        const meta = document.getElementById('scheduleMeta');
-        if (!container) return;
+    function getScheduleMonthLabel(parsed) {
+        if (!parsed) return currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed';
 
-        const now = getKaliningradParts();
-        if (meta) {
-            meta.textContent = currentLang === 'ru'
-                ? 'Показываем только актуальные занятия. Текущий день автоматически скрывается в 21:00 по калининградскому времени.'
-                : 'Only upcoming classes are shown. The current day is automatically hidden at 21:00 Kaliningrad time.';
+        const monthNames = currentLang === 'ru'
+            ? ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
+            : ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+        return monthNames[parsed.month - 1] + ' ' + parsed.year;
+    }
+
+    function disconnectScheduleObservers() {
+        if (scheduleCardObserver) {
+            scheduleCardObserver.disconnect();
+            scheduleCardObserver = null;
+        }
+        if (scheduleMonthObserver) {
+            scheduleMonthObserver.disconnect();
+            scheduleMonthObserver = null;
+        }
+    }
+
+    function armScheduleMotion() {
+        disconnectScheduleObservers();
+
+        const overlay = document.getElementById('scheduleOverlay');
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const cards = document.querySelectorAll('#scheduleTimeline .timeline-card');
+        if (reduceMotion || !('IntersectionObserver' in window)) {
+            cards.forEach(card => card.classList.add('in-view'));
+        } else {
+            scheduleCardObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        scheduleCardObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: overlay,
+                threshold: 0.10,
+                rootMargin: '0px 0px -24px 0px'
+            });
+            cards.forEach(card => scheduleCardObserver.observe(card));
         }
 
+        const links = Array.from(document.querySelectorAll('#scheduleMonthsNav .schedule-month-link'));
+        const sections = Array.from(document.querySelectorAll('#scheduleTimeline .schedule-month-section'));
+        if (!links.length || !sections.length) return;
+
+        const setActive = id => {
+            links.forEach(link => link.classList.toggle('active', link.dataset.target === id));
+        };
+
+        if ('IntersectionObserver' in window) {
+            scheduleMonthObserver = new IntersectionObserver(entries => {
+                const visible = entries
+                    .filter(entry => entry.isIntersecting)
+                    .sort((a,b) => b.intersectionRatio - a.intersectionRatio);
+                if (visible.length) setActive(visible[0].target.id);
+            }, {
+                root: overlay,
+                threshold: [0.15, 0.35, 0.6],
+                rootMargin: '-70px 0px -55% 0px'
+            });
+            sections.forEach(section => scheduleMonthObserver.observe(section));
+        }
+    }
+
+    function renderSchedule() {
+        const container = document.getElementById('scheduleTimeline');
+        const monthsNav = document.getElementById('scheduleMonthsNav');
+        if (!container || !monthsNav) return;
+
+        const now = getKaliningradParts();
         const visible = getVisibleSchedules(window.schedules);
+
+        disconnectScheduleObservers();
         container.replaceChildren();
+        monthsNav.replaceChildren();
 
         if (!visible.length) {
             container.appendChild(makeScheduleState(translationsHTML[currentLang].schEmpty));
             return;
         }
 
-        const groups = new Map();
+        const monthGroups = new Map();
+
         visible.forEach(entry => {
-            const groupKey = entry.parsed ? entry.parsed.iso : 'unknown';
-            if (!groups.has(groupKey)) groups.set(groupKey, []);
-            groups.get(groupKey).push(entry);
+            const key = entry.parsed
+                ? entry.parsed.year + '-' + String(entry.parsed.month).padStart(2,'0')
+                : 'unknown';
+
+            if (!monthGroups.has(key)) {
+                monthGroups.set(key, {
+                    label: getScheduleMonthLabel(entry.parsed),
+                    entries: []
+                });
+            }
+            monthGroups.get(key).entries.push(entry);
         });
 
-        const fragment = document.createDocumentFragment();
+        const navFragment = document.createDocumentFragment();
+        const contentFragment = document.createDocumentFragment();
 
-        groups.forEach(entries => {
-            const first = entries[0];
-            const dayBlock = document.createElement('section');
-            dayBlock.className = 'timeline-item';
+        Array.from(monthGroups.entries()).forEach(([monthKey, monthData], monthIndex) => {
+            const sectionId = 'schedule-month-' + monthKey.replace(/[^a-zA-Z0-9_-]/g, '-');
 
-            const dateRow = document.createElement('div');
-            dateRow.className = 'timeline-date';
+            const navButton = document.createElement('button');
+            navButton.type = 'button';
+            navButton.className = 'schedule-month-link' + (monthIndex === 0 ? ' active' : '');
+            navButton.dataset.target = sectionId;
+            navButton.textContent = monthData.label;
+            navButton.addEventListener('click', () => {
+                const target = document.getElementById(sectionId);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+            navFragment.appendChild(navButton);
 
-            const dateText = document.createElement('span');
-            dateText.textContent = '🗓️ ' + String(first.item.date || (currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed'));
-            dateRow.appendChild(dateText);
+            const monthSection = document.createElement('section');
+            monthSection.className = 'schedule-month-section';
+            monthSection.id = sectionId;
 
-            const dayLabel = getScheduleDayLabel(first.parsed, now);
-            if (dayLabel) {
-                const badge = document.createElement('span');
-                badge.className = 'schedule-day-badge' + (dayLabel === 'Сегодня' || dayLabel === 'Today' ? ' today' : '');
-                badge.textContent = dayLabel;
-                dateRow.appendChild(badge);
-            }
+            const heading = document.createElement('h3');
+            heading.className = 'schedule-month-heading';
+            heading.textContent = monthData.label;
+            monthSection.appendChild(heading);
 
-            dayBlock.appendChild(dateRow);
-
-            entries.forEach(({ item }) => {
-                const card = document.createElement('article');
-                card.className = 'timeline-card';
-
-                const top = document.createElement('div');
-                top.className = 'sch-top';
-
-                const program = document.createElement('div');
-                program.className = 'sch-program';
-                program.textContent = String(item.program || (currentLang === 'ru' ? 'Программа уточняется' : 'Program to be confirmed'));
-
-                const time = document.createElement('div');
-                time.className = 'sch-time';
-                time.textContent = '⏰ ' + String(item.time || '—');
-
-                top.append(program, time);
-
-                const subject = document.createElement('div');
-                subject.className = 'sch-subject';
-                subject.textContent = String(item.subject || (currentLang === 'ru' ? 'Тема занятия уточняется' : 'Class topic to be confirmed'));
-
-                const bottom = document.createElement('div');
-                bottom.className = 'sch-bottom';
-
-                const teacher = document.createElement('span');
-                teacher.textContent = '👨‍🏫 ' + String(item.teacher || '—');
-
-                const room = document.createElement('span');
-                room.textContent = '📍 ' + String(item.room || '—');
-
-                bottom.append(teacher, room);
-                card.append(top, subject, bottom);
-                dayBlock.appendChild(card);
+            const dayGroups = new Map();
+            monthData.entries.forEach(entry => {
+                const dayKey = entry.parsed ? entry.parsed.iso : 'unknown-date';
+                if (!dayGroups.has(dayKey)) dayGroups.set(dayKey, []);
+                dayGroups.get(dayKey).push(entry);
             });
 
-            fragment.appendChild(dayBlock);
+            dayGroups.forEach(entries => {
+                const first = entries[0];
+
+                const dayBlock = document.createElement('div');
+                dayBlock.className = 'timeline-item';
+
+                const dateRow = document.createElement('div');
+                dateRow.className = 'timeline-date';
+
+                const dateText = document.createElement('span');
+                dateText.textContent = '🗓️ ' + String(
+                    first.item.date ||
+                    (currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed')
+                );
+                dateRow.appendChild(dateText);
+
+                const dayLabel = getScheduleDayLabel(first.parsed, now);
+                if (dayLabel) {
+                    const badge = document.createElement('span');
+                    badge.className = 'schedule-day-badge' +
+                        (dayLabel === 'Сегодня' || dayLabel === 'Today' ? ' today' : '');
+                    badge.textContent = dayLabel;
+                    dateRow.appendChild(badge);
+                }
+
+                dayBlock.appendChild(dateRow);
+
+                entries.forEach(({ item }) => {
+                    const card = document.createElement('article');
+                    card.className = 'timeline-card';
+
+                    const top = document.createElement('div');
+                    top.className = 'sch-top';
+
+                    const program = document.createElement('div');
+                    program.className = 'sch-program';
+                    program.textContent = String(
+                        item.program ||
+                        (currentLang === 'ru' ? 'Программа уточняется' : 'Program to be confirmed')
+                    );
+
+                    const time = document.createElement('div');
+                    time.className = 'sch-time';
+                    time.textContent = '⏰ ' + String(item.time || '—');
+
+                    top.append(program, time);
+
+                    const subject = document.createElement('div');
+                    subject.className = 'sch-subject';
+                    subject.textContent = String(
+                        item.subject ||
+                        (currentLang === 'ru' ? 'Тема занятия уточняется' : 'Class topic to be confirmed')
+                    );
+
+                    const bottom = document.createElement('div');
+                    bottom.className = 'sch-bottom';
+
+                    const teacher = document.createElement('span');
+                    teacher.textContent = '👨‍🏫 ' + String(item.teacher || '—');
+
+                    const room = document.createElement('span');
+                    room.textContent = '📍 ' + String(item.room || '—');
+
+                    bottom.append(teacher, room);
+                    card.append(top, subject, bottom);
+                    dayBlock.appendChild(card);
+                });
+
+                monthSection.appendChild(dayBlock);
+            });
+
+            contentFragment.appendChild(monthSection);
         });
 
-        container.appendChild(fragment);
+        monthsNav.appendChild(navFragment);
+        container.appendChild(contentFragment);
+        armScheduleMotion();
     }
 
     function scheduleNextCutoffRefresh() {
@@ -2795,6 +3029,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
             clearTimeout(scheduleRefreshTimer);
             scheduleRefreshTimer = null;
         }
+        disconnectScheduleObservers();
     }
 
     function openDocLightbox(imgUrl, title) {
