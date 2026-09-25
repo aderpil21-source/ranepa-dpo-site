@@ -209,37 +209,80 @@ def upload_image_to_vk(image_url):
 # СОСТОЯНИЕ ПУБЛИКАЦИЙ
 # =========================
 
+from datetime import datetime, timezone
+
+
+def now_iso():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def empty_state():
+    return {"version": 2, "items": {}}
+
+
 def load_state():
+    state = empty_state()
     if not STATE_FILE.exists():
-        return set()
+        return state
 
     try:
         with STATE_FILE.open("r", encoding="utf-8") as file:
             data = json.load(file)
 
+        # Совместимость со старым форматом: ["news-id", ...]
         if isinstance(data, list):
-            return {safe_text(item) for item in data}
+            for item in data:
+                news_id = safe_text(item)
+                if news_id:
+                    state["items"][news_id] = {
+                        "status": "published",
+                        "post_id": None,
+                        "updated_at": None,
+                    }
+            return state
 
         if isinstance(data, dict):
+            if isinstance(data.get("items"), dict):
+                return {
+                    "version": 2,
+                    "items": data.get("items", {}),
+                }
+
             published = data.get("published", [])
-
             if isinstance(published, list):
-                return {safe_text(item) for item in published}
-
+                for item in published:
+                    news_id = safe_text(item)
+                    if news_id:
+                        state["items"][news_id] = {
+                            "status": "published",
+                            "post_id": None,
+                            "updated_at": None,
+                        }
     except Exception as error:
         print(f"Не удалось прочитать {STATE_FILE}: {error}")
 
-    return set()
+    return state
 
 
-def save_state(published_ids):
-    with STATE_FILE.open("w", encoding="utf-8") as file:
-        json.dump(
-            sorted(published_ids),
-            file,
-            ensure_ascii=False,
-            indent=2,
-        )
+def save_state(state):
+    tmp = STATE_FILE.with_suffix(".tmp")
+    with tmp.open("w", encoding="utf-8") as file:
+        json.dump(state, file, ensure_ascii=False, indent=2, sort_keys=True)
+    tmp.replace(STATE_FILE)
+
+
+def set_state(state, news_id, status, **extra):
+    item = {
+        "status": status,
+        "updated_at": now_iso(),
+        **extra,
+    }
+    state.setdefault("items", {})[news_id] = item
+    save_state(state)
+
+
+def is_published(state, news_id):
+    return state.get("items", {}).get(news_id, {}).get("status") == "published"
 
 
 # =========================
@@ -367,12 +410,19 @@ def publish_to_vk(news):
     }
 
     image_url = get_news_image(news)
+    media_status = "none"
+    media_error = None
     if image_url:
         try:
             attachment = upload_image_to_vk(image_url)
             if attachment:
                 params["attachments"] = attachment
+                media_status = "attached"
+            else:
+                media_status = "skipped"
         except Exception as error:
+            media_status = "failed"
+            media_error = safe_text(error)
             print(f"Не удалось прикрепить изображение: {error}")
             print("Продолжаем публикацию без изображения.")
 
@@ -384,13 +434,19 @@ def publish_to_vk(news):
     )
 
     post_id = response.get("post_id")
+    if post_id is None:
+        raise RuntimeError("VK не вернул post_id после wall.post")
 
     print(
         f"Успешно опубликовано: "
         f"post_id={post_id}, news_id={news_id}"
     )
 
-    return post_id
+    return {
+        "post_id": post_id,
+        "media_status": media_status,
+        "media_error": media_error,
+    }
 
 
 # =========================
@@ -398,12 +454,13 @@ def publish_to_vk(news):
 # =========================
 
 def main():
-    published_ids = load_state()
+    state = load_state()
 
-    print(
-        f"Уже опубликовано ранее: "
-        f"{len(published_ids)}"
-    )
+    published_ids = [
+        news_id for news_id, item in state.get("items", {}).items()
+        if item.get("status") == "published"
+    ]
+    print(f"Уже опубликовано ранее: {len(published_ids)}")
 
     news_list = get_news()
 
@@ -413,10 +470,7 @@ def main():
 
     for news in news_list:
         if not isinstance(news, dict):
-            print(
-                f"Пропускаем некорректную запись: "
-                f"{type(news).__name__}"
-            )
+            print(f"Пропускаем некорректную запись: {type(news).__name__}")
             error_count += 1
             continue
 
@@ -424,36 +478,52 @@ def main():
         title = get_news_title(news)
 
         if not news_id:
-            print(
-                f"Пропускаем новость без ID: {title}"
-            )
+            print(f"Пропускаем новость без ID: {title}")
             error_count += 1
             continue
 
-        if news_id in published_ids:
-            print(
-                f"Уже опубликовано, пропускаем: "
-                f"{title}"
-            )
+        if is_published(state, news_id):
+            print(f"Уже опубликовано, пропускаем: {title}")
             skipped_count += 1
             continue
 
+        # Фиксируем намерение до внешнего вызова. Если раннер оборвётся,
+        # следующий запуск безопасно повторит запись, не считая её опубликованной.
+        set_state(
+            state,
+            news_id,
+            "publishing",
+            title=title,
+            attempts=int(state.get("items", {}).get(news_id, {}).get("attempts") or 0) + 1,
+        )
+
         try:
-            publish_to_vk(news)
-
-            published_ids.add(news_id)
+            result = publish_to_vk(news)
+            set_state(
+                state,
+                news_id,
+                "published",
+                title=title,
+                post_id=result.get("post_id"),
+                media_status=result.get("media_status"),
+                media_error=result.get("media_error"),
+                attempts=state["items"][news_id].get("attempts", 1),
+                error=None,
+            )
             published_count += 1
-
-            # Сохраняем сразу после успешной публикации.
-            save_state(published_ids)
 
         except Exception as error:
             error_count += 1
-
-            print(
-                f"Ошибка публикации "
-                f"«{title}»: {error}"
+            error_text = safe_text(error)
+            set_state(
+                state,
+                news_id,
+                "error",
+                title=title,
+                attempts=state["items"][news_id].get("attempts", 1),
+                error=error_text[:500],
             )
+            print(f"Ошибка публикации «{title}»: {error}")
 
     print()
     print("========== ИТОГ ==========")
@@ -462,10 +532,9 @@ def main():
     print(f"Ошибок: {error_count}")
     print("==========================")
 
-    # Не считаем отсутствие новостей ошибкой.
-    # Но если VK не опубликовал ни одной новости
-    # из-за ошибок, завершаем Actions с ошибкой.
-    if error_count > 0 and published_count == 0:
+    # Ошибка workflow нужна для внимания разработчика, но state уже сохранён
+    # и следующий запуск сможет безопасно повторить только неуспешные записи.
+    if error_count > 0:
         sys.exit(1)
 
 
