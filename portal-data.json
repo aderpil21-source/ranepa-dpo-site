@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-25T17:26:38.644Z",
+  "generatedAt": "2026-09-25T21:45:05.521322+00:00",
   "programs": [
     {
       "id": "c14",
@@ -9,22 +9,14 @@
       "hours": "144 ч.",
       "format": "Очно-заочная (с применением ЭО и ДОТ)",
       "type": "Повышение квалификации",
-      "dates": " 15.06.2026 – 27.10.2026",
+      "dates": "15.06.2026 – 27.10.2026",
       "title_ru": "Менеджмент в сфере гостеприимства",
       "desc_ru": "Программа разработана для формирования ключевых управленческих компетенций, необходимых для эффективного руководства предприятиями индустрии гостеприимства в условиях высокой конкуренции. Модули программы сформированы с учетом новых стандартов, позволяя слушателям повысить квалификацию. Успешно освоив материал, участники смогут масштабировать собственный бизнес и повысить качество услуг.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление предприятиями HoReCa",
-        "Масштабирование собственного бизнеса",
-        "Применение управленческих инструментов"
-      ],
-      "title_en": "Hospitality Management",
-      "desc_en": "The program is designed to build key management competencies necessary for effective leadership of hospitality enterprises in a high-competition environment. \nThe modules are formed taking into account new standards, allowing participants to improve their qualifications. Having successfully mastered the material, participants will be able to scale their own business and improve service quality.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление предприятиями HoReCa | Масштабирование собственного бизнеса | Применение управленческих инструментов",
+      "desc_en": "Hospitality Management",
       "bullets_en": [
-        "HoReCa enterprise management",
-        "Scaling own business",
-        "Application of management tools"
+        "The program is designed to build key management competencies necessary for effective leadership of hospitality enterprises in a high-competition environment. \nThe modules are formed taking into account new standards, allowing participants to improve their qualifications. Having successfully mastered the material, participants will be able to scale their own business and improve service quality."
       ],
       "pdf_link": ""
     },
@@ -39,19 +31,11 @@
       "dates": "28.09.2026 – 28.09.2026",
       "title_ru": "Менеджмент в туристско-экскурсионной деятельности",
       "desc_ru": "Программа разработана для специалистов сферы туризма, стремящихся повысить эффективность работы персонала и качество обслуживания. Модули программы охватывают аспекты коммуникации, включая ведение переговоров и управление конфликтами. Успешно освоив методики построения эффективных диалогов, участники смогут осознанно управлять всеми каналами коммуникаций предприятия.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Ведение переговоров",
-        "Управление конфликтами",
-        "Организация работы в команде"
-      ],
-      "title_en": "Tourism and Excursion Management",
-      "desc_en": "The program is designed for tourism professionals striving to improve staff performance and service quality. \nThe modules cover aspects of communication, including negotiations and conflict management. Having successfully mastered effective dialogue techniques, participants will be able to consciously manage all enterprise communication channels.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Ведение переговоров | Управление конфликтами | Организация работы в команде",
+      "desc_en": "Tourism and Excursion Management",
       "bullets_en": [
-        "Negotiation",
-        "Conflict management",
-        "Teamwork organization"
+        "The program is designed for tourism professionals striving to improve staff performance and service quality. \nThe modules cover aspects of communication, including negotiations and conflict management. Having successfully mastered effective dialogue techniques, participants will be able to consciously manage all enterprise communication channels."
       ],
       "pdf_link": ""
     },
@@ -66,19 +50,11 @@
       "dates": "03.08.2026 – 10.09.2026",
       "title_ru": "Искусственный интеллект: практическое применение",
       "desc_ru": "Программа направлена на формирование у слушателей системного понимания и практических навыков применения технологий искусственного интеллекта для решения актуальных бизнес-задач. Переходя от теории к уверенному использованию инструментов, участники смогут инициировать и реализовывать проекты внедрения ИИ. Успешно освоив методы проектирования запросов, специалисты получат измеримые преимущества для своей организации.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Применение ИИ в бизнесе",
-        "Создание эффективных запросов",
-        "Реализация проектов внедрения"
-      ],
-      "title_en": "Artificial Intelligence: Practical Application",
-      "desc_en": "The program is designed to develop a systemic understanding and practical skills in applying artificial intelligence technologies to solve real-world business problems. Moving from theory to confident tool usage, participants will be able to initiate and implement AI integration projects. Having successfully mastered prompt engineering methods, specialists will gain measurable advantages for their organization.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Применение ИИ в бизнесе | Создание эффективных запросов | Реализация проектов внедрения",
+      "desc_en": "Artificial Intelligence: Practical Application",
       "bullets_en": [
-        "AI application in business",
-        "Creating effective prompts",
-        "Implementing integration projects"
+        "The program is designed to develop a systemic understanding and practical skills in applying artificial\nintelligence technologies to solve real-world business problems. \nMoving from theory to confident tool usage, participants will be able to initiate and implement \nAI integration projects. Having successfully mastered prompt engineering methods, specialists will gain measurable advantages for their organization."
       ],
       "pdf_link": ""
     },
@@ -93,19 +69,11 @@
       "dates": "12.05.2026 – 10.06.2026; 02.09.2026 – 01.10.2026",
       "title_ru": "Горничная",
       "desc_ru": "Программа профессионального обучения направлена на приобретение слушателями компетенций, необходимых для выполнения нового вида деятельности. Успешно освоив технические навыки уборки, выпускники смогут обеспечивать высокие стандарты чистоты и комфорта. Полученные знания напрямую влияют на удовлетворенность гостей и репутацию отеля.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Технические навыки уборки",
-        "Принципы гостеприимства",
-        "Уборка номеров"
-      ],
-      "title_en": "Housemaid",
-      "desc_en": "The vocational training program is aimed at providing students with the competencies necessary to perform a new type of professional activity. Having successfully mastered technical cleaning skills, graduates will be able to ensure high standards of cleanliness and comfort. The acquired knowledge directly affects guest satisfaction and the hotel's reputation.",
-      "long_desc_en": "https://drive.google.com/file/d/1e9c08R4S9YZntT1EcPLIXGQmFfNgyKSA/view?usp=drivesdk",
+      "bullets_ru": [],
+      "title_en": "Технические навыки уборки | Принципы гостеприимства | Уборка номеров",
+      "desc_en": "Housemaid",
       "bullets_en": [
-        "Technical cleaning skills",
-        "Hospitality principles",
-        "Room cleaning"
+        "The vocational training program is aimed at providing students with the competencies necessary to perform a new type of professional activity. \nHaving successfully mastered technical cleaning skills, graduates will be able to ensure high standards of cleanliness and comfort. \nThe acquired knowledge directly affects guest satisfaction and the hotel's reputation."
       ],
       "pdf_link": ""
     },
@@ -120,19 +88,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Менеджмент в сфере гостеприимства",
       "desc_ru": "Программа предлагает слушателям углубленное изучение принципов и стратегий управления в индустрии гостеприимства. Фокусируясь на развитии ключевых компетенций, курс охватывает лидерство, маркетинг, финансы и операционный менеджмент. Успешно освоив материал, выпускники будут готовы к карьере ведущих руководителей, способных эффективно развивать бизнес в этой отрасли.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление в гостеприимстве",
-        "Стратегическое планирование",
-        "Операционный менеджмент"
-      ],
-      "title_en": "Hospitality Management",
-      "desc_en": "The program offers students an in-depth study of management principles and strategies in the hospitality industry. Focusing on the development of core competencies, the course covers leadership, marketing, finance, and operational management. Having successfully mastered the material, graduates will be ready for careers as leading executives capable of effectively developing business in this industry.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление в гостеприимстве | Стратегическое планирование | Операционный менеджмент",
+      "desc_en": "Hospitality Management",
       "bullets_en": [
-        "Hospitality management",
-        "Strategic planning",
-        "Operational management"
+        "The program offers students an in-depth study of management principles and strategies in the hospitality industry. Focusing on the development of core competencies, the course covers leadership, marketing, finance, and operational management. Having successfully mastered the material, graduates will be ready for careers as leading executives capable of effectively developing business in this industry."
       ],
       "pdf_link": ""
     },
@@ -147,19 +107,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Менеджмент организации",
       "desc_ru": "Программа предназначена для универсальных управленцев, стремящихся к освоению ключевых вопросов современного менеджмента. Формируя профессиональное мышление, курс способствует глубокому пониманию сущности управленческих процессов. Успешно освоив материал, слушатели приобретут компетенции, необходимые для эффективной организации работы персонала в соответствии с целями организации.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Современное управление",
-        "Профессиональное мышление",
-        "Организация работы персонала"
-      ],
-      "title_en": "Organization Management",
-      "desc_en": "The program is designed for universal managers striving to master key issues of modern management. Forming professional thinking, the course promotes a deep understanding of the essence of management processes. Having successfully mastered the material, participants will acquire the competencies necessary for the effective organization of personnel work in accordance with the organization's goals.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Современное управление | Профессиональное мышление | Организация работы персонала",
+      "desc_en": "Organization Management",
       "bullets_en": [
-        "Modern management",
-        "Professional thinking",
-        "Personnel organization management"
+        "The program is designed for universal managers striving to master key issues of modern management. Forming professional thinking, the course promotes a deep understanding of the essence of management processes. Having successfully mastered the material, participants will acquire the competencies necessary for the effective organization of personnel work in accordance with the organization's goals."
       ],
       "pdf_link": ""
     },
@@ -174,19 +126,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Логистика и\r\nуправление цепями\r\nпоставок",
       "desc_ru": "Содержание программы охватывает круг вопросов, связанных с осуществлением эффективного управления логистикой цепи поставок на основе рациональной организации процессов. Основываясь на теоретических концепциях, курс развивает практические навыки стимулирования сбыта и построения сетей. Успешно освоив материал, слушатели смогут принимать эффективные управленческие решения в области логистики.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление цепями поставок",
-        "Рациональная организация процессов",
-        "Стимулирование сбыта"
-      ],
-      "title_en": "Logistics and Supply Chain Management",
-      "desc_en": "The program covers issues related to implementing effective supply chain logistics management based on the rational organization of processes. Building on theoretical concepts, the course develops practical skills in sales promotion and network building. Having successfully mastered the material, participants will be able to make effective management decisions in the field of logistics.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление цепями поставок | Рациональная организация процессов | Стимулирование сбыта",
+      "desc_en": "Logistics and Supply Chain Management",
       "bullets_en": [
-        "Supply chain management",
-        "Rational process organization",
-        "Sales promotion"
+        "The program covers issues related to implementing effective supply chain logistics management based on the rational organization of processes. Building on theoretical concepts, the course develops practical skills in sales promotion and network building. Having successfully mastered the material, participants will be able to make effective management decisions in the field of logistics."
       ],
       "pdf_link": ""
     },
@@ -199,21 +143,13 @@
       "format": "Очно-заочная (с применением ЭО и ДОТ)",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Организация\r\nдеятельности\r\nсоциальноориентированных\r\nнекоммерческих\r\nорганизаций\r\n",
+      "title_ru": "Организация\r\nдеятельности\r\nсоциальноориентированных\r\nнекоммерческих\r\nорганизаций",
       "desc_ru": "Программа направлена на подготовку руководителей и специалистов некоммерческих организаций. Изучая специфику СОНКО, слушатели осваивают особенности правового статуса и меры поддержки. Успешно завершив обучение, участники получат необходимые компетенции для решения актуальных социальных проблем.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Правовой статус СОНКО",
-        "Меры государственной поддержки",
-        "Решение социальных проблем"
-      ],
-      "title_en": "Organization of Socially Oriented NGOs",
-      "desc_en": "The program is aimed at training leaders and specialists of non-profit organizations. Studying the specifics of socially oriented NGOs, participants master the features of legal status and support measures. Having successfully completed the training, participants will acquire the necessary competencies to solve relevant social problems.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Правовой статус СОНКО | Меры государственной поддержки | Решение социальных проблем",
+      "desc_en": "Organization of Socially Oriented NGOs",
       "bullets_en": [
-        "Legal status of NGOs",
-        "State support measures",
-        "Solving social problems"
+        "The program is aimed at training leaders and specialists of non-profit organizations. Studying the specifics of socially oriented NGOs, participants master the features of legal status and support measures. Having successfully completed the training, participants will acquire the necessary competencies to solve relevant social problems."
       ],
       "pdf_link": ""
     },
@@ -228,19 +164,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Таможенный декларант",
       "desc_ru": "Программа разработана для лиц, желающих освоить новую профессию или повысить квалификацию в сфере таможенного дела. Изучая правовое взаимодействие с таможенными органами, слушатели осваивают специфику декларирования товаров и грузов. Успешно освоив учебный материал, участники приобретут практические навыки оформления деклараций различных типов.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Декларирование товаров и грузов",
-        "Правовое взаимодействие с таможней",
-        "Оформление деклараций"
-      ],
-      "title_en": "Customs Declarant",
-      "desc_en": "The program is designed for individuals wishing to master a new profession or improve their qualifications in customs. Studying legal interaction with customs authorities, participants master the specifics of goods and cargo declaration. Having successfully mastered the study material, participants will acquire practical skills in processing various types of declarations.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Декларирование товаров и грузов | Правовое взаимодействие с таможней | Оформление деклараций",
+      "desc_en": "Customs Declarant",
       "bullets_en": [
-        "Goods and cargo declaration",
-        "Legal interaction with customs",
-        "Processing declarations"
+        "The program is designed for individuals wishing to master a new profession or improve their qualifications in customs. Studying legal interaction with customs authorities, participants master the specifics of goods and cargo declaration. Having successfully mastered the study material, participants will acquire practical skills in processing various types of declarations."
       ],
       "pdf_link": ""
     },
@@ -253,21 +181,13 @@
       "format": "Очно-заочная (с применением ЭО и ДОТ)",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Управление\r\nгосударственными и\r\nмуниципальными\r\nзакупками\r\n",
+      "title_ru": "Управление\r\nгосударственными и\r\nмуниципальными\r\nзакупками",
       "desc_ru": "Программа предназначена для специалистов сферы закупок, стремящихся повысить уровень знаний и компетенций. Изучая механизмы организации контрактной системы, слушатели учатся эффективно использовать средства бюджета и внебюджетных источников. Успешно освоив материал, участники смогут минимизировать коррупционные риски и уверенно применять нормы антимонопольного законодательства.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Организация закупок",
-        "Исполнение контрактов",
-        "Антимонопольное законодательство"
-      ],
-      "title_en": "State and Municipal Procurement Management",
-      "desc_en": "The program is designed for procurement professionals striving to improve their knowledge and competencies. Studying the mechanisms of contract system organization, participants learn to effectively use budgetary and extra-budgetary funds. Having successfully mastered the material, participants will be able to minimize corruption risks and confidently apply the norms of antitrust legislation.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Организация закупок | Исполнение контрактов | Антимонопольное законодательство",
+      "desc_en": "State and Municipal Procurement Management",
       "bullets_en": [
-        "Procurement organization",
-        "Contract execution",
-        "Antitrust legislation"
+        "The program is designed for procurement professionals striving to improve their knowledge and competencies. Studying the mechanisms of contract system organization, participants learn to effectively use budgetary and extra-budgetary funds. Having successfully mastered the material, participants will be able to minimize corruption risks and confidently apply the norms of antitrust legislation."
       ],
       "pdf_link": ""
     },
@@ -282,19 +202,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "1С: Предприятие 8.3",
       "desc_ru": "Программа предназначена для бухгалтеров и пользователей, стремящихся к освоению принципов работы с объектами и механизмами платформы. Изучая регламентные расчеты и заполнение данных, слушатели осваивают автоматизированное ведение учета. Успешно освоив учебный материал, участники приобретут практические навыки формирования отчетности с использованием программного продукта.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Ведение бухгалтерского учета",
-        "Регламентные расчеты",
-        "Формирование отчетности"
-      ],
-      "title_en": "1C: Enterprise 8.3",
-      "desc_en": "The program is designed for accountants and users seeking to master the principles of working with platform objects and mechanisms. Studying routine calculations and data entry, participants master automated accounting. Having successfully mastered the study material, participants will acquire practical skills in generating reports using the software product.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Ведение бухгалтерского учета | Регламентные расчеты | Формирование отчетности",
+      "desc_en": "1C: Enterprise 8.3",
       "bullets_en": [
-        "Accounting management",
-        "Routine calculations",
-        "Report generation"
+        "The program is designed for accountants and users seeking to master the principles of working with platform objects and mechanisms. Studying routine calculations and data entry, participants master automated accounting. Having successfully mastered the study material, participants will acquire practical skills in generating reports using the software product."
       ],
       "pdf_link": ""
     },
@@ -309,19 +221,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Бухгалтерский учет для малого бизнеса и ИП",
       "desc_ru": "Программа разработана для специалистов, желающих систематизировать знания в сфере бухгалтерского учета. Освоив курс, слушатели научатся применять упрощенные алгоритмы отчетности для ИП. Полученный практический опыт позволяет эффективно организовывать финансовую деятельность предприятий, повышая конкурентоспособность.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Ведение бухучета ИП",
-        "Составление отчетности",
-        "Использование баз данных"
-      ],
-      "title_en": "Accounting for Small Business",
-      "desc_en": "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Ведение бухучета ИП | Составление отчетности | Использование баз данных",
+      "desc_en": "Accounting for Small Business",
       "bullets_en": [
-        "Small business accounting",
-        "Reporting preparation",
-        "Database utilization"
+        "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness."
       ],
       "pdf_link": ""
     },
@@ -336,19 +240,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Бухгалтер государственных и муниципальных организаций",
       "desc_ru": "Программа направлена на формирование компетенций, необходимых для ведения учета в бюджетной сфере. Освоив курс, слушатели научатся составлять финансовую отчетность с использованием современных информационных систем. Полученный практический опыт позволяет эффективно организовывать финансовую деятельность государственных организаций, повышая профессиональную компетентность.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Бюджетный учет",
-        "Финансовая отчетность",
-        "Информационные системы"
-      ],
-      "title_en": "Accountant for State and Municipal Organizations",
-      "desc_en": "The program is designed to build competencies necessary for accounting in the public sector. Students learn to prepare financial reporting using modern information systems. The acquired practical experience enables efficient financial management in state organizations, enhancing professional competence.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Бюджетный учет | Финансовая отчетность | Информационные системы",
+      "desc_en": "Accountant for State and Municipal Organizations",
       "bullets_en": [
-        "Public sector accounting",
-        "Financial reporting",
-        "Information systems"
+        "The program is designed to build competencies necessary for accounting in the public sector. Students learn to prepare financial reporting using modern information systems. The acquired practical experience enables efficient financial management in state organizations, enhancing professional competence."
       ],
       "pdf_link": ""
     },
@@ -363,19 +259,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Управление экспортным потенциалом организации",
       "desc_ru": "Программа предназначена для руководителей и специалистов экспортно-ориентированных компаний малого и среднего бизнеса. Изучая основы ВЭД, слушатели осваивают выбор экспортных рынков и каналов сбыта. Полученные знания позволяют последовательно реализовывать экспортный потенциал компании, планируя эффективный выход на международные рынки.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Экспортное предпринимательство",
-        "Анализ рынков сбыта",
-        "Международная логистика"
-      ],
-      "title_en": "Managing Organizational Export Potential",
-      "desc_en": "The program is designed for executives and specialists of export-oriented small and medium-sized businesses. Studying the fundamentals of foreign economic activity, students master the selection of export markets and distribution channels. The acquired knowledge enables consistent realization of the company's export potential while planning effective entry into international markets.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Экспортное предпринимательство | Анализ рынков сбыта | Международная логистика",
+      "desc_en": "Managing Organizational Export Potential",
       "bullets_en": [
-        "Export entrepreneurship",
-        "Market analysis",
-        "International logistics"
+        "The program is designed for executives and specialists of export-oriented small and medium-sized businesses. Studying the fundamentals of foreign economic activity, students master the selection of export markets and distribution channels. The acquired knowledge enables consistent realization of the company's export potential while planning effective entry into international markets."
       ],
       "pdf_link": ""
     },
@@ -388,21 +276,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Бухгалтерский учет для малого бизнеса ",
+      "title_ru": "Бухгалтерский учет для малого бизнеса",
       "desc_ru": "Программа разработана для специалистов, желающих систематизировать знания в сфере бухгалтерского учета. Освоив курс, слушатели научатся применять упрощенные алгоритмы отчетности для ИП. Полученный практический опыт позволяет эффективно организовывать финансовую деятельность предприятий, повышая конкурентоспособность.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Ведение бухучета ИП",
-        "Составление отчетности",
-        "Использование баз данных"
-      ],
-      "title_en": "Accounting for Small Business",
-      "desc_en": "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Ведение бухучета ИП | Составление отчетности | Использование баз данных",
+      "desc_en": "Accounting for Small Business",
       "bullets_en": [
-        "Small business accounting",
-        "Reporting preparation",
-        "Database utilization"
+        "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness."
       ],
       "pdf_link": ""
     },
@@ -415,21 +295,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Вопросы профилактики терроризма ",
+      "title_ru": "Вопросы профилактики терроризма",
       "desc_ru": "Программа повышения квалификации ориентирована на государственных служащих и специалистов, ответственных за антитеррористическую безопасность. В рамках курса изучаются эффективные механизмы взаимодействия структур и требования к защищенности объектов. Полученные знания формируют у слушателей четкое представление о внешних и внутренних угрозах национальной безопасности.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Антитеррористическая безопасность",
-        "Защита объектов",
-        "Национальная безопасность"
-      ],
-      "title_en": "Issues of Terrorism Prevention",
-      "desc_en": "The advanced training program targets civil servants and specialists responsible for anti-terrorist security. The course covers effective mechanisms for structural interaction and facility protection requirements. The acquired knowledge forms a clear understanding among students regarding external and internal threats to national security.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Антитеррористическая безопасность | Защита объектов | Национальная безопасность",
+      "desc_en": "Issues of Terrorism Prevention",
       "bullets_en": [
-        "Anti-terrorist security",
-        "Facility protection",
-        "National security"
+        "The advanced training program targets civil servants and specialists responsible for anti-terrorist security. The course covers effective mechanisms for structural interaction and facility protection requirements. The acquired knowledge forms a clear understanding among students regarding external and internal threats to national security."
       ],
       "pdf_link": ""
     },
@@ -442,21 +314,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Профилактика и противодействие коррупции ",
+      "title_ru": "Профилактика и противодействие коррупции",
       "desc_ru": "Программа повышения квалификации ориентирована на государственных служащих и руководителей учреждений. Изучая комплекс профилактических мероприятий, слушатели осваивают вопросы антикоррупционной экспертизы правовых актов. Полученные знания формируют устойчивое неприятие коррупционного поведения в профессиональной деятельности.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Антикоррупционная экспертиза",
-        "Профилактика правонарушений",
-        "Правоприменительная практика"
-      ],
-      "title_en": "Prevention and Counteraction of Corruption",
-      "desc_en": "The advanced training program targets civil servants and institutional executives. Studying a set of preventive measures, students master anti-corruption expertise of legal acts. The acquired knowledge forms a sustainable rejection of corrupt behavior in professional practice.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Антикоррупционная экспертиза | Профилактика правонарушений | Правоприменительная практика",
+      "desc_en": "Prevention and Counteraction of Corruption",
       "bullets_en": [
-        "Anti-corruption expertise",
-        "Offense prevention",
-        "Law enforcement practice"
+        "The advanced training program targets civil servants and institutional executives. Studying a set of preventive measures, students master anti-corruption expertise of legal acts. The acquired knowledge forms a sustainable rejection of corrupt behavior in professional practice."
       ],
       "pdf_link": ""
     },
@@ -469,21 +333,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Профилактика терроризма в органах власти ",
+      "title_ru": "Профилактика терроризма в органах власти",
       "desc_ru": "Программа направлена на повышение квалификации руководителей органов местного самоуправления и государственных служащих. В ходе обучения слушатели разбирают нормативно-правовое обеспечение и базовые механизмы противодействия терроризму. Полученные знания позволяют эффективно оптимизировать взаимодействие органов власти, предотвращая угрозы безопасности.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Противодействие терроризму",
-        "Нормативно-правовое обеспечение",
-        "Взаимодействие органов власти"
-      ],
-      "title_en": "Terrorism Prevention in Public Authorities",
-      "desc_en": "The program aims to improve the qualifications of municipal management and civil servants. During the training, students analyze regulatory frameworks and basic mechanisms for countering terrorism. The acquired knowledge enables efficient optimization of government agency cooperation, preventing security threats.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Противодействие терроризму | Нормативно-правовое обеспечение | Взаимодействие органов власти",
+      "desc_en": "Terrorism Prevention in Public Authorities",
       "bullets_en": [
-        "Countering terrorism",
-        "Regulatory framework",
-        "Agency cooperation"
+        "The program aims to improve the qualifications of municipal management and civil servants. During the training, students analyze regulatory frameworks and basic mechanisms for countering terrorism. The acquired knowledge enables efficient optimization of government agency cooperation, preventing security threats."
       ],
       "pdf_link": ""
     },
@@ -496,21 +352,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Основы национальной безопасности органов власти ",
+      "title_ru": "Основы национальной безопасности органов власти",
       "desc_ru": "Программа предназначена для государственных служащих и специалистов надзорных органов. В рамках курса слушатели изучают основы обеспечения национальной безопасности, осваивая инструменты защиты интересов государства. Полученные знания позволяют эффективно взаимодействовать с институтами гражданского общества, противодействуя актуальным угрозам.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Национальная безопасность",
-        "Защита интересов",
-        "Взаимодействие с обществом"
-      ],
-      "title_en": "Fundamentals of National Security in Public Authorities",
-      "desc_en": "The program is designed for civil servants and supervisory specialists. Within the course, students study the fundamentals of ensuring national security, mastering tools to protect state interests. The acquired knowledge enables effective cooperation with civil society institutions, countering current threats.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Национальная безопасность | Защита интересов | Взаимодействие с обществом",
+      "desc_en": "Fundamentals of National Security in Public Authorities",
       "bullets_en": [
-        "National security",
-        "Protection of interests",
-        "Civil society cooperation"
+        "The program is designed for civil servants and supervisory specialists. Within the course, students study the fundamentals of ensuring national security, mastering tools to protect state interests. The acquired knowledge enables effective cooperation with civil society institutions, countering current threats."
       ],
       "pdf_link": ""
     },
@@ -523,21 +371,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Антитеррористическая защищенность вузов ",
+      "title_ru": "Антитеррористическая защищенность вузов",
       "desc_ru": "Программа направлена на повышение квалификации руководителей и должностных лиц образовательных организаций. В рамках курса изучается система организации деятельности по обеспечению безопасности объектов. Полученные практические навыки позволяют эффективно реализовывать антитеррористические мероприятия в вузах.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Безопасность объектов вузов",
-        "Антитеррористическая защищенность",
-        "Организация мероприятий"
-      ],
-      "title_en": "Anti-Terrorist Protection of Universities",
-      "desc_en": "The program aims to improve the qualifications of executives and officials in educational institutions. The course covers the system for organizing facility security operations. The acquired practical skills enable efficient implementation of anti-terrorist measures in universities.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Безопасность объектов вузов | Антитеррористическая защищенность | Организация мероприятий",
+      "desc_en": "Anti-Terrorist Protection of Universities",
       "bullets_en": [
-        "University facility security",
-        "Anti-terrorist protection",
-        "Event management"
+        "The program aims to improve the qualifications of executives and officials in educational institutions. The course covers the system for organizing facility security operations. The acquired practical skills enable efficient implementation of anti-terrorist measures in universities."
       ],
       "pdf_link": ""
     },
@@ -552,19 +392,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Цифровая грамотность",
       "desc_ru": "Программа предназначена для слушателей, желающих расширить свои информационные компетенции и освоить современные системы. В процессе обучения участники учатся работать с базами данных, офисными приложениями и цифровыми устройствами. Полученные навыки позволяют уверенно использовать государственные услуги и профессиональное программное обеспечение.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Работа с базами данных",
-        "Использование офисных приложений",
-        "Цифровая безопасность"
-      ],
-      "title_en": "Digital Literacy",
-      "desc_en": "The program is designed for students seeking to expand their information competencies and master modern systems. During the training, participants learn to work with databases, office applications, and digital devices. The acquired skills enable confident use of public services and professional software.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Работа с базами данных | Использование офисных приложений | Цифровая безопасность",
+      "desc_en": "Digital Literacy",
       "bullets_en": [
-        "Database operation",
-        "Office applications",
-        "Digital security"
+        "The program is designed for students seeking to expand their information competencies and master modern systems. During the training, participants learn to work with databases, office applications, and digital devices. The acquired skills enable confident use of public services and professional software."
       ],
       "pdf_link": ""
     },
@@ -579,19 +411,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "title_ru",
       "desc_ru": "Программа направлена на совершенствование профессиональных компетенций в сфере музейно-туристического менеджмента. Курс позволяет освоить навыки работы с фондами, повышая экономическую и управленческую грамотность. У слушателей сформируется понимание возможностей использования межинституциональных ресурсов для развития культуры и туризма.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление музейными фондами",
-        "Туристический менеджмент",
-        "Межинституциональные ресурсы"
-      ],
-      "title_en": "Management in Museum and Tourism Activities",
-      "desc_en": "The program aims to improve professional competencies in museum and tourism management. The course allows students to master collection management skills while enhancing economic and managerial literacy. Participants will gain an understanding of utilizing interinstitutional resources for cultural and tourism development.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление музейными фондами | Туристический менеджмент | Межинституциональные ресурсы",
+      "desc_en": "Management in Museum and Tourism Activities",
       "bullets_en": [
-        "Museum collection management",
-        "Tourism management",
-        "Interinstitutional resources"
+        "The program aims to improve professional competencies in museum and tourism management. The course allows students to master collection management skills while enhancing economic and managerial literacy. Participants will gain an understanding of utilizing interinstitutional resources for cultural and tourism development."
       ],
       "pdf_link": ""
     },
@@ -606,19 +430,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Менеджмент в туристско-экскурсионной деятельности",
       "desc_ru": "Программа предназначена для формирования навыков в сфере туристско-экскурсионной деятельности. Освоив курс, слушатели научатся решать организационные задачи по подготовке проектов и ведению экскурсий. Полученные компетенции будут востребованы при трудоустройстве или развитии собственного бизнеса в сфере гостеприимства.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Организация экскурсий",
-        "Проектирование туров",
-        "Управление в туризме"
-      ],
-      "title_en": "Management in Tourism and Excursion Activities",
-      "desc_en": "The program is designed to build skills in tourism and excursion activities. Having mastered the course, students learn to solve organizational tasks for preparing projects and conducting excursions. The acquired competencies will be in demand when finding employment or developing one's own business in the hospitality sector.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Организация экскурсий | Проектирование туров | Управление в туризме",
+      "desc_en": "Management in Tourism and Excursion Activities",
       "bullets_en": [
-        "Excursion organization",
-        "Tour design",
-        "Tourism management"
+        "The program is designed to build skills in tourism and excursion activities. Having mastered the course, students learn to solve organizational tasks for preparing projects and conducting excursions. The acquired competencies will be in demand when finding employment or developing one's own business in the hospitality sector."
       ],
       "pdf_link": ""
     },
@@ -633,19 +449,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Развитие коммуникативных компетенций в туризме",
       "desc_ru": "Программа направлена на повышение эффективности работы персонала сферы туризма за счет развития коммуникативных навыков. Участники освоят методики построения эффективных диалогов, научившись распознавать и преодолевать барьеры. Полученные знания позволяют улучшить клиентский опыт, увеличивая лояльность и общую эффективность организаций.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Коммуникативные навыки",
-        "Управление конфликтами",
-        "Ведение переговоров"
-      ],
-      "title_en": "Development of Communicative Competencies in Tourism",
-      "desc_en": "The program aims to improve the efficiency of tourism personnel through the development of communication skills. Participants will master methods for building effective dialogues, learning to recognize and overcome communication barriers. The acquired knowledge enhances the customer experience, increasing loyalty and overall organizational efficiency.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Коммуникативные навыки | Управление конфликтами | Ведение переговоров",
+      "desc_en": "Development of Communicative Competencies in Tourism",
       "bullets_en": [
-        "Communication skills",
-        "Conflict management",
-        "Negotiation"
+        "The program aims to improve the efficiency of tourism personnel through the development of communication skills. Participants will master methods for building effective dialogues, learning to recognize and overcome communication barriers. The acquired knowledge enhances the customer experience, increasing loyalty and overall organizational efficiency."
       ],
       "pdf_link": ""
     },
@@ -658,21 +466,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Применение искусственного интеллекта на практике ",
+      "title_ru": "Применение искусственного интеллекта на практике",
       "desc_ru": "Программа повышения квалификации поможет освоить современные информационные системы и базы данных. Познакомившись с принципами работы искусственного интеллекта, слушатели обретают практические навыки его применения. Курс направлен на формирование глубокого понимания основ ИИ и способов интеграции технологий в процессы.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Использование искусственного интеллекта",
-        "Работа с базами данных",
-        "Интеграция информационных систем"
-      ],
-      "title_en": "Practical Application of Artificial Intelligence",
-      "desc_en": "The advanced training program helps master modern information systems and databases. Having familiarized themselves with the principles of artificial intelligence, students acquire practical skills for its application. The course aims to build a deep understanding of AI foundations and methods of technology integration into processes.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Использование искусственного интеллекта | Работа с базами данных | Интеграция информационных систем",
+      "desc_en": "Practical Application of Artificial Intelligence",
       "bullets_en": [
-        "Artificial intelligence application",
-        "Database operation",
-        "Information systems integration"
+        "The advanced training program helps master modern information systems and databases. Having familiarized themselves with the principles of artificial intelligence, students acquire practical skills for its application. The course aims to build a deep understanding of AI foundations and methods of technology integration into processes."
       ],
       "pdf_link": ""
     },
@@ -685,21 +485,13 @@
       "format": "Очно-заочная",
       "type": "Повышение квалификации",
       "dates": "По мере формирования групп",
-      "title_ru": "Навыки эффективной коммуникации и письма ",
+      "title_ru": "Навыки эффективной коммуникации и письма",
       "desc_ru": "Программа направлена на совершенствование навыков эффективной коммуникации и делового письма. В процессе обучения слушатели осваивают стандарты составления служебной документации и ведения профессионального диалога. Полученные компетенции позволяют уверенно решать задачи корпоративного взаимодействия, повышая общую продуктивность.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Деловое письмо",
-        "Корпоративная коммуникация",
-        "Служебная документация"
-      ],
-      "title_en": "Improving Effective Communication and Business Writing Skills",
-      "desc_en": "The program aims to improve skills in effective communication and business writing. During the training, students master standards of corporate documentation and professional dialogue. The acquired competencies enable confident handling of corporate interaction tasks, increasing overall productivity.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Деловое письмо | Корпоративная коммуникация | Служебная документация",
+      "desc_en": "Improving Effective Communication and Business Writing Skills",
       "bullets_en": [
-        "Business writing",
-        "Corporate communication",
-        "Official documentation"
+        "The program aims to improve skills in effective communication and business writing. During the training, students master standards of corporate documentation and professional dialogue. The acquired competencies enable confident handling of corporate interaction tasks, increasing overall productivity."
       ],
       "pdf_link": ""
     },
@@ -714,19 +506,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Система управления проектной деятельностью",
       "desc_ru": "Программа направлена на изучение нормативно-правовых и управленческих аспектов судебной деятельности. В ходе обучения слушатели осваивают вопросы процессуального законодательства и организации судебной статистики. Полученный практический опыт на участках позволяет эффективно решать служебные задачи.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Процессуальное законодательство",
-        "Судебная статистика",
-        "Управленческая этика"
-      ],
-      "title_en": "Project Activity Management System in Organizations",
-      "desc_en": "The program focuses on studying regulatory, legal, and managerial aspects of judicial activities. During the training, students master procedural legislation and judicial statistics organization. The acquired practical experience in magistrate offices enables efficient handling of official duties.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Процессуальное законодательство | Судебная статистика | Управленческая этика",
+      "desc_en": "Project Activity Management System in Organizations",
       "bullets_en": [
-        "Procedural legislation",
-        "Judicial statistics",
-        "Managerial ethics"
+        "The program focuses on studying regulatory, legal, and managerial aspects of judicial activities. During the training, students master procedural legislation and judicial statistics organization. The acquired practical experience in magistrate offices enables efficient handling of official duties."
       ],
       "pdf_link": ""
     },
@@ -741,19 +525,11 @@
       "dates": "1 неделя",
       "title_ru": "Обеспечение деятельности судебных участков",
       "desc_ru": "Программа направлена на повышение квалификации специалистов, обеспечивающих деятельность судебных участков. В процессе обучения слушатели изучают нормативно-правовую базу и стандарты делопроизводства. Полученные навыки позволяют эффективно организовывать работу аппарата мировых судей.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Делопроизводство на судебных участках",
-        "Нормативно-правовая база",
-        "Организация работы аппарата"
-      ],
-      "title_en": "Ensuring the Operation of Magistrate Courts",
-      "desc_en": "The program aims to improve the qualifications of specialists ensuring the operation of court sections. During the training, students study the regulatory framework and clerical standards. The acquired skills enable efficient organization of magistrate staff operations.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Делопроизводство на судебных участках | Нормативно-правовая база | Организация работы аппарата",
+      "desc_en": "Ensuring the Operation of Magistrate Courts",
       "bullets_en": [
-        "Magistrate court clerical work",
-        "Regulatory framework",
-        "Staff operations management"
+        "The program aims to improve the qualifications of specialists ensuring the operation of court sections. During the training, students study the regulatory framework and clerical standards. The acquired skills enable efficient organization of magistrate staff operations."
       ],
       "pdf_link": ""
     },
@@ -768,19 +544,11 @@
       "dates": "1 месяц",
       "title_ru": "Организация экспортной деятельности",
       "desc_ru": "Программа направлена на получение практического понимания работы экспортного предприятия от первого контакта до получения валютной выручки. Курс формирует взгляд изнутри на реальные расходы, риски и потребности бизнеса. Полученные компетенции позволяют эффективно разрабатывать меры поддержки и снижать административную нагрузку.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Анализ внешних рынков",
-        "Внешнеторговые контракты",
-        "Таможенное оформление"
-      ],
-      "title_en": "Organization of Export Activities",
-      "desc_en": "The program aims to provide a practical understanding of export enterprise operations from the first contact to receiving foreign exchange earnings. The course builds an inside perspective on real expenses, risks, and business needs. The acquired competencies allow for the effective development of support measures and the reduction of administrative burden.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Анализ внешних рынков | Внешнеторговые контракты | Таможенное оформление",
+      "desc_en": "Organization of Export Activities",
       "bullets_en": [
-        "Foreign market analysis",
-        "Foreign trade contracts",
-        "Customs clearance"
+        "The program aims to provide a practical understanding of export enterprise operations from the first contact to receiving foreign exchange earnings. The course builds an inside perspective on real expenses, risks, and business needs. The acquired competencies allow for the effective development of support measures and the reduction of administrative burden."
       ],
       "pdf_link": ""
     },
@@ -795,19 +563,11 @@
       "dates": "1 месяц",
       "title_ru": "Развитие контрольной надзорной деятельности",
       "desc_ru": "Программа направлена на изучение актуальных направлений развития контрольной и надзорной деятельности. В процессе обучения слушатели анализируют современные требования законодательства и практику проверок. Полученные знания позволяют эффективно организовывать надзорные мероприятия, минимизируя риски нарушений.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Контрольная деятельность",
-        "Надзорные мероприятия",
-        "Законодательные требования"
-      ],
-      "title_en": "Current Trends in Supervisory and Control Activities",
-      "desc_en": "The program focuses on studying current trends in the development of supervisory and control activities. During the training, students analyze modern legislative requirements and inspection practices. The acquired knowledge enables efficient organization of supervisory measures while minimizing compliance risks.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Контрольная деятельность | Надзорные мероприятия | Законодательные требования",
+      "desc_en": "Current Trends in Supervisory and Control Activities",
       "bullets_en": [
-        "Supervisory activities",
-        "Inspection procedures",
-        "Legislative requirements"
+        "The program focuses on studying current trends in the development of supervisory and control activities. During the training, students analyze modern legislative requirements and inspection practices. The acquired knowledge enables efficient organization of supervisory measures while minimizing compliance risks."
       ],
       "pdf_link": ""
     },
@@ -822,19 +582,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Повар",
       "desc_ru": "Программа направлена на формирование ключевых профессиональных компетенций по профессии повара. Обучение носит практико-ориентированный характер и базируется на современных методах приготовления блюд с учетом отраслевых стандартов. Освоив учебный курс, выпускники получают свидетельство о профессии рабочего с присвоением квалификации 3 или 4 разряда.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Технология приготовления блюд",
-        "Первичная обработка сырья",
-        "Кулинарная обработка и подача"
-      ],
-      "title_en": "Cook",
-      "desc_en": "The program is designed to develop core professional competencies for the culinary profession. Training is practice-oriented and based on modern food preparation techniques in compliance with industry standards. Having mastered the curriculum, graduates receive a vocational training certificate with the award of qualification levels 3 or 4.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Технология приготовления блюд | Первичная обработка сырья | Кулинарная обработка и подача",
+      "desc_en": "Cook",
       "bullets_en": [
-        "Food preparation technology",
-        "Raw ingredient processing",
-        "Culinary presentation"
+        "The program is designed to develop core professional competencies for the culinary profession. Training is practice-oriented and based on modern food preparation techniques in compliance with industry standards. Having mastered the curriculum, graduates receive a vocational training certificate with the award of qualification levels 3 or 4."
       ],
       "pdf_link": ""
     },
@@ -849,19 +601,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Государственное и муниципальное управление",
       "desc_ru": "Программа предназначена для лиц, желающих сменить вектор деятельности и работать в сфере управления. В ходе курса слушатели изучают основные принципы публичной политики, финансового управления и организационного проектирования. Успешное завершение обучения заканчивается присвоением новой квалификации специалиста.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Публичная политика",
-        "Финансовое управление",
-        "Организационное проектирование"
-      ],
-      "title_en": "State and Municipal Management",
-      "desc_en": "The program is designed for individuals wishing to change their career path and work in management. During the course, students study the main principles of public policy, financial management, and organizational design. Successful completion of the training results in the award of a new specialist qualification.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Публичная политика | Финансовое управление | Организационное проектирование",
+      "desc_en": "State and Municipal Management",
       "bullets_en": [
-        "Public policy",
-        "Financial management",
-        "Organizational design"
+        "The program is designed for individuals wishing to change their career path and work in management. During the course, students study the main principles of public policy, financial management, and organizational design. Successful completion of the training results in the award of a new specialist qualification."
       ],
       "pdf_link": ""
     },
@@ -876,19 +620,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Управление персоналом и кадровое делопроизводство",
       "desc_ru": "Программа направлена на формирование целостного представления о системе управления персоналом организации. В ходе обучения слушатели осваивают функциональные обязанности специалистов по кадрам и трудовым отношениям. Полученные компетенции позволяют эффективно организовывать документационное обеспечение и управление персоналом предприятия.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Кадровое делопроизводство",
-        "Управление персоналом",
-        "Документационное обеспечение"
-      ],
-      "title_en": "Personnel Management and HR Records Management",
-      "desc_en": "The program aims to build a comprehensive understanding of an organization's personnel management system. During the training, students master the functional responsibilities of HR and labor relations specialists. The acquired competencies enable efficient organization of documentation support and enterprise personnel management.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Кадровое делопроизводство | Управление персоналом | Документационное обеспечение",
+      "desc_en": "Personnel Management and HR Records Management",
       "bullets_en": [
-        "HR records management",
-        "Personnel management",
-        "Documentation support"
+        "The program aims to build a comprehensive understanding of an organization's personnel management system. During the training, students master the functional responsibilities of HR and labor relations specialists. The acquired competencies enable efficient organization of documentation support and enterprise personnel management."
       ],
       "pdf_link": ""
     },
@@ -903,19 +639,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Государственное и муниципальное управление",
       "desc_ru": "Программа направлена на подготовку высококвалифицированных специалистов в сфере государственной и муниципальной службы. В рамках курса слушатели овладевают фундаментальными теоретическими знаниями в сфере публичного управления, экономики и права. Успешное освоение программы заканчивается присвоением новой квалификации специалиста.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Публичное управление",
-        "Финансы и экономика",
-        "Государственная служба"
-      ],
-      "title_en": "State and Municipal Management",
-      "desc_en": "The program aims to train highly qualified specialists in the field of public and municipal service. Within the course, students master fundamental theoretical knowledge in public administration, economics, and law. Successful completion of the program results in the award of a new specialist qualification.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Публичное управление | Финансы и экономика | Государственная служба",
+      "desc_en": "State and Municipal Management",
       "bullets_en": [
-        "Public administration",
-        "Finance and economics",
-        "Public service"
+        "The program aims to train highly qualified specialists in the field of public and municipal service. Within the course, students master fundamental theoretical knowledge in public administration, economics, and law. Successful completion of the program results in the award of a new specialist qualification."
       ],
       "pdf_link": ""
     },
@@ -930,19 +658,11 @@
       "dates": "2,5 месяца",
       "title_ru": "Бухгалтерский и финансовый учет",
       "desc_ru": "Программа разработана с учетом требований экономики и бизнеса к уровню подготовки специалистов в сфере учета. Слушатели освоят новый вид профессиональной деятельности, получив практический опыт составления отчетности с использованием современных систем. В рамках курса участники смогут применять методы финансового анализа, устанавливая причины изменений за отчетный период.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Бухгалтерский учет",
-        "Финансовый анализ",
-        "Составление отчетности"
-      ],
-      "title_en": "Accounting and Financial Management",
-      "desc_en": "The program is developed taking into account economic and business requirements for accounting professionals. Students will master a new type of professional activity, gaining practical experience in reporting preparation using modern systems. Within the course, participants will be able to apply financial analysis methods, identifying the causes of changes over the reporting period.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Бухгалтерский учет | Финансовый анализ | Составление отчетности",
+      "desc_en": "Accounting and Financial Management",
       "bullets_en": [
-        "Accounting",
-        "Financial analysis",
-        "Reporting preparation"
+        "The program is developed taking into account economic and business requirements for accounting professionals. Students will master a new type of professional activity, gaining practical experience in reporting preparation using modern systems. Within the course, participants will be able to apply financial analysis methods, identifying the causes of changes over the reporting period."
       ],
       "pdf_link": ""
     },
@@ -957,19 +677,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Управление бизнесом",
       "desc_ru": "Программа предназначена для желающих создать бизнес с нуля или оптимизировать процессы действующего предприятия. В рамках курса слушатели получают прикладные компетенции в области современного управления, экономики и права. Успешное освоение программы профессиональной переподготовки заканчивается присвоением квалификации менеджера.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление бизнесом",
-        "Экономика и финансы",
-        "Планирование деятельности"
-      ],
-      "title_en": "Business Management",
-      "desc_en": "The program is designed for those wanting to build a business from scratch or optimize processes of an existing enterprise. Within the course, students acquire applied competencies in modern management, economics, and law. Successful completion of the professional retraining program results in the award of manager qualification.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление бизнесом | Экономика и финансы | Планирование деятельности",
+      "desc_en": "Business Management",
       "bullets_en": [
-        "Business management",
-        "Economics and finance",
-        "Activity planning"
+        "The program is designed for those wanting to build a business from scratch or optimize processes of an existing enterprise. Within the course, students acquire applied competencies in modern management, economics, and law. Successful completion of the professional retraining program results in the award of manager qualification."
       ],
       "pdf_link": ""
     },
@@ -984,19 +696,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Финансовый менеджмент",
       "desc_ru": "Программа предназначена для руководителей предприятий, предпринимателей и специалистов финансовых служб. В рамках курса слушатели учатся управлять финансово-хозяйственной деятельностью, минимизируя риски предприятия. Успешное освоение программы профессиональной переподготовки заканчивается присвоением квалификации менеджера.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление финансами",
-        "Минимизация рисков",
-        "Построение финансовых моделей"
-      ],
-      "title_en": "Financial Management",
-      "desc_en": "The program is designed for enterprise executives, entrepreneurs, and financial service specialists. Within the course, students learn to manage financial and economic activities while minimizing enterprise risks. Successful completion of the professional retraining program results in the award of manager qualification.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление финансами | Минимизация рисков | Построение финансовых моделей",
+      "desc_en": "Financial Management",
       "bullets_en": [
-        "Financial management",
-        "Risk minimization",
-        "Financial modeling"
+        "The program is designed for enterprise executives, entrepreneurs, and financial service specialists. Within the course, students learn to manage financial and economic activities while minimizing enterprise risks. Successful completion of the professional retraining program results in the award of manager qualification."
       ],
       "pdf_link": ""
     },
@@ -1011,19 +715,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Внешнеторговая и транспортная логистика",
       "desc_ru": "Программа предназначена для специалистов, работающих в таможенных органах и на предприятиях внешней торговли. В процессе обучения слушатели осваивают международные перевозки, экспедирование грузов и таможенное регулирование. Полученные компетенции позволяют эффективно решать задачи в экспортно-импортных отделах компаний.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Международные перевозки",
-        "Таможенное регулирование",
-        "Экспедирование грузов"
-      ],
-      "title_en": "Foreign Trade, Transport and Customs Logistics",
-      "desc_en": "The program is designed for specialists working in customs authorities and foreign trade enterprises. During the training, students master international transportation, cargo forwarding, and customs regulation. The acquired competencies enable efficient handling of tasks in export-import departments.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Международные перевозки | Таможенное регулирование | Экспедирование грузов",
+      "desc_en": "Foreign Trade, Transport and Customs Logistics",
       "bullets_en": [
-        "International transport",
-        "Customs regulation",
-        "Cargo forwarding"
+        "The program is designed for specialists working in customs authorities and foreign trade enterprises. During the training, students master international transportation, cargo forwarding, and customs regulation. The acquired competencies enable efficient handling of tasks in export-import departments."
       ],
       "pdf_link": ""
     },
@@ -1038,19 +734,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Управление многоквартирным домом",
       "desc_ru": "Программа предназначена для руководителей управляющих компаний и товариществ собственников жилья. В процессе обучения слушатели изучают обязательные требования к компаниям и организацию работы диспетчерской службы. Полученные компетенции позволяют эффективно управлять содержанием общего имущества и взаимодействовать с собственниками помещений.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление МКД",
-        "Организация диспетчерской службы",
-        "Содержание общего имущества"
-      ],
-      "title_en": "Apartment Building Management",
-      "desc_en": "The program is designed for executives of management companies and homeowners associations. During the training, students study mandatory requirements for companies and dispatch service organization. The acquired competencies enable efficient management of common property maintenance and cooperation with premises owners.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление МКД | Организация диспетчерской службы | Содержание общего имущества",
+      "desc_en": "Apartment Building Management",
       "bullets_en": [
-        "Apartment building management",
-        "Dispatch service organization",
-        "Common property maintenance"
+        "The program is designed for executives of management companies and homeowners associations. During the training, students study mandatory requirements for companies and dispatch service organization. The acquired competencies enable efficient management of common property maintenance and cooperation with premises owners."
       ],
       "pdf_link": ""
     },
@@ -1065,19 +753,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Комплексное развитие территорий",
       "desc_ru": "Программа направлена на профессиональную переподготовку специалистов в сфере комплексного развития территорий. В процессе обучения слушатели изучают градостроительные регламенты, механизмы планирования и экономические аспекты проектов. Полученные компетенции позволяют эффективно решать задачи пространственного развития и застройки.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Градостроительное планирование",
-        "Пространственное развитие",
-        "Экономика застройки"
-      ],
-      "title_en": "Comprehensive Territory Development",
-      "desc_en": "The program is aimed at professional retraining of specialists in the field of comprehensive territory development. During the training, students study urban planning regulations, planning mechanisms, and economic aspects of projects. The acquired competencies enable efficient handling of spatial development and construction tasks.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Градостроительное планирование | Пространственное развитие | Экономика застройки",
+      "desc_en": "Comprehensive Territory Development",
       "bullets_en": [
-        "Urban planning",
-        "Spatial development",
-        "Construction economics"
+        "The program is aimed at professional retraining of specialists in the field of comprehensive territory development. During the training, students study urban planning regulations, planning mechanisms, and economic aspects of projects. The acquired competencies enable efficient handling of spatial development and construction tasks."
       ],
       "pdf_link": ""
     },
@@ -1092,19 +772,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Управление проектной деятельностью",
       "desc_ru": "Программа направлена на профессиональную переподготовку специалистов в сфере эффективного управления проектами. В процессе обучения слушатели изучают методологии планирования, бюджетирования и контроля ресурсов. Полученные компетенции позволяют успешно реализовывать инициативы любой сложности в различных отраслях.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление проектами",
-        "Бюджетирование",
-        "Контроль ресурсов"
-      ],
-      "title_en": "Effective Project Management",
-      "desc_en": "The program is aimed at the professional retraining of specialists in the field of effective project management. During the training, students study planning, budgeting, and resource control methodologies. The acquired competencies enable the successful implementation of initiatives of any complexity across various industries.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление проектами | Бюджетирование | Контроль ресурсов",
+      "desc_en": "Effective Project Management",
       "bullets_en": [
-        "Project management",
-        "Budgeting",
-        "Resource control"
+        "The program is aimed at the professional retraining of specialists in the field of effective project management. During the training, students study planning, budgeting, and resource control methodologies. The acquired competencies enable the successful implementation of initiatives of any complexity across various industries."
       ],
       "pdf_link": ""
     },
@@ -1119,19 +791,11 @@
       "dates": "1 - 2 дня",
       "title_ru": "Служебный этикет и\r\nкоммуникативная\r\nкультура в\r\nпрофессиональной\r\nдеятельности",
       "desc_ru": "Семинар направлен на изучение правил служебного этикета и коммуникативной культуры в профессиональной деятельности. В процессе обучения участники знакомятся с нормами делового общения и стандартами поведения. Полученные знания позволяют успешно разрешать рабочие ситуации и поддерживать деловой имидж.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Деловой этикет",
-        "Профессиональная коммуникация",
-        "Корпоративная культура"
-      ],
-      "title_en": "Service Etiquette and Communicative Culture",
-      "desc_en": "The seminar focuses on studying the rules of service etiquette and communicative culture in professional activities. During the training, participants get acquainted with the norms of business communication and behavioral standards. The acquired knowledge enables successful resolution of work situations and maintaining a business image.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Деловой этикет | Профессиональная коммуникация | Корпоративная культура",
+      "desc_en": "Service Etiquette and Communicative Culture",
       "bullets_en": [
-        "Business etiquette",
-        "Professional communication",
-        "Corporate culture"
+        "The seminar focuses on studying the rules of service etiquette and communicative culture in professional activities. During the training, participants get acquainted with the norms of business communication and behavioral standards. The acquired knowledge enables successful resolution of work situations and maintaining a business image."
       ],
       "pdf_link": ""
     },
@@ -1144,21 +808,13 @@
       "format": "Очно-заочная",
       "type": "Семинар",
       "dates": "1 - 2 дня",
-      "title_ru": "Лидерство и\r\nпостроение\r\nэффективной команды\r\n",
+      "title_ru": "Лидерство и\r\nпостроение\r\nэффективной команды",
       "desc_ru": "Семинар направлен на развитие лидерских качеств и навыков построения эффективной команды. В ходе обучения участники осматривают современные методы мотивации персонала и управления коллективом. Полученные знания позволяют повысить общую результативность рабочих групп.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Лидерство",
-        "Командообразование",
-        "Мотивация персонала"
-      ],
-      "title_en": "Leadership and Team Building",
-      "desc_en": "The seminar aims to develop leadership qualities and team building skills. During the training, participants explore modern methods of personnel motivation and team management. The acquired knowledge enables increasing the overall productivity of working groups.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Лидерство | Командообразование | Мотивация персонала",
+      "desc_en": "Leadership and Team Building",
       "bullets_en": [
-        "Leadership",
-        "Team building",
-        "Personnel motivation"
+        "The seminar aims to develop leadership qualities and team building skills. During the training, participants explore modern methods of personnel motivation and team management. The acquired knowledge enables increasing the overall productivity of working groups."
       ],
       "pdf_link": ""
     },
@@ -1171,21 +827,13 @@
       "format": "Очно-заочная",
       "type": "Семинар",
       "dates": "1 - 2 дня",
-      "title_ru": "Деловая коммуникация:\r\nнавыки публичных\r\nвыступлений\r\n",
+      "title_ru": "Деловая коммуникация:\r\nнавыки публичных\r\nвыступлений",
       "desc_ru": "Семинар направлен на совершенствование навыков деловой коммуникации и публичных выступлений. В процессе обучения участники осваивают приемы ораторского искусства и преодоления страха аудитории. Полученные компетенции позволяют уверенно презентовать проекты и вести профессиональный диалог.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Публичные выступления",
-        "Ораторское искусство",
-        "Деловая коммуникация"
-      ],
-      "title_en": "Public Speaking Skills in Business Communication",
-      "desc_en": "The seminar aims to improve business communication and public speaking skills. During the training, students master oratory techniques and methods for overcoming audience anxiety. The acquired competencies enable confident project presentations and professional dialogue.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Публичные выступления | Ораторское искусство | Деловая коммуникация",
+      "desc_en": "Public Speaking Skills in Business Communication",
       "bullets_en": [
-        "Public speaking",
-        "Oratory",
-        "Business communication"
+        "The seminar aims to improve business communication and public speaking skills. During the training, students master oratory techniques and methods for overcoming audience anxiety. The acquired competencies enable confident project presentations and professional dialogue."
       ],
       "pdf_link": ""
     },
@@ -1200,19 +848,11 @@
       "dates": "1 - 2 дня",
       "title_ru": "Навыки самопрезентации",
       "desc_ru": "Семинар направлен на совершенствование навыков самопрезентации в профессиональной деятельности. В ходе обучения участники осваивают приемы уверенного позиционирования себя перед аудиторией. Полученные компетенции позволяют эффективно презентовать свои достижения и развивать личный бренд.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Самопрезентация",
-        "Личный бренд",
-        "Профессиональное позиционирование"
-      ],
-      "title_en": "Self-Presentation Skills",
-      "desc_en": "The seminar aims to improve self-presentation skills in professional activities. During the training, students master techniques for confidently positioning themselves in front of an audience. The acquired competencies enable effective presentation of one's achievements and the development of a personal brand.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Самопрезентация | Личный бренд | Профессиональное позиционирование",
+      "desc_en": "Self-Presentation Skills",
       "bullets_en": [
-        "Self-presentation",
-        "Personal brand",
-        "Professional positioning"
+        "The seminar aims to improve self-presentation skills in professional activities. During the training, students master techniques for confidently positioning themselves in front of an audience. The acquired competencies enable effective presentation of one's achievements and the development of a personal brand."
       ],
       "pdf_link": ""
     },
@@ -1227,19 +867,11 @@
       "dates": "1 - 2 дня",
       "title_ru": "Стратегия и тактика  деловых переговоров",
       "desc_ru": "Семинар направлен на изучение стратегии и тактики деловых переговоров. В ходе обучения участники осваивают приемы аргументации и защиты своей позиции. Полученные знания позволяют успешно заключать сделки и разрешать конфликты интересов.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Ведение переговоров",
-        "Аргументация",
-        "Разрешение конфликтов"
-      ],
-      "title_en": "Strategy and Tactics of Business Negotiations",
-      "desc_en": "The seminar focuses on studying the strategy and tactics of business negotiations. During the training, students master argumentation techniques and methods for defending their position. The acquired competencies enable successful deal-making and conflict resolution.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Ведение переговоров | Аргументация | Разрешение конфликтов",
+      "desc_en": "Strategy and Tactics of Business Negotiations",
       "bullets_en": [
-        "Negotiation",
-        "Argumentation",
-        "Conflict resolution"
+        "The seminar focuses on studying the strategy and tactics of business negotiations. During the training, students master argumentation techniques and methods for defending their position. The acquired competencies enable successful deal-making and conflict resolution."
       ],
       "pdf_link": ""
     },
@@ -1252,21 +884,13 @@
       "format": "Очно-заочная",
       "type": "Семинар",
       "dates": "1 - 2 дня",
-      "title_ru": "Управление\r\nконфликтами и\r\nпрофилактика\r\nвыгорания\r\n",
+      "title_ru": "Управление\r\nконфликтами и\r\nпрофилактика\r\nвыгорания",
       "desc_ru": "Семинар направлен на изучение методов управления конфликтами и профилактики профессионального выгорания. В процессе обучения участники осваивают техники эмоциональной саморегуляции и разрешения споров. Полученные знания позволяют эффективно поддерживать благоприятный климат в коллективе.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Управление конфликтами",
-        "Профилактика выгорания",
-        "Эмоциональная саморегуляция"
-      ],
-      "title_en": "Conflict Management and Burnout Prevention",
-      "desc_en": "The seminar focuses on studying methods for conflict management and professional burnout prevention. During the training, students master techniques for emotional self-regulation and dispute resolution. The acquired competencies enable effective maintenance of a favorable team climate.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Управление конфликтами | Профилактика выгорания | Эмоциональная саморегуляция",
+      "desc_en": "Conflict Management and Burnout Prevention",
       "bullets_en": [
-        "Conflict management",
-        "Burnout prevention",
-        "Emotional self-regulation"
+        "The seminar focuses on studying methods for conflict management and professional burnout prevention. During the training, students master techniques for emotional self-regulation and dispute resolution. The acquired competencies enable effective maintenance of a favorable team climate."
       ],
       "pdf_link": ""
     },
@@ -1281,19 +905,11 @@
       "dates": "По мере формирования групп",
       "title_ru": "Управление государственными закупками",
       "desc_ru": "Программа предназначена для специалистов сферы закупок, стремящихся повысить уровень знаний и компетенций. Изучая механизмы организации контрактной системы, слушатели учатся эффективно использовать средства бюджета и внебюджетных источников. Успешно освоив материал, участники смогут минимизировать коррупционные риски и уверенно применять нормы антимонопольного законодательства.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Организация закупок",
-        "Исполнение контрактов",
-        "Антимонопольное законодательство"
-      ],
-      "title_en": "State and Municipal Procurement Management",
-      "desc_en": "The program is designed for procurement professionals striving to improve their knowledge and competencies. Studying the mechanisms of contract system organization, participants learn to effectively use budgetary and extra-budgetary funds. Having successfully mastered the material, participants will be able to minimize corruption risks and confidently apply the norms of antitrust legislation.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Организация закупок | Исполнение контрактов | Антимонопольное законодательство",
+      "desc_en": "State and Municipal Procurement Management",
       "bullets_en": [
-        "Procurement organization",
-        "Contract execution",
-        "Antitrust legislation"
+        "The program is designed for procurement professionals striving to improve their knowledge and competencies. Studying the mechanisms of contract system organization, participants learn to effectively use budgetary and extra-budgetary funds. Having successfully mastered the material, participants will be able to minimize corruption risks and confidently apply the norms of antitrust legislation."
       ],
       "pdf_link": ""
     },
@@ -1308,19 +924,11 @@
       "dates": "1 месяц",
       "title_ru": "Организация экспортной деятельности",
       "desc_ru": "Программа направлена на получение практического понимания работы экспортного предприятия от первого контакта до получения валютной выручки. Курс формирует взгляд изнутри на реальные расходы, риски и потребности бизнеса. Полученные компетенции позволяют эффективно разрабатывать меры поддержки и снижать административную нагрузку.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Анализ внешних рынков",
-        "Внешнеторговые контракты",
-        "Таможенное оформление"
-      ],
-      "title_en": "Organization of Export Activities",
-      "desc_en": "The program aims to provide a practical understanding of export enterprise operations from the first contact to receiving foreign exchange earnings. The course builds an inside perspective on real expenses, risks, and business needs. The acquired competencies allow for the effective development of support measures and the reduction of administrative burden.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Анализ внешних рынков | Внешнеторговые контракты | Таможенное оформление",
+      "desc_en": "Organization of Export Activities",
       "bullets_en": [
-        "Foreign market analysis",
-        "Foreign trade contracts",
-        "Customs clearance"
+        "The program aims to provide a practical understanding of export enterprise operations from the first contact to receiving foreign exchange earnings. The course builds an inside perspective on real expenses, risks, and business needs. The acquired competencies allow for the effective development of support measures and the reduction of administrative burden."
       ],
       "pdf_link": ""
     },
@@ -1335,19 +943,11 @@
       "dates": "1,5 – 2 недели",
       "title_ru": "Актуальные направления развития контрольной (надзорной) деятельности",
       "desc_ru": "Программа направлена на изучение актуальных направлений развития контрольной и надзорной деятельности. В процессе обучения слушатели анализируют современные требования законодательства и практику проверок. Полученные знания позволяют эффективно организовывать надзорные мероприятия, минимизируя риски нарушений.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Контрольная деятельность",
-        "Надзорные мероприятия",
-        "Законодательные требования"
-      ],
-      "title_en": "Current Trends in Supervisory Development",
-      "desc_en": "The program focuses on studying current trends in the development of supervisory and control activities. During the training, students analyze modern legislative requirements and inspection practices. The acquired knowledge enables efficient organization of supervisory measures while minimizing compliance risks.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Контрольная деятельность | Надзорные мероприятия | Законодательные требования",
+      "desc_en": "Current Trends in Supervisory Development",
       "bullets_en": [
-        "Supervisory activities",
-        "Inspection procedures",
-        "Legislative requirements"
+        "The program focuses on studying current trends in the development of supervisory and control activities. During the training, students analyze modern legislative requirements and inspection practices. The acquired knowledge enables efficient organization of supervisory measures while minimizing compliance risks."
       ],
       "pdf_link": ""
     },
@@ -1362,644 +962,16 @@
       "dates": "12.05.2026 – 10.06.2026; 02.09.2026 – 01.10.2026",
       "title_ru": "Горничная",
       "desc_ru": "Программа профессионального обучения направлена на приобретение слушателями компетенций, необходимых для выполнения нового вида деятельности. Успешно освоив технические навыки уборки, выпускники смогут обеспечивать высокие стандарты чистоты и комфорта. Полученные знания напрямую влияют на удовлетворенность гостей и репутацию отеля.",
-      "long_desc_ru": "",
-      "bullets_ru": [
-        "Технические навыки уборки",
-        "Принципы гостеприимства",
-        "Уборка номеров"
-      ],
-      "title_en": "Housemaid",
-      "desc_en": "The vocational training program is aimed at providing students with the competencies necessary to perform a new type of professional activity. Having successfully mastered technical cleaning skills, graduates will be able to ensure high standards of cleanliness and comfort. The acquired knowledge directly affects guest satisfaction and the hotel's reputation.",
-      "long_desc_en": "",
+      "bullets_ru": [],
+      "title_en": "Технические навыки уборки | Принципы гостеприимства | Уборка номеров",
+      "desc_en": "Housemaid",
       "bullets_en": [
-        "Technical cleaning skills",
-        "Hospitality principles",
-        "Room cleaning"
+        "The vocational training program is aimed at providing students with the competencies necessary to perform a new type of professional activity. Having successfully mastered technical cleaning skills, graduates will be able to ensure high standards of cleanliness and comfort. The acquired knowledge directly affects guest satisfaction and the hotel's reputation."
       ],
       "pdf_link": ""
     }
   ],
   "schedules": [
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "04.09.2026",
-      "time": "17:00 - 18:00",
-      "subject": "Организационное собрание слушателей. Оформление документов. Входное тестирование",
-      "teacher": "Канаш И.С.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "04.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Основы контрактной системы. Цели, задачи, принципы, участники",
-      "teacher": "Мудрак Е.И., Козлов С.П.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "04.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Законодательство РФ о контрактной системе. Обзор изменений, типичные ошибки",
-      "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "04.09.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Актуальный обзор административной и арбитражной практики",
-      "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "04.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Применение национального режима при осуществлении закупок",
-      "teacher": "Дрибноход С.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Правовое регулирование и практика противодействия коррупции",
-      "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Понятие «конфликта интересов», ответственность за правонарушения",
-      "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Антикоррупционные стандарты, ограничения, запреты и обязанности",
-      "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "07.09.2026",
-      "time": "18:00 - 20:15",
-      "subject": "3. Практикум по применению положений закона о контрактной системе (6 часов) Разбор проблем и ошибок, возникающих при реализации положений закона о контрактной системе. Поиск вариантов решений типовых ошибок и проблем применений законодательства. Решение ситуационных задач по теме.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Порядок планирования и обоснования закупок",
-      "teacher": "Дрибноход С.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Способы определения поставщика, требования к участникам, антидемпинг",
-      "teacher": "Козлов С.П.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Правила описания объекта закупки, проведение конкурсов и аукционов",
-      "teacher": "Козлов С.П.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Особенности закупок бюджетных и автономных учреждений",
-      "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "07.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Контракты: заключение, исполнение, изменение, расторжение. Приемка",
-      "teacher": "Мудрак Е.И., Козлов С.П.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "09.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Мониторинг, контроль, аудит и защита прав участников",
-      "teacher": "Дрибноход С.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "09.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Электронный документооборот в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "09.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Защита прав в административном и судебном порядке, ответственность",
-      "teacher": "Дрибноход С.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "10.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Информационное обеспечение контрактной системы, ЕИС, цифровизация",
-      "teacher": "Козлов С.П.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Госзакупки (108 ч)",
-      "date": "10.09.2026",
-      "time": "18:00 - 19:00",
-      "subject": "Итоговая аттестация в форме тестирования",
-      "teacher": "Преподаватель / Комиссия",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "11.09.2026",
-      "time": "17:00 - 17:15",
-      "subject": "Организационное собрание слушателей.",
-      "teacher": "Директор Центра дополнительного образования Канаш И.С.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "11.09.2026",
-      "time": "17:15 - 18:00",
-      "subject": "Оформление документов. Входное тестирование",
-      "teacher": "Директор Центра дополнительного образования Канаш И.С.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "11.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Обзор законодательства о закупках товаров, работ, услуг для обеспечения государственных и муниципальных нужд и его изменений (8 часов) Федеральный закон от 05.04.2013 № 44-ФЗ «О контрактной системе в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд» (с изм. и доп). Федеральный закон от 18.07.2011 № 223-ФЗ «О закупках товаров, работ, услуг отдельными видами юридических лиц» (с изм. и доп.). Применение Гражданского кодекса Российской Федерации, Бюджетного кодекса Российской Федерации в контрактной системе. Соотношение законодательства Российской Федерации о закупках и международных норм и правил. Антимонопольные ограничения при осуществлении закупок. Применение антимонопольного законодательства.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "11.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "2. Применение национального режима при осуществлении закупок. (4 часа) Правовая основа и цели национального режима. Инструменты национального режима: запреты, ограничения, преимущества. Подтверждение происхождения товара: реестры, документы, баллы. Применение национального режима на закупочных этапах процедуры. Специфика по видам товаров и отдельным категориям закупок.",
-      "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "11.09.2026",
-      "time": "18:00 - 20:15",
-      "subject": "Разбор типовых проблем и ошибок, возникающих при реализации положений закона о контрактной системе. Поиск вариантов решений типовых ошибок и проблем применений законодательства. Решение ситуационных задач по теме.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "14.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "4. Актуальный обзор административной и арбитражной практики (8 часов) Рассмотрение дел об административных правонарушениях и административная практика. Судебная практика в сфере закупок. Обзор арбитражной практики проведения закупок. Причины обжалования, выводы судей, результаты дел. Основы претензионной работы.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "14.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Административная ответственность заказчиков и их должностных лиц. Обжалование постановлений о наложении штрафа. Решение ситуационных задач из административной и арбитражной практики.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "14.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "5. Вопросы внедрения информационных технологий в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (8 часов) Понятие и содержание единой информационной системы в сфере закупок. Порядок функционирования. Официальный сайт. Региональные информационные системы. Интеграция региональных информационных систем с единой информационной системой. Идентификационный код закупки.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "14.09.2026",
-      "time": "18:00 - 19:00",
-      "subject": "Итоговая аттестация в форме тестирования.",
-      "teacher": "",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "",
-      "program": "",
-      "date": "14.09.2026",
-      "time": "",
-      "subject": "",
-      "teacher": "",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Актуальные вопросы применения законодательства о контрактной системе в сфере закупок (36 часов)",
-      "date": "14.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Федеральный закон от 26.07.2006 № 135-ФЗ «О защите конкуренции». Компетенция органов государственной власти субъектов Российской Федерации, органов местного самоуправления на принятие правовых актов, регулирующих отношения, направленные на обеспечение государственных и муниципальных нужд. Нормативные правовые акты Президента Российской Федерации, постановления и распоряжения Правительства Российской Федерации, нормативные правовые акты федеральных органов исполнительной власти. Ключевые изменения в законодательстве о закупках товаров, работ, услуг для обеспечения государственных и муниципальных нужд за последние годы.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "15.09.2026",
-      "time": "17:00 - 18:00",
-      "subject": "Организационное собрание слушателей. Оформление документов. Входное тестирование",
-      "teacher": "Директор Центра дополнительного образования Канаш И.С.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "16.09.2026",
-      "time": "18:00 - 20:15",
-      "subject": "Основы построения бюджетной системы Российской Федерации. Бюджетное устройство Российской Федерации и принципы его организации. Бюджет и его роль в экономике и социальном развитии страны. Понятие бюджетных обязательств. Бюджетная классификация Российской Федерации: основы ее построения и состав. Роль бюджетной классификации. Организация бюджетного процесса в Российской Федерации, принципы его организации и этапы. Формирование бюджетов субъектов Российской Федерации и местных бюджетов.",
-      "teacher": "Сергеев Д.Л. / Эксперт ЦБ РФ КО",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "16.09.2026",
-      "time": "18:00 - 20:15",
-      "subject": "Классификация доходов бюджетов бюджетной системы Российской Федерации. Классификация источников финансирования дефицитов бюджетов. Состав и структура коды, особенности применения отдельных кодов.",
-      "teacher": "Сергеев Д.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "16.09.2026",
-      "time": "18:00 - 18:45",
-      "subject": "Формирование бюджетов государственных внебюджетных фондов.",
-      "teacher": "Калейкина Е.А. / Социальный фонд России",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "16.09.2026",
-      "time": "18:00 - 18:45",
-      "subject": "Бюджет Фонда пенсионного и социального страхования Российской Федерации, его назначение.",
-      "teacher": "Миночкина Т.А. / Страховой фонд ФОМС",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "16.09.2026",
-      "time": "18:00 - 18:45",
-      "subject": "Бюджеты Федерального и территориальных фондов обязательного медицинского страхования, их назначение.",
-      "teacher": "Багаманов В.Р.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "17.09.2026",
-      "time": "18:00 - 18:45",
-      "subject": "Бухгалтерский учет, как основа государства",
-      "teacher": "Чистякова О.О. / Казначейство",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "18.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Разграничение доходов между бюджетами: необходимость, формы.",
-      "teacher": "Ващенко О.В. / Центробанк",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "18.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Межбюджетные трансферты, их формы",
-      "teacher": "Сергеев Д.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "18.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Бюджетная политика Российской Федерации. Бюджетное планирование и его реформирование. Управление бюджетами бюджетной системы Российской Федерации. Теоретические и правовые основы управления бюджетной системой Российской Федерации.",
-      "teacher": "Сергеев Д.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "18.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Бюджетная политика Российской Федерации. Бюджетное планирование и его реформирование. Управление бюджетами бюджетной системы Российской Федерации. Теоретические и правовые основы управления бюджетной системой Российской Федерации.",
-      "teacher": "Сергеев Д.Л.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "18.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Организация государственного и муниципального финансового контроля в Российской Федерации",
-      "teacher": "Сорокина И.А. / Контрольно-счетная палата Калининградской области",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "21.09.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Виды нарушений бюджетного законодательства и ответственность за их совершение. Понятие, признаки бюджетного нарушения. Бюджетные меры принуждения: понятие, виды.",
-      "teacher": "Вербецкий А.А. / Центробанк",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "21.09.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Виды нарушений бюджетного законодательства и ответственность за их совершение. Понятие, признаки бюджетного нарушения. Бюджетные меры принуждения: понятие, виды.",
-      "teacher": "Вербецкий А.А. / Казначейство",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-109",
-      "program": "Бюджетная система и бюджетный процесс (36 часов)",
-      "date": "21.09.2026",
-      "time": "18:00 - 19:00",
-      "subject": "Итоговая аттестация в форме тестирования",
-      "teacher": "Преподаватель / Комиссия",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "21.09.2026",
-      "time": "17:00 - 17:15",
-      "subject": "Организационное собрание. Оформление документов",
-      "teacher": "Канаш И.С. к.э.н., директор Центра дополнительного образования",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "21.09.2026",
-      "time": "17:15 - 18:00",
-      "subject": "Входное тестирование",
-      "teacher": "Канаш И.С. к.э.н., директор Центра дополнительного образования",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "21.09.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Методология терроризма и экстремизма. Сущность и содержание терроризма и экстремизма как социально-политического явления. Особенности и формы проявления терроризма и экстремизма.",
-      "teacher": "Артемов Е.К.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "23.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Истоки экстремистских и террористических воззрений и деяний в стране. Разновидности и проявления современного экстремизма и терроризма; основные направления профилактики и нашей специфика противодействия им. Состояние общегосударственной системы противодействия терроризму.",
-      "teacher": "Артемов Е.К.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "23.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Правовое регулирование и организация мероприятий по антитеррористической защищенности объектов (территорий) в Российской Федерации. Требования к антитеррористической защищенности объектов (территорий) и порядок их разработки. Развитие системы мер антитеррористической защищенности объектов (территорий) B Российской Федерации. Осуществление мероприятий по антитеррористической защищенности объектов (территорий) как одно из основных направлений профилактики терроризма. Порядок категорирования объекта (территории). Форма паспорта безопасности объекта (территории) и порядок его разработки. Основные меры, направленные на обеспечение антитеррористической защищенности объектов (территорий). Координация деятельности B сфере антитеррористической защищенности объектов (территорий). Контроль состояния антитеррористической защищенности объектов (территорий).",
-      "teacher": "Пахомова О.Н.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "23.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Правовое регулирование и организация мероприятий по антитеррористической защищенности объектов (территорий) в Российской Федерации. Требования к антитеррористической защищенности объектов (территорий) и порядок их разработки. Развитие системы мер антитеррористической защищенности объектов (территорий) B Российской Федерации. Осуществление мероприятий по антитеррористической защищенности объектов (территорий) как одно из основных направлений профилактики терроризма. Порядок категорирования объекта (территории). Форма паспорта безопасности объекта (территории) и порядок его разработки. Основные меры, направленные на обеспечение антитеррористической защищенности объектов (территорий). Координация деятельности B сфере антитеррористической защищенности объектов (территорий). Контроль состояния антитеррористической защищенности объектов (территорий).",
-      "teacher": "Шевчук С.В.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "23.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Правовое регулирование и организация мероприятий по антитеррористической защищенности объектов (территорий) в Российской Федерации. Требования к антитеррористической защищенности объектов (территорий) и порядок их разработки. Развитие системы мер антитеррористической защищенности объектов (территорий) B Российской Федерации. Осуществление мероприятий по антитеррористической защищенности объектов (территорий) как одно из основных направлений профилактики терроризма. Порядок категорирования объекта (территории). Форма паспорта безопасности объекта (территории) и порядок его разработки. Основные меры, направленные на обеспечение антитеррористической защищенности объектов (территорий). Координация деятельности B сфере антитеррористической защищенности объектов (территорий). Контроль состояния антитеррористической защищенности объектов (территорий).",
-      "teacher": "Шевчук С.В.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "23.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Правовое регулирование и организация мероприятий по антитеррористической защищенности объектов (территорий) в Российской Федерации. Требования к антитеррористической защищенности объектов (территорий) и порядок их разработки. Развитие системы мер антитеррористической защищенности объектов (территорий) B Российской Федерации. Осуществление мероприятий по антитеррористической защищенности объектов (территорий) как одно из основных направлений профилактики терроризма. Порядок категорирования объекта (территории). Форма паспорта безопасности объекта (территории) и порядок его разработки. Основные меры, направленные на обеспечение антитеррористической защищенности объектов (территорий). Координация деятельности B сфере антитеррористической защищенности объектов (территорий). Контроль состояния антитеррористической защищенности объектов (территорий).",
-      "teacher": "Шевчук С.В.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "23.09.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Правовое регулирование и организация мероприятий по антитеррористической защищенности объектов (территорий) в Российской Федерации. Требования к антитеррористической защищенности объектов (территорий) и порядок их разработки. Развитие системы мер антитеррористической защищенности объектов (территорий) B Российской Федерации. Осуществление мероприятий по антитеррористической защищенности объектов (территорий) как одно из основных направлений профилактики терроризма. Порядок категорирования объекта (территории). Форма паспорта безопасности объекта (территории) и порядок его разработки. Основные меры, направленные на обеспечение антитеррористической защищенности объектов (территорий). Координация деятельности B сфере антитеррористической защищенности объектов (территорий). Контроль состояния антитеррористической защищенности объектов (территорий).",
-      "teacher": "Шевчук С.В.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "23.09.2026",
-      "time": "19:30 - 21:00",
-      "subject": "Правовое регулирование и организация мероприятий по антитеррористической защищенности объектов (территорий) в Российской Федерации. Требования к антитеррористической защищенности объектов (территорий) и порядок их разработки. Развитие системы мер антитеррористической защищенности объектов (территорий) B Российской Федерации. Осуществление мероприятий по антитеррористической защищенности объектов (территорий) как одно из основных направлений профилактики терроризма. Порядок категорирования объекта (территории). Форма паспорта безопасности объекта (территории) и порядок его разработки. Основные меры, направленные на обеспечение антитеррористической защищенности объектов (территорий). Координация деятельности B сфере антитеррористической защищенности объектов (территорий). Контроль состояния антитеррористической защищенности объектов (территорий).",
-      "teacher": "Артемов Е.К.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "24.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Организация органами государственной власти и местного самоуправления деятельности по обеспечению антитеррористической защищенности объектов (территорий), прежде в части готовности сотрудников (работников) учреждений, охранников и посетителей к действиям при совершении на объекте преступлений террористической направленности",
-      "teacher": "Карасев Б.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "24.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Полномочия и содержание деятельности государственных органов и органов местного самоуправления по вопросам обеспечения антитеррористической защищенности объектов (территорий). Особенности обеспечения социальной поддержки органов государственной власти и местного самоуправления и формирование антиэкстремистского правосознания в обществе.",
-      "teacher": "Пахомова О.Н.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-110",
-      "program": "Вопросы обеспечения антитеррористической защищенности объектов (территорий) (36 часов)",
-      "date": "24.09.2026",
-      "time": "18:00 - 19:00",
-      "subject": "Итоговая аттестация: круглый стол",
-      "teacher": "",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-111",
-      "program": "Вопросы профилактики терроризма (36 часов)",
-      "date": "24.09.2026",
-      "time": "17:00 - 17:15",
-      "subject": "Организационное собрание. Оформление документов",
-      "teacher": "Канаш И.С. к.э.н., директор Центра дополнительного образования",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-111",
-      "program": "Вопросы профилактики терроризма (36 часов)",
-      "date": "24.09.2026",
-      "time": "17:15 - 18:00",
-      "subject": "Входное тестирование",
-      "teacher": "Канаш И.С. к.э.н., директор Центра дополнительного образования",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-111",
-      "program": "Вопросы профилактики терроризма (36 часов)",
-      "date": "25.09.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Современная характеристика терроризма. Терроризм как угроза национальной безопасности Российской Федерации",
-      "teacher": "Артемов Е.К.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-111",
-      "program": "Вопросы профилактики терроризма (36 часов)",
-      "date": "25.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Современные аспекты функционирования общегосударственной системы противодействия терроризму в Российской Федерации",
-      "teacher": "Артемов Е.К.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
     {
       "id": "gos-111",
       "program": "Вопросы профилактики терроризма (36 часов)",
@@ -2007,8 +979,7 @@
       "time": "18:00 - 19:30",
       "subject": "Мониторинг состояния общегосударственной системы противодействия терроризму как одна из задач Национального антитеррористического комитета. Мониторинг политических и социально-экономических процессов в целях выработки мер по устранению причин и условий совершения преступлений террористической направленности, а также совершенствования общегосударственной системы противодействия терроризму.",
       "teacher": "Артемов Е.К.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2017,8 +988,7 @@
       "time": "18:00 - 21:00",
       "subject": "Правовое регулирование противодействия терроризму в Российской Федерации",
       "teacher": "Пахомова О.Н.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2027,8 +997,7 @@
       "time": "18:00 - 19:30",
       "subject": "Уровни террористической опасности, порядок их установления, реализация мероприятий соответствующих уровней террористической опасности.",
       "teacher": "Шевчук С.В.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2037,8 +1006,7 @@
       "time": "18:00 - 21:00",
       "subject": "Особенности противодействия распространению идей украинского национализма и неонацизма",
       "teacher": "Артемов Е.К.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2047,8 +1015,7 @@
       "time": "18:00 - 21:00",
       "subject": "Организация противодействия идеологии терроризма в Российской Федерации (в соответствии с Комплексным планом противодействия идеологии терроризма Российской Федерации на 2024-2028 годы)",
       "teacher": "Пронина Е.Ю.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2057,8 +1024,7 @@
       "time": "18:00 - 21:00",
       "subject": "Организация органами государственной власти и местного самоуправления деятельности по обеспечению антитеррористической защищенности объектов (территорий), прежде в части готовности сотрудников (работников) учреждений, охранников и посетителей к действиям при совершении на объекте преступлений террористической направленности",
       "teacher": "Карасев Б.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2067,8 +1033,7 @@
       "time": "18:00 - 19:30",
       "subject": "Практикум профилактики терроризма.",
       "teacher": "Мирюкова М.А.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2077,8 +1042,7 @@
       "time": "18:00 - 21:00",
       "subject": "Практикум профилактики терроризма. Деловая игра «Деятельность органов государственной власти и местного самоуправления по предупреждению (профилактике) терроризма»",
       "teacher": "Мирюкова М.А.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-111",
@@ -2087,38 +1051,7 @@
       "time": "18:00 - 19:00",
       "subject": "Итоговое тестирование",
       "teacher": "",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
-    },
-    {
-      "id": "gos-112",
-      "program": "Организация работы с документами в деятельности государственных органов Калининградской области (36 часов)",
-      "date": "29.09.2026",
-      "time": "17:00 - 18:00",
-      "subject": "Организационное собрание слушателей. Оформление документов. Входное тестирование",
-      "teacher": "Директор Центра дополнительного образования Канаш Ирина Степановна",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-112",
-      "program": "Организация работы с документами в деятельности государственных органов Калининградской области (36 часов)",
-      "date": "29.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Нормативно-правовое и методическое обеспечение работы с документами в современных условиях. Характеристика законодательных и нормативных правовых актов Российской Федерации, регламентирующих работу с документами. Международные стандарты в области управления документами. Система управления документами. Мониторинг и аудит управления документами.",
-      "teacher": "Исакова Эвелина Александровна, эксперт начальник отдела социально-правовых запросов ОГКУ «Государственный архив Калининградской области»",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-112",
-      "program": "Организация работы с документами в деятельности государственных органов Калининградской области (36 часов)",
-      "date": "30.09.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Современные требования к документированию управленческой деятельности. Осуществление процесса документирования в системе электронного документооборота. Требования к составлению и оформлению документов. Федеральный конституционный закон от 25.12.2000 No 2-ФКЗ «О Государственном гербе Российской Федерации»; Постановление Правительства РФ от 22.09.2009 № 754 «Об утверждении Положения о системе межведомственного электронного документооборота»",
-      "teacher": "Исакова Эвелина Александровна, эксперт начальник отдела социально-правовых запросов ОГКУ «Государственный архив Калининградской области»",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2127,8 +1060,7 @@
       "time": "18:00 - 21:00",
       "subject": "Правила делопроизводства в государственных органах, органах местного самоуправления, утв. Приказом Росархива от 22.05.2019 №71; Методические рекомендации по разработке инструкций по делопроизводству в государственных органах, органах местного самоуправления, утв. Приказом Росархива от 24.12.2020 № 199. Локальные нормативные акты государственных органов (регламенты, правила, инструкции и др.). Указ Губернатора Калининградской области от 28 июня 2024 года № 58-у «Об инструкции по делопроизводству в Правительстве Калининградской области и органах исполнительной власти Калининградской области». Постановление Правительства Калининградской области от 24 июня 2011 года № 450 «О Регламента Правительства Калининградской области».",
       "teacher": "Исакова Эвелина Александровна, эксперт начальник отдела социально-правовых запросов ОГКУ Государственный архив Калининградской области",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2137,8 +1069,7 @@
       "time": "18:00 - 21:00",
       "subject": "Служба делопроизводства в организации: задачи, функции, права, компетенции, оценка эффективности. Разработка локальных нормативных актов организации по вопросам управления документами.",
       "teacher": "Савченко И.Г., эксперт, заведующий сектором документационного обеспечения управления административного отдела ЗФ РАНХиГС",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2147,8 +1078,7 @@
       "time": "18:00 - 19:30",
       "subject": "Особенности формирования, должностного и численнного состава, организации деятельности службы делопроизводства в органах государственного управления",
       "teacher": "Исакова Эвелина Александровна, эксперт начальник отдела социально-правовых запросов ОГКУ «Государственный архив Калининградской области»",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2157,8 +1087,7 @@
       "time": "18:00 - 19:30",
       "subject": "Составление номенклатуры дел: назначение, порядок составления и использования. Отражение в номенклатуре дел сведений об электронных делах и гибридных делах",
       "teacher": "Савченко И.Г., эксперт, заведующий сектором документационного обеспечения управления административного отдела ЗФ РАНХиГС",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2167,8 +1096,7 @@
       "time": "18:00 - 20:15",
       "subject": "Документальный и архивный фонд организации. Архив организации: задача, функции, права, ответственность. Нормативные документы по вопросам отбора документов на постоянное хранение. Перечень типовых управленческих документов, образующихся в деятельности организации, с указанием сроков хранения: методика применения. Порядок передачи документов структурных подразделений в архив организации. Архивное хранение электронных документов. Основные проблемы. Вопросы сохранности электронных документов.",
       "teacher": "Исакова Эвелина Александровна, эксперт начальник отдела социально-правовых запросов ОГКУ «Государственный архив Калининградской области»",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2177,8 +1105,7 @@
       "time": "18:00 - 20:15",
       "subject": "Документальный и архивный фонд организации. Архив организации: задача, функции, права, ответственность. Нормативные документы по вопросам отбора документов на постоянное хранение. Перечень типовых управленческих документов, образующихся в деятельности организации, с указанием сроков хранения: методика применения. Порядок передачи документов структурных подразделений в архив организации. Архивное хранение электронных документов. Основные проблемы. Вопросы сохранности электронных документов.",
       "teacher": "Исакова Эвелина Александровна, эксперт начальник отдела социально-правовых запросов ОГКУ «Государственный архив Калининградской области»",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2187,8 +1114,7 @@
       "time": "18:00 - 21:00",
       "subject": "Электронные документы. Особенности организации работы с электронными документами. Система электронного документооборота. Современные разработки в области систем электронного документооборота. Организации работы с документами в системе электронного документооборота.",
       "teacher": "Савченко И.Г., эксперт, заведующий сектором документационного обеспечения управления административного отдела ЗФ РАНХиГС",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2197,8 +1123,7 @@
       "time": "18:00 - 19:30",
       "subject": "Регламентация выбора носителя документа. Определение используемых видов электронной подписи.",
       "teacher": "Роскомнадзор, эксперт",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2207,8 +1132,7 @@
       "time": "18:00 - 19:30",
       "subject": "Современные информационные технологии в документационном обеспечении деятельности государственных органов",
       "teacher": "Исакова Эвелина Александровна, эксперт начальник отдела социально-правовых запросов ОГКУ «Государственный архив Калининградской области»",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-112",
@@ -2217,58 +1141,7 @@
       "time": "17:00 - 18:00",
       "subject": "Итоговая аттестация в форме тестирования",
       "teacher": "Комиссия ИАК",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
-    },
-    {
-      "id": "gos-113",
-      "program": "Управление государственными финансами (36 часов)",
-      "date": "02.10.2026",
-      "time": "17:00 - 18:00",
-      "subject": "Организационное собрание слушателей. Оформление документов. Входное тестирование",
-      "teacher": "Директор Центра дополнительного образования Канаш И.С.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-113",
-      "program": "Управление государственными финансами (36 часов)",
-      "date": "05.10.2026",
-      "time": "18:00 - 20:15",
-      "subject": "Государственная финансовая и денежно-кредитная политика Российской Федерации: цели и принципы формирования, условия эффективной реализации; взаимодействие финансовой и денежно-кредитной политик как фактор финансовой устойчивости.",
-      "teacher": "Эксперт ЦБ РФ КО",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-113",
-      "program": "Управление государственными финансами (36 часов)",
-      "date": "05.10.2026",
-      "time": "18:00 - 20:15",
-      "subject": "Совершенствование управления государственными финансами в Российской Федерации. Актуальные вопросы бюджетного процесса. Программно-целевой принцип формирования бюджета Российской Федерации и субъектов Российской Федерации на основе государственных программ. Государственная программа Российской Федерации «Управление государственными финансами и регулирование финансовых рынков», утвержденная постановлением Правительства Российской Федерации от 15 апреля 2014 года № 320. Совершенствование нормативной правовой базы в сферах рынка ценных бумаг, страховой деятельности, банковской деятельности.",
-      "teacher": "Калейкина Е.А. / Социальный фонд России",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-113",
-      "program": "Управление государственными финансами (36 часов)",
-      "date": "05.10.2026",
-      "time": "18:00 - 20:15",
-      "subject": "Совершенствование нормативной правовой базы в сферах рынка ценных бумаг, страховой деятельности, банковской деятельности.",
-      "teacher": "Миночкина Т.А. / Страховой фонд ФОМС",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-113",
-      "program": "Управление государственными финансами (36 часов)",
-      "date": "05.10.2026",
-      "time": "18:00 - 20:15",
-      "subject": "Функционирование и развитие налоговой системы страны, осуществления банковской и страховой деятельности, защиты пенсионных накоплений.",
-      "teacher": "Багаманов В.Р. (РЦБ)",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2277,8 +1150,7 @@
       "time": "18:00 - 20:15",
       "subject": "Формирование и инвестирование пенсионных накоплений, совершенствование деятельности негосударственных пенсионных фондов.",
       "teacher": "Чистякова О.О. / Казначейство",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2287,8 +1159,7 @@
       "time": "18:00 - 20:15",
       "subject": "Бухгалтерский учет как информационная основа управления государственными финансами.",
       "teacher": "Ващенко О.В. / Центробанк",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2297,8 +1168,7 @@
       "time": "18:00 - 20:15",
       "subject": "Профилактика и противодействие коррупции в области управления государственными финансами: основные понятия. Коррупциогенные факторы, порождающие коррупционные правонарушения. Виды, механизмы выявления и оценки коррупционных рисков в различных сферах деятельности, в том числе, связанной с использованием бюджетных средств.",
       "teacher": "Прокуратура / УБЭП",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2307,8 +1177,7 @@
       "time": "18:00 - 20:15",
       "subject": "Профилактика и противодействие коррупции в области управления государственными финансами: основные понятия. Коррупциогенные факторы, порождающие коррупционные правонарушения. Виды, механизмы выявления и оценки коррупционных рисков в различных сферах деятельности, в том числе, связанной с использованием бюджетных средств.",
       "teacher": "Прокуратура / УБЭП",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2317,8 +1186,7 @@
       "time": "18:00 - 20:15",
       "subject": "Организация закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд в соответствии с Федеральным законом от 5 апреля 2013 года № 44-ФЗ «О контрактной системе в сфере закупок товаров, работ, услуг обеспечения для государственных и муниципальных нужд».",
       "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2327,8 +1195,7 @@
       "time": "18:00 - 20:15",
       "subject": "Единая информационная система в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд. Ознакомление с основным функционалом единой информационной системы в сфере закупок.",
       "teacher": "Мудрак Е.И.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2337,8 +1204,7 @@
       "time": "18:00 - 21:00",
       "subject": "Государственный финансовый контроль и его роль в управлении государственными финансами. Организация и методика проведения контрольных мероприятий, оформление и реализация их результатов.",
       "teacher": "Сорокина И.А. / Контрольно-счетная палата Калининградской области",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2347,8 +1213,7 @@
       "time": "18:00 - 19:30",
       "subject": "Ответственность за нарушение бюджетного законодательства. Развитие интегрированной информационной системы управления общественными финансами «Электронный бюджет». Основной функционал соответствующей системы.",
       "teacher": "Вербецкий А.А. / Центробанк",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2357,8 +1222,7 @@
       "time": "18:00 - 19:30",
       "subject": "Ответственность за нарушение бюджетного законодательства. Развитие интегрированной информационной системы управления общественными финансами «Электронный бюджет». Основной функционал соответствующей системы.",
       "teacher": "Казначейство",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-113",
@@ -2367,88 +1231,7 @@
       "time": "18:00 - 19:00",
       "subject": "Заседание ИАК",
       "teacher": "",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "08.10.2026",
-      "time": "17:00 - 18:00",
-      "subject": "Организационное собрание слушателей. Оформление документов. Входное тестирование",
-      "teacher": "Канаш И.С.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "08.10.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Цели, задачи и принципы контрактной системы. Участники контрактной системы, их права и обязанности",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "08.10.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Контрактная система. Контрактные управляющие. Комиссия по осуществлению закупок.",
-      "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "08.10.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Обзор законодательства о закупках товаров, работ, услуг для обеспечения государственных и муниципальных нужд и его изменений. Типовые проблемы и ошибки, возникающие при реализации положений закона о контрактной системе, варианты их решения.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "08,10,2026",
-      "time": "18:00 - 19:30",
-      "subject": "Актуальный обзор административной и арбитражной практики.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "09.10.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Применение национального режима при осуществлении закупок.",
-      "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "09.10.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Правовое регулирование и практика применения законодательства в сфере противодействия коррупции",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (108 часов)",
-      "date": "09.10.2026",
-      "time": "18:00 - 21:00",
-      "subject": "Понятие «конфликта интересов» в рамках антикоррупционного и закупочного законодательства. Административная и уголовная ответственность за правонарушения коррупционной направленности. Антикоррупционные стандарты и типичные коррупционные нарушения в системе муниципальной службы.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2457,8 +1240,7 @@
       "time": "18:00 - 21:00",
       "subject": "Антикоррупционные ограничения, запреты и обязанности, примеры из актуальной правоприменительной практики, относящейся к закупочной сфере.",
       "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2467,8 +1249,7 @@
       "time": "18:00 - 21:00",
       "subject": "Порядок планирования и обоснования закупок",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2477,8 +1258,7 @@
       "time": "18:00 - 21:00",
       "subject": "Порядок планирования и обоснования закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2487,8 +1267,7 @@
       "time": "18:00 - 21:00",
       "subject": "Установление начальной максимальной цены контракта",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2497,8 +1276,7 @@
       "time": "18:00 - 21:00",
       "subject": "Способы определения поставщика (подрядчика, исполнителя): общая характеристика способов, основные правила выбора. Требования к участникам закупки. Антидемпинговые меры при проведении конкурсов и аукционов. Порядок проведения запросов предложений",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2507,8 +1285,7 @@
       "time": "18:00 - 21:00",
       "subject": "Правила описания объекта закупки. Нормирование в сфере закупок. Порядок проведения конкурсов. Оценка заявок, окончательных предложений участников закупки. Порядок проведения электронного аукциона. Порядок проведения запросов котировок, запросов предложений",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2517,8 +1294,7 @@
       "time": "18:00 - 21:00",
       "subject": "Осуществление закупки у единственного поставщика (подрядчика, исполнителя).",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2527,8 +1303,7 @@
       "time": "18:00 - 19:30",
       "subject": "Особенности закупок, осуществляемых бюджетными, автономными учреждениями, государственными, муниципальными унитарными предприятиями и иными юридическими лицами.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2537,8 +1312,7 @@
       "time": "18:00 - 21:00",
       "subject": "Порядок заключения, исполнения, изменения и расторжения государственных и муниципальных контрактов. Приемка продукции. Порядок проведения экспертизы",
       "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2547,8 +1321,7 @@
       "time": "18:00 - 21:00",
       "subject": "Порядок заключения, исполнения, изменения и расторжения государственных и муниципальных контрактов. Приемка продукции. Порядок проведения экспертизы",
       "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2557,8 +1330,7 @@
       "time": "18:00 - 21:00",
       "subject": "Порядок заключения, исполнения, изменения и расторжения государственных и муниципальных контрактов. Приемка продукции. Порядок проведения экспертизы",
       "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2567,8 +1339,7 @@
       "time": "18:00 - 21:00",
       "subject": "Основания, субъекты и порядок осуществления мониторинга, контроля и аудита в ходе осуществления и по итогам закупочной деятельности. Общественный контроль и общественное обсуждение закупок.",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2577,8 +1348,7 @@
       "time": "18:00 - 21:00",
       "subject": "Защита прав и законных интересов участников контрактной системы в административном и судебном порядке. Ответственность заказчиков, работников контрактных служб, контрактных управляющих, членов комиссий по осуществлению закупок за нарушение законодательства Российской Федерации в сфере закупок. Порядок рассмотрения споров.",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2587,8 +1357,7 @@
       "time": "18:00 - 19:30",
       "subject": "Защита прав и законных интересов участников контрактной системы в административном и судебном порядке. Ответственность заказчиков, работников контрактных служб, контрактных управляющих, членов комиссий по осуществлению закупок за нарушение законодательства Российской Федерации в сфере закупок. Порядок рассмотрения споров.",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2597,8 +1366,7 @@
       "time": "18:00 - 21:00",
       "subject": "Вопросы внедрения информационных технологий в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2607,8 +1375,7 @@
       "time": "18:00 - 21:00",
       "subject": "Вопросы внедрения информационных технологий в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2617,8 +1384,7 @@
       "time": "18:00 - 21:00",
       "subject": "Ознакомление с основным функционалом единой информационной системы в сфере закупок.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2627,8 +1393,7 @@
       "time": "18:00 - 21:00",
       "subject": "Ознакомление с основным функционалом единой информационной системы в сфере закупок. Цифровизация госзаказа: структурированное извещение, подача заявки и контракт.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2637,8 +1402,7 @@
       "time": "18:00 - 21:00",
       "subject": "Цифровизация госзаказа: структурированное извещение, подача заявки и контракт.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2647,8 +1411,7 @@
       "time": "18:00 - 21:00",
       "subject": "Цифровизация госзаказа: структурированное извещение, подача заявки и контракт.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2657,88 +1420,7 @@
       "time": "18:00 - 19:00",
       "subject": "Итоговая аттестация в форме тестирования.",
       "teacher": "",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "27.10.2026",
-      "time": "17:00 - 18:00",
-      "subject": "Организационное собрание слушателей. Оформление документов. Входное тестирование",
-      "teacher": "Директор Центра дополнительного образования Канаш И.С.",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "28.10.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Цели, задачи и принципы контрактной системы. Участники контрактной системы, их права и обязанности",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "28.10.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Контрактная система. Контрактные управляющие. Комиссия по осуществлению закупок.",
-      "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "30.10.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Обзор законодательства о закупках товаров, работ, услуг для обеспечения государственных и муниципальных нужд и его изменений. Типовые проблемы и ошибки, возникающие при реализации положений закона о контрактной системе, варианты их решения.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "02.11.2026",
-      "time": "18:00 - 18:45",
-      "subject": "Актуальный обзор административной и арбитражной практики.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "06.11.2026",
-      "time": "18:00 - 18:45",
-      "subject": "Применение национального режима при осуществлении закупок.",
-      "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "09.11.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Правовое регулирование и практика применения законодательства в сфере противодействия коррупции",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
-    },
-    {
-      "id": "gos-108",
-      "program": "Вопросы функционирования контрактной системы в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд (36 часов)",
-      "date": "11.11.2026",
-      "time": "18:00 - 19:30",
-      "subject": "Понятие «конфликта интересов» в рамках антикоррупционного и закупочного законодательства. Административная и уголовная ответственность за правонарушения коррупционной направленности.",
-      "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": false
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2747,8 +1429,7 @@
       "time": "18:00 - 19:30",
       "subject": "Антикоррупционные стандарты и типичные коррупционные нарушения в системе муниципальной службы. Антикоррупционные ограничения, запреты и обязанности, примеры из актуальной правоприменительной практики, относящейся к закупочной сфере.",
       "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2757,8 +1438,7 @@
       "time": "18:00 - 19:30",
       "subject": "Порядок планирования и обоснования закупок",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2767,8 +1447,7 @@
       "time": "18:00 - 19:30",
       "subject": "Установление начальной максимальной цены контракта.",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2777,8 +1456,7 @@
       "time": "18:00 - 21:00",
       "subject": "Способы определения поставщика (подрядчика, исполнителя): общая характеристика способов, основные правила выбора. Требования к участникам закупки. Антидемпинговые меры при проведении конкурсов и аукционов. запросов предложений",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2787,8 +1465,7 @@
       "time": "18:00 - 21:00",
       "subject": "Порядок заключения, исполнения, изменения и расторжения государственных и муниципальных контрактов. Приемка продукции. Порядок проведения экспертизы.",
       "teacher": "Мудрак Е.И., доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2797,8 +1474,7 @@
       "time": "18:00 - 21:00",
       "subject": "Основания, субъекты и порядок осуществления мониторинга, контроля и аудита в ходе осуществления и по итогам закупочной деятельности. Общественный контроль и общественное обсуждение закупок. Защита прав и законных интересов участников контрактной системы в административном и судебном порядке. Ответственность заказчиков, работников контрактных служб, контрактных управляющих, членов комиссий по осуществлению закупок за нарушение законодательства Российской Федерации в сфере закупок. Порядок рассмотрения споров.",
       "teacher": "Дрибноход С.Л., канд. пед. наук, доцент",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2807,8 +1483,7 @@
       "time": "18:00 - 21:00",
       "subject": "Вопросы внедрения информационных технологий в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2817,8 +1492,7 @@
       "time": "18:00 - 21:00",
       "subject": "Вопросы внедрения информационных технологий в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд. Ознакомление с основным функционалом единой информационной системы в сфере закупок. Цифровизация госзаказа: структурированное извещение, подача заявки и контракт.",
       "teacher": "Козлов С.П., канд. экон. наук",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     },
     {
       "id": "gos-108",
@@ -2827,8 +1501,7 @@
       "time": "18:00 - 19:00",
       "subject": "Итоговая аттестация в форме тестирования.",
       "teacher": "",
-      "room": "ул. Артиллерийская, д.62, 308 ауд.",
-      "status": true
+      "room": "ул. Артиллерийская, д.62, 308 ауд."
     }
   ],
   "owlFiles": [
@@ -2913,7 +1586,5 @@
       "isPublished": true
     }
   ],
-  "currentAlert": {
-    "text": "21542"
-  }
+  "currentAlert": null
 }
