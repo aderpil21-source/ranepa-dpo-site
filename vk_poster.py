@@ -2,14 +2,13 @@ import json
 import os
 import sys
 from pathlib import Path
-from urllib.parse import urlparse
 
 import requests
 
 
-# ============================================================
-# CONFIG
-# ============================================================
+# =========================
+# НАСТРОЙКИ
+# =========================
 
 NEWS_API_URL = (
     "https://script.google.com/macros/s/"
@@ -17,58 +16,63 @@ NEWS_API_URL = (
     "/exec"
 )
 
+VK_API_URL = "https://api.vk.com/method/"
+VK_API_VERSION = os.getenv("VK_API_VERSION", "5.199")
+
 VK_TOKEN = os.getenv("VK_TOKEN")
 VK_OWNER_ID = os.getenv("VK_OWNER_ID")
-VK_API_VERSION = os.getenv("VK_API_VERSION", "5.199")
 
 STATE_FILE = Path("vk_published.json")
 
-REQUEST_TIMEOUT = 30
 
+# =========================
+# ПРОВЕРКА НАСТРОЕК
+# =========================
 
-# ============================================================
-# HELPERS
-# ============================================================
-
-def fail(message):
-    print(f"ОШИБКА: {message}")
+if not VK_TOKEN:
+    print("Ошибка: не найден VK_TOKEN")
     sys.exit(1)
+
+if not VK_OWNER_ID:
+    print("Ошибка: не найден VK_OWNER_ID")
+    sys.exit(1)
+
+
+# =========================
+# ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+# =========================
+
+def safe_text(value, default=""):
+    """Безопасно превращает значение в строку."""
+    if value is None:
+        return default
+
+    return str(value).strip()
 
 
 def get_json(url, params=None):
     response = requests.get(
         url,
         params=params,
-        timeout=REQUEST_TIMEOUT,
-        headers={
-            "User-Agent": "Ranepa-DPO-VK-Publisher/1.0"
-        }
+        timeout=30,
     )
 
     response.raise_for_status()
 
-    try:
-        return response.json()
-    except Exception:
-        print("Ответ сервера:")
-        print(response.text[:2000])
-        raise
+    return response.json()
 
 
 def vk_api(method, params):
-    url = f"https://api.vk.com/method/{method}"
-
-    params = dict(params)
-    params["access_token"] = VK_TOKEN
-    params["v"] = VK_API_VERSION
+    request_params = {
+        **params,
+        "access_token": VK_TOKEN,
+        "v": VK_API_VERSION,
+    }
 
     response = requests.post(
-        url,
-        data=params,
-        timeout=REQUEST_TIMEOUT,
-        headers={
-            "User-Agent": "Ranepa-DPO-VK-Publisher/1.0"
-        }
+        VK_API_URL + method,
+        data=request_params,
+        timeout=30,
     )
 
     response.raise_for_status()
@@ -79,62 +83,62 @@ def vk_api(method, params):
         error = data["error"]
 
         code = error.get("error_code")
-        message = error.get("error_msg")
+        message = error.get("error_msg", "Неизвестная ошибка VK")
 
         raise RuntimeError(
             f"VK API error {code}: {message}"
         )
 
-    return data.get("response")
+    return data["response"]
 
 
-# ============================================================
-# STATE
-# ============================================================
+# =========================
+# СОСТОЯНИЕ ПУБЛИКАЦИЙ
+# =========================
 
 def load_state():
     if not STATE_FILE.exists():
-        return {}
+        return set()
 
     try:
-        with open(STATE_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        with STATE_FILE.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if isinstance(data, list):
+            return {safe_text(item) for item in data}
 
         if isinstance(data, dict):
-            return data
+            published = data.get("published", [])
 
-    except Exception as e:
-        print(f"Не удалось прочитать {STATE_FILE}: {e}")
+            if isinstance(published, list):
+                return {safe_text(item) for item in published}
 
-    return {}
+    except Exception as error:
+        print(f"Не удалось прочитать {STATE_FILE}: {error}")
+
+    return set()
 
 
-def save_state(state):
-    temp_file = STATE_FILE.with_suffix(".tmp")
-
-    with open(temp_file, "w", encoding="utf-8") as f:
+def save_state(published_ids):
+    with STATE_FILE.open("w", encoding="utf-8") as file:
         json.dump(
-            state,
-            f,
+            sorted(published_ids),
+            file,
             ensure_ascii=False,
-            indent=2
+            indent=2,
         )
 
-    temp_file.replace(STATE_FILE)
 
-
-# ============================================================
-# NEWS
-# ============================================================
+# =========================
+# ПОЛУЧЕНИЕ НОВОСТЕЙ
+# =========================
 
 def get_news():
-    print("Получаем новости из API сайта...")
+    print("Получаем новости из Google Apps Script...")
 
     data = get_json(
         NEWS_API_URL,
-        params={
-            "type": "news"
-        }
+        params={"type": "news"},
     )
 
     if isinstance(data, list):
@@ -152,394 +156,195 @@ def get_news():
         news = []
 
     if not isinstance(news, list):
-        fail("API сайта вернул неожиданный формат данных.")
+        news = []
 
-    print(f"Всего записей: {len(news)}")
+    print(f"Получено новостей: {len(news)}")
 
     return news
 
 
-def is_published(news):
-    status = str(news.get("status", "")).lower().strip()
-
-    return status in {
-        "published",
-        "опубликовано",
-        "опубликован",
-        "public"
-    }
-
+# =========================
+# ПОЛЯ НОВОСТИ
+# =========================
 
 def get_news_id(news):
-    return str(
+    value = (
         news.get("id")
-        or news.get("_id")
+        or news.get("newsId")
         or news.get("uuid")
-        or ""
-    ).strip()
+        or news.get("_id")
+    )
+
+    return safe_text(value)
 
 
 def get_news_title(news):
-    return (
+    value = (
         news.get("title")
         or news.get("name")
         or "Новость"
-    ).strip()
+    )
+
+    return safe_text(value, "Новость")
 
 
 def get_news_lead(news):
-    return (
+    value = (
         news.get("lead")
         or news.get("description")
         or news.get("excerpt")
-        or ""
-    ).strip()
-
-
-def get_news_url(news):
-    """
-    Если API уже хранит URL новости — используем его.
-    Иначе строим URL по ID.
-    """
-
-    url = (
-        news.get("url")
-        or news.get("link")
-        or news.get("href")
-        or news.get("newsUrl")
+        or news.get("summary")
         or ""
     )
 
-    if url:
-        return str(url).strip()
+    return safe_text(value)
 
+
+def get_news_url(news):
     news_id = get_news_id(news)
 
-    if news_id:
-        return f"https://ranepa-dpo39.ru/news.html?id={news_id}"
+    value = (
+        news.get("url")
+        or news.get("link")
+        or news.get("href")
+    )
 
-    return "https://ranepa-dpo39.ru/"
+    value = safe_text(value)
 
+    if value:
+        return value
 
-# ============================================================
-# IMAGE
-# ============================================================
-
-def normalize_image_url(url):
-    if not url:
-        return ""
-
-    url = str(url).strip()
-
-    # Google Drive:
-    # https://drive.google.com/file/d/FILE_ID/view
-    if "drive.google.com/file/d/" in url:
-        try:
-            file_id = url.split("/file/d/")[1].split("/")[0]
-
-            return (
-                "https://drive.google.com/uc"
-                f"?export=view&id={file_id}"
-            )
-        except Exception:
-            pass
-
-    # Google Drive:
-    # https://drive.google.com/open?id=FILE_ID
-    if "drive.google.com/open?id=" in url:
-        file_id = url.split("open?id=")[1].split("&")[0]
-
-        return (
-            "https://drive.google.com/uc"
-            f"?export=view&id={file_id}"
-        )
-
-    return url
+    return f"https://ranepa-dpo39.ru/news.html?id={news_id}"
 
 
-def extract_image(news):
-    # 1. Обложка
-    cover = news.get("coverImage")
-
-    if cover:
-        if isinstance(cover, dict):
-            cover = (
-                cover.get("url")
-                or cover.get("src")
-                or cover.get("publicUrl")
-            )
-
-        if cover:
-            return normalize_image_url(cover)
-
-    # 2. Иногда поле называется image
-    image = news.get("image")
-
-    if image:
-        if isinstance(image, dict):
-            image = (
-                image.get("url")
-                or image.get("src")
-                or image.get("publicUrl")
-            )
-
-        if image:
-            return normalize_image_url(image)
-
-    # 3. Первый image-блок
-    blocks = news.get("blocks") or []
-
-    if isinstance(blocks, list):
-        for block in blocks:
-
-            if not isinstance(block, dict):
-                continue
-
-            block_type = str(
-                block.get("type")
-                or block.get("blockType")
-                or ""
-            ).lower()
-
-            if block_type not in {
-                "image",
-                "img",
-                "photo",
-                "picture"
-            }:
-                continue
-
-            url = (
-                block.get("url")
-                or block.get("src")
-                or block.get("image")
-                or block.get("publicUrl")
-            )
-
-            if isinstance(url, dict):
-                url = (
-                    url.get("url")
-                    or url.get("src")
-                    or url.get("publicUrl")
-                )
-
-            if url:
-                return normalize_image_url(url)
-
-    return ""
-
-
-# ============================================================
-# VK POST
-# ============================================================
+# =========================
+# ПУБЛИКАЦИЯ В VK
+# =========================
 
 def publish_to_vk(news):
     news_id = get_news_id(news)
     title = get_news_title(news)
     lead = get_news_lead(news)
     news_url = get_news_url(news)
-    image_url = extract_image(news)
 
-    print()
-    print(f"Обрабатываем новость: {news_id} — {title}")
+    if not news_id:
+        raise RuntimeError("У новости отсутствует ID")
 
-    if image_url:
-        print(f"Найдена картинка: {image_url}")
-    else:
-        print("Картинка не найдена.")
-
-    # --------------------------------------------------------
-    # Формируем текст
-    # --------------------------------------------------------
-
-    parts = []
-
-    if title:
-        parts.append(title)
+    message_parts = [
+        title,
+    ]
 
     if lead:
-        parts.append(lead)
+        message_parts.append(lead)
 
-    parts.append(
-        f"Подробнее: {news_url}"
-    )
+    message_parts.append(news_url)
 
-    message = "\n\n".join(parts).strip()
+    message = "\n\n".join(message_parts)
 
-    # --------------------------------------------------------
-    # Параметры wall.post
-    # --------------------------------------------------------
+    # ID сообщества должен быть отрицательным.
+    owner_id = safe_text(VK_OWNER_ID)
+
+    if not owner_id.startswith("-"):
+        owner_id = "-" + owner_id
 
     params = {
-        "owner_id": VK_OWNER_ID,
+        "owner_id": owner_id,
         "from_group": 1,
         "message": message,
+        "attachments": news_url,
     }
 
-    # VK позволяет передавать URL изображения
-    # как изображение ссылки.
-    #
-    # Важно:
-    # это НЕ загрузка фото через photos.getWallUploadServer.
-    # Поэтому нам не нужен пользовательский токен.
-    if image_url:
-        params["attachments"] = news_url
-
-    print("Публикуем запись в VK...")
+    print(f"Публикуем в VK: {title}")
 
     response = vk_api(
         "wall.post",
-        params
+        params,
     )
 
     post_id = response.get("post_id")
 
-    if not post_id:
-        raise RuntimeError(
-            f"VK не вернул post_id: {response}"
-        )
-
     print(
-        f"VK: опубликовано успешно. "
-        f"post_id={post_id}"
+        f"Успешно опубликовано: "
+        f"post_id={post_id}, news_id={news_id}"
     )
 
-    return {
-        "post_id": post_id,
-        "news_id": news_id,
-        "title": title,
-        "url": news_url,
-        "image_url": image_url,
-    }
+    return post_id
 
 
-# ============================================================
-# MAIN
-# ============================================================
+# =========================
+# ОСНОВНАЯ ЛОГИКА
+# =========================
 
 def main():
+    published_ids = load_state()
 
-    if not VK_TOKEN:
-        fail(
-            "Не найден секрет VK_TOKEN. "
-            "Добавь его в GitHub Secrets."
-        )
-
-    if not VK_OWNER_ID:
-        fail(
-            "Не найден VK_OWNER_ID. "
-            "Добавь ID сообщества в GitHub Secrets."
-        )
-
-    print(f"VK_OWNER_ID: {VK_OWNER_ID}")
-    print(f"VK API version: {VK_API_VERSION}")
-    print("Режим: Community Token")
-    print()
-
-    state = load_state()
+    print(
+        f"Уже опубликовано ранее: "
+        f"{len(published_ids)}"
+    )
 
     news_list = get_news()
 
-    published_news = [
-        news
-        for news in news_list
-        if is_published(news)
-    ]
+    published_count = 0
+    skipped_count = 0
+    error_count = 0
 
-    print(
-        f"Опубликованных на сайте: "
-        f"{len(published_news)}"
-    )
-
-    # --------------------------------------------------------
-    # Сортируем по дате, если она есть
-    # --------------------------------------------------------
-
-    def sort_key(item):
-        return (
-            item.get("publishedAt")
-            or item.get("published_at")
-            or item.get("date")
-            or item.get("createdAt")
-            or item.get("created_at")
-            or ""
-        )
-
-    published_news.sort(
-        key=sort_key
-    )
-
-    # --------------------------------------------------------
-    # Только новые для VK
-    # --------------------------------------------------------
-
-    new_news = []
-
-    for news in published_news:
+    for news in news_list:
+        if not isinstance(news, dict):
+            print(
+                f"Пропускаем некорректную запись: "
+                f"{type(news).__name__}"
+            )
+            error_count += 1
+            continue
 
         news_id = get_news_id(news)
+        title = get_news_title(news)
 
         if not news_id:
             print(
-                "Пропускаем запись без ID:"
+                f"Пропускаем новость без ID: {title}"
             )
-            print(news)
+            error_count += 1
             continue
 
-        if news_id in state:
+        if news_id in published_ids:
+            print(
+                f"Уже опубликовано, пропускаем: "
+                f"{title}"
+            )
+            skipped_count += 1
             continue
-
-        new_news.append(news)
-
-    print(
-        f"Новых новостей для VK: "
-        f"{len(new_news)}"
-    )
-
-    if not new_news:
-        print("Новых новостей нет.")
-        return
-
-    # --------------------------------------------------------
-    # Публикуем по одной
-    # --------------------------------------------------------
-
-    for news in new_news:
-
-        news_id = get_news_id(news)
 
         try:
+            publish_to_vk(news)
 
-            result = publish_to_vk(news)
+            published_ids.add(news_id)
+            published_count += 1
 
-            state[news_id] = {
-                "published": True,
-                "post_id": result["post_id"],
-                "title": result["title"],
-                "url": result["url"],
-                "image_url": result["image_url"],
-            }
+            # Сохраняем сразу после успешной публикации.
+            save_state(published_ids)
 
-            save_state(state)
+        except Exception as error:
+            error_count += 1
 
             print(
-                f"Состояние сохранено: {news_id}"
+                f"Ошибка публикации "
+                f"«{title}»: {error}"
             )
 
-        except Exception as e:
+    print()
+    print("========== ИТОГ ==========")
+    print(f"Новых публикаций: {published_count}")
+    print(f"Пропущено: {skipped_count}")
+    print(f"Ошибок: {error_count}")
+    print("==========================")
 
-            print()
-            print(
-                f"ОШИБКА при публикации "
-                f"{news_id}:"
-            )
-            print(str(e))
-
-            # Важно:
-            # эту новость НЕ записываем в state.
-            # Значит, следующий запуск попробует её снова.
-
-            continue
+    # Не считаем отсутствие новостей ошибкой.
+    # Но если VK не опубликовал ни одной новости
+    # из-за ошибок, завершаем Actions с ошибкой.
+    if error_count > 0 and published_count == 0:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
