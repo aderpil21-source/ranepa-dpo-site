@@ -371,7 +371,7 @@ function blocksWithVkPreference(blocks, enabled){
     return clean;
 }
 
-const VK_GROUP_URL = 'https://vk.com/ranepa_dpo39';
+const VK_GROUP_URL = 'https://vk.ru/ranepa_dpo39';
 const VK_GROUP_OWNER_ID = '-241627750';
 
 function vkPostUrl(postId){
@@ -379,14 +379,8 @@ function vkPostUrl(postId){
 }
 
 function openVkWindowForManualPhoto(){
-    const popup = window.open('about:blank', 'ranepaVkManualPhoto');
-    if (popup){
-        try {
-            popup.document.title = 'Открываем ВКонтакте…';
-            popup.document.body.innerHTML = '<p style="font-family:Arial,sans-serif;padding:20px">Сохраняем новость и открываем пост во ВКонтакте…</p>';
-        } catch(e){}
-    }
-    return popup;
+    // Открываем сразу нужную группу по клику, чтобы пользователь не видел пустую about:blank.
+    return window.open(VK_GROUP_URL, 'ranepaVkManualPhoto');
 }
 
 function rememberVkChoice(id, enabled){
