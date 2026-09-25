@@ -2645,19 +2645,15 @@ document.getElementById('mediaLightbox').addEventListener('click', function(e) {
         checkCookieConsent();
         toggleEnrollButtons();
     });
-window.addEventListener('DOMContentLoaded', () => {
-    // Проверяем, есть ли в ссылке якорь новости (например, #news=123)
-    const hash = window.location.hash;
-    if (hash.startsWith('#news=')) {
-        const newsId = hash.replace('#news=', '');
-        // Ждем секунду пока подгружаются новости из API, затем открываем нужную
-        const checkNewsLoaded = setInterval(() => {
-            if (newsItems && newsItems.length > 0) {
-                clearInterval(checkNewsLoaded);
-                openNews(); // Открываем оверлей новостей
-                openNewsDetail(newsId); // Открываем конкретную новость по ID
-            }
-        }, 200);
+// Совместимость со старыми ссылками вида index.html#news=ID.
+// Старый обработчик ждал несуществующий новостной оверлей и мог работать бесконечно.
+const legacyNewsHash = window.location.hash;
+if (legacyNewsHash.startsWith('#news=')) {
+    const legacyNewsId = legacyNewsHash.slice('#news='.length).trim();
+    if (legacyNewsId) {
+        window.location.replace(
+            'news.html#' + encodeURIComponent(legacyNewsId)
+        );
     }
-});
+}
 </script></html>
