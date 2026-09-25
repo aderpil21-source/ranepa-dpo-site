@@ -383,7 +383,7 @@ def publish_to_vk(news):
     # это НЕ загрузка фото через photos.getWallUploadServer.
     # Поэтому нам не нужен пользовательский токен.
     if image_url:
-        params["link_image"] = image_url
+        params["attachments"] = news_url
 
     print("Публикуем запись в VK...")
 
