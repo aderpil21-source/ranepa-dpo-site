@@ -1,5 +1,26 @@
-[
-  "e14085d9-a4a6-45b6-8674-e26c296c788d",
-  "409de9d3-0f6d-41f0-bc5e-df2f36c72b92",
-  "6f70c10a-8079-4159-b6f5-318522d8c2da"
-]
+{
+  "version": 2,
+  "items": {
+    "e14085d9-a4a6-45b6-8674-e26c296c788d": {
+      "status": "published",
+      "post_id": null,
+      "updated_at": null,
+      "attempts": 1,
+      "error": null
+    },
+    "409de9d3-0f6d-41f0-bc5e-df2f36c72b92": {
+      "status": "published",
+      "post_id": null,
+      "updated_at": null,
+      "attempts": 1,
+      "error": null
+    },
+    "6f70c10a-8079-4159-b6f5-318522d8c2da": {
+      "status": "published",
+      "post_id": null,
+      "updated_at": null,
+      "attempts": 1,
+      "error": null
+    }
+  }
+}
