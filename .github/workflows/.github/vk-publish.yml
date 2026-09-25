@@ -62,6 +62,7 @@ jobs:
       - name: Publish news to VK
         env:
           VK_TOKEN: ${{ secrets.VK_TOKEN }}
+          VK_UPLOAD_TOKEN: ${{ secrets.VK_UPLOAD_TOKEN }}
           VK_OWNER_ID: ${{ secrets.VK_OWNER_ID }}
           VK_API_VERSION: "5.199"
 
