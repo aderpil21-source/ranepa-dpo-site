@@ -1,0 +1,83 @@
+name: Refresh public news
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-public-news
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download and validate public news
+        shell: bash
+        env:
+          API_URL: https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec?type=news
+        run: |
+          set -euo pipefail
+
+          tmp_file="$(mktemp)"
+
+          curl             --fail             --silent             --show-error             --location             --retry 2             --retry-delay 2             --connect-timeout 10             --max-time 45             "$API_URL"             --output "$tmp_file"
+
+          python - "$tmp_file" <<'PY'
+          import json
+          import sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          path = Path(sys.argv[1])
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          if not isinstance(data, dict):
+              raise SystemExit("News API response is not a JSON object")
+
+          items = data.get("items")
+          if not isinstance(items, list):
+              raise SystemExit("News API response has no items array")
+
+          public_items = [
+              item for item in items
+              if isinstance(item, dict) and item.get("status") == "published"
+          ]
+
+          output = {
+              "generatedAt": datetime.now(timezone.utc).isoformat(),
+              "items": public_items,
+          }
+
+          path.write_text(
+              json.dumps(output, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          mv "$tmp_file" news-data.json
+
+      - name: Commit only when news changed
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- news-data.json; then
+            echo "news-data.json is already up to date"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add news-data.json
+          git commit -m "data: refresh public news snapshot"
+          git push
