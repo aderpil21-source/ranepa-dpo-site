@@ -2212,23 +2212,53 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         addUserMsg(text);
         input.value = '';
 
-        // --- СЕКРЕТНЫЙ ВХОД ДЛЯ ПРЕПОДАВАТЕЛЕЙ ---
-        if (text.toLowerCase().includes('служебный вход')) {
-            setTimeout(() => {
-                const portalUrl = API_URL + "?page=upload";
-                addBotMsg(currentLang === 'ru'
-                    ? "🔒 <b>Служебный портал.</b> Для загрузки учебных планов перейдите по ссылке ниже. Вам потребуется ввести ПИН-код сотрудника."
-                    : "🔒 <b>Staff Portal.</b> Click the link below to access the curriculum upload portal. A staff PIN code will be required.");
-                setOptions(`
-                    <button class="chat-opt-btn" onclick="window.open('${portalUrl}', '_blank')" style="background: linear-gradient(135deg, #10b981, #059669); color: white; text-align: center; font-size: 1rem; border: none; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);">
-                        📂 Открыть портал загрузки
-                    </button>
-                    <button class="chat-opt-btn" onclick="resetMenu()">⬅️ Вернуться в меню</button>
-                `);
-            }, 400);
-            return;
-        }
-        // --- КОНЕЦ СЕКРЕТНОГО ВХОДА ---
+        // --- СКРЫТЫЙ СЛУЖЕБНЫЙ ВХОД ---
+const staffCommand = normalizeText(text);
+
+const wantsNewsEditor = [
+    'режим редактора',
+    'редактор',
+    'добавить новость',
+    'создать новость',
+    'опубликовать новость',
+    'новая новость',
+    'редакция'
+].some(cmd => staffCommand.includes(cmd));
+
+const wantsStaffPortal = [
+    'служебный вход',
+    'служебный портал',
+    'загрузить учебный план',
+    'загрузка учебного плана'
+].some(cmd => staffCommand.includes(cmd));
+
+if (wantsNewsEditor || wantsStaffPortal) {
+    setTimeout(() => {
+        const targetUrl = wantsNewsEditor
+            ? 'news.html?editor=1'
+            : API_URL + '?page=upload';
+
+        addBotMsg(
+            wantsNewsEditor
+                ? '🔒 <b>Редакция Центра ДПО</b><br><br>Это служебный раздел для сотрудников. Для продолжения потребуется подтверждение доступа.'
+                : '🔒 <b>Служебный портал</b><br><br>Здесь сотрудники могут загружать и обновлять учебные планы.'
+        );
+
+        setOptions(`
+            <button class="chat-opt-btn"
+                onclick="window.location.href='${targetUrl}'"
+                style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">
+                🔐 Продолжить
+            </button>
+            <button class="chat-opt-btn" onclick="resetMenu()">
+                ⬅️ Вернуться в меню
+            </button>
+        `);
+    }, 300);
+
+    return;
+}
+// --- КОНЕЦ СКРЫТОГО СЛУЖЕБНОГО ВХОДА ---
 
         const cleanCode = text.toUpperCase();
         const foundFile = globalOwlFiles.find(f => f.code.toUpperCase() === cleanCode);
