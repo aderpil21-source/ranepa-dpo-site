@@ -85,8 +85,21 @@ header{ background:var(--header-bg); backdrop-filter:blur(25px);
 .news-media-figure img,.news-media-figure video{ width:100%; border-radius:16px; display:block; background:rgba(255,255,255,.03); }
 .news-media-figure img{ cursor:zoom-in; }
 .news-media-figure figcaption{ color:var(--text-muted); font-size:.85rem; margin-top:8px; }
-.news-video-embed-wrap{ position:relative; width:100%; padding-top:56.25%; border-radius:16px; overflow:hidden; }
+.news-video-embed-wrap{ position:relative; width:100%; padding-top:56.25%; border-radius:16px; overflow:hidden; background:#000; }
 .news-video-embed-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:none; }
+.news-video-shell{ position:relative; width:100%; }
+.news-video-shell.is-floating{ position:fixed; right:22px; bottom:22px; width:min(420px,calc(100vw - 32px)); z-index:18000; background:#05080e; border:1px solid rgba(255,255,255,.2); border-radius:16px; overflow:hidden; box-shadow:0 24px 70px rgba(0,0,0,.65); }
+.news-video-shell.is-floating.is-large{ width:min(640px,calc(100vw - 32px)); }
+.news-video-shell.is-floating .news-video-embed-wrap{ border-radius:0; }
+.news-video-float-bar{ display:flex; align-items:center; justify-content:flex-end; gap:6px; margin-top:8px; }
+.news-video-shell.is-floating .news-video-float-bar{ margin:0; padding:7px; background:rgba(5,8,14,.96); border-top:1px solid rgba(255,255,255,.1); }
+.news-video-float-btn{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); color:#fff; border-radius:8px; padding:7px 10px; cursor:pointer; font-size:.75rem; font-weight:700; }
+.news-video-float-btn:hover{ background:var(--ranepa-red); border-color:var(--ranepa-red); }
+.news-video-float-btn[data-video-size],.news-video-float-btn[data-video-return]{ display:none; }
+.news-video-shell.is-floating .news-video-float-btn[data-video-float]{ display:none; }
+.news-video-shell.is-floating .news-video-float-btn[data-video-size],.news-video-shell.is-floating .news-video-float-btn[data-video-return]{ display:inline-flex; }
+.video-float-placeholder{ width:100%; border:1px dashed rgba(255,255,255,.12); border-radius:16px; background:rgba(255,255,255,.02); }
+@media (max-width:700px){ .news-video-shell.is-floating,.news-video-shell.is-floating.is-large{ right:10px; bottom:10px; width:calc(100vw - 20px); } }
 .accordion-btn{ background:var(--btn-glass); border:1px solid var(--border-glass); color:#fff; padding:15px; border-radius:14px; font-weight:800; cursor:pointer; transition:.3s; margin-bottom:24px; }
 .accordion-btn:hover{ background:var(--ranepa-red); border-color:var(--ranepa-red); }
 
@@ -881,13 +894,63 @@ function renderGrid(){
 }
 
 function showListView(){
+    restoreFloatingVideo();
     $('newsListView').style.display = 'block';
     $('newsDetailView').style.display = 'none';
     history.replaceState(null, null, location.pathname);
     window.scrollTo({ top:0, behavior:'smooth' });
 }
 
+let floatingVideoShell = null;
+let floatingVideoPlaceholder = null;
+
+function floatVideo(shell){
+    if (!shell || shell === floatingVideoShell) return;
+    restoreFloatingVideo();
+    const rect = shell.getBoundingClientRect();
+    const placeholder = document.createElement('div');
+    placeholder.className = 'video-float-placeholder';
+    placeholder.style.height = Math.max(rect.height,180) + 'px';
+    shell.parentNode.insertBefore(placeholder,shell);
+    floatingVideoShell = shell;
+    floatingVideoPlaceholder = placeholder;
+    shell.classList.add('is-floating');
+    shell.classList.remove('is-large');
+}
+
+function restoreFloatingVideo(){
+    if (!floatingVideoShell) return;
+    const shell = floatingVideoShell;
+    shell.classList.remove('is-floating','is-large');
+    if (floatingVideoPlaceholder && floatingVideoPlaceholder.parentNode){
+        floatingVideoPlaceholder.parentNode.insertBefore(shell,floatingVideoPlaceholder);
+        floatingVideoPlaceholder.remove();
+    }
+    floatingVideoShell = null;
+    floatingVideoPlaceholder = null;
+}
+
+function toggleFloatingVideoSize(shell){
+    if (!shell || !shell.classList.contains('is-floating')) return;
+    shell.classList.toggle('is-large');
+    const btn = shell.querySelector('[data-video-size]');
+    if (btn) btn.textContent = shell.classList.contains('is-large') ? '− Уменьшить' : '＋ Увеличить';
+}
+
+function initFloatingVideoControls(root){
+    root.querySelectorAll('.news-video-shell').forEach(shell => {
+        shell.querySelector('[data-video-float]')?.addEventListener('click',()=>floatVideo(shell));
+        shell.querySelector('[data-video-size]')?.addEventListener('click',()=>toggleFloatingVideoSize(shell));
+        shell.querySelector('[data-video-return]')?.addEventListener('click',()=>restoreFloatingVideo());
+    });
+}
+
+function videoShellHtml(innerHtml){
+    return `<div class="news-video-shell">${innerHtml}<div class="news-video-float-bar"><button type="button" class="news-video-float-btn" data-video-float>▣ Мини-плеер</button><button type="button" class="news-video-float-btn" data-video-size>＋ Увеличить</button><button type="button" class="news-video-float-btn" data-video-return>↙ Вернуть в статью</button></div></div>`;
+}
+
 function openDetail(id){
+    restoreFloatingVideo();
     const n = newsItems.find(x => x.id === id);
     if (!n) return;
     $('newsListView').style.display = 'none';
@@ -909,8 +972,8 @@ function openDetail(id){
         }
         if (b.type === 'video' && b.url){
             const embed = toEmbedUrl(b.url);
-            if (embed) return `<figure class="news-media-figure"><div class="news-video-embed-wrap"><iframe src="${escapeHtml(embed)}" allow="autoplay; fullscreen; encrypted-media" allowfullscreen loading="lazy"></iframe></div>${cap}</figure>`;
-            return `<figure class="news-media-figure"><video src="${escapeHtml(b.url)}" controls playsinline preload="metadata"></video>${cap}</figure>`;
+            if (embed) return `<figure class="news-media-figure">${videoShellHtml(`<div class="news-video-embed-wrap"><iframe src="${escapeHtml(embed)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`)}${cap}</figure>`;
+            return `<figure class="news-media-figure">${videoShellHtml(`<video src="${escapeHtml(b.url)}" controls playsinline preload="metadata"></video>`)}${cap}</figure>`;
         }
         return '';
     }).join('');
@@ -923,6 +986,7 @@ function openDetail(id){
         ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
         <div>${body}</div>`;
     $('backToListBtn').addEventListener('click', showListView);
+    initFloatingVideoControls(view);
 
     // Битая картинка не оставляет пустую дыру в статье
     view.querySelectorAll('img[data-fallback]').forEach(img => {
