@@ -8,14 +8,29 @@ of visitors shares the same upstream response.
 import os
 import time
 import requests
-from flask import Flask, jsonify, Response
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
+
+ALLOWED_ORIGINS = {
+    "https://ranepa-dpo39.ru",
+    "https://www.ranepa-dpo39.ru",
+    "https://ranepa-dpo-site.vercel.app",
+}
 
 NEWS_API_URL = os.getenv(
     "NEWS_API_URL",
     "https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec",
 )
+
+
+@app.after_request
+def add_headers(response):
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+    return response
 
 
 @app.get("/api/news-live")
@@ -51,8 +66,8 @@ def news_live():
 
     # One upstream response can serve many visitors for 30 seconds.
     # If revalidation is slow, CDN may keep serving the previous response briefly.
-    response.headers["Cache-Control"] = "public, s-maxage=30, stale-while-revalidate=90"
-    response.headers["CDN-Cache-Control"] = "public, s-maxage=30, stale-while-revalidate=90"
-    response.headers["Vercel-CDN-Cache-Control"] = "public, s-maxage=30, stale-while-revalidate=90"
+    response.headers["Cache-Control"] = "public, s-maxage=15, stale-while-revalidate=60"
+    response.headers["CDN-Cache-Control"] = "public, s-maxage=15, stale-while-revalidate=60"
+    response.headers["Vercel-CDN-Cache-Control"] = "public, s-maxage=15, stale-while-revalidate=60"
     response.headers["X-Content-Type-Options"] = "nosniff"
     return response
