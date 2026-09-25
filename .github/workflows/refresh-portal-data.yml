@@ -1,15 +1,15 @@
-name: Refresh portal data
+name: Refresh public portal snapshots
 
 on:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: refresh-portal-data
+  group: refresh-public-portal-snapshots
   cancel-in-progress: false
 
 jobs:
@@ -29,44 +29,108 @@ jobs:
 
           tmp_file="$(mktemp)"
 
-          curl             --fail             --silent             --show-error             --location             --retry 2             --retry-delay 2             --connect-timeout 10             --max-time 45             "$API_URL"             --output "$tmp_file"
+          curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 2 \
+            --retry-delay 2 \
+            --connect-timeout 10 \
+            --max-time 45 \
+            "$API_URL" \
+            --output "$tmp_file"
 
-          python - "$tmp_file" <<'PY'
+          python - "$tmp_file" portal-data.json schedule-data.json owl-files.json <<'PY'
           import json
           import sys
+          from datetime import datetime, timezone
           from pathlib import Path
 
-          path = Path(sys.argv[1])
-          data = json.loads(path.read_text(encoding="utf-8"))
+          api_path = Path(sys.argv[1])
+          portal_path = Path(sys.argv[2])
+          schedule_path = Path(sys.argv[3])
+          owl_path = Path(sys.argv[4])
 
+          data = json.loads(api_path.read_text(encoding="utf-8"))
           if not isinstance(data, dict):
               raise SystemExit("Portal API response is not a JSON object")
 
           programs = data.get("programs")
+          schedules = data.get("schedules")
+          owl_files = data.get("owlFiles")
+          current_alert = data.get("currentAlert")
+
           if not isinstance(programs, list) or not programs:
               raise SystemExit("Portal API response has no non-empty programs array")
+          if not isinstance(schedules, list):
+              raise SystemExit("Portal API response has no schedules array")
+          if not isinstance(owl_files, list):
+              raise SystemExit("Portal API response has no owlFiles array")
+          if current_alert is not None and not isinstance(current_alert, dict):
+              raise SystemExit("Portal API currentAlert has invalid format")
 
-          path.write_text(
-              json.dumps(data, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8",
-          )
+          now = datetime.now(timezone.utc).isoformat()
+
+          def read_json(path):
+              if not path.exists():
+                  return None
+              try:
+                  return json.loads(path.read_text(encoding="utf-8"))
+              except (json.JSONDecodeError, OSError):
+                  return None
+
+          def write_json(path, payload):
+              path.write_text(
+                  json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+                  encoding="utf-8",
+              )
+
+          portal_payload = {
+              "programs": programs,
+              "schedules": schedules,
+              "owlFiles": owl_files,
+              "currentAlert": current_alert,
+          }
+          current_portal = read_json(portal_path)
+          current_portal_payload = None
+          if isinstance(current_portal, dict):
+              current_portal_payload = {
+                  "programs": current_portal.get("programs"),
+                  "schedules": current_portal.get("schedules"),
+                  "owlFiles": current_portal.get("owlFiles"),
+                  "currentAlert": current_portal.get("currentAlert"),
+              }
+          if current_portal_payload != portal_payload:
+              write_json(portal_path, {"generatedAt": now, **portal_payload})
+              print("portal-data.json updated")
+
+          current_schedule = read_json(schedule_path)
+          if not isinstance(current_schedule, dict) or current_schedule.get("schedules") != schedules:
+              write_json(schedule_path, {"generatedAt": now, "schedules": schedules})
+              print("schedule-data.json updated")
+
+          current_owl = read_json(owl_path)
+          if not isinstance(current_owl, dict) or current_owl.get("owlFiles") != owl_files:
+              write_json(owl_path, {"generatedAt": now, "owlFiles": owl_files})
+              print("owl-files.json updated")
           PY
 
-          mv "$tmp_file" portal-data.json
+          rm -f "$tmp_file"
 
-      - name: Commit only when data changed
+      - name: Commit only changed snapshots
         shell: bash
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- portal-data.json; then
-            echo "portal-data.json is already up to date"
+          if git diff --quiet -- portal-data.json schedule-data.json owl-files.json; then
+            echo "Public portal snapshots are already up to date"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add portal-data.json
-          git commit -m "data: refresh portal snapshot"
+          git add portal-data.json schedule-data.json owl-files.json
+          git commit -m "data: refresh public portal snapshots"
           git push
