@@ -912,6 +912,11 @@ function publicNewsFingerprint(items){
     }
 }
 
+function publicNewsSnapshotUrl(){
+    const minuteBucket = Math.floor(Date.now() / PUBLIC_NEWS_POLL_MS);
+    return './news-data.json?v=' + minuteBucket;
+}
+
 function applyPublicNewsItems(items, options){
     const opts = options || {};
     const freshItems = Array.isArray(items)
@@ -937,9 +942,7 @@ async function refreshPublicNewsSnapshot(options){
 
     publicNewsRefreshInFlight = (async () => {
         try {
-            const separator = './news-data.json'.includes('?') ? '&' : '?';
-            const url = './news-data.json' + separator + 'v=' + Date.now();
-            const response = await fetch(url, { cache:'no-store' });
+            const response = await fetch(publicNewsSnapshotUrl());
             if (!response.ok) throw new Error('Local news HTTP ' + response.status);
 
             const data = await response.json();
@@ -1025,7 +1028,7 @@ async function fetchNews(){
 
     // Первый визит: читаем маленький JSON с того же сайта.
     try {
-        const response = await fetch('./news-data.json?v=' + Date.now(), { cache:'no-store' });
+        const response = await fetch(publicNewsSnapshotUrl());
         if (!response.ok) throw new Error('Local news HTTP ' + response.status);
 
         const data = await response.json();
