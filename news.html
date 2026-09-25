@@ -937,16 +937,49 @@ function toggleFloatingVideoSize(shell){
     if (btn) btn.textContent = shell.classList.contains('is-large') ? '− Уменьшить' : '＋ Увеличить';
 }
 
+function openBackgroundPlayer(shell){
+    if (!shell) return;
+    const iframe = shell.querySelector('iframe');
+    const video = shell.querySelector('video');
+    const src = iframe ? iframe.src : (video ? (video.currentSrc || video.src) : '');
+    const type = iframe ? 'embed' : 'video';
+    if (!src){
+        toast('Не удалось определить ссылку на видео', 'error');
+        return;
+    }
+
+    const title = document.querySelector('.news-detail-title')?.textContent?.trim() || 'Видео Центра ДПО';
+    const url = 'media-player.html?src=' + encodeURIComponent(src)
+        + '&type=' + encodeURIComponent(type)
+        + '&title=' + encodeURIComponent(title);
+
+    const popup = window.open(
+        url,
+        'ranepaBackgroundPlayer',
+        'popup=yes,width=520,height=380,resizable=yes,scrollbars=no'
+    );
+
+    if (!popup){
+        toast('Браузер заблокировал отдельное окно. Включён мини-плеер внутри страницы.', 'warn');
+        floatVideo(shell);
+        return;
+    }
+
+    try { popup.focus(); } catch(e){}
+    toast('Фоновый плеер открыт. Теперь можно переходить по сайту.', 'ok');
+}
+
 function initFloatingVideoControls(root){
     root.querySelectorAll('.news-video-shell').forEach(shell => {
         shell.querySelector('[data-video-float]')?.addEventListener('click',()=>floatVideo(shell));
+        shell.querySelector('[data-video-background]')?.addEventListener('click',()=>openBackgroundPlayer(shell));
         shell.querySelector('[data-video-size]')?.addEventListener('click',()=>toggleFloatingVideoSize(shell));
         shell.querySelector('[data-video-return]')?.addEventListener('click',()=>restoreFloatingVideo());
     });
 }
 
 function videoShellHtml(innerHtml){
-    return `<div class="news-video-shell">${innerHtml}<div class="news-video-float-bar"><button type="button" class="news-video-float-btn" data-video-float>▣ Мини-плеер</button><button type="button" class="news-video-float-btn" data-video-size>＋ Увеличить</button><button type="button" class="news-video-float-btn" data-video-return>↙ Вернуть в статью</button></div></div>`;
+    return `<div class="news-video-shell">${innerHtml}<div class="news-video-float-bar"><button type="button" class="news-video-float-btn" data-video-background>↗ Фоновый режим</button><button type="button" class="news-video-float-btn" data-video-float>▣ Мини-плеер</button><button type="button" class="news-video-float-btn" data-video-size>＋ Увеличить</button><button type="button" class="news-video-float-btn" data-video-return>↙ Вернуть в статью</button></div></div>`;
 }
 
 function openDetail(id){
