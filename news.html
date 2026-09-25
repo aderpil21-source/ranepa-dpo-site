@@ -871,7 +871,8 @@ function exportBackup(){
 /* ============================================================================
    БЛОК 10. СПИСОК И ДЕТАЛЬНАЯ СТРАНИЦА
    ============================================================================ */
-const PUBLIC_NEWS_POLL_MS = 60 * 1000;
+const PUBLIC_NEWS_POLL_MS = 30 * 1000;
+const PUBLIC_NEWS_LIVE_URL = 'https://ranepa-dpo-site.vercel.app/api/news-live';
 let publicNewsPollTimer = null;
 let publicNewsRefreshInFlight = null;
 
@@ -918,17 +919,19 @@ async function refreshPublicNewsSnapshot(options){
 
     publicNewsRefreshInFlight = (async () => {
         try {
-            const response = await fetch(publicNewsSnapshotUrl());
-            if (!response.ok) throw new Error('Local news HTTP ' + response.status);
+            const response = await fetch(PUBLIC_NEWS_LIVE_URL, { mode:'cors' });
+            if (!response.ok) throw new Error('Live news HTTP ' + response.status);
 
             const data = await response.json();
             if (!data || !Array.isArray(data.items)) {
-                throw new Error('Local news snapshot has invalid format');
+                throw new Error('Live news feed has invalid format');
             }
 
             return applyPublicNewsItems(data.items, { openHash: !!opts.openHash });
-        } catch(e){
-            if (!opts.silent) console.warn('Не удалось обновить локальный снимок новостей:', e);
+        } catch(liveError){
+            // Live-канал — источник свежести, но его сбой не должен ломать страницу.
+            // Последний статический снимок уже показан пользователю.
+            if (!opts.silent) console.warn('Live-обновление новостей недоступно:', liveError);
             return false;
         } finally {
             publicNewsRefreshInFlight = null;
@@ -996,7 +999,7 @@ async function fetchNews(){
         renderGrid();
         openHashNewsIfPresent();
 
-        // Проверяем только статический JSON, Apps Script посетитель не опрашивает.
+        // Сразу после мгновенного рендера проверяем свежий CDN-feed; Apps Script посетитель не опрашивает.
         refreshPublicNewsSnapshot({ silent:true });
         startPublicNewsPolling();
         return;
@@ -1013,6 +1016,7 @@ async function fetchNews(){
         }
 
         applyPublicNewsItems(data.items, { openHash:true, forceRender:true });
+        refreshPublicNewsSnapshot({ silent:true });
         startPublicNewsPolling();
         return;
     } catch(localError){
