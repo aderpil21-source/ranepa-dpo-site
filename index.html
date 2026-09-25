@@ -556,45 +556,102 @@
             .scroll-nav-btn { width: 40px; height: 40px; }
         }
 
-        /* ===== СТИЛИ ДЛЯ РАСПИСАНИЯ (ТАЙМЛАЙН) ===== */
+        /* ===== РАСПИСАНИЕ: БЫСТРОЕ И ПОНЯТНОЕ ===== */
         .schedule-overlay {
-            /* Выше срочного тикера (10045), но ниже основного header (10050):
-               при открытом расписании тикер не перекрывает заголовок и кнопку закрытия. */
+            /* Выше срочного тикера (10045), но ниже основного header (10050). */
             position: fixed; inset: var(--header-h) 0 0 0; z-index: 10047;
-            background: var(--bg-deep); backdrop-filter: blur(15px);
-            display: none; overflow-y: auto; padding: 40px 20px 80px 20px;
-            opacity: 0; transition: opacity 0.3s ease;
+            background: var(--bg-deep);
+            display: none; overflow-y: auto;
+            padding: 28px 20px max(70px, env(safe-area-inset-bottom));
+            opacity: 0; transition: opacity 0.18s ease;
+            overscroll-behavior: contain;
         }
         .schedule-overlay.active { display: block; opacity: 1; }
-        .schedule-container { max-width: 800px; margin: 0 auto; position: relative; }
-        .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .schedule-title { font-size: 2.2rem; color: var(--text-main); font-weight: 900; }
-        .schedule-title span { color: #38bdf8; }
-        .close-sch-btn { 
-            background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); width: 40px; height: 40px; 
-            border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: 0.2s; 
+        .schedule-container { max-width: 900px; margin: 0 auto; position: relative; }
+        .schedule-header {
+            position: sticky; top: 0; z-index: 3;
+            display: flex; justify-content: space-between; align-items: center; gap: 16px;
+            margin-bottom: 14px; padding: 8px 0 14px;
+            background: linear-gradient(to bottom, var(--bg-deep) 78%, transparent);
         }
-        .close-sch-btn:hover { background: #CA0F3E; color: #fff; transform: rotate(90deg); }
-
-        .timeline { position: relative; border-left: 3px solid rgba(56, 189, 248, 0.3); margin-left: 20px; padding-left: 30px; }
-        .timeline-item { margin-bottom: 40px; position: relative; }
-        .timeline-dot { position: absolute; left: -39px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: #38bdf8; border: 4px solid var(--bg-deep); box-shadow: 0 0 10px #38bdf8; }
-        .timeline-date { font-weight: 900; color: var(--text-main); font-size: 1.3rem; margin-bottom: 15px; letter-spacing: 1px; }
-
-        .timeline-card { 
-            background: var(--bg-card); border: 1px solid var(--border-glass); 
-            border-radius: 15px; padding: 25px; margin-bottom: 15px; 
-            box-shadow: 0 10px 30px var(--shadow-color); transition: transform 0.2s, border-color 0.2s; 
+        .schedule-title { font-size: clamp(1.65rem, 4vw, 2.25rem); color: var(--text-main); font-weight: 900; line-height: 1.1; }
+        .schedule-title span:last-child { color: #38bdf8; }
+        .schedule-meta {
+            color: var(--text-muted); font-size: 0.88rem; line-height: 1.5;
+            margin: 0 0 24px; padding: 12px 14px;
+            border: 1px solid var(--border-glass); border-radius: 12px;
+            background: var(--bg-card);
         }
-        .timeline-card:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.5); }
+        .close-sch-btn {
+            flex: 0 0 auto; background: var(--btn-glass); border: 1px solid var(--border-glass);
+            color: var(--text-main); width: 44px; height: 44px; border-radius: 50%;
+            font-size: 1.45rem; cursor: pointer;
+            transition: background 0.18s ease, border-color 0.18s ease;
+            touch-action: manipulation;
+        }
+        .close-sch-btn:hover { background: #CA0F3E; border-color: #CA0F3E; color: #fff; }
 
-        .sch-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
-        .sch-program { background: rgba(202, 15, 62, 0.15); color: var(--ranepa-red); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
-        .sch-time { color: #38bdf8; font-weight: 900; font-size: 1.1rem; background: rgba(56, 189, 248, 0.1); padding: 5px 12px; border-radius: 8px; }
+        .timeline { margin: 0; padding: 0; }
+        .timeline-item { margin-bottom: 28px; }
+        .timeline-date {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            font-weight: 900; color: var(--text-main); font-size: 1.18rem;
+            margin-bottom: 12px;
+        }
+        .schedule-day-badge {
+            display: inline-flex; align-items: center;
+            padding: 4px 9px; border-radius: 999px;
+            background: rgba(56, 189, 248, 0.12); color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            font-size: 0.72rem; font-weight: 900; text-transform: uppercase; letter-spacing: .04em;
+        }
+        .schedule-day-badge.today {
+            background: rgba(202, 15, 62, 0.14); color: #fb7185;
+            border-color: rgba(251, 113, 133, 0.28);
+        }
+        .timeline-card {
+            background: var(--bg-card); border: 1px solid var(--border-glass);
+            border-radius: 15px; padding: 20px; margin-bottom: 10px;
+            box-shadow: 0 8px 22px var(--shadow-color);
+            transition: border-color 0.18s ease, transform 0.18s ease;
+            contain: content;
+        }
+        @media (hover:hover) and (pointer:fine) {
+            .timeline-card:hover { transform: translateY(-2px); border-color: rgba(56, 189, 248, 0.45); }
+        }
+        .sch-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 11px; flex-wrap: wrap; gap: 10px; }
+        .sch-program {
+            background: rgba(202, 15, 62, 0.13); color: #fb7185;
+            padding: 5px 10px; border-radius: 8px; font-size: 0.76rem;
+            font-weight: 800; text-transform: uppercase;
+        }
+        .sch-time {
+            color: #38bdf8; font-weight: 900; font-size: 1rem;
+            background: rgba(56, 189, 248, 0.10); padding: 5px 10px; border-radius: 8px;
+        }
+        .sch-subject { font-size: 1.08rem; color: var(--text-main); margin-bottom: 13px; font-weight: 750; line-height: 1.45; }
+        .sch-bottom { display: flex; gap: 16px; font-size: 0.88rem; color: var(--text-muted); flex-wrap: wrap; }
+        .sch-bottom span { display: inline-flex; align-items: center; gap: 6px; }
+        .schedule-state {
+            text-align: center; color: var(--text-muted);
+            padding: 48px 16px; font-size: 1rem; line-height: 1.6;
+        }
 
-        .sch-subject { font-size: 1.2rem; color: var(--text-main); margin-bottom: 15px; font-weight: 700; line-height: 1.4; }
-        .sch-bottom { display: flex; gap: 20px; font-size: 0.9rem; color: var(--text-muted); flex-wrap: wrap; }
-        .sch-bottom span { display: flex; align-items: center; gap: 6px; }
+        @media (max-width: 768px) {
+            .schedule-overlay { padding: 18px 12px max(54px, env(safe-area-inset-bottom)); }
+            .schedule-header { margin-bottom: 8px; padding-top: 4px; }
+            .schedule-meta { font-size: 0.8rem; margin-bottom: 18px; }
+            .timeline-item { margin-bottom: 22px; }
+            .timeline-card { padding: 15px; border-radius: 13px; }
+            .sch-top { display: grid; grid-template-columns: 1fr; gap: 8px; }
+            .sch-program, .sch-time { width: fit-content; max-width: 100%; }
+            .sch-subject { font-size: 1rem; }
+            .sch-bottom { flex-direction: column; gap: 7px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .schedule-overlay, .timeline-card, .close-sch-btn { transition: none !important; }
+        }
 
 
        #mediaLightbox { 
@@ -1153,9 +1210,10 @@
     <div class="schedule-overlay" id="scheduleOverlay">
         <div class="schedule-container">
             <div class="schedule-header">
-                <h2 class="schedule-title"><span data-i18n="schTitleMain">Лента</span> <span data-i18n="schTitleSub">Занятий</span></h2>
-                <button class="close-sch-btn" onclick="closeSchedule()">✕</button>
+                <h2 class="schedule-title"><span data-i18n="schTitleMain">Расписание</span> <span data-i18n="schTitleSub">занятий</span></h2>
+                <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание">✕</button>
             </div>
+            <div class="schedule-meta" id="scheduleMeta">Показываем только актуальные занятия. День автоматически скрывается после 21:00 по калининградскому времени.</div>
             <div class="timeline" id="scheduleTimeline">
                 <!-- Сюда скрипт вставит карточки -->
             </div>
@@ -1398,6 +1456,25 @@
     let currentLang = 'ru';
     let globalAlert = null;
     let leavingSiteTargetUrl = '';
+    let portalDataPromise = null;
+    let scheduleDataLoaded = false;
+    let scheduleRefreshTimer = null;
+
+    function loadPortalData() {
+        if (!portalDataPromise) {
+            portalDataPromise = fetch(API_URL)
+                .then(response => {
+                    if (!response.ok) throw new Error('API HTTP ' + response.status);
+                    return response.json();
+                })
+                .catch(error => {
+                    // После ошибки разрешаем следующему открытию расписания повторить запрос.
+                    portalDataPromise = null;
+                    throw error;
+                });
+        }
+        return portalDataPromise;
+    }
 
     const SECTOR_NAMES = {
         'gos': { ru: '🏛️ Госсектор, закупки и право', en: '🏛️ Public Sector, Procurement & Law' },
@@ -1522,8 +1599,8 @@
             owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.",
             owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся.",
             goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?",
-            schTitleMain: "Лента", schTitleSub: "Занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
-            schLoading: "Загружаем расписание... ⏳", schEmpty: "Расписание пока формируется... Загляните позже! 🦉",
+            schTitleMain: "Расписание", schTitleSub: "занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
+            schLoading: "Загружаем расписание…", schEmpty: "Ближайших занятий пока нет.", schError: "Не удалось загрузить расписание. Закройте окно и попробуйте открыть его ещё раз.",
             cookieConsentText: "Данный сайт использует файлы Cookie в порядке и целях, указанных по <a href=\"https://www.ranepa.ru/politika-obrabotki-faylov-cookies/\" target=\"_blank\" rel=\"noopener\">ссылке</a>.",
             cookieConsentBtn: "Согласен",
             consentCheckboxText: "Даю согласие на обработку персональных данных <span style=\"color: var(--ranepa-red);\">*</span>",
@@ -1567,8 +1644,8 @@
             owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog? You can also enter a lecture code to get materials.",
             owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon.",
             goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?",
-            schTitleMain: "Class", schTitleSub: "Schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
-            schLoading: "Loading schedule... ⏳", schEmpty: "Schedule is currently being compiled... Check back later! 🦉",
+            schTitleMain: "Class", schTitleSub: "schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
+            schLoading: "Loading schedule…", schEmpty: "There are no upcoming classes yet.", schError: "Could not load the schedule. Close this window and try opening it again.",
             cookieConsentText: "This website uses Cookie files in the manner and for the purposes specified via the <a href=\"https://www.ranepa.ru/politika-obrabotki-faylov-cookies/\" target=\"_blank\" rel=\"noopener\">link</a>.",
             cookieConsentBtn: "Accept",
             consentCheckboxText: "I consent to the processing of personal data <span style=\"color: var(--ranepa-red);\">*</span>",
@@ -1680,14 +1757,14 @@
 
     async function fetchPrograms() {
         try {
-            const response = await fetch(API_URL);
-            const data = await response.json();
+            const data = await loadPortalData();
             
             if (data.owlFiles) {
                 globalOwlFiles = data.owlFiles;
             }
-            if (data.schedules) {
+            if (Array.isArray(data.schedules)) {
                 window.schedules = data.schedules;
+                scheduleDataLoaded = true;
             }
 
             const tickerEl = document.getElementById('globalAlertTicker');
@@ -2482,71 +2559,243 @@ if (wantsNewsEditor || wantsStaffPortal) {
         });
     }
 
-    async function showSchedule() {
-        const overlay = document.getElementById('scheduleOverlay');
-        const container = document.getElementById('scheduleTimeline');
-        
-        const newsOverlay = document.getElementById('newsOverlay');
-if (newsOverlay) {
-    newsOverlay.classList.remove('active');
-}
-        overlay.classList.add('active');
+    const SCHEDULE_TIME_ZONE = 'Europe/Kaliningrad';
+    const SCHEDULE_CUTOFF_HOUR = 21;
 
-        if (!window.schedules || window.schedules.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top: 50px; font-size: 1.2rem;">${translationsHTML[currentLang].schLoading}</div>`;
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                if (data.schedules) {
-                    window.schedules = data.schedules;
-                }
-            } catch (e) {
-                console.error("Ошибка загрузки расписания", e);
-            }
+    function getKaliningradParts(date = new Date()) {
+        const formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: SCHEDULE_TIME_ZONE,
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', second: '2-digit',
+            hourCycle: 'h23'
+        });
+        const out = {};
+        formatter.formatToParts(date).forEach(part => {
+            if (part.type !== 'literal') out[part.type] = Number(part.value);
+        });
+        return out;
+    }
+
+    function parseScheduleDate(value) {
+        const match = String(value || '').trim().match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+        if (!match) return null;
+        const day = Number(match[1]);
+        const month = Number(match[2]);
+        const year = Number(match[3]);
+        const check = new Date(Date.UTC(year, month - 1, day));
+        if (
+            check.getUTCFullYear() !== year ||
+            check.getUTCMonth() !== month - 1 ||
+            check.getUTCDate() !== day
+        ) return null;
+        return {
+            year, month, day,
+            key: year * 10000 + month * 100 + day,
+            iso: year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0')
+        };
+    }
+
+    function getScheduleTimeMinutes(value) {
+        const match = String(value || '').match(/(\d{1,2}):(\d{2})/);
+        if (!match) return Number.MAX_SAFE_INTEGER;
+        return Number(match[1]) * 60 + Number(match[2]);
+    }
+
+    function getScheduleDayLabel(parsed, nowParts) {
+        if (!parsed) return currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed';
+        const todayKey = nowParts.year * 10000 + nowParts.month * 100 + nowParts.day;
+        if (parsed.key === todayKey) return currentLang === 'ru' ? 'Сегодня' : 'Today';
+
+        const todayUtc = Date.UTC(nowParts.year, nowParts.month - 1, nowParts.day);
+        const tomorrow = new Date(todayUtc + 86400000);
+        const tomorrowKey =
+            tomorrow.getUTCFullYear() * 10000 +
+            (tomorrow.getUTCMonth() + 1) * 100 +
+            tomorrow.getUTCDate();
+
+        if (parsed.key === tomorrowKey) return currentLang === 'ru' ? 'Завтра' : 'Tomorrow';
+        return '';
+    }
+
+    function getVisibleSchedules(items) {
+        const now = getKaliningradParts();
+        const todayKey = now.year * 10000 + now.month * 100 + now.day;
+        const beforeCutoff = now.hour < SCHEDULE_CUTOFF_HOUR;
+
+        return (Array.isArray(items) ? items : [])
+            .map(item => ({ item, parsed: parseScheduleDate(item && item.date) }))
+            .filter(entry => {
+                // Некорректную дату не прячем молча: покажем её в конце как "Дата уточняется".
+                if (!entry.parsed) return true;
+                if (entry.parsed.key > todayKey) return true;
+                if (entry.parsed.key < todayKey) return false;
+                return beforeCutoff;
+            })
+            .sort((a, b) => {
+                const aDate = a.parsed ? a.parsed.key : Number.MAX_SAFE_INTEGER;
+                const bDate = b.parsed ? b.parsed.key : Number.MAX_SAFE_INTEGER;
+                if (aDate !== bDate) return aDate - bDate;
+                return getScheduleTimeMinutes(a.item.time) - getScheduleTimeMinutes(b.item.time);
+            });
+    }
+
+    function makeScheduleState(message) {
+        const el = document.createElement('div');
+        el.className = 'schedule-state';
+        el.textContent = message;
+        return el;
+    }
+
+    function renderSchedule() {
+        const container = document.getElementById('scheduleTimeline');
+        const meta = document.getElementById('scheduleMeta');
+        if (!container) return;
+
+        const now = getKaliningradParts();
+        if (meta) {
+            meta.textContent = currentLang === 'ru'
+                ? 'Показываем только актуальные занятия. Текущий день автоматически скрывается в 21:00 по калининградскому времени.'
+                : 'Only upcoming classes are shown. The current day is automatically hidden at 21:00 Kaliningrad time.';
         }
 
-        if (!window.schedules || window.schedules.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top: 50px; font-size: 1.2rem;">${translationsHTML[currentLang].schEmpty}</div>`;
+        const visible = getVisibleSchedules(window.schedules);
+        container.replaceChildren();
+
+        if (!visible.length) {
+            container.appendChild(makeScheduleState(translationsHTML[currentLang].schEmpty));
             return;
         }
 
-        const grouped = {};
-        window.schedules.forEach(s => {
-            if (!grouped[s.date]) grouped[s.date] = [];
-            grouped[s.date].push(s);
+        const groups = new Map();
+        visible.forEach(entry => {
+            const groupKey = entry.parsed ? entry.parsed.iso : 'unknown';
+            if (!groups.has(groupKey)) groups.set(groupKey, []);
+            groups.get(groupKey).push(entry);
         });
 
-        let html = '';
-        for (const [date, lessons] of Object.entries(grouped)) {
-            html += `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-date">🗓️ ${date}</div>`;
-            
-            lessons.forEach(l => {
-                html += `
-                <div class="timeline-card">
-                    <div class="sch-top">
-                        <div class="sch-program">${l.program}</div>
-                        <div class="sch-time">⏰ ${l.time}</div>
-                    </div>
-                    <div class="sch-subject">${l.subject}</div>
-                    <div class="sch-bottom">
-                        <span>👨‍🏫 <b>${l.teacher}</b></span>
-                        <span>📍 ${l.room}</span>
-                    </div>
-                </div>`;
+        const fragment = document.createDocumentFragment();
+
+        groups.forEach(entries => {
+            const first = entries[0];
+            const dayBlock = document.createElement('section');
+            dayBlock.className = 'timeline-item';
+
+            const dateRow = document.createElement('div');
+            dateRow.className = 'timeline-date';
+
+            const dateText = document.createElement('span');
+            dateText.textContent = '🗓️ ' + String(first.item.date || (currentLang === 'ru' ? 'Дата уточняется' : 'Date to be confirmed'));
+            dateRow.appendChild(dateText);
+
+            const dayLabel = getScheduleDayLabel(first.parsed, now);
+            if (dayLabel) {
+                const badge = document.createElement('span');
+                badge.className = 'schedule-day-badge' + (dayLabel === 'Сегодня' || dayLabel === 'Today' ? ' today' : '');
+                badge.textContent = dayLabel;
+                dateRow.appendChild(badge);
+            }
+
+            dayBlock.appendChild(dateRow);
+
+            entries.forEach(({ item }) => {
+                const card = document.createElement('article');
+                card.className = 'timeline-card';
+
+                const top = document.createElement('div');
+                top.className = 'sch-top';
+
+                const program = document.createElement('div');
+                program.className = 'sch-program';
+                program.textContent = String(item.program || (currentLang === 'ru' ? 'Программа уточняется' : 'Program to be confirmed'));
+
+                const time = document.createElement('div');
+                time.className = 'sch-time';
+                time.textContent = '⏰ ' + String(item.time || '—');
+
+                top.append(program, time);
+
+                const subject = document.createElement('div');
+                subject.className = 'sch-subject';
+                subject.textContent = String(item.subject || (currentLang === 'ru' ? 'Тема занятия уточняется' : 'Class topic to be confirmed'));
+
+                const bottom = document.createElement('div');
+                bottom.className = 'sch-bottom';
+
+                const teacher = document.createElement('span');
+                teacher.textContent = '👨‍🏫 ' + String(item.teacher || '—');
+
+                const room = document.createElement('span');
+                room.textContent = '📍 ' + String(item.room || '—');
+
+                bottom.append(teacher, room);
+                card.append(top, subject, bottom);
+                dayBlock.appendChild(card);
             });
-            html += `</div>`;
+
+            fragment.appendChild(dayBlock);
+        });
+
+        container.appendChild(fragment);
+    }
+
+    function scheduleNextCutoffRefresh() {
+        if (scheduleRefreshTimer) clearTimeout(scheduleRefreshTimer);
+
+        const now = getKaliningradParts();
+        const secondsNow = now.hour * 3600 + now.minute * 60 + now.second;
+        const cutoffSeconds = SCHEDULE_CUTOFF_HOUR * 3600;
+
+        // Калининград живёт по UTC+2 без сезонного перевода часов.
+        // Ставим один таймер ровно на ближайшие 21:00 вместо постоянного polling.
+        const secondsUntilCutoff = secondsNow < cutoffSeconds
+            ? cutoffSeconds - secondsNow
+            : (24 * 3600 - secondsNow) + cutoffSeconds;
+
+        scheduleRefreshTimer = setTimeout(() => {
+            const overlay = document.getElementById('scheduleOverlay');
+            if (overlay && overlay.classList.contains('active')) {
+                renderSchedule();
+                scheduleNextCutoffRefresh();
+            }
+        }, Math.max(1000, secondsUntilCutoff * 1000 + 250));
+    }
+
+    async function showSchedule() {
+        const overlay = document.getElementById('scheduleOverlay');
+        const container = document.getElementById('scheduleTimeline');
+        if (!overlay || !container) return;
+
+        overlay.classList.add('active');
+
+        // Если расписание уже приехало вместе с программами — открываем мгновенно, без второго fetch.
+        if (scheduleDataLoaded) {
+            renderSchedule();
+            scheduleNextCutoffRefresh();
+            return;
         }
 
-        container.innerHTML = html;
+        container.replaceChildren(makeScheduleState(translationsHTML[currentLang].schLoading));
+
+        try {
+            const data = await loadPortalData();
+            window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
+            scheduleDataLoaded = true;
+            renderSchedule();
+            scheduleNextCutoffRefresh();
+        } catch (error) {
+            console.error('Ошибка загрузки расписания', error);
+            container.replaceChildren(makeScheduleState(translationsHTML[currentLang].schError));
+        }
     }
 
     function closeSchedule() {
-        document.getElementById('scheduleOverlay').classList.remove('active');
+        const overlay = document.getElementById('scheduleOverlay');
+        if (overlay) overlay.classList.remove('active');
+        if (scheduleRefreshTimer) {
+            clearTimeout(scheduleRefreshTimer);
+            scheduleRefreshTimer = null;
+        }
     }
-
 
     function openDocLightbox(imgUrl, title) {
     const box = document.getElementById('lightboxContent');
