@@ -429,20 +429,10 @@ def get_news_lead(news):
 
 
 def get_news_url(news):
-    news_id = get_news_id(news)
-
-    value = (
-        news.get("url")
-        or news.get("link")
-        or news.get("href")
-    )
-
-    value = safe_text(value)
-
-    if value:
-        return value
-
-    return f"https://ranepa-dpo39.ru/news.html?id={news_id}"
+    # Всегда ведём читателя в общий раздел новостей.
+    # Так ссылка стабильна и посетитель видит не только одну публикацию,
+    # но и остальные материалы Центра ДПО.
+    return "https://ranepa-dpo39.ru/news.html"
 
 
 # =========================
@@ -495,14 +485,10 @@ def publish_to_vk(news):
             else:
                 media_status = "skipped"
         except Exception as error:
-            media_status = "preview"
+            media_status = "failed"
             media_error = safe_text(error)
             print(f"Не удалось загрузить фото в VK: {error}")
-            print("Пробуем бесплатную карточку-ссылку с обложкой.")
-            params["attachments"] = (
-                "https://ranepa-dpo-site.vercel.app/api/share-news?id="
-                + news_id
-            )
+            print("Публикуем пост без вложения; ссылка на раздел новостей уже есть в тексте.")
 
     print(f"Публикуем в VK: {title}")
 
