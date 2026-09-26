@@ -444,44 +444,42 @@
             overflow: visible;
             pointer-events: none;
         }
-        .owl-video {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-            opacity: 0;
-            transition: opacity .28s ease;
-            pointer-events: none;
-            filter: drop-shadow(0 18px 22px rgba(0,0,0,.58));
-        }
+        .owl-animated,
         .owl-poster {
             position: absolute;
             left: 50%;
             bottom: 0;
-            width: 164px;
-            height: 224px;
             object-fit: contain;
             transform: translateX(-50%);
-            opacity: 1;
-            transition: opacity .28s ease;
             pointer-events: none;
             user-select: none;
             -webkit-user-drag: none;
             filter:
-                drop-shadow(0 18px 20px rgba(0,0,0,.64))
-                drop-shadow(0 3px 3px rgba(0,0,0,.38));
+                drop-shadow(0 18px 20px rgba(0,0,0,.62))
+                drop-shadow(0 3px 3px rgba(0,0,0,.36));
         }
-        .owl-media-video-ready .owl-video { opacity: 1; }
-        .owl-media-video-ready .owl-poster { opacity: 0; }
-        .owl-media-static .owl-video,
-        .owl-media-failed .owl-video { display: none; }
+        .owl-animated {
+            width: 287px;
+            height: 500px;
+            max-height: 260px;
+            opacity: 0;
+            transition: opacity .28s ease;
+        }
+        .owl-poster {
+            width: 164px;
+            height: 224px;
+            opacity: 1;
+            transition: opacity .28s ease;
+        }
+        .owl-media-animated-ready .owl-animated { opacity: 1; }
+        .owl-media-animated-ready .owl-poster { opacity: 0; }
+        .owl-media-static .owl-animated,
+        .owl-media-failed .owl-animated { display: none; }
         .owl-media-static .owl-poster,
         .owl-media-failed .owl-poster { opacity: 1; }
 
         @media (prefers-reduced-motion: reduce) {
-            .owl-video { display: none !important; }
+            .owl-animated { display: none !important; }
             .owl-poster { opacity: 1 !important; }
         }
 
@@ -1650,15 +1648,15 @@
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
 
             <div class="owl-media-stage" id="owlMediaStage" aria-hidden="true">
-                <video
-                    class="owl-video"
-                    id="owlVideo"
-                    muted
-                    loop
-                    playsinline
-                    preload="metadata"
-                    disablepictureinpicture
-                ></video>
+                <img
+                    class="owl-animated"
+                    id="owlAnimated"
+                    src="./img/owl-main.webp"
+                    alt=""
+                    draggable="false"
+                    decoding="async"
+                    fetchpriority="low"
+                >
                 <img
                     class="owl-poster"
                     id="owlPoster"
@@ -3681,8 +3679,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     function playHoot() {}
 
     const OWL_MEDIA = {
-        full: './img/owl-main.webm',
-        lite: './img/owl-main-lite.webm'
+        animated: './img/owl-main.webp'
     };
     let owlMediaMode = 'static';
 
@@ -3695,61 +3692,37 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
         const memory = Number(navigator.deviceMemory || 0);
         const cores = Number(navigator.hardwareConcurrency || 0);
-        if ((memory && memory <= 4) || (cores && cores <= 4)) return 'lite';
-        return 'full';
-    }
-
-    function setOwlPlaybackRate(rate) {
-        const video = document.getElementById('owlVideo');
-        if (!video || video.readyState < 2) return;
-        try { video.playbackRate = rate; } catch (e) {}
+        if ((memory && memory <= 2) || (cores && cores <= 2)) return 'static';
+        return 'animated';
     }
 
     function initOwlMedia() {
         const container = document.getElementById('owlContainer');
-        const video = document.getElementById('owlVideo');
-        if (!container || !video) return;
+        const animated = document.getElementById('owlAnimated');
+        if (!container || !animated) return;
 
         owlMediaMode = detectOwlMediaMode();
-        container.classList.remove('owl-media-video-ready', 'owl-media-failed', 'owl-media-static');
+        container.classList.remove('owl-media-animated-ready', 'owl-media-failed', 'owl-media-static');
 
         if (owlMediaMode === 'static') {
             container.classList.add('owl-media-static');
             return;
         }
 
-        video.src = OWL_MEDIA[owlMediaMode];
-        video.defaultPlaybackRate = 0.9;
-
-        const revealVideo = () => {
+        const revealAnimated = () => {
             container.classList.remove('owl-media-failed', 'owl-media-static');
-            container.classList.add('owl-media-video-ready');
-            setOwlPlaybackRate(0.9);
-            const playPromise = video.play();
-            if (playPromise && typeof playPromise.catch === 'function') {
-                playPromise.catch(() => {
-                    container.classList.remove('owl-media-video-ready');
-                    container.classList.add('owl-media-failed');
-                });
-            }
+            container.classList.add('owl-media-animated-ready');
         };
 
-        video.addEventListener('canplay', revealVideo, { once: true });
-        video.addEventListener('error', () => {
-            container.classList.remove('owl-media-video-ready');
-            container.classList.add('owl-media-failed');
-        }, { once: true });
-
-        video.load();
-
-        document.addEventListener('visibilitychange', () => {
-            if (owlMediaMode === 'static') return;
-            if (document.visibilityState === 'hidden') {
-                video.pause();
-            } else if (container.classList.contains('owl-media-video-ready')) {
-                video.play().catch(() => {});
-            }
-        });
+        if (animated.complete && animated.naturalWidth > 0) {
+            revealAnimated();
+        } else {
+            animated.addEventListener('load', revealAnimated, { once: true });
+            animated.addEventListener('error', () => {
+                container.classList.remove('owl-media-animated-ready');
+                container.classList.add('owl-media-failed');
+            }, { once: true });
+        }
     }
 
     let scrollMiniTimeout;
