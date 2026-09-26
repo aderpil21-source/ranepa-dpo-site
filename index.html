@@ -2006,6 +2006,7 @@
             'Очно-заочная с применением ЭО и ДОТ': 'Blended, with e-learning and distance learning technologies',
             'Очно-заочная (с применением ЭО и ДОТ)': 'Blended, with e-learning and distance learning technologies',
             'Очно с применением ДОТ': 'In-person, with distance learning technologies',
+            'Уточняется': 'To be confirmed',
             'По мере формирования групп': 'As groups are formed',
             '1 месяц': '1 month',
             '1,5 месяца': '1.5 months',
@@ -2207,7 +2208,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
             let cardHTML = `
             <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
-                <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
+                <div class="card-meta"><span class="price program-meta-value" data-meta-value="${encodeURIComponent(prog.price)}">${translateProgramMeta(prog.price, currentLang)}</span><span class="hours program-meta-value" data-meta-value="${encodeURIComponent(prog.hours)}">${translateProgramMeta(prog.hours, currentLang)}</span></div>
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
                 <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
