@@ -214,15 +214,23 @@ function findProgram(data){
   return arr.find(p=>String(p.id||'')===programId&&truthyActive(p.active))||null;
 }
 async function loadSiteSettings(){
+  const bucket=Math.floor(Date.now()/(60*1000));
   try{
-    const data=await getJson(SITE_ADMIN_API+'?type=news&_sitecfg='+Date.now());
-    const items=data&&Array.isArray(data.items)?data.items:[];
-    const item=items.find(n=>n&&n.id===SITE_SETTINGS_ID);
-    if(!item) return {visibility:{},content:{}};
-    const parsed=JSON.parse(item.lead||'{}');
+    const local=await getJson('./site-settings.json?v='+bucket);
+    if(local&&local.settings&&typeof local.settings==='object'){
+      return {
+        visibility:local.settings.visibility&&typeof local.settings.visibility==='object'?local.settings.visibility:{},
+        content:local.settings.content&&typeof local.settings.content==='object'?local.settings.content:{}
+      };
+    }
+  }catch(e){}
+  try{
+    const data=await getJson(SITE_ADMIN_API+'?type=siteSettings&_sitecfg='+Date.now());
+    const settings=data&&data.ok&&data.settings&&typeof data.settings==='object'?data.settings:null;
+    if(!settings) return {visibility:{},content:{}};
     return {
-      visibility: parsed&&parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{},
-      content: parsed&&parsed.content&&typeof parsed.content==='object'?parsed.content:{}
+      visibility:settings.visibility&&typeof settings.visibility==='object'?settings.visibility:{},
+      content:settings.content&&typeof settings.content==='object'?settings.content:{}
     };
   }catch(e){
     return {visibility:{},content:{}};
@@ -236,14 +244,11 @@ function siteOverride(key){
 async function loadProgram(){
   const bucket=Math.floor(Date.now()/(5*60*1000));
   let local=null;
+  let portal=null;
   try{local=findProgram(await getJson('./program-data.json?v='+bucket));}catch(e){}
-  if(local&&hasDetailedData(local)) return local;
-  try{
-    const portal=findProgram(await getJson('./portal-data.json?v='+bucket));
-    if(portal&&hasDetailedData(portal)) return portal;
-    if(!local&&portal) local=portal;
-  }catch(e){}
-  return local;
+  try{portal=findProgram(await getJson('./portal-data.json?v='+bucket));}catch(e){}
+  if(local&&portal) return Object.assign({},local,portal);
+  return portal||local;
 }
 
 function metaValue(value,lang){
