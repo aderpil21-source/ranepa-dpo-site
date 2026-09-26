@@ -1958,6 +1958,10 @@
             programLoadError: "Не удалось загрузить программы. Пожалуйста, обновите страницу.", docsEmpty: "Документы пока не загружены.",
             staffNewsMsg: "🔒 <b>Редакция Центра ДПО</b><br><br>Это служебный раздел для сотрудников. Для продолжения потребуется подтверждение доступа.",
             staffPortalMsg: "🔒 <b>Служебный портал</b><br><br>Здесь сотрудники могут загружать и обновлять учебные планы.",
+            staffMenuMsg: "🔒 <b>Служебный вход Центра ДПО</b><br><br>Выберите рабочий раздел. Каждый раздел самостоятельно проверяет доступ.",
+            staffNewsBtn: "📰 Редактор новостей",
+            staffUploadBtn: "📚 Загрузка учебных программ",
+            staffProgramsBtn: "🗂️ Карточки программ",
             staffContinue: "🔐 Продолжить", staffBack: "⬅️ Вернуться в меню",
             owlMaterialsFound: "📚 Материалы по теме <b>«{title}»</b> успешно найдены!", owlMaterialsOpen: "👉 Скачать / открыть материалы лекции",
             owlTeacherComment: "💬 <b>Комментарий преподавателя:</b>", owlMaterialsUpdated: "🕒 Загружено / обновлено:",
@@ -2019,6 +2023,10 @@
             programLoadError: "Could not load the programs. Please refresh the page.", docsEmpty: "No documents have been uploaded yet.",
             staffNewsMsg: "🔒 <b>Center Editorial Workspace</b><br><br>This is a staff-only section. Access verification is required to continue.",
             staffPortalMsg: "🔒 <b>Staff Portal</b><br><br>Staff members can upload and update curriculum documents here.",
+            staffMenuMsg: "🔒 <b>Center Staff Access</b><br><br>Select a workspace. Each workspace verifies access independently.",
+            staffNewsBtn: "📰 News editor",
+            staffUploadBtn: "📚 Curriculum upload",
+            staffProgramsBtn: "🗂️ Program cards",
             staffContinue: "🔐 Continue", staffBack: "⬅️ Back to menu",
             owlMaterialsFound: "📚 Materials for <b>“{title}”</b> were found successfully!", owlMaterialsOpen: "👉 Download / open lecture materials",
             owlTeacherComment: "💬 <b>Instructor’s comment:</b>", owlMaterialsUpdated: "🕒 Uploaded / updated:",
@@ -2844,41 +2852,43 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
         // --- СКРЫТЫЙ СЛУЖЕБНЫЙ ВХОД ---
 const staffCommand = normalizeText(text);
-
-const wantsNewsEditor = [
+const wantsStaffAccess = [
+    'служебный вход',
+    'служебный портал',
     'режим редактора',
     'редактор',
     'добавить новость',
     'создать новость',
     'опубликовать новость',
     'новая новость',
-    'редакция'
-].some(cmd => staffCommand.includes(cmd));
-
-const wantsStaffPortal = [
-    'служебный вход',
-    'служебный портал',
+    'редакция',
     'загрузить учебный план',
-    'загрузка учебного плана'
+    'загрузка учебного плана',
+    'карточки программ',
+    'редактор программ'
 ].some(cmd => staffCommand.includes(cmd));
 
-if (wantsNewsEditor || wantsStaffPortal) {
+if (wantsStaffAccess) {
     setTimeout(() => {
-        const targetUrl = wantsNewsEditor
-            ? 'news.html?editor=1'
-            : API_URL + '?page=upload';
+        const uploadUrl = API_URL + '?page=upload';
 
-        addBotMsg(
-            wantsNewsEditor
-                ? translationsHTML[currentLang].staffNewsMsg
-                : translationsHTML[currentLang].staffPortalMsg
-        );
+        addBotMsg(translationsHTML[currentLang].staffMenuMsg);
 
         setOptions(`
             <button class="chat-opt-btn"
-                onclick="window.location.href='${targetUrl}'"
+                onclick="window.location.href='news.html?editor=1'"
                 style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">
-                ${translationsHTML[currentLang].staffContinue}
+                ${translationsHTML[currentLang].staffNewsBtn}
+            </button>
+            <button class="chat-opt-btn"
+                onclick="window.location.href='${uploadUrl}'"
+                style="background:linear-gradient(135deg,#1f4f46,#0f766e);color:#fff;border:none;text-align:center;">
+                ${translationsHTML[currentLang].staffUploadBtn}
+            </button>
+            <button class="chat-opt-btn"
+                onclick="window.location.href='program-admin.html'"
+                style="background:linear-gradient(135deg,#3b2f63,#7c3aed);color:#fff;border:none;text-align:center;">
+                ${translationsHTML[currentLang].staffProgramsBtn}
             </button>
             <button class="chat-opt-btn" onclick="resetMenu()">
                 ${translationsHTML[currentLang].staffBack}

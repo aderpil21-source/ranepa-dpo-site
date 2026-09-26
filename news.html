@@ -1294,6 +1294,13 @@ async function submitLogin(){
             sessionStorage.setItem('newsAdminToken', adminToken);
             $('newsAdminLoginModal').classList.remove('active');
             $('newsAdminPassInput').value = '';
+
+            const next = new URLSearchParams(location.search).get('next');
+            if (next === 'program-admin.html') {
+                location.href = 'program-admin.html';
+                return;
+            }
+
             $('newsAdminBar').style.display = 'flex';
             fetchNews();
             flushPendingUploads();
@@ -1563,10 +1570,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setOnline();
 
     const editorRequested = new URLSearchParams(window.location.search).get('editor') === '1';
+    const editorNext = new URLSearchParams(window.location.search).get('next');
 
-if (editorRequested && !adminToken) {
-    $('newsAdminLoginModal').classList.add('active');
-}
+    if (editorRequested && !adminToken) {
+        $('newsAdminLoginModal').classList.add('active');
+    } else if (editorRequested && adminToken && editorNext === 'program-admin.html') {
+        location.href = 'program-admin.html';
+        return;
+    }
     $('loginCancelBtn').onclick = () => $('newsAdminLoginModal').classList.remove('active');
     $('loginSubmitBtn').onclick = submitLogin;
     $('newsAdminPassInput').onkeydown = e => { if (e.key === 'Enter') submitLogin(); };
