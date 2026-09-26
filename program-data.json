@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:06:14.211Z",
+  "generatedAt": "2026-09-26T12:07:07.852Z",
   "programs": [
     {
       "id": "c14",
@@ -575,7 +575,7 @@
       "dates": "Срок обучения — 1 месяц; набор по мере формирования групп",
       "title_ru": "Бухгалтерский учет для малого бизнеса и ИП",
       "desc_ru": "Программа разработана для специалистов, желающих систематизировать знания в сфере бухгалтерского учета. Освоив курс, слушатели научатся применять упрощенные алгоритмы отчетности для ИП. Полученный практический опыт позволяет эффективно организовывать финансовую деятельность предприятий, повышая конкурентоспособность.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа помогает систематизировать знания по бухгалтерскому учёту применительно к задачам малого бизнеса и индивидуальных предпринимателей. В ходе обучения рассматриваются ведение бухгалтерского учёта, подготовка отчётности и использование баз данных в учётной работе.\n\nПрактическая направленность программы связана с применением упрощённых алгоритмов отчётности и организацией финансовой деятельности малого предприятия или индивидуального предпринимателя.",
       "bullets_ru": [
         "Ведение бухучета ИП",
         "Составление отчетности",
@@ -583,7 +583,7 @@
       ],
       "title_en": "Accounting for Small Business",
       "desc_en": "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness.",
-      "long_desc_en": "",
+      "long_desc_en": "The program helps participants systematise accounting knowledge for the practical needs of small businesses and individual entrepreneurs. It covers small business accounting, preparation of reports, and the use of databases in accounting work.\n\nThe practical focus is on applying simplified reporting procedures and organising the financial activities of a small business or an individual entrepreneur.",
       "bullets_en": [
         "Small business accounting",
         "Reporting preparation",
@@ -608,7 +608,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 24,000",
       "hours_en": "72 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -626,7 +626,7 @@
       "dates": "Срок обучения — 1 месяц; набор по мере формирования групп",
       "title_ru": "Бухгалтер государственных и муниципальных организаций",
       "desc_ru": "Программа направлена на формирование компетенций, необходимых для ведения учета в бюджетной сфере. Освоив курс, слушатели научатся составлять финансовую отчетность с использованием современных информационных систем. Полученный практический опыт позволяет эффективно организовывать финансовую деятельность государственных организаций, повышая профессиональную компетентность.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа направлена на развитие компетенций, необходимых для ведения бухгалтерского учёта в государственных и муниципальных организациях. Обучение охватывает бюджетный учёт, подготовку финансовой отчётности и использование современных информационных систем.\n\nПолученные знания помогают организовывать учётные и финансовые процессы в организациях бюджетной сферы и повышать профессиональную компетентность специалистов.",
       "bullets_ru": [
         "Бюджетный учет",
         "Финансовая отчетность",
@@ -634,7 +634,7 @@
       ],
       "title_en": "Accountant for State and Municipal Organizations",
       "desc_en": "The program is designed to build competencies necessary for accounting in the public sector. Students learn to prepare financial reporting using modern information systems. The acquired practical experience enables efficient financial management in state organizations, enhancing professional competence.",
-      "long_desc_en": "",
+      "long_desc_en": "The program develops the competencies required for accounting in state and municipal organisations. It covers public sector accounting, preparation of financial statements, and the use of modern information systems.\n\nThe knowledge gained helps participants organise accounting and financial processes in public sector organisations and strengthen their professional competence.",
       "bullets_en": [
         "Public sector accounting",
         "Financial reporting",
@@ -659,7 +659,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 24,000",
       "hours_en": "72 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -677,7 +677,7 @@
       "dates": "Срок обучения — 1 месяц; набор по мере формирования групп",
       "title_ru": "Управление экспортным потенциалом организации",
       "desc_ru": "Программа предназначена для руководителей и специалистов экспортно-ориентированных компаний малого и среднего бизнеса. Изучая основы ВЭД, слушатели осваивают выбор экспортных рынков и каналов сбыта. Полученные знания позволяют последовательно реализовывать экспортный потенциал компании, планируя эффективный выход на международные рынки.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для руководителей и специалистов экспортно ориентированных компаний малого и среднего бизнеса. В рамках обучения рассматриваются основы внешнеэкономической деятельности, экспортное предпринимательство, анализ рынков сбыта и международная логистика.\n\nСлушатели получают системное представление о выборе экспортных рынков и каналов сбыта и о последовательном развитии экспортного потенциала организации при выходе на международные рынки.",
       "bullets_ru": [
         "Экспортное предпринимательство",
         "Анализ рынков сбыта",
@@ -685,7 +685,7 @@
       ],
       "title_en": "Managing Organizational Export Potential",
       "desc_en": "The program is designed for executives and specialists of export-oriented small and medium-sized businesses. Studying the fundamentals of foreign economic activity, students master the selection of export markets and distribution channels. The acquired knowledge enables consistent realization of the company's export potential while planning effective entry into international markets.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for executives and specialists of export-oriented small and medium-sized businesses. It covers the fundamentals of foreign economic activity, export entrepreneurship, market analysis, and international logistics.\n\nParticipants develop a systematic understanding of how to select export markets and distribution channels and how to build an organisation's export potential when entering international markets.",
       "bullets_en": [
         "Export entrepreneurship",
         "Market analysis",
@@ -710,7 +710,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 24,000",
       "hours_en": "72 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -728,7 +728,7 @@
       "dates": "Срок обучения — 1,5 – 2 недели; набор по мере формирования групп",
       "title_ru": "Бухгалтерский учет для малого бизнеса и ИП",
       "desc_ru": "Программа разработана для специалистов, желающих систематизировать знания в сфере бухгалтерского учета. Освоив курс, слушатели научатся применять упрощенные алгоритмы отчетности для ИП. Полученный практический опыт позволяет эффективно организовывать финансовую деятельность предприятий, повышая конкурентоспособность.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа помогает систематизировать знания по бухгалтерскому учёту для малого бизнеса и индивидуальных предпринимателей в компактном формате повышения квалификации. В центре внимания — ведение учёта, подготовка отчётности и использование баз данных.\n\nПрактическая направленность связана с применением упрощённых алгоритмов отчётности и организацией финансовой деятельности малого предприятия или индивидуального предпринимателя.",
       "bullets_ru": [
         "Ведение бухучета ИП",
         "Составление отчетности",
@@ -736,7 +736,7 @@
       ],
       "title_en": "Accounting for Small Business",
       "desc_en": "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness.",
-      "long_desc_en": "",
+      "long_desc_en": "This advanced training program provides a compact format for systematising accounting knowledge for small businesses and individual entrepreneurs. It focuses on accounting procedures, preparation of reports, and the use of databases.\n\nThe practical component centres on simplified reporting procedures and the organisation of financial activities in a small business or individual entrepreneurial practice.",
       "bullets_en": [
         "Small business accounting",
         "Reporting preparation",
@@ -761,7 +761,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 13,500",
       "hours_en": "36 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -838,7 +838,7 @@
       "dates": "Срок обучения — 1,5 – 2 недели; набор по мере формирования групп",
       "title_ru": "Вопросы профилактики и противодействия коррупции",
       "desc_ru": "Программа повышения квалификации ориентирована на государственных служащих и руководителей учреждений. Изучая комплекс профилактических мероприятий, слушатели осваивают вопросы антикоррупционной экспертизы правовых актов. Полученные знания формируют устойчивое неприятие коррупционного поведения в профессиональной деятельности.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа повышения квалификации посвящена вопросам профилактики и противодействия коррупции в профессиональной деятельности государственных служащих и руководителей учреждений. В ходе обучения рассматриваются профилактические меры, антикоррупционная экспертиза правовых актов и правоприменительная практика.\n\nПрограмма помогает систематизировать подходы к предупреждению коррупционных правонарушений и формированию устойчивого неприятия коррупционного поведения в профессиональной среде.",
       "bullets_ru": [
         "Антикоррупционная экспертиза",
         "Профилактика правонарушений",
@@ -846,7 +846,7 @@
       ],
       "title_en": "Prevention and Counteraction of Corruption",
       "desc_en": "The advanced training program targets civil servants and institutional executives. Studying a set of preventive measures, students master anti-corruption expertise of legal acts. The acquired knowledge forms a sustainable rejection of corrupt behavior in professional practice.",
-      "long_desc_en": "",
+      "long_desc_en": "The advanced training program focuses on the prevention and counteraction of corruption in the professional activities of civil servants and institutional managers. It covers preventive measures, anti-corruption review of legal acts, and law enforcement practice.\n\nThe program helps participants systematise approaches to preventing corruption-related offences and to reinforcing a professional culture that rejects corrupt conduct.",
       "bullets_en": [
         "Anti-corruption expertise",
         "Offense prevention",
@@ -871,7 +871,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 10,500",
       "hours_en": "36 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
