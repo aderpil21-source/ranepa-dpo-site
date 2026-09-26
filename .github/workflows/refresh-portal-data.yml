@@ -33,6 +33,7 @@ jobs:
           set -euo pipefail
 
           tmp_file="$(mktemp)"
+          tmp_programs="$(mktemp)"
 
           curl \
             --fail \
@@ -46,17 +47,33 @@ jobs:
             "$API_URL" \
             --output "$tmp_file"
 
-          python - "$tmp_file" program-data.json portal-data.json schedule-data.json owl-files.json <<'PY'
+          if ! curl \
+            --fail \
+            --silent \
+            --show-error \
+            --location \
+            --retry 1 \
+            --retry-delay 2 \
+            --connect-timeout 10 \
+            --max-time 45 \
+            "$API_URL?type=programsDetailed&_cb=$(date +%s)" \
+            --output "$tmp_programs"; then
+            : > "$tmp_programs"
+            echo "Detailed program endpoint is not available; keeping current program-data.json"
+          fi
+
+          python - "$tmp_file" "$tmp_programs" program-data.json portal-data.json schedule-data.json owl-files.json <<'PY'
           import json
           import sys
           from datetime import datetime, timezone
           from pathlib import Path
 
           api_path = Path(sys.argv[1])
-          program_path = Path(sys.argv[2])
-          portal_path = Path(sys.argv[3])
-          schedule_path = Path(sys.argv[4])
-          owl_path = Path(sys.argv[5])
+          detailed_path = Path(sys.argv[2])
+          program_path = Path(sys.argv[3])
+          portal_path = Path(sys.argv[4])
+          schedule_path = Path(sys.argv[5])
+          owl_path = Path(sys.argv[6])
 
           data = json.loads(api_path.read_text(encoding="utf-8"))
           if not isinstance(data, dict):
@@ -83,9 +100,43 @@ jobs:
               except (json.JSONDecodeError, OSError):
                   return None
 
+          def write_json(path, payload):
+              path.write_text(
+                  json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+                  encoding="utf-8",
+              )
+
           program_snapshot = read_json(program_path)
           if not isinstance(program_snapshot, dict):
               raise SystemExit("program-data.json is missing or invalid")
+
+          detailed = read_json(detailed_path)
+          candidate = detailed.get("programs") if isinstance(detailed, dict) else None
+          required = {
+              "id", "active", "title_ru", "title_en", "desc_ru", "desc_en",
+              "long_desc_ru", "long_desc_en", "official_desc_ru", "official_desc_en",
+          }
+
+          if isinstance(candidate, list) and candidate:
+              valid_rows = all(
+                  isinstance(item, dict)
+                  and item.get("id")
+                  and required.issubset(item.keys())
+                  for item in candidate
+              )
+              ids = [str(item.get("id")) for item in candidate if isinstance(item, dict)]
+              unique_ids = len(ids) == len(set(ids))
+              if valid_rows and unique_ids:
+                  current_programs = program_snapshot.get("programs")
+                  if current_programs != candidate:
+                      write_json(program_path, {"generatedAt": now, "programs": candidate})
+                      print("program-data.json updated from programsDetailed")
+                  program_snapshot = {"generatedAt": now, "programs": candidate}
+              else:
+                  print("Detailed program payload failed validation; keeping current program-data.json")
+          else:
+              print("Detailed program payload missing; keeping current program-data.json")
+
           programs = program_snapshot.get("programs")
           if not isinstance(programs, list) or not programs:
               raise SystemExit("program-data.json has no non-empty programs array")
@@ -94,12 +145,6 @@ jobs:
           ids = [str(item.get("id")) for item in programs]
           if len(ids) != len(set(ids)):
               raise SystemExit("program-data.json contains duplicate program IDs")
-
-          def write_json(path, payload):
-              path.write_text(
-                  json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
-                  encoding="utf-8",
-              )
 
           portal_payload = {
               "programs": programs,
@@ -131,14 +176,14 @@ jobs:
               print("owl-files.json updated")
           PY
 
-          rm -f "$tmp_file"
+          rm -f "$tmp_file" "$tmp_programs"
 
       - name: Commit only changed snapshots
         shell: bash
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- portal-data.json schedule-data.json owl-files.json; then
+          if git diff --quiet -- program-data.json portal-data.json schedule-data.json owl-files.json; then
             echo "Public portal snapshots are already up to date"
             exit 0
           fi
@@ -146,6 +191,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add portal-data.json schedule-data.json owl-files.json
+          git add program-data.json portal-data.json schedule-data.json owl-files.json
           git commit -m "data: refresh public portal snapshots"
           git push
