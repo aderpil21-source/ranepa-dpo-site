@@ -153,6 +153,8 @@ const qs=new URLSearchParams(location.search);
 const programId=(qs.get('id')||'').trim();
 let currentLang=qs.get('lang')==='en'?'en':'ru';
 let program=null;
+const SITE_SETTINGS_ID='__site_admin_settings__';
+const SITE_ADMIN_API='https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 
 const ui={
   ru:{
@@ -209,6 +211,18 @@ async function getJson(url){
 function findProgram(data){
   const arr=Array.isArray(data)?data:(data&&Array.isArray(data.programs)?data.programs:[]);
   return arr.find(p=>String(p.id||'')===programId&&truthyActive(p.active))||null;
+}
+async function loadSiteVisibility(){
+  try{
+    const data=await getJson(SITE_ADMIN_API+'?type=news&_sitecfg='+Date.now());
+    const items=data&&Array.isArray(data.items)?data.items:[];
+    const item=items.find(n=>n&&n.id===SITE_SETTINGS_ID);
+    if(!item) return {};
+    const parsed=JSON.parse(item.lead||'{}');
+    return parsed&&parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{};
+  }catch(e){
+    return {};
+  }
 }
 async function loadProgram(){
   const bucket=Math.floor(Date.now()/(5*60*1000));
@@ -377,7 +391,10 @@ async function init(){
     state.innerHTML='<h1>'+ui[currentLang].notFound+'</h1><p>'+ui[currentLang].notFoundText+'</p>';
     return;
   }
-  program=await loadProgram();
+  const loaded=await Promise.all([loadProgram(),loadSiteVisibility()]);
+  program=loaded[0];
+  const visibility=loaded[1]||{};
+  if(program&&(visibility.programs===false||visibility['program:'+program.id]===false)) program=null;
   if(!program){
     state.className='error';
     state.innerHTML='<h1>'+ui[currentLang].notFound+'</h1><p>'+ui[currentLang].notFoundText+'</p>';
