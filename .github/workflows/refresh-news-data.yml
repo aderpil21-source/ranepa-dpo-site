@@ -41,7 +41,7 @@ jobs:
             "$API_URL" \
             --output "$tmp_file"
 
-          python - "$tmp_file" news-data.json <<'PY'
+          python - "$tmp_file" news-data.json site-settings.json <<'PY'
           import json
           import sys
           from datetime import datetime, timezone
@@ -49,6 +49,7 @@ jobs:
 
           api_path = Path(sys.argv[1])
           snapshot_path = Path(sys.argv[2])
+          settings_path = Path(sys.argv[3])
 
           data = json.loads(api_path.read_text(encoding="utf-8"))
 
@@ -59,11 +60,32 @@ jobs:
           if not isinstance(items, list):
               raise SystemExit("News API response has no items array")
 
+          settings_item = next(
+              (
+                  item for item in items
+                  if isinstance(item, dict)
+                  and item.get("id") == "__site_admin_settings__"
+              ),
+              None,
+          )
+
+          settings = {}
+          if settings_item:
+              try:
+                  raw_settings = settings_item.get("lead") or "{}"
+                  parsed_settings = json.loads(raw_settings)
+                  if isinstance(parsed_settings, dict):
+                      settings = parsed_settings
+              except (TypeError, json.JSONDecodeError):
+                  settings = {}
+
           public_items = [
               item for item in items
               if isinstance(item, dict)
               and item.get("status") == "published"
               and item.get("id") != "__site_admin_settings__"
+              and "__site_version__" not in (item.get("tags") or [])
+              and "__system__" not in (item.get("tags") or [])
           ]
 
           current_items = None
@@ -75,38 +97,65 @@ jobs:
               except (json.JSONDecodeError, OSError):
                   pass
 
-          if current_items == public_items:
+          current_settings = None
+          if settings_path.exists():
+              try:
+                  current = json.loads(settings_path.read_text(encoding="utf-8"))
+                  if isinstance(current, dict) and isinstance(current.get("settings"), dict):
+                      current_settings = current["settings"]
+              except (json.JSONDecodeError, OSError):
+                  pass
+
+          changed = False
+          now = datetime.now(timezone.utc).isoformat()
+
+          if current_items != public_items:
+              output = {
+                  "generatedAt": now,
+                  "items": public_items,
+              }
+              snapshot_path.write_text(
+                  json.dumps(output, ensure_ascii=False, indent=2) + "\n",
+                  encoding="utf-8",
+              )
+              changed = True
+              print(f"Updated public snapshot: {len(public_items)} published item(s)")
+          else:
               print("Published news are unchanged")
+
+          if current_settings != settings:
+              settings_output = {
+                  "generatedAt": now,
+                  "settings": settings,
+              }
+              settings_path.write_text(
+                  json.dumps(settings_output, ensure_ascii=False, indent=2) + "\n",
+                  encoding="utf-8",
+              )
+              changed = True
+              print("Updated site settings snapshot")
+          else:
+              print("Site settings are unchanged")
+
+          if not changed:
               raise SystemExit(0)
-
-          output = {
-              "generatedAt": datetime.now(timezone.utc).isoformat(),
-              "items": public_items,
-          }
-
-          snapshot_path.write_text(
-              json.dumps(output, ensure_ascii=False, indent=2) + "\n",
-              encoding="utf-8",
-          )
-
-          print(f"Updated public snapshot: {len(public_items)} published item(s)")
           PY
 
           rm -f "$tmp_file"
 
-      - name: Commit only when news changed
+      - name: Commit only when public data changed
         shell: bash
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- news-data.json; then
-            echo "news-data.json is already up to date"
+          if git diff --quiet -- news-data.json site-settings.json; then
+            echo "Public news and site settings are already up to date"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add news-data.json
-          git commit -m "data: refresh public news snapshot"
+          git add news-data.json site-settings.json
+          git commit -m "data: refresh public site snapshots"
           git push

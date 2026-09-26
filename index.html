@@ -1045,6 +1045,65 @@
             display: none;
         }
         .site-admin-edit-hint.active { display:block; }
+        .site-admin-historybar {
+            display:grid;
+            grid-template-columns:42px 42px 1fr;
+            gap:8px;
+            padding:10px 12px;
+            border-bottom:1px solid rgba(255,255,255,.08);
+            background:rgba(15,23,42,.72);
+        }
+        .site-admin-historybar button {
+            min-height:36px;
+            border:1px solid rgba(255,255,255,.14);
+            border-radius:10px;
+            background:rgba(255,255,255,.07);
+            color:#fff;
+            cursor:pointer;
+            font-weight:900;
+        }
+        .site-admin-historybar button:disabled {
+            opacity:.28;
+            cursor:not-allowed;
+        }
+        .site-admin-historybar .history-toggle {
+            text-align:left;
+            padding:8px 10px;
+            font-size:.72rem;
+            line-height:1.25;
+            overflow:hidden;
+        }
+        .site-admin-version-list {
+            display:none;
+            max-height:220px;
+            overflow:auto;
+            padding:8px 10px 10px;
+            border-bottom:1px solid rgba(255,255,255,.08);
+            background:rgba(2,6,23,.58);
+        }
+        .site-admin-version-list.active { display:block; }
+        .site-admin-version-row {
+            width:100%;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            border:1px solid rgba(255,255,255,.08);
+            background:rgba(255,255,255,.035);
+            color:#e2e8f0;
+            border-radius:9px;
+            padding:8px 9px;
+            margin-bottom:6px;
+            cursor:pointer;
+            text-align:left;
+            font-size:.7rem;
+        }
+        .site-admin-version-row:hover { border-color:rgba(56,189,248,.55); }
+        .site-admin-version-row.current {
+            border-color:rgba(74,222,128,.7);
+            background:rgba(22,163,74,.14);
+        }
+        .site-admin-version-row small { color:#94a3b8; white-space:nowrap; }
         @media (max-width: 640px) {
             .site-admin-panel { top: 10px; right: 12px; max-height: calc(100vh - 20px); }
         }
@@ -1522,6 +1581,12 @@
             <button type="button" onclick="resetSiteTextOverrides()">↶ Сбросить правки текста</button>
         </div>
         <div class="site-admin-edit-hint" id="siteAdminEditHint">Редактирование включено: нажмите на подсвеченный текст, напечатайте новый и щёлкните вне него. Изменение сохранится автоматически для текущего языка.</div>
+        <div class="site-admin-historybar">
+            <button type="button" id="siteAdminUndoBtn" onclick="undoSiteVersion()" title="Отменить последнее изменение">←</button>
+            <button type="button" id="siteAdminRedoBtn" onclick="redoSiteVersion()" title="Вернуть отменённое изменение">→</button>
+            <button type="button" class="history-toggle" id="siteAdminHistoryToggle" onclick="toggleSiteVersionList()">История версий</button>
+        </div>
+        <div class="site-admin-version-list" id="siteAdminVersionList"></div>
         <div class="site-admin-status" id="siteAdminStatus">Настройки загружаются…</div>
         <div class="site-admin-controls" id="siteAdminControls"></div>
         <div class="site-admin-foot">
@@ -1776,11 +1841,18 @@
 
     // ===== PRO РЕЖИМ / ВИДИМОСТЬ + РЕДАКТИРОВАНИЕ ТЕКСТОВ =====
     const SITE_SETTINGS_ID = '__site_admin_settings__';
+    const SITE_VERSION_PREFIX = '__site_admin_version__';
     const SITE_SETTINGS_CACHE_KEY = 'ranepa_site_settings_v2';
     const SITE_SETTINGS_OLD_CACHE_KEY = 'ranepa_site_visibility_v1';
+    const SITE_REDO_STACK_KEY = 'ranepa_site_redo_stack_v1';
     let siteVisibility = {};
     let siteContentOverrides = {};
     let siteSettingsItem = null;
+    let siteVersionHistory = [];
+    let siteCurrentVersionId = null;
+    let siteRedoStack = [];
+    let siteSaveInFlight = null;
+    let siteSaveQueued = false;
     let siteAdminToken = sessionStorage.getItem('siteAdminToken') || null;
     let siteAdminMode = !!siteAdminToken;
     let siteTextEditMode = false;
@@ -1830,12 +1902,239 @@
                 version: Number(parsed.version || 1),
                 visibility: parsed.visibility && typeof parsed.visibility === 'object' ? parsed.visibility : {},
                 content: parsed.content && typeof parsed.content === 'object' ? parsed.content : {},
+                currentVersionId: parsed.currentVersionId || null,
                 updatedAt: parsed.updatedAt || ''
             };
         } catch (e) {
             console.warn('Некорректные служебные настройки:', e);
             return null;
         }
+    }
+
+
+    function loadSiteRedoStack() {
+        try {
+            const value = JSON.parse(sessionStorage.getItem(SITE_REDO_STACK_KEY) || '[]');
+            siteRedoStack = Array.isArray(value) ? value.filter(Boolean) : [];
+        } catch (e) {
+            siteRedoStack = [];
+        }
+    }
+
+    function saveSiteRedoStack() {
+        try { sessionStorage.setItem(SITE_REDO_STACK_KEY, JSON.stringify(siteRedoStack)); } catch (e) {}
+    }
+
+    function siteSnapshot() {
+        return {
+            visibility: JSON.parse(JSON.stringify(siteVisibility || {})),
+            content: JSON.parse(JSON.stringify(siteContentOverrides || {}))
+        };
+    }
+
+    function siteSnapshotFingerprint(snapshot) {
+        try { return JSON.stringify(snapshot || {}); } catch (e) { return ''; }
+    }
+
+    function parseSiteVersionItem(item) {
+        const tags = item && Array.isArray(item.tags) ? item.tags : [];
+        const isVersion = !!item && (
+            tags.includes('__site_version__') ||
+            (typeof item.id === 'string' && item.id.indexOf(SITE_VERSION_PREFIX) === 0)
+        );
+        if (!isVersion) return null;
+        try {
+            const data = JSON.parse(item.lead || '{}');
+            if (!data || !data.snapshot || typeof data.snapshot !== 'object') return null;
+            return {
+                id: item.id,
+                createdAt: data.createdAt || item.createdAt || item.updatedAt || '',
+                parentId: data.parentId || null,
+                reason: data.reason || '',
+                snapshot: {
+                    visibility: data.snapshot.visibility && typeof data.snapshot.visibility === 'object' ? data.snapshot.visibility : {},
+                    content: data.snapshot.content && typeof data.snapshot.content === 'object' ? data.snapshot.content : {}
+                }
+            };
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function loadSiteVersionHistory(items) {
+        siteVersionHistory = (Array.isArray(items) ? items : [])
+            .map(parseSiteVersionItem)
+            .filter(Boolean)
+            .sort(function (a, b) {
+                return String(a.createdAt || '').localeCompare(String(b.createdAt || ''));
+            });
+        renderSiteVersionUI();
+    }
+
+    function findSiteVersion(id) {
+        return siteVersionHistory.find(function (version) { return version.id === id; }) || null;
+    }
+
+    function siteVersionDate(value) {
+        try {
+            return new Intl.DateTimeFormat('ru-RU', {
+                timeZone:'Europe/Kaliningrad',
+                year:'numeric', month:'2-digit', day:'2-digit',
+                hour:'2-digit', minute:'2-digit', second:'2-digit'
+            }).format(new Date(value));
+        } catch (e) {
+            return String(value || '');
+        }
+    }
+
+    function renderSiteVersionUI() {
+        const undo = document.getElementById('siteAdminUndoBtn');
+        const redo = document.getElementById('siteAdminRedoBtn');
+        const toggle = document.getElementById('siteAdminHistoryToggle');
+        const list = document.getElementById('siteAdminVersionList');
+        const current = findSiteVersion(siteCurrentVersionId);
+        if (undo) undo.disabled = !(current && current.parentId && findSiteVersion(current.parentId));
+        if (redo) redo.disabled = !siteRedoStack.length;
+        if (toggle) {
+            toggle.textContent = current
+                ? 'Версия: ' + siteVersionDate(current.createdAt)
+                : 'История версий';
+        }
+        if (!list) return;
+        const ordered = siteVersionHistory.slice().sort(function (a, b) {
+            return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
+        });
+        list.innerHTML = ordered.length ? ordered.map(function (version) {
+            const active = version.id === siteCurrentVersionId ? ' current' : '';
+            return '<button type="button" class="site-admin-version-row' + active + '" data-site-version-id="' +
+                siteAdminEscape(version.id) + '">' +
+                '<span>' + siteAdminEscape(siteVersionDate(version.createdAt)) +
+                (version.reason ? '<br><small>' + siteAdminEscape(version.reason) + '</small>' : '') +
+                '</span><small>' + (active ? 'текущая' : 'восстановить') + '</small></button>';
+        }).join('') : '<div style="padding:8px;color:#94a3b8;font-size:.72rem;">История пока пуста.</div>';
+        list.querySelectorAll('[data-site-version-id]').forEach(function (button) {
+            button.addEventListener('click', function () {
+                restoreSiteVersion(button.dataset.siteVersionId);
+            });
+        });
+    }
+
+    function toggleSiteVersionList() {
+        const list = document.getElementById('siteAdminVersionList');
+        if (list) list.classList.toggle('active');
+    }
+
+    async function writeSiteVersion(snapshot, parentId, reason) {
+        if (!siteAdminToken) throw new Error('Нет Pro-сессии');
+        const now = new Date().toISOString();
+        const localId = SITE_VERSION_PREFIX + now.replace(/[-:.TZ]/g, '') + '_' + Math.random().toString(36).slice(2, 8);
+        const versionPayload = {
+            version: 1,
+            createdAt: now,
+            parentId: parentId || null,
+            reason: reason || 'Изменение сайта',
+            snapshot: snapshot
+        };
+        const item = {
+            id: null,
+            title: 'Версия сайта ' + siteVersionDate(now),
+            lead: JSON.stringify(versionPayload),
+            tags: ['__system__','__site_version__'],
+            blocks: [],
+            coverImage: '',
+            status: 'hidden',
+            createdAt: now,
+            updatedAt: now
+        };
+        const data = await siteAdminRequest(API_URL, {
+            method:'POST',
+            body: JSON.stringify({ action:'newsSave', token:siteAdminToken, item:item })
+        });
+        if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Версия не сохранена');
+        const savedId = data.id || localId;
+        const saved = {
+            id: savedId,
+            createdAt: now,
+            parentId: parentId || null,
+            reason: versionPayload.reason,
+            snapshot: snapshot
+        };
+        siteVersionHistory.push(saved);
+        siteVersionHistory.sort(function (a, b) {
+            return String(a.createdAt || '').localeCompare(String(b.createdAt || ''));
+        });
+        renderSiteVersionUI();
+        return saved;
+    }
+
+    async function ensureInitialSiteVersion() {
+        if (!siteAdminMode || !siteAdminToken) return;
+        if (siteCurrentVersionId && findSiteVersion(siteCurrentVersionId)) return;
+        if (siteVersionHistory.length) {
+            const latest = siteVersionHistory[siteVersionHistory.length - 1];
+            siteCurrentVersionId = latest.id;
+            return;
+        }
+        const initial = await writeSiteVersion(siteSnapshot(), null, 'Исходное состояние');
+        siteCurrentVersionId = initial.id;
+        await saveSiteSettings({ recordVersion:false, reason:'Инициализация истории' });
+    }
+
+    function applySiteVersionSnapshot(snapshot) {
+        if (!snapshot || typeof snapshot !== 'object') return;
+        siteVisibility = JSON.parse(JSON.stringify(snapshot.visibility || {}));
+        siteContentOverrides = JSON.parse(JSON.stringify(snapshot.content || {}));
+        cacheSiteSettings({
+            version:3,
+            visibility:siteVisibility,
+            content:siteContentOverrides,
+            currentVersionId:siteCurrentVersionId,
+            updatedAt:new Date().toISOString()
+        });
+        applySiteVisibility();
+        applySiteContentOverrides();
+    }
+
+    async function switchToSiteVersion(versionId, options) {
+        const opts = options || {};
+        const target = findSiteVersion(versionId);
+        if (!target) return false;
+        siteCurrentVersionId = target.id;
+        applySiteVersionSnapshot(target.snapshot);
+        await saveSiteSettings({ recordVersion:false, reason:opts.reason || 'Восстановление версии' });
+        renderSiteVersionUI();
+        if (opts.reload !== false) {
+            setTimeout(function () { location.reload(); }, 120);
+        }
+        return true;
+    }
+
+    async function undoSiteVersion() {
+        const current = findSiteVersion(siteCurrentVersionId);
+        if (!current || !current.parentId) return;
+        const previous = findSiteVersion(current.parentId);
+        if (!previous) return;
+        siteRedoStack.push(current.id);
+        saveSiteRedoStack();
+        await switchToSiteVersion(previous.id, { reason:'Отмена изменения' });
+    }
+
+    async function redoSiteVersion() {
+        const nextId = siteRedoStack.pop();
+        saveSiteRedoStack();
+        if (!nextId) return;
+        const next = findSiteVersion(nextId);
+        if (!next) return;
+        await switchToSiteVersion(next.id, { reason:'Возврат изменения' });
+    }
+
+    async function restoreSiteVersion(versionId) {
+        const target = findSiteVersion(versionId);
+        if (!target || target.id === siteCurrentVersionId) return;
+        if (!confirm('Восстановить версию от ' + siteVersionDate(target.createdAt) + '?')) return;
+        siteRedoStack = [];
+        saveSiteRedoStack();
+        await switchToSiteVersion(target.id, { reason:'Восстановление из истории' });
     }
 
     function readCachedSiteSettings() {
@@ -1847,6 +2146,7 @@
         if (!cached || typeof cached !== 'object') return false;
         if (cached.visibility && typeof cached.visibility === 'object') siteVisibility = cached.visibility;
         if (cached.content && typeof cached.content === 'object') siteContentOverrides = cached.content;
+        if (cached.currentVersionId) siteCurrentVersionId = cached.currentVersionId;
         return true;
     }
 
@@ -2074,7 +2374,7 @@
         if (!siteContentOverrides[key] || typeof siteContentOverrides[key] !== 'object') siteContentOverrides[key] = {};
         siteContentOverrides[key][lang] = text;
         siteAdminSetStatus('Текст изменён — сохраняем…');
-        scheduleSiteSettingsSave();
+        scheduleSiteSettingsSave('Редактирование текста');
     }
 
     function resetSiteTextOverrides() {
@@ -2087,7 +2387,7 @@
         if (!confirm('Удалить все текстовые правки Pro-режима и вернуть тексты из основной базы/кода?')) return;
         siteContentOverrides = {};
         cacheSiteSettings({ version:2, visibility:siteVisibility, content:siteContentOverrides, updatedAt:new Date().toISOString() });
-        scheduleSiteSettingsSave();
+        scheduleSiteSettingsSave('Сброс текстовых правок');
         siteAdminSetStatus('Правки сброшены. Перезагружаем исходные тексты…', 'ok');
         setTimeout(function () { location.reload(); }, 450);
     }
@@ -2135,6 +2435,29 @@
 
     async function loadSiteSettings(useAdmin) {
         try {
+            if (!useAdmin) {
+                try {
+                    const bucket = Math.floor(Date.now() / (60 * 1000));
+                    const response = await fetch('./site-settings.json?v=' + bucket, { cache:'no-store' });
+                    if (response.ok) {
+                        const snapshot = await response.json();
+                        const cachedSettings = snapshot && snapshot.settings;
+                        if (cachedSettings && typeof cachedSettings === 'object') {
+                            siteVisibility = cachedSettings.visibility && typeof cachedSettings.visibility === 'object'
+                                ? cachedSettings.visibility : siteVisibility;
+                            siteContentOverrides = cachedSettings.content && typeof cachedSettings.content === 'object'
+                                ? cachedSettings.content : siteContentOverrides;
+                            siteCurrentVersionId = cachedSettings.currentVersionId || siteCurrentVersionId || null;
+                            cacheSiteSettings(cachedSettings);
+                            applySiteVisibility();
+                            applySiteContentOverrides();
+                        }
+                    }
+                } catch (snapshotError) {
+                    console.warn('Статический снимок настроек недоступен:', snapshotError);
+                }
+            }
+
             const url = useAdmin && siteAdminToken
                 ? API_URL + '?type=news&admin=1&token=' + encodeURIComponent(siteAdminToken) + '&_sitecfg=' + Date.now()
                 : API_URL + '?type=news&_sitecfg=' + Date.now();
@@ -2147,13 +2470,17 @@
             siteSettingsItem = item;
             siteVisibility = parsed.visibility || {};
             siteContentOverrides = parsed.content || {};
+            siteCurrentVersionId = parsed.currentVersionId || siteCurrentVersionId || null;
+            if (useAdmin) loadSiteVersionHistory(items);
             cacheSiteSettings(parsed);
             applySiteVisibility();
             applySiteContentOverrides();
             if (siteAdminMode) {
                 renderSiteAdminPanel();
                 if (siteTextEditMode) decorateSiteEditableElements();
+                if (useAdmin) await ensureInitialSiteVersion();
             }
+            renderSiteVersionUI();
             siteAdminSetStatus('Настройки синхронизированы', 'ok');
             return true;
         } catch (e) {
@@ -2163,33 +2490,58 @@
         }
     }
 
-    async function saveSiteSettings() {
+    async function saveSiteSettings(options) {
+        const opts = options || {};
         if (!siteAdminToken) {
             siteAdminSetStatus('Сессия Pro-режима истекла', 'err');
             openSiteAdminLogin();
             return false;
         }
-        const now = new Date().toISOString();
-        const base = siteSettingsItem || {};
-        const payload = {
-            version: 2,
-            visibility: siteVisibility,
-            content: siteContentOverrides,
-            updatedAt: now
-        };
-        const item = {
-            id: SITE_SETTINGS_ID,
-            title: '__SITE_ADMIN_SETTINGS__',
-            lead: JSON.stringify(payload),
-            tags: ['__system__'],
-            blocks: [],
-            coverImage: '',
-            status: 'published',
-            createdAt: base.createdAt || now,
-            updatedAt: now
-        };
-        siteAdminSetStatus('Сохраняем…');
-        try {
+
+        if (siteSaveInFlight) {
+            siteSaveQueued = true;
+            return siteSaveInFlight;
+        }
+
+        siteSaveInFlight = (async function () {
+            const now = new Date().toISOString();
+            const base = siteSettingsItem || {};
+            const snapshot = siteSnapshot();
+
+            if (opts.recordVersion !== false) {
+                const current = findSiteVersion(siteCurrentVersionId);
+                const same = current && siteSnapshotFingerprint(current.snapshot) === siteSnapshotFingerprint(snapshot);
+                if (!same) {
+                    const savedVersion = await writeSiteVersion(
+                        snapshot,
+                        siteCurrentVersionId,
+                        opts.reason || 'Изменение сайта'
+                    );
+                    siteCurrentVersionId = savedVersion.id;
+                    siteRedoStack = [];
+                    saveSiteRedoStack();
+                }
+            }
+
+            const payload = {
+                version: 3,
+                visibility: siteVisibility,
+                content: siteContentOverrides,
+                currentVersionId: siteCurrentVersionId || null,
+                updatedAt: now
+            };
+            const item = {
+                id: SITE_SETTINGS_ID,
+                title: '__SITE_ADMIN_SETTINGS__',
+                lead: JSON.stringify(payload),
+                tags: ['__system__'],
+                blocks: [],
+                coverImage: '',
+                status: 'published',
+                createdAt: base.createdAt || now,
+                updatedAt: now
+            };
+            siteAdminSetStatus('Сохраняем…');
             const data = await siteAdminRequest(API_URL, {
                 method:'POST',
                 body: JSON.stringify({ action:'newsSave', token:siteAdminToken, item:item })
@@ -2197,17 +2549,30 @@
             if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Настройки не сохранены');
             siteSettingsItem = Object.assign({}, item, { id:data.id || SITE_SETTINGS_ID });
             cacheSiteSettings(payload);
-            siteAdminSetStatus('Сохранено. Изменение уже действует на сайте.', 'ok');
+            renderSiteVersionUI();
+            siteAdminSetStatus('Сохранено. Версия записана в историю.', 'ok');
             return true;
+        })();
+
+        try {
+            return await siteSaveInFlight;
         } catch (e) {
             siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
             return false;
+        } finally {
+            siteSaveInFlight = null;
+            if (siteSaveQueued) {
+                siteSaveQueued = false;
+                scheduleSiteSettingsSave('Следующее изменение');
+            }
         }
     }
 
-    function scheduleSiteSettingsSave() {
+    function scheduleSiteSettingsSave(reason) {
         if (siteAdminSaveTimer) clearTimeout(siteAdminSaveTimer);
-        siteAdminSaveTimer = setTimeout(saveSiteSettings, 300);
+        siteAdminSaveTimer = setTimeout(function () {
+            saveSiteSettings({ recordVersion:true, reason:reason || 'Изменение сайта' });
+        }, 450);
     }
 
     function setSiteVisibility(key, visible) {
@@ -2215,7 +2580,7 @@
         else siteVisibility[key] = false;
         applySiteVisibility();
         renderSiteAdminPanel();
-        scheduleSiteSettingsSave();
+        scheduleSiteSettingsSave('Изменение видимости');
     }
 
     function showAllSiteElements() {
@@ -2224,7 +2589,7 @@
         siteVisibility = {};
         applySiteVisibility();
         renderSiteAdminPanel();
-        scheduleSiteSettingsSave();
+        scheduleSiteSettingsSave('Показать все элементы');
     }
 
     function openStudyPlanUpload() {
@@ -2333,6 +2698,7 @@
     }
 
     function initSiteAdminVisibility() {
+        loadSiteRedoStack();
         readCachedSiteSettings();
         applySiteVisibility();
         applySiteContentOverrides();
