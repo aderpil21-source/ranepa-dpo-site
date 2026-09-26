@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:10:36.262Z",
+  "generatedAt": "2026-09-26T12:11:22.658Z",
   "programs": [
     {
       "id": "c14",
@@ -1954,7 +1954,7 @@
       "dates": "2,5 месяца",
       "title_ru": "Эффективное управление проектной деятельностью",
       "desc_ru": "Программа направлена на профессиональную переподготовку специалистов в сфере эффективного управления проектами. В процессе обучения слушатели изучают методологии планирования, бюджетирования и контроля ресурсов. Полученные компетенции позволяют успешно реализовывать инициативы любой сложности в различных отраслях.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки направлена на развитие компетенций в сфере эффективного управления проектами. В ходе обучения рассматриваются методологии планирования, бюджетирование, распределение и контроль ресурсов, а также организация проектной деятельности.\n\nОсвоение программы помогает выстраивать последовательный подход к подготовке и реализации проектов и применять инструменты управления при работе с инициативами различной сложности.",
       "bullets_ru": [
         "Управление проектами",
         "Бюджетирование",
@@ -1962,7 +1962,7 @@
       ],
       "title_en": "Effective Project Management",
       "desc_en": "The program is aimed at the professional retraining of specialists in the field of effective project management. During the training, students study planning, budgeting, and resource control methodologies. The acquired competencies enable the successful implementation of initiatives of any complexity across various industries.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program develops competencies in effective project management. It covers planning methodologies, budgeting, resource allocation and control, and the organisation of project activities.\n\nThe program helps participants build a consistent approach to preparing and delivering projects and apply management tools to initiatives of varying complexity.",
       "bullets_en": [
         "Project management",
         "Budgeting",
@@ -1987,7 +1987,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 46,300",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -2005,7 +2005,7 @@
       "dates": "1 - 2 дня",
       "title_ru": "Служебный этикет и\r\nкоммуникативная\r\nкультура в\r\nпрофессиональной\r\nдеятельности",
       "desc_ru": "Семинар направлен на изучение правил служебного этикета и коммуникативной культуры в профессиональной деятельности. В процессе обучения участники знакомятся с нормами делового общения и стандартами поведения. Полученные знания позволяют успешно разрешать рабочие ситуации и поддерживать деловой имидж.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Семинар посвящён служебному этикету и коммуникативной культуре в профессиональной деятельности. Участники рассматривают нормы делового общения, правила профессионального поведения и способы поддержания корректной коммуникации в рабочих ситуациях.\n\nПолученные знания помогают увереннее разрешать повседневные рабочие ситуации, соблюдать стандарты делового взаимодействия и поддерживать профессиональный имидж.",
       "bullets_ru": [
         "Деловой этикет",
         "Профессиональная коммуникация",
@@ -2013,7 +2013,7 @@
       ],
       "title_en": "Service Etiquette and Communicative Culture",
       "desc_en": "The seminar focuses on studying the rules of service etiquette and communicative culture in professional activities. During the training, participants get acquainted with the norms of business communication and behavioral standards. The acquired knowledge enables successful resolution of work situations and maintaining a business image.",
-      "long_desc_en": "",
+      "long_desc_en": "The seminar focuses on service etiquette and communication culture in professional activities. Participants explore business communication norms, standards of professional behaviour, and approaches to maintaining appropriate communication in workplace situations.\n\nThe knowledge gained helps participants handle everyday professional situations more confidently, follow business interaction standards, and maintain a professional image.",
       "bullets_en": [
         "Business etiquette",
         "Professional communication",
@@ -2038,7 +2038,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 8,500",
       "hours_en": "16 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -2056,7 +2056,7 @@
       "dates": "1 - 2 дня",
       "title_ru": "Лидерство и\r\nпостроение\r\nэффективной команды\r\n",
       "desc_ru": "Семинар направлен на развитие лидерских качеств и навыков построения эффективной команды. В ходе обучения участники рассматривают современные методы мотивации персонала и управления коллективом. Полученные знания позволяют повысить общую результативность рабочих групп.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Семинар направлен на развитие лидерских качеств и навыков построения эффективной команды. В ходе обучения рассматриваются командообразование, современные подходы к мотивации персонала и управление коллективом.\n\nУчастники систематизируют инструменты, которые помогают выстраивать взаимодействие внутри команды, поддерживать мотивацию сотрудников и повышать результативность рабочих групп.",
       "bullets_ru": [
         "Лидерство",
         "Командообразование",
@@ -2064,7 +2064,7 @@
       ],
       "title_en": "Leadership and Team Building",
       "desc_en": "The seminar aims to develop leadership qualities and team building skills. During the training, participants explore modern methods of personnel motivation and team management. The acquired knowledge enables increasing the overall productivity of working groups.",
-      "long_desc_en": "",
+      "long_desc_en": "The seminar develops leadership qualities and effective team-building skills. It covers team development, modern approaches to employee motivation, and team management.\n\nParticipants systematise tools that support stronger team interaction, employee motivation, and improved performance of working groups.",
       "bullets_en": [
         "Leadership",
         "Team building",
@@ -2089,7 +2089,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 8,500",
       "hours_en": "16 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -2107,7 +2107,7 @@
       "dates": "1 - 2 дня",
       "title_ru": "Деловая коммуникация:\r\nнавыки публичных\r\nвыступлений\r\n",
       "desc_ru": "Семинар направлен на совершенствование навыков деловой коммуникации и публичных выступлений. В процессе обучения участники осваивают приемы ораторского искусства и преодоления страха аудитории. Полученные компетенции позволяют уверенно презентовать проекты и вести профессиональный диалог.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Семинар посвящён развитию навыков деловой коммуникации и публичных выступлений. Участники осваивают приёмы ораторского искусства, работу с аудиторией и способы снижения волнения при выступлении.\n\nПрактическая направленность семинара помогает увереннее презентовать проекты, формулировать позицию перед аудиторией и вести профессиональный диалог.",
       "bullets_ru": [
         "Публичные выступления",
         "Ораторское искусство",
@@ -2115,7 +2115,7 @@
       ],
       "title_en": "Public Speaking Skills in Business Communication",
       "desc_en": "The seminar aims to improve business communication and public speaking skills. During the training, students master oratory techniques and methods for overcoming audience anxiety. The acquired competencies enable confident project presentations and professional dialogue.",
-      "long_desc_en": "",
+      "long_desc_en": "The seminar develops business communication and public speaking skills. Participants explore public speaking techniques, audience interaction, and approaches to managing anxiety when speaking in public.\n\nIts practical focus helps participants present projects more confidently, communicate their position to an audience, and conduct professional dialogue.",
       "bullets_en": [
         "Public speaking",
         "Oratory",
@@ -2140,7 +2140,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 8,500",
       "hours_en": "16 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -2158,7 +2158,7 @@
       "dates": "1 - 2 дня",
       "title_ru": "Навыки самопрезентации",
       "desc_ru": "Семинар направлен на совершенствование навыков самопрезентации в профессиональной деятельности. В ходе обучения участники осваивают приемы уверенного позиционирования себя перед аудиторией. Полученные компетенции позволяют эффективно презентовать свои достижения и развивать личный бренд.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Семинар направлен на развитие навыков самопрезентации в профессиональной среде. В ходе обучения участники рассматривают способы уверенного позиционирования перед аудиторией, представления своих достижений и формирования профессионального образа.\n\nПолученные навыки помогают яснее рассказывать о собственном опыте и результатах, использовать инструменты личного бренда и выстраивать профессиональное позиционирование.",
       "bullets_ru": [
         "Самопрезентация",
         "Личный бренд",
@@ -2166,7 +2166,7 @@
       ],
       "title_en": "Self-Presentation Skills",
       "desc_en": "The seminar aims to improve self-presentation skills in professional activities. During the training, students master techniques for confidently positioning themselves in front of an audience. The acquired competencies enable effective presentation of one's achievements and the development of a personal brand.",
-      "long_desc_en": "",
+      "long_desc_en": "The seminar develops self-presentation skills in a professional environment. Participants explore ways to position themselves confidently before an audience, present their achievements, and build a professional image.\n\nThe skills gained help participants communicate their experience and results more clearly, use personal branding tools, and strengthen their professional positioning.",
       "bullets_en": [
         "Self-presentation",
         "Personal brand",
@@ -2191,7 +2191,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 8,500",
       "hours_en": "16 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
