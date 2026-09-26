@@ -305,6 +305,9 @@
 
         .buy-btn { display: inline-block; width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 18px; text-align: center; border-radius: 14px; font-weight: 900; text-decoration: none; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; font-size: 1rem; box-shadow: 0 8px 20px rgba(202, 15, 62, 0.3); }
         .buy-btn:hover { background: linear-gradient(135deg, #f43f5e, var(--ranepa-red)); box-shadow: 0 12px 25px rgba(202, 15, 62, 0.5); transform: translateY(-3px) scale(1.02); }
+        .card-actions { display: grid; gap: 10px; margin-top: auto; }
+        .program-details-link { display: block; width: 100%; background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); padding: 15px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; text-align: center; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s var(--bezier-bounce); }
+        .program-details-link:hover { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); transform: translateY(-2px); }
 
         .section-header { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 900; color: var(--text-main); margin: 70px 0 35px; text-align: center; z-index: 5; position: relative; text-shadow: 0 4px 12px var(--shadow-color); scroll-margin-top: calc(var(--header-h) + 20px); }
 
@@ -912,10 +915,10 @@
     </div>
 
     <div class="bg-tags-container" id="bgTags">
-        <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
-        <div class="bg-tag">#БЫСТРЫЙ_СТАРТ</div>
-        <div class="bg-tag">#СИСТЕМНЫЙ_БИЗНЕС</div>
-        <div class="bg-tag">#ПРОФЕССИОНАЛИЗМ</div>
+        <div class="bg-tag" data-i18n="bgTag1">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
+        <div class="bg-tag" data-i18n="bgTag2">#БЫСТРЫЙ_СТАРТ</div>
+        <div class="bg-tag" data-i18n="bgTag3">#СИСТЕМНЫЙ_БИЗНЕС</div>
+        <div class="bg-tag" data-i18n="bgTag4">#ПРОФЕССИОНАЛИЗМ</div>
     </div>
 
     <div class="ambient-3d-bg">
@@ -925,7 +928,7 @@
 
     <header>
         <a href="#" class="logo-group" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
-            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия">
+            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия" data-i18n-alt="logoAlt">
             <div class="logo-subtitle" data-i18n="logoSub">Западный филиал • Центр дополнительного образования</div>
         </a>
 
@@ -946,7 +949,7 @@
             </div>
 
             <nav class="header-nav">
-                <a href="news.html" class="header-nav-link" style="text-decoration: none;">Новости</a>
+                <a href="news.html" class="header-nav-link" style="text-decoration: none;" data-i18n="navNews">Новости</a>
                 <span class="header-nav-link" onclick="showSchedule()" data-i18n="navSchedule">Расписание</span>
                 <span class="header-nav-link" onclick="document.getElementById('programsSection').scrollIntoView({behavior: 'smooth'});" data-i18n="navProg">Программы</span>
                 <span class="header-nav-link" onclick="openQuickContacts()" data-i18n="navCont">Контакты</span>
@@ -955,12 +958,12 @@
         </div>
 
         <div class="header-kadry">
-            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
+            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" data-i18n-alt="kadryAlt">
         </div>
     </header>
 
     <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()">
-        <div class="ticker-inner" id="tickerText">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
+        <div class="ticker-inner" id="tickerText" data-i18n="tickerDefault">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
     </div>
 
     <section class="hero">
@@ -980,7 +983,7 @@
                 <button class="tab-btn" onclick="filterPrograms(event,'tab-sem')" data-i18n="tabSem">🗣️ Семинары</button>
             </div>
         </div>
-        <div class="swipe-hint" id="swipeHint">← 👉 листайте вкладки вправо →</div>
+        <div class="swipe-hint" id="swipeHint" data-i18n="swipeHint">← 👉 листайте вкладки вправо →</div>
 
         <div class="filters-bar" id="filtersBar" style="display:none;">
             <div class="filter-group">
@@ -1002,7 +1005,7 @@
 
             <div class="filter-group">
                 <label data-i18n="filterMaxPrice">Стоимость до, ₽</label>
-                <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500">
+                <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500" data-i18n="filterNoLimit">
             </div>
             <div class="filter-group">
                 <label data-i18n="filterDuration">Длительность</label>
@@ -1056,55 +1059,55 @@
 
     <!-- БЛОК ДОКУМЕНТОВ И ДИПЛОМОВ -->
     <div class="documents-section" style="max-width: 1350px; margin: 70px auto; padding: 0 max(15px, env(safe-area-inset-right)); text-align: center; position: relative; z-index: 5;">
-        <h2 class="section-header" style="margin: 0 0 15px 0;">Официальные документы об образовании</h2>
+        <h2 class="section-header" style="margin: 0 0 15px 0;" data-i18n="educationDocsTitle">Официальные документы об образовании</h2>
         <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto 40px; font-size: 1.05rem;">
-            Официальные дипломы и удостоверения установленного образца с внесением данных в государственную систему ФИС ФРДО.
+            <span data-i18n="educationDocsDesc">Официальные дипломы и удостоверения установленного образца с внесением данных в государственную систему ФИС ФРДО.</span>
         </p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
             <!-- Документ 1 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-1.jpg', 'Удостоверение о повышении квалификации')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-1.jpg', translationsHTML[currentLang].docAdvanced)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-1.jpg" alt="Удостоверение о повышении квалификации" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-1.jpg" alt="Удостоверение о повышении квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Удостоверение о повышении квалификации</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Образец установленного образца</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docAdvanced">Удостоверение о повышении квалификации</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образца</p>
             </div>
 
             <!-- Документ 2 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-2.jpg', 'Удостоверение о повышении квалификации')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-2.jpg', translationsHTML[currentLang].docAdvanced)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-2.jpg" alt="Повышение квалификации" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-2.jpg" alt="Повышение квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Повышение квалификации</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Официальное удостоверение</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docAdvancedShort">Повышение квалификации</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docOfficialCertificate">Официальное удостоверение</p>
             </div>
 
             <!-- Документ 3 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-3.jpg', 'Сертификат')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-3.jpg', translationsHTML[currentLang].docCertificate)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-3.jpg" alt="Сертификат" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-3.jpg" alt="Сертификат" data-i18n-alt="docCertificate" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Сертификат</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Государственный стандарт</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docCertificate">Сертификат</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStateStandard">Государственный стандарт</p>
             </div>
 
             <!-- Документ 4 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-4.jpg', 'Диплом о профессиональной переподготовке')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-4.jpg', translationsHTML[currentLang].docRetraining)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-4.jpg" alt="Диплом о профессиональной переподготовке" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-4.jpg" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Диплом о профессиональной переподготовке</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Образец установленного образцан</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docRetraining">Диплом о профессиональной переподготовке</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образцан</p>
             </div>
 
             <!-- Документ 5 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-5.jpg', 'Диплом о профессиональной переподготовке')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-5.jpg', translationsHTML[currentLang].docRetraining)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-5.jpg" alt="Диплом о профессиональной переподготовке" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-5.jpg" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Диплом о профессиональной переподготовке</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Образец установленного образца</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docRetraining">Диплом о профессиональной переподготовке</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образца</p>
             </div>
         </div>
     </div>
@@ -1127,7 +1130,7 @@
             <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
-                    <h4>Канаш Ирина Степановна</h4>
+                    <h4 data-i18n="nameKanash">Канаш Ирина Степановна</h4>
                     <div class="position" data-i18n="dirCenter">Директор центра</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 304</p>
@@ -1136,7 +1139,7 @@
                     </div>
                 </div>
                 <div class="contact-card">
-                    <h4>Крупин Артур Леонидович</h4>
+                    <h4 data-i18n="nameKrupin">Крупин Артур Леонидович</h4>
                     <div class="position" data-i18n="depDir">Заместитель директора центра</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1145,7 +1148,7 @@
                     </div>
                 </div>
                 <div class="contact-card">
-                    <h4>Перетяка Нина Петровна</h4>
+                    <h4 data-i18n="namePeretyaka">Перетяка Нина Петровна</h4>
                     <div class="position" data-i18n="projDir">Директор проекта</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1154,7 +1157,7 @@
                     </div>
                 </div>
                 <div class="contact-card">
-                    <h4>Лощилова М.А.</h4>
+                    <h4 data-i18n="nameLoshchilova">Лощилова М.А.</h4>
                     <div class="position" data-i18n="spec">Специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1167,7 +1170,7 @@
             <h3 class="department-title" data-i18n="dept2" style="margin-top:40px;">Отдел ПК и переподготовки государственных служащих</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
-                    <h4>Михина Елена Владимировна</h4>
+                    <h4 data-i18n="nameMikhina">Михина Елена Владимировна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1176,7 +1179,7 @@
                     </div>
                 </div>
                <!-- <div class="contact-card">
-                    <h4>Беспалова Валерия Вадимовна</h4>
+                    <h4 data-i18n="nameBespalova">Беспалова Валерия Вадимовна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1189,7 +1192,7 @@
             <h3 class="department-title" data-i18n="dept3" style="margin-top:40px;">Отдел дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
-                    <h4>Дацун Татьяна Григорьевна</h4>
+                    <h4 data-i18n="nameDatsun">Дацун Татьяна Григорьевна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1198,7 +1201,7 @@
                     </div>
                 </div>
                <!-- <div class="contact-card">
-                    <h4>Чижекова Наталья Владимировна</h4>
+                    <h4 data-i18n="nameChizhekova">Чижекова Наталья Владимировна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1207,7 +1210,7 @@
         </div>
     </div> -->
                 <div class="contact-card">
-                    <h4>Хамзина Ирина Александровна</h4>
+                    <h4 data-i18n="nameKhamzina">Хамзина Ирина Александровна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1223,18 +1226,18 @@
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
-                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;">📄 Официальные образовательные программы (Архив)</span>
+                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;" data-i18n="docsArchiveLink">📄 Официальные образовательные программы (Архив)</span>
                 </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center;">
                     <a href="https://vk.ru/ranepa_dpo39" target="_blank" rel="noopener" class="vk-btn">
-    <img src="./img/logo-vk.png" alt="ВКонтакте" style="width: 22px; height: 22px; object-fit: contain; display: block;">
+    <img src="./img/logo-vk.png" alt="ВКонтакте" data-i18n-alt="vkAlt" style="width: 22px; height: 22px; object-fit: contain; display: block;">
     <span data-i18n="vkText">ВКонтакте</span>
 </a>
                 </div>
             </div>
             <div class="footer-kadry-mobile">
-                <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
+                <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" data-i18n-alt="kadryAlt">
             </div>
         </div>
     </div>
@@ -1325,8 +1328,8 @@
     <!-- ОКНО АРХИВА ПРОГРАММ -->
     <div class="modal-overlay" id="docsModal">
         <div class="modal-box" style="text-align: left; max-width: 650px;">
-            <h3>Официальные образовательные программы</h3>
-            <p style="font-size: 0.95rem; line-height: 1.8;">
+            <h3 data-i18n="docsModalTitle">Официальные образовательные программы</h3>
+            <p style="font-size: 0.95rem; line-height: 1.8;" data-i18n="docsModalDesc">
                 В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:
             </p>
             
@@ -1340,7 +1343,7 @@
 
     <div class="modal-overlay" id="urgentAlertModal" style="z-index: 25000;">
         <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
-            <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
+            <h3 style="color: var(--ranepa-red);" data-i18n="urgentTitle">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
             <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
             <div class="buy-btn" onclick="closeUrgentAlertModal()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);" data-i18n="modClose">Закрыть</div>
         </div>
@@ -1351,10 +1354,10 @@
         <div class="schedule-container">
             <div class="schedule-header">
                 <h2 class="schedule-title"><span data-i18n="schTitleMain">Расписание</span> <span data-i18n="schTitleSub">занятий</span></h2>
-                <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание">✕</button>
+                <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание" data-i18n-aria-label="scheduleCloseAria">✕</button>
             </div>
             <div class="schedule-layout">
-                <nav class="schedule-months" id="scheduleMonthsNav" aria-label="Месяцы расписания"></nav>
+                <nav class="schedule-months" id="scheduleMonthsNav" aria-label="Месяцы расписания" data-i18n-aria-label="scheduleMonthsAria"></nav>
                 <div class="schedule-content" id="scheduleTimeline"></div>
             </div>
         </div>
@@ -1530,7 +1533,7 @@
         </div>
         
         <div class="chat-input-box">
-            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции, название программы или вопрос..." onkeydown="if(event.key === 'Enter') handleUserMessage()">
+            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции, название программы или вопрос..." data-i18n-placeholder="chatPlaceholder" onkeydown="if(event.key === 'Enter') handleUserMessage()">
             <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
         </div>
 
@@ -1556,10 +1559,10 @@
     </div>
 
     <div class="scroll-nav" id="scrollNav">
-        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
+        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх" data-i18n-aria-label="scrollTopAria">
             <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
         </button>
-        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
+        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз" data-i18n-aria-label="scrollBottomAria">
             <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
         </button>
     </div>
@@ -1591,7 +1594,8 @@
 
     let globalOwlFiles = [];
     let globalPrograms = [];
-    let currentLang = 'ru';
+    const initialLang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ru';
+    let currentLang = initialLang;
     let globalAlert = null;
     let leavingSiteTargetUrl = '';
     let portalDataPromise = null;
@@ -1782,14 +1786,30 @@
                     return data;
                 })
                 .catch(async localError => {
-                    console.warn('Локальный снимок недоступен, обращаемся к API:', localError);
+                    console.warn('Локальный снимок недоступен, используем резервные источники:', localError);
 
-                    const response = await fetch(API_URL, { cache: 'no-store' });
-                    if (!response.ok) throw new Error('API HTTP ' + response.status);
+                    const [programResponse, apiResponse] = await Promise.all([
+                        fetch('./program-data.json', { cache: 'no-store' }),
+                        fetch(API_URL, { cache: 'no-store' })
+                    ]);
+                    if (!programResponse.ok) throw new Error('Program snapshot HTTP ' + programResponse.status);
+                    if (!apiResponse.ok) throw new Error('API HTTP ' + apiResponse.status);
 
-                    const data = await response.json();
+                    const [programSnapshot, apiData] = await Promise.all([
+                        programResponse.json(),
+                        apiResponse.json()
+                    ]);
+                    const programs = programSnapshot && Array.isArray(programSnapshot.programs)
+                        ? programSnapshot.programs
+                        : null;
+                    const data = {
+                        programs,
+                        schedules: apiData && apiData.schedules,
+                        owlFiles: apiData && apiData.owlFiles,
+                        currentAlert: apiData ? apiData.currentAlert : null
+                    };
                     if (!isValidPortalData(data)) {
-                        throw new Error('API returned invalid portal data');
+                        throw new Error('Fallback sources returned invalid portal data');
                     }
 
                     writePortalBrowserCache(data);
@@ -1896,10 +1916,17 @@
 
     const translationsHTML = {
         ru: {
-            pageTitle: "Доп образование и профпереподготовка в Калининграде | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
+            pageTitle: "Доп образование и профпереподготовка в Калининграде | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navNews: "Новости", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
+            bgTag1: "#ЭКСПЕРТЫ_УПРАВЛЕНИЯ", bgTag2: "#БЫСТРЫЙ_СТАРТ", bgTag3: "#СИСТЕМНЫЙ_БИЗНЕС", bgTag4: "#ПРОФЕССИОНАЛИЗМ",
+            logoAlt: "РАНХиГС Президентская академия", kadryAlt: "Национальный проект Кадры", vkAlt: "ВКонтакте", tickerDefault: "⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)", swipeHint: "← 👉 листайте вкладки вправо →", filterNoLimit: "без ограничения",
+            educationDocsTitle: "Официальные документы об образовании", educationDocsDesc: "Официальные дипломы и удостоверения установленного образца с внесением данных в государственную систему ФИС ФРДО.",
+            docAdvanced: "Удостоверение о повышении квалификации", docAdvancedShort: "Повышение квалификации", docCertificate: "Сертификат", docRetraining: "Диплом о профессиональной переподготовке", docStandardSample: "Образец установленного образца", docOfficialCertificate: "Официальное удостоверение", docStateStandard: "Государственный стандарт",
+            nameKanash: "Канаш Ирина Степановна", nameKrupin: "Крупин Артур Леонидович", namePeretyaka: "Перетяка Нина Петровна", nameLoshchilova: "Лощилова М.А.", nameMikhina: "Михина Елена Владимировна", nameBespalova: "Беспалова Валерия Вадимовна", nameDatsun: "Дацун Татьяна Григорьевна", nameChizhekova: "Чижекова Наталья Владимировна", nameKhamzina: "Хамзина Ирина Александровна",
+            docsArchiveLink: "📄 Официальные образовательные программы (Архив)", docsModalTitle: "Официальные образовательные программы", docsModalDesc: "В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:", urgentTitle: "⚠️ ВАЖНАЯ ИНФОРМАЦИЯ",
+            scheduleCloseAria: "Закрыть расписание", scheduleMonthsAria: "Месяцы расписания", chatPlaceholder: "Введите код лекции, название программы или вопрос...", scrollTopAria: "Наверх", scrollBottomAria: "Вниз",
             heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
             tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
-            studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
+            studyPlanBtn: "Изучить учебный план", detailsBtn: "Подробно о программе", enrollBtn: "Записаться", typeLabel: "Тип:", formatLabel: "Форма:", datesLabel: "Сроки:",
             filterSector: "Направление", filterMaxPrice: "Стоимость до, ₽", filterDuration: "Длительность",
             filterSort: "Сортировка", sortAlphaAsc: "По алфавиту (А-Я)", sortAlphaDesc: "По алфавиту (Я-А)", sortPriceAsc: "Сначала дешевле", sortPriceDesc: "Сначала дороже", sortHoursAsc: "Сначала короче", sortHoursDesc: "Сначала длиннее",
             filterDurAny: "Любая", filterDurShort: "до 50 ч.", filterDurMid: "50–200 ч.", filterDurLong: "от 200 ч.", filterReset: "Сбросить",
@@ -1927,6 +1954,15 @@
             owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
             owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.",
             owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся.",
+            tickerAlertPrefix: "⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ", tickerAlertClick: "    |    🖱️ Нажмите сюда, чтобы прочитать полностью",
+            programLoadError: "Не удалось загрузить программы. Пожалуйста, обновите страницу.", docsEmpty: "Документы пока не загружены.",
+            staffNewsMsg: "🔒 <b>Редакция Центра ДПО</b><br><br>Это служебный раздел для сотрудников. Для продолжения потребуется подтверждение доступа.",
+            staffPortalMsg: "🔒 <b>Служебный портал</b><br><br>Здесь сотрудники могут загружать и обновлять учебные планы.",
+            staffContinue: "🔐 Продолжить", staffBack: "⬅️ Вернуться в меню",
+            owlMaterialsFound: "📚 Материалы по теме <b>«{title}»</b> успешно найдены!", owlMaterialsOpen: "👉 Скачать / открыть материалы лекции",
+            owlTeacherComment: "💬 <b>Комментарий преподавателя:</b>", owlMaterialsUpdated: "🕒 Загружено / обновлено:",
+            owlMaterialHidden: "⚠️ Материал по коду <b>«{title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.",
+            owlStatusChanged: "🕒 Статус изменен:",
             goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?",
             schTitleMain: "Расписание", schTitleSub: "занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
             schLoading: "Загружаем расписание…", schEmpty: "Ближайших занятий пока нет.", schError: "Не удалось загрузить расписание. Закройте окно и попробуйте открыть его ещё раз.",
@@ -1942,10 +1978,17 @@
             leaveCancel: "Отмена"
         },
         en: {
-            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
+            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navNews: "News", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
+            bgTag1: "#MANAGEMENT_EXPERTS", bgTag2: "#FAST_START", bgTag3: "#SYSTEMATIC_BUSINESS", bgTag4: "#PROFESSIONALISM",
+            logoAlt: "RANEPA Presidential Academy", kadryAlt: "National Project Kadry", vkAlt: "VKontakte", tickerDefault: "⚠️ IMPORTANT NOTICE FROM AN INSTRUCTOR (Click to read in full)", swipeHint: "← 👉 swipe the tabs to the right →", filterNoLimit: "no limit",
+            educationDocsTitle: "Official Education Credentials", educationDocsDesc: "Official diplomas and certificates in the approved format, with records entered into the federal FIS FRDO education credentials system.",
+            docAdvanced: "Certificate of Advanced Training", docAdvancedShort: "Advanced Training", docCertificate: "Certificate", docRetraining: "Professional Retraining Diploma", docStandardSample: "Approved-format sample", docOfficialCertificate: "Official certificate", docStateStandard: "Official standard",
+            nameKanash: "Irina Stepanovna Kanash", nameKrupin: "Artur Leonidovich Krupin", namePeretyaka: "Nina Petrovna Peretyaka", nameLoshchilova: "M. A. Loshchilova", nameMikhina: "Elena Vladimirovna Mikhina", nameBespalova: "Valeria Vadimovna Bespalova", nameDatsun: "Tatyana Grigoryevna Datsun", nameChizhekova: "Natalya Vladimirovna Chizhekova", nameKhamzina: "Irina Aleksandrovna Khamzina",
+            docsArchiveLink: "📄 Official Educational Programs (Archive)", docsModalTitle: "Official Educational Programs", docsModalDesc: "In accordance with applicable Russian legislation, this archive contains full texts and summaries of continuing professional education programs:", urgentTitle: "⚠️ IMPORTANT INFORMATION",
+            scheduleCloseAria: "Close schedule", scheduleMonthsAria: "Schedule months", chatPlaceholder: "Enter a lecture code, program title, or question...", scrollTopAria: "Scroll to top", scrollBottomAria: "Scroll to bottom",
             heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
             tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
-            studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now", faqTitle: "Frequently Asked Questions",
+            studyPlanBtn: "Explore Curriculum", detailsBtn: "Program details", enrollBtn: "Apply Now", typeLabel: "Type:", formatLabel: "Format:", datesLabel: "Study period:", faqTitle: "Frequently Asked Questions",
             filterSector: "Sector", filterMaxPrice: "Max price, ₽", filterDuration: "Duration",
             filterSort: "Sort by", sortAlphaAsc: "Alphabetical (A-Z)", sortAlphaDesc: "Alphabetical (Z-A)", sortPriceAsc: "Price (Low to High)", sortPriceDesc: "Price (High to Low)", sortHoursAsc: "Duration (Short to Long)", sortHoursDesc: "Duration (Long to Short)",
             filterDurAny: "Any", filterDurShort: "up to 50 hrs", filterDurMid: "50–200 hrs", filterDurLong: "200+ hrs", filterReset: "Reset",
@@ -1972,6 +2015,15 @@
             owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
             owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog? You can also enter a lecture code to get materials.",
             owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon.",
+            tickerAlertPrefix: "⚠️ IMPORTANT NOTICE: ", tickerAlertClick: "    |    🖱️ Click here to read in full",
+            programLoadError: "Could not load the programs. Please refresh the page.", docsEmpty: "No documents have been uploaded yet.",
+            staffNewsMsg: "🔒 <b>Center Editorial Workspace</b><br><br>This is a staff-only section. Access verification is required to continue.",
+            staffPortalMsg: "🔒 <b>Staff Portal</b><br><br>Staff members can upload and update curriculum documents here.",
+            staffContinue: "🔐 Continue", staffBack: "⬅️ Back to menu",
+            owlMaterialsFound: "📚 Materials for <b>“{title}”</b> were found successfully!", owlMaterialsOpen: "👉 Download / open lecture materials",
+            owlTeacherComment: "💬 <b>Instructor’s comment:</b>", owlMaterialsUpdated: "🕒 Uploaded / updated:",
+            owlMaterialHidden: "⚠️ Materials for code <b>“{title}”</b> are currently <b>inactive</b> or hidden by the instructor.",
+            owlStatusChanged: "🕒 Status changed:",
             goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?",
             schTitleMain: "Class", schTitleSub: "schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
             schLoading: "Loading schedule…", schEmpty: "There are no upcoming classes yet.", schError: "Could not load the schedule. Close this window and try opening it again.",
@@ -1987,6 +2039,66 @@
             leaveCancel: "Cancel"
         }
     };
+
+    function formatI18n(template, values) {
+        return String(template || '').replace(/\{(\w+)\}/g, (_, key) =>
+            values && values[key] !== undefined ? String(values[key]) : ''
+        );
+    }
+
+    function renderGlobalAlertTicker() {
+        const tickerEl = document.getElementById('globalAlertTicker');
+        const tickerTextEl = document.getElementById('tickerText');
+        if (!tickerEl || !tickerTextEl) return;
+        if (globalAlert && globalAlert.text) {
+            const alertText = String(globalAlert.text || '').replace(/\s*\n\s*/g, ' ').trim();
+            tickerTextEl.textContent =
+                translationsHTML[currentLang].tickerAlertPrefix +
+                alertText +
+                translationsHTML[currentLang].tickerAlertClick;
+            tickerEl.style.display = 'block';
+        } else {
+            tickerTextEl.textContent = translationsHTML[currentLang].tickerDefault;
+            tickerEl.style.display = 'none';
+        }
+    }
+
+    function translateProgramMeta(value, lang) {
+        const raw = String(value || '').trim();
+        if (lang === 'ru') return raw;
+        const exact = {
+            'По запросу': 'On request',
+            'Повышение квалификации': 'Advanced training',
+            'Проф. переподготовка': 'Professional retraining',
+            'Проф. обучение': 'Vocational training',
+            'Семинар': 'Seminar',
+            'Очная': 'In-person',
+            'Очно-заочная': 'Blended',
+            'Очно-заочная с применением ЭО и ДОТ': 'Blended, with e-learning and distance learning technologies',
+            'Очно-заочная (с применением ЭО и ДОТ)': 'Blended, with e-learning and distance learning technologies',
+            'Очно с применением ДОТ': 'In-person, with distance learning technologies',
+            'Уточняется': 'To be confirmed',
+            'По мере формирования групп': 'As groups are formed',
+            '1 месяц': '1 month',
+            '1,5 месяца': '1.5 months',
+            '2 месяца': '2 months',
+            '2,5 месяца': '2.5 months',
+            '1,5 – 2 недели': '1.5–2 weeks',
+            '1 - 2 дня': '1–2 days',
+            '10 недель': '10 weeks'
+        };
+        if (exact[raw]) return exact[raw];
+        return raw.replace(/ч\./gi, 'hrs');
+    }
+
+    function localizedProgramMeta(prog, key, lang) {
+        if (!prog) return '';
+        if (lang === 'en') {
+            const exact = String(prog[key + '_en'] || '').trim();
+            if (exact) return exact;
+        }
+        return translateProgramMeta(prog[key], lang);
+    }
 
     function setLanguage(lang) {
         currentLang = lang;
@@ -2008,6 +2120,25 @@
             }
         });
 
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translationsHTML[lang] && translationsHTML[lang][key] !== undefined) {
+                el.placeholder = translationsHTML[lang][key];
+            }
+        });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+            const key = el.getAttribute('data-i18n-alt');
+            if (translationsHTML[lang] && translationsHTML[lang][key] !== undefined) {
+                el.alt = translationsHTML[lang][key];
+            }
+        });
+        document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+            const key = el.getAttribute('data-i18n-aria-label');
+            if (translationsHTML[lang] && translationsHTML[lang][key] !== undefined) {
+                el.setAttribute('aria-label', translationsHTML[lang][key]);
+            }
+        });
+
         const consentToggleBtn = document.getElementById('consentToggleBtn');
         if (consentToggleBtn) {
             const isShown = document.getElementById('consentDetailsText').classList.contains('show');
@@ -2016,12 +2147,24 @@
                 : translationsHTML[lang].consentToggleShow;
         }
 
-        document.querySelectorAll('.accordion-btn').forEach(btn => {
-            const card = btn.closest('.card');
-            btn.textContent = card.classList.contains('active')
-                ? (lang === 'ru' ? 'Свернуть учебный план' : 'Collapse Curriculum')
-                : (lang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum');
+        document.querySelectorAll('.program-meta-value').forEach(el => {
+            const programId = el.dataset.programId || '';
+            const metaKey = el.dataset.metaKey || '';
+            const prog = globalPrograms.find(item => String(item.id || '') === programId);
+            if (prog && metaKey) {
+                el.textContent = localizedProgramMeta(prog, metaKey, lang);
+                return;
+            }
+            let raw = '';
+            try { raw = decodeURIComponent(el.dataset.metaValue || ''); } catch (e) { raw = el.dataset.metaValue || ''; }
+            el.textContent = translateProgramMeta(raw, lang);
         });
+        document.querySelectorAll('.program-details-link').forEach(link => {
+            const id = link.dataset.programId || '';
+            link.href = 'program.html?id=' + encodeURIComponent(id) + '&lang=' + lang;
+        });
+        renderGlobalAlertTicker();
+        renderDocsList(globalPrograms);
 
         resetMenu();
     }
@@ -2096,27 +2239,39 @@
                 scheduleDataLoaded = true;
             }
 
-            const tickerEl = document.getElementById('globalAlertTicker');
-            const tickerTextEl = document.getElementById('tickerText');
-
-            if (data.currentAlert && data.currentAlert.text) {
-                globalAlert = data.currentAlert;
-                const alertText = String(globalAlert.text || '').replace(/\s*\n\s*/g, ' ').trim();
-                tickerTextEl.textContent =
-                    '⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ' +
-                    alertText +
-                    '    |    🖱️ Нажмите сюда, чтобы прочитать полностью';
-                tickerEl.style.display = 'block';
-            } else {
-                globalAlert = null;
-                tickerEl.style.display = 'none';
-            }
+            globalAlert = data.currentAlert && data.currentAlert.text ? data.currentAlert : null;
+            renderGlobalAlertTicker();
 
             buildPrograms(data.programs || data);
         } catch (error) {
             console.error("Ошибка API:", error);
-            document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Не удалось загрузить программы. Пожалуйста, обновите страницу.</div>`;
+            document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">${translationsHTML[currentLang].programLoadError}</div>`;
         }
+    }
+
+    function renderDocsList(programs) {
+        const docsListEl = document.getElementById('docsList');
+        if (!docsListEl) return;
+        const items = (Array.isArray(programs) ? programs : []).filter(
+            prog => prog && prog.pdf_link && String(prog.pdf_link).trim() !== ''
+        );
+        if (!items.length) {
+            docsListEl.innerHTML = '<div style="color: var(--text-muted);">' +
+                translationsHTML[currentLang].docsEmpty + '</div>';
+            return;
+        }
+        docsListEl.innerHTML = items.map(prog => {
+            const title = currentLang === 'en'
+                ? (prog.title_en || prog.title_ru || '')
+                : (prog.title_ru || prog.title_en || '');
+            const type = localizedProgramMeta(prog, 'type', currentLang);
+            const hours = localizedProgramMeta(prog, 'hours', currentLang);
+            let docTitle = type ? type + ' “' + title + '”' : '“' + title + '”';
+            if (hours) docTitle += ' (' + hours + ')';
+            return '<div>📄 <a href="' + String(prog.pdf_link) +
+                '" target="_blank" rel="noopener" class="contact-link" style="text-decoration: underline;">' +
+                docTitle + '</a></div>';
+        }).join('');
     }
 
     function buildPrograms(programs) {
@@ -2131,8 +2286,6 @@
         // Сортируем программы по алфавиту изначально
         programs.sort((a, b) => String(a.title_ru).trim().localeCompare(String(b.title_ru).trim(), 'ru'));
         globalPrograms = programs;
-
-        let docsHTML = ''; // Переменная для сбора ссылок на PDF
 
         programs.forEach(prog => {
             translationsHTML.ru[`${prog.id}_title`] = prog.title_ru;
@@ -2150,20 +2303,12 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                 });
             }
 
-            // --- АВТОМАТИЧЕСКАЯ СБОРКА АРХИВА PDF ---
-            if (prog.pdf_link && prog.pdf_link.trim() !== '') {
-                let docTitle = prog.type ? `${prog.type} «${prog.title_ru}»` : `«${prog.title_ru}»`;
-                if (prog.hours) docTitle += ` (${prog.hours})`;
-                docsHTML += `<div>📄 <a href="${prog.pdf_link}" target="_blank" class="contact-link" style="text-decoration: underline;">${docTitle}</a></div>`;
-            }
-            // ----------------------------------------
-
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
                 extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
-                if (prog.type) extraInfoHTML += `<div><b>Тип:</b> ${prog.type}</div>`;
-                if (prog.format) extraInfoHTML += `<div><b>Форма:</b> ${prog.format}</div>`;
-                if (prog.dates) extraInfoHTML += `<div><b>Сроки:</b> ${prog.dates}</div>`;
+                if (prog.type) extraInfoHTML += `<div><b data-i18n="typeLabel">Тип:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="type" data-meta-value="${encodeURIComponent(prog.type)}">${localizedProgramMeta(prog, 'type', currentLang)}</span></div>`;
+                if (prog.format) extraInfoHTML += `<div><b data-i18n="formatLabel">Форма:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="format" data-meta-value="${encodeURIComponent(prog.format)}">${localizedProgramMeta(prog, 'format', currentLang)}</span></div>`;
+                if (prog.dates) extraInfoHTML += `<div><b data-i18n="datesLabel">Сроки:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="dates" data-meta-value="${encodeURIComponent(prog.dates)}">${localizedProgramMeta(prog, 'dates', currentLang)}</span></div>`;
                 extraInfoHTML += `</div>`;
             }
 
@@ -2173,18 +2318,12 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
             let cardHTML = `
             <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
-                <div class="card-meta"><span class="price">${prog.price}</span><span class="hours">${prog.hours}</span></div>
+                <div class="card-meta"><span class="price program-meta-value" data-program-id="${prog.id}" data-meta-key="price" data-meta-value="${encodeURIComponent(prog.price)}">${localizedProgramMeta(prog, 'price', currentLang)}</span><span class="hours program-meta-value" data-program-id="${prog.id}" data-meta-key="hours" data-meta-value="${encodeURIComponent(prog.hours)}">${localizedProgramMeta(prog, 'hours', currentLang)}</span></div>
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
                 <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        ${bulletsHTML}
-                    </ul>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; border-left: 2px solid var(--ranepa-red); padding-left: 8px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 0 8px 8px 0;">
-                        📄 Полная официальная программа и аннотация доступны в <span onclick="openDocsModal()" style="color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700;">архиве программ</span> внизу страницы.
-                    </div>
+                <div class="card-actions">
+                    <a class="program-details-link" href="program.html?id=${encodeURIComponent(prog.id)}&lang=${currentLang}" target="_blank" rel="noopener" data-program-id="${prog.id}" data-i18n="detailsBtn">Подробно о программе</a>
                     <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
                 </div>
             </div>`;
@@ -2197,11 +2336,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             }
         });
 
-        // Заполняем модальное окно документов сгенерированными ссылками
-        const docsListEl = document.getElementById('docsList');
-        if (docsListEl) {
-            docsListEl.innerHTML = docsHTML !== '' ? docsHTML : '<div style="color: var(--text-muted);">Документы пока не загружены.</div>';
-        }
+        renderDocsList(programs);
 
         const sectorOrder = ['gos', 'biz', 'horeca', 'prof'];
         
@@ -2624,18 +2759,18 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
         addBotMsg(
             wantsNewsEditor
-                ? '🔒 <b>Редакция Центра ДПО</b><br><br>Это служебный раздел для сотрудников. Для продолжения потребуется подтверждение доступа.'
-                : '🔒 <b>Служебный портал</b><br><br>Здесь сотрудники могут загружать и обновлять учебные планы.'
+                ? translationsHTML[currentLang].staffNewsMsg
+                : translationsHTML[currentLang].staffPortalMsg
         );
 
         setOptions(`
             <button class="chat-opt-btn"
                 onclick="window.location.href='${targetUrl}'"
                 style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">
-                🔐 Продолжить
+                ${translationsHTML[currentLang].staffContinue}
             </button>
             <button class="chat-opt-btn" onclick="resetMenu()">
-                ⬅️ Вернуться в меню
+                ${translationsHTML[currentLang].staffBack}
             </button>
         `);
     }, 300);
@@ -2657,14 +2792,19 @@ if (wantsNewsEditor || wantsStaffPortal) {
         if (foundFile) {
             setTimeout(() => {
                 if (foundFile.isPublished) {
-                    let responseMsg = `📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`;
+                    let responseMsg =
+                        formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: foundFile.title }) +
+                        `<br><br><a href="${foundFile.url}" target="_blank" rel="noopener" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">${translationsHTML[currentLang].owlMaterialsOpen}</a>`;
                     if (foundFile.comment && foundFile.comment.trim() !== "") {
-                        responseMsg += `<br><br>💬 <b>Комментарий преподавателя:</b><br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
+                        responseMsg += `<br><br>${translationsHTML[currentLang].owlTeacherComment}<br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
                     }
-                    responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Загружено / обновлено: ${foundFile.date}</span>`;
+                    responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlMaterialsUpdated} ${foundFile.date}</span>`;
                     addBotMsg(responseMsg);
                 } else {
-                    addBotMsg(`⚠️ Материал по коду <b>«${foundFile.title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Статус изменен: ${foundFile.date}</span>`);
+                    addBotMsg(
+                        formatI18n(translationsHTML[currentLang].owlMaterialHidden, { title: foundFile.title }) +
+                        `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlStatusChanged} ${foundFile.date}</span>`
+                    );
                 }
             }, 500);
             return;
