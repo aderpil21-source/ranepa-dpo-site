@@ -268,7 +268,7 @@ function render(){
   document.getElementById('format').textContent=localizedMeta('format');
   document.getElementById('period').textContent=localizedMeta('dates');
 
-  setSection('about',field('long_desc'),v=>document.getElementById('about').textContent=v);
+  setSection('about',field('long_desc')||field('desc'),v=>document.getElementById('about').textContent=v);
   setSection('audience',field('audience'),v=>document.getElementById('audience').textContent=v);
   setSection('goal',field('goal'),v=>document.getElementById('goal').textContent=v);
   setSection('outcomes',field('outcomes'),v=>{
