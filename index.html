@@ -1937,7 +1937,12 @@
     }
 
     function parseSiteVersionItem(item) {
-        if (!item || typeof item.id !== 'string' || item.id.indexOf(SITE_VERSION_PREFIX) !== 0) return null;
+        const tags = item && Array.isArray(item.tags) ? item.tags : [];
+        const isVersion = !!item && (
+            tags.includes('__site_version__') ||
+            (typeof item.id === 'string' && item.id.indexOf(SITE_VERSION_PREFIX) === 0)
+        );
+        if (!isVersion) return null;
         try {
             const data = JSON.parse(item.lead || '{}');
             if (!data || !data.snapshot || typeof data.snapshot !== 'object') return null;
@@ -2031,7 +2036,7 @@
             snapshot: snapshot
         };
         const item = {
-            id: localId,
+            id: null,
             title: 'Версия сайта ' + siteVersionDate(now),
             lead: JSON.stringify(versionPayload),
             tags: ['__system__','__site_version__'],
@@ -2046,8 +2051,9 @@
             body: JSON.stringify({ action:'newsSave', token:siteAdminToken, item:item })
         });
         if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Версия не сохранена');
+        const savedId = data.id || localId;
         const saved = {
-            id: data.id || localId,
+            id: savedId,
             createdAt: now,
             parentId: parentId || null,
             reason: versionPayload.reason,
