@@ -1954,6 +1954,15 @@
             owlHelp: "Нужна помощь с выбором программы?", owlHeader: "Цифровой ассистент", owlName: "Сова:",
             owlWelcome: "Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.",
             owlOpt1: "🎯 Пройти тест на профориентацию", owlOpt2: "📚 Кратко обо всех программах", owlOpt3: "📞 Открыть контакты руководства", loading: "Связываемся с базой данных...", noPrograms: "Программы в данном разделе скоро появятся.",
+            tickerAlertPrefix: "⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ", tickerAlertClick: "    |    🖱️ Нажмите сюда, чтобы прочитать полностью",
+            programLoadError: "Не удалось загрузить программы. Пожалуйста, обновите страницу.", docsEmpty: "Документы пока не загружены.",
+            staffNewsMsg: "🔒 <b>Редакция Центра ДПО</b><br><br>Это служебный раздел для сотрудников. Для продолжения потребуется подтверждение доступа.",
+            staffPortalMsg: "🔒 <b>Служебный портал</b><br><br>Здесь сотрудники могут загружать и обновлять учебные планы.",
+            staffContinue: "🔐 Продолжить", staffBack: "⬅️ Вернуться в меню",
+            owlMaterialsFound: "📚 Материалы по теме <b>«{title}»</b> успешно найдены!", owlMaterialsOpen: "👉 Скачать / открыть материалы лекции",
+            owlTeacherComment: "💬 <b>Комментарий преподавателя:</b>", owlMaterialsUpdated: "🕒 Загружено / обновлено:",
+            owlMaterialHidden: "⚠️ Материал по коду <b>«{title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.",
+            owlStatusChanged: "🕒 Статус изменен:",
             goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?",
             schTitleMain: "Расписание", schTitleSub: "занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
             schLoading: "Загружаем расписание…", schEmpty: "Ближайших занятий пока нет.", schError: "Не удалось загрузить расписание. Закройте окно и попробуйте открыть его ещё раз.",
@@ -2006,6 +2015,15 @@
             owlHelp: "Need help choosing a program?", owlHeader: "Digital Assistant", owlName: "Owl:",
             owlWelcome: "Good day. I'm the official digital advisor of the Center for Continuing Education. Shall we run the career-fit test or go straight to the catalog? You can also enter a lecture code to get materials.",
             owlOpt1: "🎯 Take the career-fit test", owlOpt2: "📚 Quick overview of all programs", owlOpt3: "📞 Open management contacts", loading: "Connecting to the database...", noPrograms: "Programs in this section will appear soon.",
+            tickerAlertPrefix: "⚠️ IMPORTANT NOTICE: ", tickerAlertClick: "    |    🖱️ Click here to read in full",
+            programLoadError: "Could not load the programs. Please refresh the page.", docsEmpty: "No documents have been uploaded yet.",
+            staffNewsMsg: "🔒 <b>Center Editorial Workspace</b><br><br>This is a staff-only section. Access verification is required to continue.",
+            staffPortalMsg: "🔒 <b>Staff Portal</b><br><br>Staff members can upload and update curriculum documents here.",
+            staffContinue: "🔐 Continue", staffBack: "⬅️ Back to menu",
+            owlMaterialsFound: "📚 Materials for <b>“{title}”</b> were found successfully!", owlMaterialsOpen: "👉 Download / open lecture materials",
+            owlTeacherComment: "💬 <b>Instructor’s comment:</b>", owlMaterialsUpdated: "🕒 Uploaded / updated:",
+            owlMaterialHidden: "⚠️ Materials for code <b>“{title}”</b> are currently <b>inactive</b> or hidden by the instructor.",
+            owlStatusChanged: "🕒 Status changed:",
             goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?",
             schTitleMain: "Class", schTitleSub: "schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
             schLoading: "Loading schedule…", schEmpty: "There are no upcoming classes yet.", schError: "Could not load the schedule. Close this window and try opening it again.",
@@ -2021,6 +2039,29 @@
             leaveCancel: "Cancel"
         }
     };
+
+    function formatI18n(template, values) {
+        return String(template || '').replace(/\{(\w+)\}/g, (_, key) =>
+            values && values[key] !== undefined ? String(values[key]) : ''
+        );
+    }
+
+    function renderGlobalAlertTicker() {
+        const tickerEl = document.getElementById('globalAlertTicker');
+        const tickerTextEl = document.getElementById('tickerText');
+        if (!tickerEl || !tickerTextEl) return;
+        if (globalAlert && globalAlert.text) {
+            const alertText = String(globalAlert.text || '').replace(/\s*\n\s*/g, ' ').trim();
+            tickerTextEl.textContent =
+                translationsHTML[currentLang].tickerAlertPrefix +
+                alertText +
+                translationsHTML[currentLang].tickerAlertClick;
+            tickerEl.style.display = 'block';
+        } else {
+            tickerTextEl.textContent = translationsHTML[currentLang].tickerDefault;
+            tickerEl.style.display = 'none';
+        }
+    }
 
     function translateProgramMeta(value, lang) {
         const raw = String(value || '').trim();
@@ -2106,6 +2147,8 @@
             const id = link.dataset.programId || '';
             link.href = 'program.html?id=' + encodeURIComponent(id) + '&lang=' + lang;
         });
+        renderGlobalAlertTicker();
+        renderDocsList(globalPrograms);
 
         resetMenu();
     }
@@ -2180,27 +2223,39 @@
                 scheduleDataLoaded = true;
             }
 
-            const tickerEl = document.getElementById('globalAlertTicker');
-            const tickerTextEl = document.getElementById('tickerText');
-
-            if (data.currentAlert && data.currentAlert.text) {
-                globalAlert = data.currentAlert;
-                const alertText = String(globalAlert.text || '').replace(/\s*\n\s*/g, ' ').trim();
-                tickerTextEl.textContent =
-                    '⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ: ' +
-                    alertText +
-                    '    |    🖱️ Нажмите сюда, чтобы прочитать полностью';
-                tickerEl.style.display = 'block';
-            } else {
-                globalAlert = null;
-                tickerEl.style.display = 'none';
-            }
+            globalAlert = data.currentAlert && data.currentAlert.text ? data.currentAlert : null;
+            renderGlobalAlertTicker();
 
             buildPrograms(data.programs || data);
         } catch (error) {
             console.error("Ошибка API:", error);
-            document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">Не удалось загрузить программы. Пожалуйста, обновите страницу.</div>`;
+            document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">${translationsHTML[currentLang].programLoadError}</div>`;
         }
+    }
+
+    function renderDocsList(programs) {
+        const docsListEl = document.getElementById('docsList');
+        if (!docsListEl) return;
+        const items = (Array.isArray(programs) ? programs : []).filter(
+            prog => prog && prog.pdf_link && String(prog.pdf_link).trim() !== ''
+        );
+        if (!items.length) {
+            docsListEl.innerHTML = '<div style="color: var(--text-muted);">' +
+                translationsHTML[currentLang].docsEmpty + '</div>';
+            return;
+        }
+        docsListEl.innerHTML = items.map(prog => {
+            const title = currentLang === 'en'
+                ? (prog.title_en || prog.title_ru || '')
+                : (prog.title_ru || prog.title_en || '');
+            const type = translateProgramMeta(prog.type, currentLang);
+            const hours = translateProgramMeta(prog.hours, currentLang);
+            let docTitle = type ? type + ' “' + title + '”' : '“' + title + '”';
+            if (hours) docTitle += ' (' + hours + ')';
+            return '<div>📄 <a href="' + String(prog.pdf_link) +
+                '" target="_blank" rel="noopener" class="contact-link" style="text-decoration: underline;">' +
+                docTitle + '</a></div>';
+        }).join('');
     }
 
     function buildPrograms(programs) {
@@ -2215,8 +2270,6 @@
         // Сортируем программы по алфавиту изначально
         programs.sort((a, b) => String(a.title_ru).trim().localeCompare(String(b.title_ru).trim(), 'ru'));
         globalPrograms = programs;
-
-        let docsHTML = ''; // Переменная для сбора ссылок на PDF
 
         programs.forEach(prog => {
             translationsHTML.ru[`${prog.id}_title`] = prog.title_ru;
@@ -2233,14 +2286,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                     bulletsHTML += `<li data-i18n="${bulletKey}">✔️ ${b_ru.trim()}</li>`;
                 });
             }
-
-            // --- АВТОМАТИЧЕСКАЯ СБОРКА АРХИВА PDF ---
-            if (prog.pdf_link && prog.pdf_link.trim() !== '') {
-                let docTitle = prog.type ? `${prog.type} «${prog.title_ru}»` : `«${prog.title_ru}»`;
-                if (prog.hours) docTitle += ` (${prog.hours})`;
-                docsHTML += `<div>📄 <a href="${prog.pdf_link}" target="_blank" class="contact-link" style="text-decoration: underline;">${docTitle}</a></div>`;
-            }
-            // ----------------------------------------
 
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
@@ -2275,11 +2320,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             }
         });
 
-        // Заполняем модальное окно документов сгенерированными ссылками
-        const docsListEl = document.getElementById('docsList');
-        if (docsListEl) {
-            docsListEl.innerHTML = docsHTML !== '' ? docsHTML : '<div style="color: var(--text-muted);">Документы пока не загружены.</div>';
-        }
+        renderDocsList(programs);
 
         const sectorOrder = ['gos', 'biz', 'horeca', 'prof'];
         
@@ -2702,18 +2743,18 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
         addBotMsg(
             wantsNewsEditor
-                ? '🔒 <b>Редакция Центра ДПО</b><br><br>Это служебный раздел для сотрудников. Для продолжения потребуется подтверждение доступа.'
-                : '🔒 <b>Служебный портал</b><br><br>Здесь сотрудники могут загружать и обновлять учебные планы.'
+                ? translationsHTML[currentLang].staffNewsMsg
+                : translationsHTML[currentLang].staffPortalMsg
         );
 
         setOptions(`
             <button class="chat-opt-btn"
                 onclick="window.location.href='${targetUrl}'"
                 style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">
-                🔐 Продолжить
+                ${translationsHTML[currentLang].staffContinue}
             </button>
             <button class="chat-opt-btn" onclick="resetMenu()">
-                ⬅️ Вернуться в меню
+                ${translationsHTML[currentLang].staffBack}
             </button>
         `);
     }, 300);
@@ -2735,14 +2776,19 @@ if (wantsNewsEditor || wantsStaffPortal) {
         if (foundFile) {
             setTimeout(() => {
                 if (foundFile.isPublished) {
-                    let responseMsg = `📚 Материалы по теме <b>«${foundFile.title}»</b> успешно найдены!<br><br><a href="${foundFile.url}" target="_blank" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">👉 Скачать / открыть материалы лекции</a>`;
+                    let responseMsg =
+                        formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: foundFile.title }) +
+                        `<br><br><a href="${foundFile.url}" target="_blank" rel="noopener" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">${translationsHTML[currentLang].owlMaterialsOpen}</a>`;
                     if (foundFile.comment && foundFile.comment.trim() !== "") {
-                        responseMsg += `<br><br>💬 <b>Комментарий преподавателя:</b><br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
+                        responseMsg += `<br><br>${translationsHTML[currentLang].owlTeacherComment}<br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${foundFile.comment.replace(/\n/g, '<br>')}</i>`;
                     }
-                    responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Загружено / обновлено: ${foundFile.date}</span>`;
+                    responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlMaterialsUpdated} ${foundFile.date}</span>`;
                     addBotMsg(responseMsg);
                 } else {
-                    addBotMsg(`⚠️ Материал по коду <b>«${foundFile.title}»</b> в данный момент <b>неактуален</b> или скрыт преподавателем.<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">🕒 Статус изменен: ${foundFile.date}</span>`);
+                    addBotMsg(
+                        formatI18n(translationsHTML[currentLang].owlMaterialHidden, { title: foundFile.title }) +
+                        `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlStatusChanged} ${foundFile.date}</span>`
+                    );
                 }
             }, 500);
             return;
