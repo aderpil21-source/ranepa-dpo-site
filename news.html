@@ -344,6 +344,31 @@ const CONFIG = {
    ============================================================================ */
 const SYSTEM_NEWS_ID = '__site_admin_settings__';
 function isSystemNewsItem(item){ return !!item && item.id === SYSTEM_NEWS_ID; }
+let publicNewsPageEnabled = true;
+
+async function loadPublicNewsPageEnabled(){
+    if (adminToken) return true;
+    try {
+        const data = await requestJson(CONFIG.api + '?type=news&_sitecfg=' + Date.now(), { method:'GET' }, 1);
+        const items = Array.isArray(data.items) ? data.items : [];
+        const settings = items.find(isSystemNewsItem);
+        if (!settings) return true;
+        const parsed = JSON.parse(settings.lead || '{}');
+        const visibility = parsed && parsed.visibility && typeof parsed.visibility === 'object'
+            ? parsed.visibility : {};
+        return visibility.news_page !== false;
+    } catch(e) {
+        console.warn('Не удалось проверить доступность раздела новостей:', e);
+        return true;
+    }
+}
+
+function renderNewsPageDisabled(){
+    const grid = $('newsGrid');
+    if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:70px 24px;color:var(--text-muted);"><h2 style="color:var(--text-main);margin-bottom:12px;">Раздел новостей временно скрыт</h2><p>Вернитесь на главную страницу Центра.</p></div>';
+    const tags = $('newsTagsBar');
+    if (tags) tags.innerHTML = '';
+}
 
 let newsItems = [], adminToken = sessionStorage.getItem('newsAdminToken') || null;
 let vkState = { version:2, items:{} };
@@ -984,6 +1009,10 @@ function startPublicNewsPolling(){
 }
 
 async function fetchNews(){
+    if (!adminToken && publicNewsPageEnabled === false) {
+        renderNewsPageDisabled();
+        return;
+    }
     // Администратор всегда получает свежий полный набор напрямую с бэкенда.
     if (adminToken){
         stopPublicNewsPolling();
@@ -1540,8 +1569,11 @@ async function deleteNews(id){
 /* ============================================================================
    БЛОК 13. СОБЫТИЯ
    ============================================================================ */
-document.addEventListener('DOMContentLoaded', () => {
-    fetchNews();
+document.addEventListener('DOMContentLoaded', async () => {
+    const editorRequested = new URLSearchParams(window.location.search).get('editor') === '1';
+    publicNewsPageEnabled = editorRequested || adminToken ? true : await loadPublicNewsPageEnabled();
+    if (publicNewsPageEnabled || editorRequested || adminToken) fetchNews();
+    else renderNewsPageDisabled();
     renderPendingNote();
 
     document.addEventListener('visibilitychange', () => {
@@ -1565,8 +1597,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('online', setOnline);
     window.addEventListener('offline', setOnline);
     setOnline();
-
-    const editorRequested = new URLSearchParams(window.location.search).get('editor') === '1';
 
 if (editorRequested && !adminToken) {
     $('newsAdminLoginModal').classList.add('active');
