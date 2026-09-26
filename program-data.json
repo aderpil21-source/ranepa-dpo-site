@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:07:54.820Z",
+  "generatedAt": "2026-09-26T12:08:42.721Z",
   "programs": [
     {
       "id": "c14",
@@ -1197,7 +1197,7 @@
       "dates": "Срок обучения — 1 месяц; набор по мере формирования групп",
       "title_ru": "Развитие коммуникаций в индустрии гостеприимства",
       "desc_ru": "Программа направлена на повышение эффективности работы персонала сферы туризма за счет развития коммуникативных навыков. Участники освоят методики построения эффективных диалогов, научившись распознавать и преодолевать барьеры. Полученные знания позволяют улучшить клиентский опыт, увеличивая лояльность и общую эффективность организаций.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа направлена на развитие коммуникативных навыков сотрудников сферы туризма и гостеприимства. В рамках обучения рассматриваются построение эффективного диалога, распознавание и преодоление коммуникационных барьеров, ведение переговоров и управление конфликтными ситуациями.\n\nРазвитие этих навыков помогает улучшать взаимодействие с клиентами и коллегами, повышать качество коммуникации и укреплять лояльность к организации.",
       "bullets_ru": [
         "Коммуникативные навыки",
         "Управление конфликтами",
@@ -1205,7 +1205,7 @@
       ],
       "title_en": "Development of Communicative Competencies in Tourism",
       "desc_en": "The program aims to improve the efficiency of tourism personnel through the development of communication skills. Participants will master methods for building effective dialogues, learning to recognize and overcome communication barriers. The acquired knowledge enhances the customer experience, increasing loyalty and overall organizational efficiency.",
-      "long_desc_en": "",
+      "long_desc_en": "The program develops communication skills for professionals in tourism and hospitality. It covers effective dialogue, recognising and overcoming communication barriers, negotiation, and conflict management.\n\nDeveloping these skills helps improve interaction with clients and colleagues, strengthen communication quality, and support customer loyalty and organisational effectiveness.",
       "bullets_en": [
         "Communication skills",
         "Conflict management",
@@ -1230,7 +1230,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 38,000",
       "hours_en": "72 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1248,7 +1248,7 @@
       "dates": "1,5 месяца",
       "title_ru": "Искусственный интеллект: практическое применение",
       "desc_ru": "Программа повышения квалификации поможет освоить современные информационные системы и базы данных. Познакомившись с принципами работы искусственного интеллекта, слушатели обретают практические навыки его применения. Курс направлен на формирование глубокого понимания основ ИИ и способов интеграции технологий в процессы.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа повышения квалификации посвящена практическому применению искусственного интеллекта и современных информационных систем. Слушатели знакомятся с принципами работы ИИ, работой с базами данных и возможностями интеграции цифровых инструментов в рабочие процессы.\n\nОбучение помогает перейти от общего понимания технологий к их практическому использованию и сформировать системное представление о применении ИИ в профессиональной деятельности.",
       "bullets_ru": [
         "Использование искусственного интеллекта",
         "Работа с базами данных",
@@ -1256,7 +1256,7 @@
       ],
       "title_en": "Practical Application of Artificial Intelligence",
       "desc_en": "The advanced training program helps master modern information systems and databases. Having familiarized themselves with the principles of artificial intelligence, students acquire practical skills for its application. The course aims to build a deep understanding of AI foundations and methods of technology integration into processes.",
-      "long_desc_en": "",
+      "long_desc_en": "The advanced training program focuses on the practical application of artificial intelligence and modern information systems. Participants explore the principles of AI, database work, and opportunities to integrate digital tools into professional workflows.\n\nThe training helps participants move from a general understanding of the technology to practical use and develop a systematic view of how AI can be applied in professional activities.",
       "bullets_en": [
         "Artificial intelligence application",
         "Database operation",
@@ -1281,7 +1281,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 10,500 (basic level) / RUB 38,000 (specialised level)",
       "hours_en": "98 academic hours (specialised level) / 36 academic hours (basic level) ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1299,7 +1299,7 @@
       "dates": "1,5 – 2 недели",
       "title_ru": "Совершенствование навыков эффективной коммуникации и делового письма",
       "desc_ru": "Программа направлена на совершенствование навыков эффективной коммуникации и делового письма. В процессе обучения слушатели осваивают стандарты составления служебной документации и ведения профессионального диалога. Полученные компетенции позволяют уверенно решать задачи корпоративного взаимодействия, повышая общую продуктивность.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа направлена на совершенствование навыков эффективной коммуникации и делового письма. В ходе обучения рассматриваются стандарты подготовки служебной документации, правила профессионального письменного общения и ведение делового диалога.\n\nПолученные навыки помогают увереннее решать задачи корпоративного взаимодействия, формулировать деловые сообщения и поддерживать понятную и профессиональную коммуникацию внутри организации.",
       "bullets_ru": [
         "Деловое письмо",
         "Корпоративная коммуникация",
@@ -1307,7 +1307,7 @@
       ],
       "title_en": "Improving Effective Communication and Business Writing Skills",
       "desc_en": "The program aims to improve skills in effective communication and business writing. During the training, students master standards of corporate documentation and professional dialogue. The acquired competencies enable confident handling of corporate interaction tasks, increasing overall productivity.",
-      "long_desc_en": "",
+      "long_desc_en": "The program develops effective communication and business writing skills. It covers standards for preparing official documents, professional written communication, and business dialogue.\n\nThe skills gained help participants handle corporate communication tasks more confidently, formulate business messages clearly, and maintain professional communication within an organisation.",
       "bullets_en": [
         "Business writing",
         "Corporate communication",
@@ -1332,7 +1332,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 10,500",
       "hours_en": "36 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1393,7 +1393,7 @@
       "dates": "1 неделя",
       "title_ru": "Обеспечение деятельности судебных участков мировых судей",
       "desc_ru": "Программа направлена на повышение квалификации специалистов, обеспечивающих деятельность судебных участков. В процессе обучения слушатели изучают нормативно-правовую базу и стандарты делопроизводства. Полученные навыки позволяют эффективно организовывать работу аппарата мировых судей.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для специалистов, обеспечивающих деятельность судебных участков мировых судей. В рамках обучения рассматриваются нормативно-правовая база, стандарты делопроизводства и организация работы аппарата судебного участка.\n\nПолученные знания и навыки помогают систематизировать рабочие процессы, связанные с документационным обеспечением и повседневной организацией деятельности аппарата мировых судей.",
       "bullets_ru": [
         "Делопроизводство на судебных участках",
         "Нормативно-правовая база",
@@ -1401,7 +1401,7 @@
       ],
       "title_en": "Ensuring the Operation of Magistrate Courts",
       "desc_en": "The program aims to improve the qualifications of specialists ensuring the operation of court sections. During the training, students study the regulatory framework and clerical standards. The acquired skills enable efficient organization of magistrate staff operations.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for professionals who support the operation of magistrate courts. It covers the regulatory framework, clerical standards, and the organisation of administrative work within a magistrate court office.\n\nThe knowledge and skills gained help participants systematise work processes related to documentation and the day-to-day organisation of magistrate court operations.",
       "bullets_en": [
         "Magistrate court clerical work",
         "Regulatory framework",
@@ -1426,7 +1426,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 41,000",
       "hours_en": "40 academic hours ⚡",
       "format_en": "In-person, with distance learning technologies",
