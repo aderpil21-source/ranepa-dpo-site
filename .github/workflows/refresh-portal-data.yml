@@ -62,10 +62,18 @@ jobs:
           if not isinstance(data, dict):
               raise SystemExit("Portal API response is not a JSON object")
 
+          programs = data.get("programs")
           schedules = data.get("schedules")
           owl_files = data.get("owlFiles")
           current_alert = data.get("currentAlert")
 
+          if not isinstance(programs, list) or not programs:
+              raise SystemExit("Portal API response has no non-empty programs array")
+          if any(not isinstance(item, dict) or not item.get("id") for item in programs):
+              raise SystemExit("Portal API response contains invalid program records")
+          ids = [str(item.get("id")) for item in programs]
+          if len(ids) != len(set(ids)):
+              raise SystemExit("Portal API response contains duplicate program IDs")
           if not isinstance(schedules, list):
               raise SystemExit("Portal API response has no schedules array")
           if not isinstance(owl_files, list):
@@ -82,18 +90,6 @@ jobs:
                   return json.loads(path.read_text(encoding="utf-8"))
               except (json.JSONDecodeError, OSError):
                   return None
-
-          program_snapshot = read_json(program_path)
-          if not isinstance(program_snapshot, dict):
-              raise SystemExit("program-data.json is missing or invalid")
-          programs = program_snapshot.get("programs")
-          if not isinstance(programs, list) or not programs:
-              raise SystemExit("program-data.json has no non-empty programs array")
-          if any(not isinstance(item, dict) or not item.get("id") for item in programs):
-              raise SystemExit("program-data.json contains invalid program records")
-          ids = [str(item.get("id")) for item in programs]
-          if len(ids) != len(set(ids)):
-              raise SystemExit("program-data.json contains duplicate program IDs")
 
           def write_json(path, payload):
               path.write_text(
