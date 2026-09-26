@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:07:07.852Z",
+  "generatedAt": "2026-09-26T12:07:54.820Z",
   "programs": [
     {
       "id": "c14",
@@ -889,7 +889,7 @@
       "dates": "Срок обучения — 1,5 – 2 недели; набор по мере формирования групп",
       "title_ru": "Организация деятельности по профилактике терроризма в органах государственной власти и местного самоуправления",
       "desc_ru": "Программа направлена на повышение квалификации руководителей органов местного самоуправления и государственных служащих. В ходе обучения слушатели разбирают нормативно-правовое обеспечение и базовые механизмы противодействия терроризму. Полученные знания позволяют эффективно оптимизировать взаимодействие органов власти, предотвращая угрозы безопасности.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для руководителей органов местного самоуправления и государственных служащих, участвующих в организации профилактики терроризма. Обучение охватывает нормативно-правовое обеспечение, базовые механизмы противодействия терроризму и вопросы взаимодействия органов власти.\n\nПрограмма помогает систематизировать подходы к организации профилактической работы и к координации действий органов государственной власти и местного самоуправления при предупреждении угроз безопасности.",
       "bullets_ru": [
         "Противодействие терроризму",
         "Нормативно-правовое обеспечение",
@@ -897,7 +897,7 @@
       ],
       "title_en": "Terrorism Prevention in Public Authorities",
       "desc_en": "The program aims to improve the qualifications of municipal management and civil servants. During the training, students analyze regulatory frameworks and basic mechanisms for countering terrorism. The acquired knowledge enables efficient optimization of government agency cooperation, preventing security threats.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for local government leaders and civil servants involved in organising terrorism prevention activities. It covers the regulatory framework, core counter-terrorism mechanisms, and cooperation between public authorities.\n\nThe program helps participants systematise approaches to preventive work and to coordinating the actions of state and local authorities in preventing security threats.",
       "bullets_en": [
         "Countering terrorism",
         "Regulatory framework",
@@ -922,7 +922,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 10,500",
       "hours_en": "36 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -940,7 +940,7 @@
       "dates": "Срок обучения — 1,5 – 2 недели; набор по мере формирования групп",
       "title_ru": "Основы национальной безопасности в органах государственной власти и местного самоуправления",
       "desc_ru": "Программа предназначена для государственных служащих и специалистов надзорных органов. В рамках курса слушатели изучают основы обеспечения национальной безопасности, осваивая инструменты защиты интересов государства. Полученные знания позволяют эффективно взаимодействовать с институтами гражданского общества, противодействуя актуальным угрозам.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для государственных служащих и специалистов надзорных органов и посвящена основам национальной безопасности. В ходе обучения рассматриваются подходы к защите интересов государства, противодействию актуальным угрозам и взаимодействию с институтами гражданского общества.\n\nПолученные знания помогают сформировать целостное представление о задачах органов власти в сфере национальной безопасности и о роли межведомственного и общественного взаимодействия.",
       "bullets_ru": [
         "Национальная безопасность",
         "Защита интересов",
@@ -948,7 +948,7 @@
       ],
       "title_en": "Fundamentals of National Security in Public Authorities",
       "desc_en": "The program is designed for civil servants and supervisory specialists. Within the course, students study the fundamentals of ensuring national security, mastering tools to protect state interests. The acquired knowledge enables effective cooperation with civil society institutions, countering current threats.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for civil servants and supervisory professionals and focuses on the fundamentals of national security. It covers approaches to protecting state interests, countering current threats, and cooperating with civil society institutions.\n\nThe training helps participants develop an integrated understanding of the role of public authorities in national security and of the importance of inter-agency and public cooperation.",
       "bullets_en": [
         "National security",
         "Protection of interests",
@@ -973,7 +973,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 10,500",
       "hours_en": "36 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -991,7 +991,7 @@
       "dates": "Срок обучения — 1,5 – 2 недели; набор по мере формирования групп",
       "title_ru": "Обеспечение антитеррористической защищенности объектов (территорий) образовательных организаций высшего образования",
       "desc_ru": "Программа направлена на повышение квалификации руководителей и должностных лиц образовательных организаций. В рамках курса изучается система организации деятельности по обеспечению безопасности объектов. Полученные практические навыки позволяют эффективно реализовывать антитеррористические мероприятия в вузах.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа направлена на повышение квалификации руководителей и должностных лиц образовательных организаций высшего образования в сфере антитеррористической защищённости. В рамках обучения рассматриваются вопросы организации безопасности объектов и территорий и проведения антитеррористических мероприятий.\n\nПрактическая направленность программы связана с формированием навыков, необходимых для организации и реализации мер антитеррористической защищённости в образовательной организации.",
       "bullets_ru": [
         "Безопасность объектов вузов",
         "Антитеррористическая защищенность",
@@ -999,7 +999,7 @@
       ],
       "title_en": "Anti-Terrorist Protection of Universities",
       "desc_en": "The program aims to improve the qualifications of executives and officials in educational institutions. The course covers the system for organizing facility security operations. The acquired practical skills enable efficient implementation of anti-terrorist measures in universities.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed to improve the qualifications of managers and officials of higher education institutions in the field of anti-terrorist protection. It covers the organisation of security for facilities and territories and the implementation of anti-terrorist measures.\n\nThe practical focus is on developing the skills required to organise and implement anti-terrorist protection measures within an educational institution.",
       "bullets_en": [
         "University facility security",
         "Anti-terrorist protection",
@@ -1024,7 +1024,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 10,500",
       "hours_en": "36 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1042,7 +1042,7 @@
       "dates": "Срок обучения — 1,5 месяца; набор по мере формирования групп",
       "title_ru": "Цифровая грамотность",
       "desc_ru": "Программа предназначена для слушателей, желающих расширить свои информационные компетенции и освоить современные системы. В процессе обучения участники учатся работать с базами данных, офисными приложениями и цифровыми устройствами. Полученные навыки позволяют уверенно использовать государственные услуги и профессиональное программное обеспечение.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для слушателей, которым необходимо расширить цифровые и информационные компетенции для повседневной и профессиональной деятельности. Обучение включает работу с базами данных, офисными приложениями, цифровыми устройствами и вопросы цифровой безопасности.\n\nОсвоение программы помогает увереннее использовать цифровые сервисы, государственные услуги и профессиональное программное обеспечение, а также применять базовые правила безопасной работы в цифровой среде.",
       "bullets_ru": [
         "Работа с базами данных",
         "Использование офисных приложений",
@@ -1050,7 +1050,7 @@
       ],
       "title_en": "Digital Literacy",
       "desc_en": "The program is designed for students seeking to expand their information competencies and master modern systems. During the training, participants learn to work with databases, office applications, and digital devices. The acquired skills enable confident use of public services and professional software.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for participants who need to broaden their digital and information competencies for everyday and professional activities. It covers working with databases, office applications, digital devices, and digital security.\n\nCompletion of the program helps participants use digital services, public services, and professional software more confidently while applying basic principles of safe work in a digital environment.",
       "bullets_en": [
         "Database operation",
         "Office applications",
@@ -1075,7 +1075,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 37,000",
       "hours_en": "98 academic hours ⚡",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1093,7 +1093,7 @@
       "dates": "Срок обучения — 1,5 месяца; набор по мере формирования групп",
       "title_ru": "Менеджмент в музейно-туристической деятельности",
       "desc_ru": "Программа направлена на совершенствование профессиональных компетенций в сфере музейно-туристического менеджмента. Курс позволяет освоить навыки работы с фондами, повышая экономическую и управленческую грамотность. У слушателей сформируется понимание возможностей использования межинституциональных ресурсов для развития культуры и туризма.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа направлена на развитие профессиональных компетенций в сфере музейного и туристического менеджмента. В ходе обучения рассматриваются управление музейными фондами, туристический менеджмент, а также экономические и управленческие аспекты деятельности учреждений культуры и туризма.\n\nОтдельное внимание уделяется пониманию возможностей межинституционального взаимодействия и использования общих ресурсов для развития культурных и туристических проектов.",
       "bullets_ru": [
         "Управление музейными фондами",
         "Туристический менеджмент",
@@ -1101,7 +1101,7 @@
       ],
       "title_en": "Management in Museum and Tourism Activities",
       "desc_en": "The program aims to improve professional competencies in museum and tourism management. The course allows students to master collection management skills while enhancing economic and managerial literacy. Participants will gain an understanding of utilizing interinstitutional resources for cultural and tourism development.",
-      "long_desc_en": "",
+      "long_desc_en": "The program develops professional competencies in museum and tourism management. It covers museum collection management, tourism management, and the economic and managerial aspects of cultural and tourism organisations.\n\nParticular attention is given to inter-institutional cooperation and to the use of shared resources for the development of cultural and tourism projects.",
       "bullets_en": [
         "Museum collection management",
         "Tourism management",
@@ -1126,7 +1126,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 40,000",
       "hours_en": "98 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
