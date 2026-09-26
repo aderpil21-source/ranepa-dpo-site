@@ -343,7 +343,7 @@ const CONFIG = {
    БЛОК 2. СОСТОЯНИЕ
    ============================================================================ */
 const SYSTEM_NEWS_ID = '__site_admin_settings__';
-function isSystemNewsItem(item){ return !!item && item.id === SYSTEM_NEWS_ID; }
+function isSystemNewsItem(item){ return !!item && typeof item.id === 'string' && (item.id === SYSTEM_NEWS_ID || item.id.indexOf('__site_admin_version__') === 0); }
 let publicNewsPageEnabled = true;
 
 async function loadPublicNewsPageEnabled(){
