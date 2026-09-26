@@ -412,17 +412,33 @@
         .owl-walker {
             position: absolute;
             bottom: -2px;
-            left: 50%;
-            margin-left: -82px;
+            left: 8%;
+            margin-left: 0;
             width: 164px;
             height: 224px;
             will-change: transform;
             transform-style: preserve-3d;
+            animation: owlProfessionalPatrol 15.5s ease-in-out infinite;
+        }
+        @keyframes owlProfessionalPatrol {
+            0%, 18%   { transform: translate3d(0, 0, 0) scaleX(1); }
+            24%       { transform: translate3d(34px, -2px, 0) scaleX(1); }
+            31%       { transform: translate3d(78px, 0, 0) scaleX(1); }
+            38%       { transform: translate3d(126px, -2px, 0) scaleX(1); }
+            45%, 52%  { transform: translate3d(188px, 0, 0) scaleX(1); }
+            53%, 70%  { transform: translate3d(188px, 0, 0) scaleX(-1); }
+            76%       { transform: translate3d(142px, -2px, 0) scaleX(-1); }
+            83%       { transform: translate3d(94px, 0, 0) scaleX(-1); }
+            90%       { transform: translate3d(44px, -2px, 0) scaleX(-1); }
+            96%       { transform: translate3d(0, 0, 0) scaleX(-1); }
+            100%      { transform: translate3d(0, 0, 0) scaleX(1); }
         }
         .owl-ecosystem.flying .owl-walker,
         .owl-ecosystem.sitting .owl-walker {
+            animation: none;
             left: 50%;
             margin-left: -82px;
+            transform: none;
         }
 
         .owl-photo-stage {
@@ -433,6 +449,8 @@
             will-change: transform;
         }
         .owl-photo {
+            position: relative;
+            z-index: 1;
             width: 100%;
             height: 100%;
             display: block;
@@ -458,6 +476,32 @@
             58%, 70% { transform: rotate(1.15deg) translateX(0.7px); }
             82% { transform: rotate(-0.45deg) translateX(-0.2px); }
         }
+
+        .owl-talon {
+            position: absolute;
+            bottom: 8px;
+            width: 22px;
+            height: 10px;
+            z-index: 4;
+            border-bottom: 3px solid #d1aa69;
+            border-radius: 50%;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,.55));
+            pointer-events: none;
+        }
+        .owl-talon::before,
+        .owl-talon::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            width: 10px;
+            height: 8px;
+            border-bottom: 2px solid #b88a4d;
+            border-radius: 50%;
+        }
+        .owl-talon::before { left: 0; transform: rotate(18deg); }
+        .owl-talon::after { right: 0; transform: rotate(-18deg); }
+        .owl-talon-left { left: 55px; }
+        .owl-talon-right { right: 55px; }
 
         .owl-blink {
             position: absolute;
@@ -509,6 +553,7 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
+            .owl-walker,
             .owl-photo-stage,
             .owl-photo,
             .owl-blink,
@@ -1271,12 +1316,7 @@
             <button class="filter-reset-btn" onclick="resetFilters()" data-i18n="filterReset">Сбросить</button>
         </div>
 
-        <div id="tab-all" class="tab-content active">
-            <div class="loader-box">
-                <div class="loader-spinner"></div>
-                <span data-i18n="loading">Связываемся с базой данных...</span>
-            </div>
-        </div>
+        <div id="tab-all" class="tab-content active" aria-live="polite"></div>
         <div id="tab-kadry" class="tab-content"></div>
         <div id="tab-pk" class="tab-content"></div>
         <div id="tab-pp" class="tab-content"></div>
@@ -1691,6 +1731,8 @@
             <div class="owl-walker" id="owlWalker">
                 <div class="owl-photo-stage" aria-hidden="true">
                     <img class="owl-photo" src="./img/owl-professional.webp" alt="" draggable="false" decoding="async">
+                    <span class="owl-talon owl-talon-left"></span>
+                    <span class="owl-talon owl-talon-right"></span>
                     <span class="owl-blink owl-blink-left"></span>
                     <span class="owl-blink owl-blink-right"></span>
                 </div>
@@ -1757,6 +1799,7 @@
             }
         });
     </script>
+    <script src="./portal-snapshot.js"></script>
 </body>
 
     <script>
@@ -2872,6 +2915,15 @@
 
     function loadPortalData() {
         if (!portalDataPromise) {
+            const embeddedData = window.__RANEPA_PORTAL_SNAPSHOT__;
+            if (isValidPortalData(embeddedData)) {
+                applyFreshPortalState(embeddedData);
+                writePortalBrowserCache(embeddedData);
+                portalDataPromise = Promise.resolve(embeddedData);
+                setTimeout(refreshPortalDataInBackground, 0);
+                return portalDataPromise;
+            }
+
             const cachedData = readPortalBrowserCache();
 
             if (cachedData) {
@@ -2897,34 +2949,29 @@
                     return data;
                 })
                 .catch(async localError => {
-                    console.warn('Локальный снимок недоступен, используем резервные источники:', localError);
+                    console.warn('Локальный портал-снимок недоступен, используем статический снимок программ:', localError);
 
-                    const [programResponse, apiResponse] = await Promise.all([
-                        fetch('./program-data.json', { cache: 'no-store' }),
-                        fetch(API_URL, { cache: 'no-store' })
-                    ]);
+                    const programResponse = await fetch('./program-data.json', { cache: 'force-cache' });
                     if (!programResponse.ok) throw new Error('Program snapshot HTTP ' + programResponse.status);
-                    if (!apiResponse.ok) throw new Error('API HTTP ' + apiResponse.status);
 
-                    const [programSnapshot, apiData] = await Promise.all([
-                        programResponse.json(),
-                        apiResponse.json()
-                    ]);
+                    const programSnapshot = await programResponse.json();
                     const programs = programSnapshot && Array.isArray(programSnapshot.programs)
                         ? programSnapshot.programs
                         : null;
+                    const cachedData = readPortalBrowserCache();
                     const data = {
                         programs,
-                        schedules: apiData && apiData.schedules,
-                        owlFiles: apiData && apiData.owlFiles,
-                        currentAlert: apiData ? apiData.currentAlert : null
+                        schedules: cachedData && Array.isArray(cachedData.schedules) ? cachedData.schedules : [],
+                        owlFiles: cachedData && Array.isArray(cachedData.owlFiles) ? cachedData.owlFiles : [],
+                        currentAlert: cachedData ? cachedData.currentAlert : null
                     };
                     if (!isValidPortalData(data)) {
-                        throw new Error('Fallback sources returned invalid portal data');
+                        throw new Error('Static program snapshot is invalid');
                     }
 
                     writePortalBrowserCache(data);
                     applyFreshPortalState(data);
+                    setTimeout(refreshPortalDataInBackground, 0);
                     return data;
                 })
                 .catch(error => {
