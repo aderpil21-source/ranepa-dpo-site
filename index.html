@@ -1786,14 +1786,30 @@
                     return data;
                 })
                 .catch(async localError => {
-                    console.warn('Локальный снимок недоступен, обращаемся к API:', localError);
+                    console.warn('Локальный снимок недоступен, используем резервные источники:', localError);
 
-                    const response = await fetch(API_URL, { cache: 'no-store' });
-                    if (!response.ok) throw new Error('API HTTP ' + response.status);
+                    const [programResponse, apiResponse] = await Promise.all([
+                        fetch('./program-data.json', { cache: 'no-store' }),
+                        fetch(API_URL, { cache: 'no-store' })
+                    ]);
+                    if (!programResponse.ok) throw new Error('Program snapshot HTTP ' + programResponse.status);
+                    if (!apiResponse.ok) throw new Error('API HTTP ' + apiResponse.status);
 
-                    const data = await response.json();
+                    const [programSnapshot, apiData] = await Promise.all([
+                        programResponse.json(),
+                        apiResponse.json()
+                    ]);
+                    const programs = programSnapshot && Array.isArray(programSnapshot.programs)
+                        ? programSnapshot.programs
+                        : null;
+                    const data = {
+                        programs,
+                        schedules: apiData && apiData.schedules,
+                        owlFiles: apiData && apiData.owlFiles,
+                        currentAlert: apiData ? apiData.currentAlert : null
+                    };
                     if (!isValidPortalData(data)) {
-                        throw new Error('API returned invalid portal data');
+                        throw new Error('Fallback sources returned invalid portal data');
                     }
 
                     writePortalBrowserCache(data);
