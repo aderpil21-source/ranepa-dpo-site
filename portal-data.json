@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:30:29.124426+00:00",
+  "generatedAt": "2026-09-26T12:34:32.196413+00:00",
   "programs": [
     {
       "id": "c14",
@@ -1349,12 +1349,12 @@
       "type": "Повышение квалификации",
       "dates": "1,5 месяца",
       "title_ru": "Система управления проектной деятельностью в организациях",
-      "desc_ru": "Программа повышения квалификации по системе управления проектной деятельностью в организациях.",
-      "long_desc_ru": "",
+      "desc_ru": "Программа повышения квалификации объёмом 98 академических часов по системе управления проектной деятельностью в организациях. Обучение проходит в очно-заочной форме с применением электронного обучения и дистанционных образовательных технологий; срок обучения — 1,5 месяца.",
+      "long_desc_ru": "По приказу Западного филиала РАНХиГС подтверждены наименование программы, объём 98 академических часов, срок обучения 1,5 месяца, очно-заочная форма с применением ЭО и ДОТ и стоимость 38 000 ₽. Утверждённая дополнительная профессиональная программа или расписание с раскрытием содержания обучения в предоставленном пакете отсутствуют. Поэтому конкретные темы, целевая аудитория, результаты обучения, преподаватели и документ по итогам обучения пока не публикуются как подтверждённые сведения.",
       "bullets_ru": [],
       "title_en": "Project Activity Management System in Organizations",
-      "desc_en": "Advanced training program on project activity management systems in organizations.",
-      "long_desc_en": "",
+      "desc_en": "A 98-academic-hour advanced training program on project activity management systems in organizations. It is delivered in a blended format using e-learning and distance learning technologies over 1.5 months.",
+      "long_desc_en": "The RANEPA Western Branch order confirms the program title, a duration of 98 academic hours, a 1.5-month study period, a blended format using e-learning and distance learning technologies, and a tuition fee of RUB 38,000. The materials provided do not include an approved detailed professional education program or a course schedule describing the curriculum. Therefore, specific topics, target audience, learning outcomes, instructors, and the qualification document are not yet published as verified information.",
       "bullets_en": [],
       "pdf_link": "",
       "active": true,
