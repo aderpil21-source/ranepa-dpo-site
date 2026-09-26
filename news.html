@@ -878,7 +878,13 @@ let publicNewsRefreshInFlight = null;
 
 function openHashNewsIfPresent(){
     const hash = location.hash.replace('#','').replace('news=','');
-    if (hash && newsItems.find(n => n.id === hash)) openDetail(hash);
+    if (!hash) return false;
+
+    const exists = newsItems.find(n => n.id === hash);
+    if (!exists) return false;
+
+    openDetail(hash);
+    return true;
 }
 
 function publicNewsFingerprint(items){
@@ -930,7 +936,7 @@ async function refreshPublicNewsSnapshot(options){
                 throw new Error('Public news API returned invalid format');
             }
 
-            return applyPublicNewsItems(data.items, { openHash: !!opts.openHash });
+            return applyPublicNewsItems(data.items, { openHash: true });
         } catch(error){
             if (!opts.silent) console.warn('Не удалось обновить свежие новости:', error);
             return false;
@@ -987,8 +993,11 @@ async function fetchNews(){
         renderGrid();
         openHashNewsIfPresent();
 
-        // Сразу после мгновенного рендера один раз проверяем свежие данные в фоне.
-        refreshPublicNewsSnapshot({ silent:true });
+        // При прямой ссылке на новую публикацию локальный кэш может ещё не знать её.
+        // В этом случае сразу принудительно запрашиваем свежий публичный список.
+        const requestedHash = location.hash.replace('#','').replace('news=','');
+        const hashMissing = requestedHash && !newsItems.find(n => n.id === requestedHash);
+        refreshPublicNewsSnapshot({ silent:true, force: !!hashMissing, openHash:true });
         startPublicNewsPolling();
         return;
     }
@@ -1004,7 +1013,9 @@ async function fetchNews(){
         }
 
         applyPublicNewsItems(data.items, { openHash:true, forceRender:true });
-        refreshPublicNewsSnapshot({ silent:true });
+        const requestedHash = location.hash.replace('#','').replace('news=','');
+        const hashMissing = requestedHash && !newsItems.find(n => n.id === requestedHash);
+        refreshPublicNewsSnapshot({ silent:true, force: !!hashMissing, openHash:true });
         startPublicNewsPolling();
         return;
     } catch(localError){
