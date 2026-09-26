@@ -173,9 +173,9 @@
         "Принципы гостеприимства",
         "Уборка номеров"
       ],
-      "title_en": "Housemaid",
-      "desc_en": "The vocational training program is aimed at providing students with the competencies necessary to perform a new type of professional activity. \nHaving successfully mastered technical cleaning skills, graduates will be able to ensure high standards of cleanliness and comfort. \nThe acquired knowledge directly affects guest satisfaction and the hotel's reputation.",
-      "long_desc_en": "This vocational training program is designed to develop the competencies required to work as a housemaid in the hospitality industry. The training covers technical cleaning skills, hospitality principles, and practical tasks related to cleaning and preparing guest rooms.\n\nCompletion of the program helps participants apply standards of cleanliness and comfort in day-to-day work. These skills are directly connected with guest service quality and the reputation of a hospitality business.",
+      "title_en": "Hotel Housekeeper",
+      "desc_en": "This vocational training program develops the competencies required for professional housekeeping in the hospitality industry. Participants build practical room-cleaning skills and learn to maintain high standards of cleanliness and comfort. These skills directly support guest satisfaction and the reputation of a hospitality business.",
+      "long_desc_en": "This vocational training program is designed to develop the competencies required to work as a hotel housekeeper in the hospitality industry. The training covers technical cleaning skills, hospitality principles, and practical tasks related to cleaning and preparing guest rooms.\n\nCompletion of the program helps participants apply standards of cleanliness and comfort in day-to-day work. These skills are directly connected with guest service quality and the reputation of a hospitality business.",
       "bullets_en": [
         "Technical cleaning skills",
         "Hospitality principles",
@@ -275,13 +275,13 @@
         "Профессиональное мышление",
         "Организация работы персонала"
       ],
-      "title_en": "Organization Management",
-      "desc_en": "The program is designed for universal managers striving to master key issues of modern management. Forming professional thinking, the course promotes a deep understanding of the essence of management processes. Having successfully mastered the material, participants will acquire the competencies necessary for the effective organization of personnel work in accordance with the organization's goals.",
+      "title_en": "Organizational Management",
+      "desc_en": "The program is designed for managers seeking a systematic understanding of modern management. It develops managerial thinking, supports a deeper understanding of management processes, and helps participants organize staff work in line with an organization's goals.",
       "long_desc_en": "The program is designed for managers who need a systematic understanding of key issues in modern management. It develops professional managerial thinking, helps participants understand management processes, and links those processes to organisational goals.\n\nParticular attention is given to organising staff work and applying management approaches to improve coordination and organisational performance.",
       "bullets_en": [
         "Modern management",
-        "Professional thinking",
-        "Personnel organization management"
+        "Managerial thinking",
+        "Organizing staff work"
       ],
       "pdf_link": "",
       "active": true,
@@ -581,13 +581,13 @@
         "Составление отчетности",
         "Использование баз данных"
       ],
-      "title_en": "Accounting for Small Business",
+      "title_en": "Accounting for Small Businesses and Individual Entrepreneurs",
       "desc_en": "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness.",
       "long_desc_en": "The program helps participants systematise accounting knowledge for the practical needs of small businesses and individual entrepreneurs. It covers small business accounting, preparation of reports, and the use of databases in accounting work.\n\nThe practical focus is on applying simplified reporting procedures and organising the financial activities of a small business or an individual entrepreneur.",
       "bullets_en": [
         "Small business accounting",
-        "Reporting preparation",
-        "Database utilization"
+        "Report preparation",
+        "Use of databases"
       ],
       "pdf_link": "",
       "active": true,
@@ -734,13 +734,13 @@
         "Составление отчетности",
         "Использование баз данных"
       ],
-      "title_en": "Accounting for Small Business",
+      "title_en": "Accounting for Small Businesses and Individual Entrepreneurs",
       "desc_en": "The program is designed for professionals seeking to systematize accounting knowledge. Students learn to apply simplified reporting algorithms for small businesses and individual entrepreneurs. The acquired practical experience enables efficient financial management and enhances competitiveness.",
       "long_desc_en": "This advanced training program provides a compact format for systematising accounting knowledge for small businesses and individual entrepreneurs. It focuses on accounting procedures, preparation of reports, and the use of databases.\n\nThe practical component centres on simplified reporting procedures and the organisation of financial activities in a small business or individual entrepreneurial practice.",
       "bullets_en": [
         "Small business accounting",
-        "Reporting preparation",
-        "Database utilization"
+        "Report preparation",
+        "Use of databases"
       ],
       "pdf_link": "",
       "active": true,
@@ -895,7 +895,7 @@
         "Нормативно-правовое обеспечение",
         "Взаимодействие органов власти"
       ],
-      "title_en": "Terrorism Prevention in Public Authorities",
+      "title_en": "Organizing Terrorism Prevention in State and Local Government Bodies",
       "desc_en": "The program aims to improve the qualifications of municipal management and civil servants. During the training, students analyze regulatory frameworks and basic mechanisms for countering terrorism. The acquired knowledge enables efficient optimization of government agency cooperation, preventing security threats.",
       "long_desc_en": "The program is designed for local government leaders and civil servants involved in organising terrorism prevention activities. It covers the regulatory framework, core counter-terrorism mechanisms, and cooperation between public authorities.\n\nThe program helps participants systematise approaches to preventive work and to coordinating the actions of state and local authorities in preventing security threats.",
       "bullets_en": [
@@ -946,7 +946,7 @@
         "Защита интересов",
         "Взаимодействие с обществом"
       ],
-      "title_en": "Fundamentals of National Security in Public Authorities",
+      "title_en": "Fundamentals of National Security in State and Local Government Bodies",
       "desc_en": "The program is designed for civil servants and supervisory specialists. Within the course, students study the fundamentals of ensuring national security, mastering tools to protect state interests. The acquired knowledge enables effective cooperation with civil society institutions, countering current threats.",
       "long_desc_en": "The program is designed for civil servants and supervisory professionals and focuses on the fundamentals of national security. It covers approaches to protecting state interests, countering current threats, and cooperating with civil society institutions.\n\nThe training helps participants develop an integrated understanding of the role of public authorities in national security and of the importance of inter-agency and public cooperation.",
       "bullets_en": [
@@ -997,7 +997,7 @@
         "Антитеррористическая защищенность",
         "Организация мероприятий"
       ],
-      "title_en": "Anti-Terrorist Protection of Universities",
+      "title_en": "Anti-Terrorist Protection of Higher Education Facilities and Territories",
       "desc_en": "The program aims to improve the qualifications of executives and officials in educational institutions. The course covers the system for organizing facility security operations. The acquired practical skills enable efficient implementation of anti-terrorist measures in universities.",
       "long_desc_en": "The program is designed to improve the qualifications of managers and officials of higher education institutions in the field of anti-terrorist protection. It covers the organisation of security for facilities and territories and the implementation of anti-terrorist measures.\n\nThe practical focus is on developing the skills required to organise and implement anti-terrorist protection measures within an educational institution.",
       "bullets_en": [
@@ -1099,7 +1099,7 @@
         "Туристический менеджмент",
         "Межинституциональные ресурсы"
       ],
-      "title_en": "Management in Museum and Tourism Activities",
+      "title_en": "Museum and Tourism Management",
       "desc_en": "The program aims to improve professional competencies in museum and tourism management. The course allows students to master collection management skills while enhancing economic and managerial literacy. Participants will gain an understanding of utilizing interinstitutional resources for cultural and tourism development.",
       "long_desc_en": "The program develops professional competencies in museum and tourism management. It covers museum collection management, tourism management, and the economic and managerial aspects of cultural and tourism organisations.\n\nParticular attention is given to inter-institutional cooperation and to the use of shared resources for the development of cultural and tourism projects.",
       "bullets_en": [
@@ -1151,7 +1151,7 @@
         "Стратегии развития туризма",
         "Практические рабочие кейсы"
       ],
-      "title_en": "Management in Tourism and Excursion Activities",
+      "title_en": "Tourism and Excursion Management",
       "desc_en": "The 98-hour program is designed for practicing tourism professionals. Training is practice-oriented: participants learn to design excursion programs, manage projects, understand tourism development strategies, and make decisions in real work situations.",
       "long_desc_en": "Representatives of the Association of Professional Tour Guides of the Kaliningrad Region participated in the development and expert review of the program. Industry experts contribute to new cohorts through lectures, practical sessions, and regional best-practice cases.",
       "bullets_en": [
@@ -1203,9 +1203,9 @@
         "Управление конфликтами",
         "Ведение переговоров"
       ],
-      "title_en": "Development of Communicative Competencies in Tourism",
-      "desc_en": "The program aims to improve the efficiency of tourism personnel through the development of communication skills. Participants will master methods for building effective dialogues, learning to recognize and overcome communication barriers. The acquired knowledge enhances the customer experience, increasing loyalty and overall organizational efficiency.",
-      "long_desc_en": "The program develops communication skills for professionals in tourism and hospitality. It covers effective dialogue, recognising and overcoming communication barriers, negotiation, and conflict management.\n\nDeveloping these skills helps improve interaction with clients and colleagues, strengthen communication quality, and support customer loyalty and organisational effectiveness.",
+      "title_en": "Communication Development in the Hospitality Industry",
+      "desc_en": "The program aims to improve staff effectiveness in the hospitality industry through the development of communication skills. Participants learn methods for building effective dialogue, recognizing and overcoming communication barriers, and handling professional interactions more confidently. The knowledge gained helps improve the customer experience, strengthen loyalty, and support overall organizational effectiveness.",
+      "long_desc_en": "The program develops communication skills for professionals in the hospitality industry. It covers effective dialogue, recognizing and overcoming communication barriers, negotiation, and conflict management.\n\nDeveloping these skills helps improve interaction with clients and colleagues, strengthen communication quality, and support customer loyalty and organizational effectiveness.",
       "bullets_en": [
         "Communication skills",
         "Conflict management",
@@ -1352,7 +1352,7 @@
       "desc_ru": "Программа повышения квалификации объёмом 98 академических часов по системе управления проектной деятельностью в организациях. Обучение проходит в очно-заочной форме с применением электронного обучения и дистанционных образовательных технологий; срок обучения — 1,5 месяца.",
       "long_desc_ru": "По приказу Западного филиала РАНХиГС подтверждены наименование программы, объём 98 академических часов, срок обучения 1,5 месяца, очно-заочная форма с применением ЭО и ДОТ и стоимость 38 000 ₽. Утверждённая дополнительная профессиональная программа или расписание с раскрытием содержания обучения в предоставленном пакете отсутствуют. Поэтому конкретные темы, целевая аудитория, результаты обучения, преподаватели и документ по итогам обучения пока не публикуются как подтверждённые сведения.",
       "bullets_ru": [],
-      "title_en": "Project Activity Management System in Organizations",
+      "title_en": "Project Management System in Organizations",
       "desc_en": "A 98-academic-hour advanced training program on project activity management systems in organizations. It is delivered in a blended format using e-learning and distance learning technologies over 1.5 months.",
       "long_desc_en": "The RANEPA Western Branch order confirms the program title, a duration of 98 academic hours, a 1.5-month study period, a blended format using e-learning and distance learning technologies, and a tuition fee of RUB 38,000. The materials provided do not include an approved detailed professional education program or a course schedule describing the curriculum. Therefore, specific topics, target audience, learning outcomes, instructors, and the qualification document are not yet published as verified information.",
       "bullets_en": [],
@@ -1501,7 +1501,7 @@
         "Финансовое управление",
         "Организационное проектирование"
       ],
-      "title_en": "State and Municipal Management",
+      "title_en": "Public and Municipal Administration",
       "desc_en": "The program is designed for individuals who wish to change their career direction and work in management. During the course, participants study the main principles of public policy, financial management, and organisational design.",
       "long_desc_en": "This professional retraining program is designed for participants who plan to work in state and municipal management or change their professional field. It covers the foundations of public policy, financial management, and organisational design.\n\nThe program develops a systematic understanding of the tasks and mechanisms of public administration and provides a body of knowledge relevant to professional management activities.",
       "bullets_en": [
@@ -1603,7 +1603,7 @@
         "Финансы и экономика",
         "Государственная служба"
       ],
-      "title_en": "State and Municipal Management",
+      "title_en": "Public and Municipal Administration",
       "desc_en": "The program is designed to prepare specialists for work in state and municipal service. During the course, participants develop fundamental theoretical knowledge in public administration, economics, and law.",
       "long_desc_en": "This professional retraining program prepares specialists for work in state and municipal service. It covers public administration, economics and finance, law, and the functioning of public service institutions.\n\nThe program provides a fundamental theoretical foundation relevant to professional work in public administration.",
       "bullets_en": [
@@ -1858,7 +1858,7 @@
         "Организация диспетчерской службы",
         "Содержание общего имущества"
       ],
-      "title_en": "Apartment Building Management",
+      "title_en": "Production Management: Apartment Building Management",
       "desc_en": "The program is designed for executives of management companies and homeowners associations. During the training, students study mandatory requirements for companies and dispatch service organization. The acquired competencies enable efficient management of common property maintenance and cooperation with premises owners.",
       "long_desc_en": "This professional retraining program is designed for managers of property management companies, homeowners associations, and professionals involved in apartment building operations. It covers mandatory requirements for management organisations, dispatch service organisation, and maintenance of common property.\n\nThe program helps participants build systematic processes for apartment building management and interaction with property owners, with a focus on effective operation and maintenance.",
       "bullets_en": [
@@ -2011,9 +2011,9 @@
         "Профессиональная коммуникация",
         "Корпоративная культура"
       ],
-      "title_en": "Service Etiquette and Communicative Culture",
-      "desc_en": "The seminar focuses on studying the rules of service etiquette and communicative culture in professional activities. During the training, participants get acquainted with the norms of business communication and behavioral standards. The acquired knowledge enables successful resolution of work situations and maintaining a business image.",
-      "long_desc_en": "The seminar focuses on service etiquette and communication culture in professional activities. Participants explore business communication norms, standards of professional behaviour, and approaches to maintaining appropriate communication in workplace situations.\n\nThe knowledge gained helps participants handle everyday professional situations more confidently, follow business interaction standards, and maintain a professional image.",
+      "title_en": "Professional Etiquette and Communication Culture",
+      "desc_en": "The seminar focuses on professional etiquette and communication culture in the workplace. Participants explore business communication norms and standards of professional behavior. The knowledge gained helps them handle workplace situations effectively and maintain a professional image.",
+      "long_desc_en": "The seminar focuses on professional etiquette and communication culture in professional activities. Participants explore business communication norms, standards of professional behavior, and approaches to effective workplace communication.\n\nThe knowledge gained helps participants handle everyday professional situations more confidently, follow accepted standards of business interaction, and maintain a professional image.",
       "bullets_en": [
         "Business etiquette",
         "Professional communication",
@@ -2215,7 +2215,7 @@
         "Аргументация",
         "Разрешение конфликтов"
       ],
-      "title_en": "Strategy and Tactics of Business Negotiations",
+      "title_en": "Business Negotiation Strategy and Tactics",
       "desc_en": "The seminar focuses on studying the strategy and tactics of business negotiations. During the training, students master argumentation techniques and methods for defending their position. The acquired competencies enable successful deal-making and conflict resolution.",
       "long_desc_en": "The seminar focuses on the strategy and tactics of business negotiations. Participants explore the structure of the negotiation process, argumentation techniques, ways to defend their position, and approaches to resolving conflicts of interest.\n\nThe skills gained help participants conduct professional negotiations more confidently, justify proposals, and find workable solutions when the interests of the parties differ.",
       "bullets_en": [
@@ -2368,11 +2368,11 @@
         "Надзорные мероприятия",
         "Законодательные требования"
       ],
-      "title_en": "Current Trends in Supervisory Development",
-      "desc_en": "The program focuses on studying current trends in the development of supervisory and control activities. During the training, students analyze modern legislative requirements and inspection practices. The acquired knowledge enables efficient organization of supervisory measures while minimizing compliance risks.",
-      "long_desc_en": "The advanced training program focuses on current developments in supervisory and control activities. It covers contemporary legislative requirements, the organisation of supervisory measures, and inspection practice.\n\nThe knowledge gained helps participants organise supervisory work in line with current requirements, assess compliance risks, and improve the quality of control procedures.",
+      "title_en": "Current Trends in Regulatory and Supervisory Activities",
+      "desc_en": "The program focuses on current trends in regulatory and supervisory activities. During the training, participants analyze current legislative requirements and inspection practices. The knowledge gained supports the effective organization of regulatory and supervisory work while helping to reduce compliance risks.",
+      "long_desc_en": "The advanced training program focuses on current developments in regulatory and supervisory activities. It covers contemporary legislative requirements, the organization of regulatory and supervisory measures, and inspection practice.\n\nThe knowledge gained helps participants organize oversight work in line with current requirements, assess compliance risks, and improve the quality of control procedures.",
       "bullets_en": [
-        "Supervisory activities",
+        "Regulatory and supervisory activities",
         "Inspection procedures",
         "Legislative requirements"
       ],
@@ -2478,7 +2478,7 @@
         "Административная и арбитражная практика",
         "ЕИС и информационные технологии"
       ],
-      "title_en": "Current Issues in the Application of Public Procurement Contract System Legislation",
+      "title_en": "Current Issues in Applying Public Procurement Contract System Legislation",
       "desc_en": "A 36-hour advanced training program covering current public procurement contract system legislation, the national procurement regime, common compliance issues, administrative and arbitration practice, and information technologies in procurement.",
       "long_desc_en": "According to the course schedule, the program focuses on current issues in applying public procurement contract system legislation. It covers Federal Laws No. 44-FZ and No. 223-FZ, the relationship between procurement regulation and civil and budget legislation, antitrust restrictions, and legislative changes.\n\nDedicated sessions address the national procurement regime, common problems and errors, administrative and arbitration practice, the liability of contracting authorities, claims work, and the use of information technologies in procurement. Final assessment is conducted in the form of a test.",
       "bullets_en": [
