@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:08:42.721Z",
+  "generatedAt": "2026-09-26T12:09:45.882Z",
   "programs": [
     {
       "id": "c14",
@@ -1444,7 +1444,7 @@
       "dates": "Срок обучения — 1,5 месяца; набор по мере формирования групп",
       "title_ru": "Повар",
       "desc_ru": "Программа направлена на формирование ключевых профессиональных компетенций по профессии повара. Обучение носит практико-ориентированный характер и базируется на современных методах приготовления блюд с учетом отраслевых стандартов. Освоив учебный курс, выпускники получают свидетельство о профессии рабочего с присвоением квалификации 3 или 4 разряда.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессионального обучения направлена на формирование базовых и прикладных компетенций, необходимых для работы по профессии повара. Обучение носит практико-ориентированный характер и охватывает технологию приготовления блюд, первичную обработку сырья, кулинарную обработку и подачу.\n\nОсвоение программы помогает сформировать последовательные профессиональные навыки приготовления продукции с учётом отраслевых требований и стандартов. По завершении обучения выпускникам присваивается квалификация 3 или 4 разряда и выдаётся свидетельство о профессии рабочего.",
       "bullets_ru": [
         "Технология приготовления блюд",
         "Первичная обработка сырья",
@@ -1452,7 +1452,7 @@
       ],
       "title_en": "Cook",
       "desc_en": "The program is designed to develop core professional competencies for the culinary profession. Training is practice-oriented and based on modern food preparation techniques in compliance with industry standards. Having mastered the curriculum, graduates receive a vocational training certificate with the award of qualification levels 3 or 4.",
-      "long_desc_en": "",
+      "long_desc_en": "This vocational training program develops the core and applied competencies required to work as a cook. The training is practice-oriented and covers food preparation technology, primary processing of ingredients, culinary processing, and presentation.\n\nThe program helps participants build consistent professional skills in preparing food in line with industry requirements and standards. Upon completion, graduates are awarded qualification level 3 or 4 and receive a vocational training certificate.",
       "bullets_en": [
         "Food preparation technology",
         "Raw ingredient processing",
@@ -1477,7 +1477,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 60,000",
       "hours_en": "150 academic hours",
       "format_en": "In-person",
@@ -1495,7 +1495,7 @@
       "dates": "Срок обучения — 3 месяца; набор по мере формирования групп",
       "title_ru": "Государственное и муниципальное управление",
       "desc_ru": "Программа предназначена для лиц, желающих сменить вектор деятельности и работать в сфере управления. В ходе курса слушатели изучают основные принципы публичной политики, финансового управления и организационного проектирования. Успешное завершение обучения заканчивается присвоением новой квалификации специалиста.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки предназначена для слушателей, которые планируют работать в сфере государственного и муниципального управления или изменить направление профессиональной деятельности. Обучение охватывает основы публичной политики, финансового управления и организационного проектирования.\n\nПрограмма формирует системное представление о задачах и механизмах публичного управления и помогает освоить комплекс знаний, необходимых для профессиональной деятельности в управленческой сфере. Успешное завершение обучения предусматривает получение новой квалификации.",
       "bullets_ru": [
         "Публичная политика",
         "Финансовое управление",
@@ -1503,7 +1503,7 @@
       ],
       "title_en": "State and Municipal Management",
       "desc_en": "The program is designed for individuals wishing to change their career path and work in management. During the course, students study the main principles of public policy, financial management, and organizational design. Successful completion of the training results in the award of a new specialist qualification.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program is designed for participants who plan to work in state and municipal management or change their professional field. It covers the foundations of public policy, financial management, and organisational design.\n\nThe program develops a systematic understanding of the tasks and mechanisms of public administration and provides the body of knowledge required for professional management activities. Successful completion results in the award of a new qualification.",
       "bullets_en": [
         "Public policy",
         "Financial management",
@@ -1528,7 +1528,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 56,000",
       "hours_en": "506 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1546,7 +1546,7 @@
       "dates": "2,5 месяца",
       "title_ru": "Управление персоналом и кадровое делопроизводство",
       "desc_ru": "Программа направлена на формирование целостного представления о системе управления персоналом организации. В ходе обучения слушатели осваивают функциональные обязанности специалистов по кадрам и трудовым отношениям. Полученные компетенции позволяют эффективно организовывать документационное обеспечение и управление персоналом предприятия.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки формирует целостное представление о системе управления персоналом и кадровом делопроизводстве организации. В ходе обучения рассматриваются функции специалистов по кадрам и трудовым отношениям, управление персоналом и документационное обеспечение кадровых процессов.\n\nОсвоение программы помогает организовывать кадровую работу, поддерживать документационные процессы и применять системный подход к управлению персоналом предприятия.",
       "bullets_ru": [
         "Кадровое делопроизводство",
         "Управление персоналом",
@@ -1554,7 +1554,7 @@
       ],
       "title_en": "Personnel Management and HR Records Management",
       "desc_en": "The program aims to build a comprehensive understanding of an organization's personnel management system. During the training, students master the functional responsibilities of HR and labor relations specialists. The acquired competencies enable efficient organization of documentation support and enterprise personnel management.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program develops a comprehensive understanding of personnel management and HR records management within an organisation. It covers the functions of HR and labour relations specialists, personnel management, and documentation support for HR processes.\n\nThe program helps participants organise HR work, maintain documentation processes, and apply a systematic approach to workforce management.",
       "bullets_en": [
         "HR records management",
         "Personnel management",
@@ -1579,7 +1579,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 46,300",
       "hours_en": "256 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1597,7 +1597,7 @@
       "dates": "Срок обучения — 2,5 месяца; набор по мере формирования групп",
       "title_ru": "Государственное и муниципальное управление",
       "desc_ru": "Программа направлена на подготовку высококвалифицированных специалистов в сфере государственной и муниципальной службы. В рамках курса слушатели овладевают фундаментальными теоретическими знаниями в сфере публичного управления, экономики и права. Успешное освоение программы заканчивается присвоением новой квалификации специалиста.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки направлена на подготовку специалистов для сферы государственной и муниципальной службы. В рамках обучения рассматриваются публичное управление, экономика и финансы, право и вопросы функционирования государственной службы.\n\nПрограмма помогает сформировать фундаментальную теоретическую базу для профессиональной деятельности в органах публичного управления. Успешное завершение обучения предусматривает получение новой квалификации.",
       "bullets_ru": [
         "Публичное управление",
         "Финансы и экономика",
@@ -1605,7 +1605,7 @@
       ],
       "title_en": "State and Municipal Management",
       "desc_en": "The program aims to train highly qualified specialists in the field of public and municipal service. Within the course, students master fundamental theoretical knowledge in public administration, economics, and law. Successful completion of the program results in the award of a new specialist qualification.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program prepares specialists for work in state and municipal service. It covers public administration, economics and finance, law, and the functioning of public service institutions.\n\nThe program provides a fundamental theoretical foundation for professional work in public administration. Successful completion results in the award of a new qualification.",
       "bullets_en": [
         "Public administration",
         "Finance and economics",
@@ -1630,7 +1630,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 45,000",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1648,7 +1648,7 @@
       "dates": "2,5 месяца",
       "title_ru": "Бухгалтерский и финансовый учет",
       "desc_ru": "Программа разработана с учетом требований экономики и бизнеса к уровню подготовки специалистов в сфере учета. Слушатели освоят новый вид профессиональной деятельности, получив практический опыт составления отчетности с использованием современных систем. В рамках курса участники смогут применять методы финансового анализа, устанавливая причины изменений за отчетный период.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки предназначена для освоения нового вида профессиональной деятельности в сфере бухгалтерского и финансового учёта. Обучение охватывает бухгалтерский учёт, подготовку отчётности и методы финансового анализа с использованием современных информационных систем.\n\nСлушатели получают практическое представление о формировании отчётности и анализе финансовых показателей, включая выявление причин изменений за отчётный период.",
       "bullets_ru": [
         "Бухгалтерский учет",
         "Финансовый анализ",
@@ -1656,7 +1656,7 @@
       ],
       "title_en": "Accounting and Financial Management",
       "desc_en": "The program is developed taking into account economic and business requirements for accounting professionals. Students will master a new type of professional activity, gaining practical experience in reporting preparation using modern systems. Within the course, participants will be able to apply financial analysis methods, identifying the causes of changes over the reporting period.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program is designed for participants entering a new field of professional activity in accounting and financial reporting. It covers accounting, preparation of reports, and financial analysis using modern information systems.\n\nParticipants develop a practical understanding of financial reporting and the analysis of financial indicators, including identifying the reasons for changes over a reporting period.",
       "bullets_en": [
         "Accounting",
         "Financial analysis",
@@ -1681,7 +1681,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 45,000",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
