@@ -1,0 +1,100 @@
+name: Temporary validate program detail feature
+
+on:
+  push:
+    branches:
+      - feature/program-detail-pages
+    paths:
+      - index.html
+      - program.html
+      - program-data.json
+      - portal-data.json
+      - .github/workflows/validate-program-detail-feature.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract and syntax-check inline JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          for filename in ("index.html", "program.html"):
+              text = Path(filename).read_text(encoding="utf-8")
+              scripts = re.findall(r"<script([^>]*)>(.*?)</script>", text, flags=re.S | re.I)
+              count = 0
+              for attrs, body in scripts:
+                  attrs_lower = attrs.lower()
+                  if "application/ld+json" in attrs_lower or "src=" in attrs_lower:
+                      continue
+                  count += 1
+                  Path(f"/tmp/{filename}-{count}.js").write_text(body, encoding="utf-8")
+              if count == 0:
+                  raise SystemExit(f"No inline JavaScript found in {filename}")
+              print(filename, count)
+          PY
+
+          for f in /tmp/index.html-*.js /tmp/program.html-*.js; do
+            node --check "$f"
+          done
+
+      - name: Validate program snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          program_data = json.loads(Path("program-data.json").read_text(encoding="utf-8"))
+          portal_data = json.loads(Path("portal-data.json").read_text(encoding="utf-8"))
+
+          programs = program_data.get("programs")
+          if not isinstance(programs, list) or not programs:
+              raise SystemExit("program-data.json has no programs")
+
+          if portal_data.get("programs") != programs:
+              raise SystemExit("portal-data.json programs differ from program-data.json")
+
+          ids = [str(p.get("id", "")) for p in programs]
+          if len(ids) != len(set(ids)):
+              raise SystemExit("Duplicate program IDs")
+
+          required = (
+              "id", "title_ru", "title_en", "desc_ru", "desc_en",
+              "price_en", "hours_en", "format_en", "type_en", "dates_en",
+          )
+          pairs = (
+              ("title_ru", "title_en"), ("desc_ru", "desc_en"),
+              ("long_desc_ru", "long_desc_en"), ("audience_ru", "audience_en"),
+              ("goal_ru", "goal_en"), ("outcomes_ru", "outcomes_en"),
+              ("topics_ru", "topics_en"), ("document_ru", "document_en"),
+              ("teachers_ru", "teachers_en"), ("official_desc_ru", "official_desc_en"),
+          )
+
+          for p in programs:
+              missing = [k for k in required if not str(p.get(k, "")).strip()]
+              if missing:
+                  raise SystemExit(f"{p.get('id')}: missing {missing}")
+
+              for ru, en in pairs:
+                  if bool(str(p.get(ru, "")).strip()) != bool(str(p.get(en, "")).strip()):
+                      raise SystemExit(f"{p.get('id')}: bilingual mismatch {ru}/{en}")
+
+              ru_bullets = p.get("bullets_ru") or []
+              en_bullets = p.get("bullets_en") or []
+              if len(ru_bullets) != len(en_bullets):
+                  raise SystemExit(f"{p.get('id')}: bullet count mismatch")
+
+          print(f"Validated {len(programs)} programs")
+          PY
