@@ -1016,6 +1016,35 @@
         }
         .site-admin-foot .danger { background:rgba(202,15,62,.22); border-color:rgba(202,15,62,.45); }
         .site-admin-login-note { color:var(--text-muted); font-size:.82rem; line-height:1.5; margin-bottom:14px; }
+        .site-admin-tools button.active {
+            background: linear-gradient(135deg, rgba(22,163,74,.35), rgba(14,165,160,.28));
+            border-color: rgba(74,222,128,.65);
+            box-shadow: 0 0 0 1px rgba(74,222,128,.15) inset;
+        }
+        body.site-admin-text-editing .site-admin-editable {
+            outline: 2px dashed rgba(56,189,248,.78) !important;
+            outline-offset: 3px;
+            cursor: text !important;
+            border-radius: 4px;
+        }
+        body.site-admin-text-editing .site-admin-editable:hover,
+        body.site-admin-text-editing .site-admin-editable:focus {
+            outline-color: #f59e0b !important;
+            background: rgba(245,158,11,.09) !important;
+        }
+        body.site-admin-text-editing .site-admin-editable:focus {
+            box-shadow: 0 0 0 4px rgba(245,158,11,.12);
+        }
+        .site-admin-edit-hint {
+            padding: 9px 14px;
+            font-size: .7rem;
+            line-height: 1.45;
+            color: #bae6fd;
+            background: rgba(14,116,144,.13);
+            border-bottom: 1px solid rgba(56,189,248,.16);
+            display: none;
+        }
+        .site-admin-edit-hint.active { display:block; }
         @media (max-width: 640px) {
             .site-admin-panel { top: 10px; right: 12px; max-height: calc(100vh - 20px); }
         }
@@ -1470,11 +1499,11 @@
     <!-- СЛУЖЕБНЫЙ РЕЖИМ: авторизация и панель управления видимостью -->
     <div class="modal-overlay" id="siteAdminLoginModal" style="z-index:30060;">
         <div class="modal-box chrome-glass" style="max-width:460px;">
-            <h3 style="margin-bottom:10px;">Служебный вход</h3>
-            <p class="site-admin-login-note">Введите пароль редактора. Пароль проверяется на сервере и не хранится в коде сайта.</p>
+            <h3 style="margin-bottom:10px;">Pro режим</h3>
+            <p class="site-admin-login-note">Введите пароль Pro-режима. Он проверяется сервером и не хранится в коде сайта.</p>
             <input type="password" id="siteAdminPasswordInput" class="chat-text-input" autocomplete="current-password" placeholder="Пароль">
             <div id="siteAdminLoginError" style="display:none;color:var(--ranepa-red);font-weight:800;margin:10px 0;"></div>
-            <button class="modal-btn" id="siteAdminLoginBtn" type="button" onclick="submitSiteAdminLogin()" style="background:linear-gradient(135deg,#29345B,#CA0F3E);border:none;text-align:center;">Войти в режим администратора</button>
+            <button class="modal-btn" id="siteAdminLoginBtn" type="button" onclick="submitSiteAdminLogin()" style="background:linear-gradient(135deg,#29345B,#CA0F3E);border:none;text-align:center;">Войти в Pro режим</button>
             <div class="close-modal" onclick="closeSiteAdminLogin()">Отмена</div>
         </div>
     </div>
@@ -1487,9 +1516,12 @@
             <button type="button" onclick="hideSiteAdminPanel()" title="Свернуть">×</button>
         </div>
         <div class="site-admin-tools">
+            <button type="button" id="siteAdminEditBtn" onclick="toggleSiteTextEditMode()">✏ Редактировать тексты</button>
             <button type="button" onclick="window.location.href='news.html?editor=1'">📰 Редактор новостей</button>
-            <button type="button" onclick="window.location.href=API_URL + '?page=upload'">📄 Учебные планы</button>
+            <button type="button" onclick="openStudyPlanUpload()">📄 Учебные планы</button>
+            <button type="button" onclick="resetSiteTextOverrides()">↶ Сбросить правки текста</button>
         </div>
+        <div class="site-admin-edit-hint" id="siteAdminEditHint">Редактирование включено: нажмите на подсвеченный текст, напечатайте новый и щёлкните вне него. Изменение сохранится автоматически для текущего языка.</div>
         <div class="site-admin-status" id="siteAdminStatus">Настройки загружаются…</div>
         <div class="site-admin-controls" id="siteAdminControls"></div>
         <div class="site-admin-foot">
@@ -1742,15 +1774,20 @@
     API_URL = 'https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 
 
-    // ===== СЛУЖЕБНЫЙ РЕЖИМ / УНИВЕРСАЛЬНАЯ ВИДИМОСТЬ =====
+    // ===== PRO РЕЖИМ / ВИДИМОСТЬ + РЕДАКТИРОВАНИЕ ТЕКСТОВ =====
     const SITE_SETTINGS_ID = '__site_admin_settings__';
-    const SITE_SETTINGS_CACHE_KEY = 'ranepa_site_visibility_v1';
+    const SITE_SETTINGS_CACHE_KEY = 'ranepa_site_settings_v2';
+    const SITE_SETTINGS_OLD_CACHE_KEY = 'ranepa_site_visibility_v1';
     let siteVisibility = {};
+    let siteContentOverrides = {};
     let siteSettingsItem = null;
     let siteAdminToken = sessionStorage.getItem('siteAdminToken') || null;
     let siteAdminMode = !!siteAdminToken;
+    let siteTextEditMode = false;
     let siteAdminSaveTimer = null;
     let siteAdminObserver = null;
+    let siteAdminMutationTimer = null;
+    const siteEditBefore = new WeakMap();
 
     const SITE_ADMIN_REGISTRY = [
         { key:'header_controls', label:'Кнопки языка, шрифта и темы', group:'Шапка', selector:'.header-controls' },
@@ -1792,6 +1829,7 @@
             return {
                 version: Number(parsed.version || 1),
                 visibility: parsed.visibility && typeof parsed.visibility === 'object' ? parsed.visibility : {},
+                content: parsed.content && typeof parsed.content === 'object' ? parsed.content : {},
                 updatedAt: parsed.updatedAt || ''
             };
         } catch (e) {
@@ -1800,18 +1838,19 @@
         }
     }
 
-    function readCachedSiteVisibility() {
-        try {
-            const cached = JSON.parse(localStorage.getItem(SITE_SETTINGS_CACHE_KEY) || 'null');
-            if (cached && cached.visibility && typeof cached.visibility === 'object') {
-                siteVisibility = cached.visibility;
-                return true;
-            }
-        } catch (e) {}
-        return false;
+    function readCachedSiteSettings() {
+        let cached = null;
+        try { cached = JSON.parse(localStorage.getItem(SITE_SETTINGS_CACHE_KEY) || 'null'); } catch (e) {}
+        if (!cached) {
+            try { cached = JSON.parse(localStorage.getItem(SITE_SETTINGS_OLD_CACHE_KEY) || 'null'); } catch (e) {}
+        }
+        if (!cached || typeof cached !== 'object') return false;
+        if (cached.visibility && typeof cached.visibility === 'object') siteVisibility = cached.visibility;
+        if (cached.content && typeof cached.content === 'object') siteContentOverrides = cached.content;
+        return true;
     }
 
-    function cacheSiteVisibility(payload) {
+    function cacheSiteSettings(payload) {
         try { localStorage.setItem(SITE_SETTINGS_CACHE_KEY, JSON.stringify(payload)); } catch (e) {}
     }
 
@@ -1874,6 +1913,185 @@
         });
     }
 
+    function siteCssPath(el) {
+        if (!el || el.nodeType !== 1) return '';
+        if (el.id) return '#' + CSS.escape(el.id);
+        const parts = [];
+        let node = el;
+        while (node && node !== document.body && parts.length < 6) {
+            if (node.id) {
+                parts.unshift('#' + CSS.escape(node.id));
+                break;
+            }
+            let part = node.tagName.toLowerCase();
+            if (node.parentElement) {
+                const peers = Array.from(node.parentElement.children).filter(function (x) { return x.tagName === node.tagName; });
+                if (peers.length > 1) part += ':nth-of-type(' + (peers.indexOf(node) + 1) + ')';
+            }
+            parts.unshift(part);
+            node = node.parentElement;
+        }
+        return parts.join(' > ');
+    }
+
+    function siteEditKeyForElement(el) {
+        if (!el || el.nodeType !== 1) return '';
+        if (el.dataset.siteEditKey) return 'custom:' + el.dataset.siteEditKey;
+        if (el.dataset.i18n) return 'i18n:' + el.dataset.i18n;
+        if (el.classList.contains('program-meta-value') && el.dataset.programId && el.dataset.metaKey) {
+            return 'programmeta:' + el.dataset.programId + ':' + el.dataset.metaKey;
+        }
+        if (el.id) return 'id:' + el.id;
+        const path = siteCssPath(el);
+        return path ? 'dom:' + path : '';
+    }
+
+    function siteOverrideFor(key, lang) {
+        const record = siteContentOverrides[key];
+        if (!record || typeof record !== 'object') return null;
+        return Object.prototype.hasOwnProperty.call(record, lang) ? String(record[lang]) : null;
+    }
+
+    function siteElementPlainText(el) {
+        return String(el.innerText == null ? el.textContent || '' : el.innerText)
+            .replace(/\u00a0/g, ' ')
+            .replace(/[ \t]+\n/g, '\n')
+            .replace(/\n[ \t]+/g, '\n')
+            .trim();
+    }
+
+    function setSiteElementText(el, value) {
+        const text = String(value == null ? '' : value);
+        if (siteElementPlainText(el) === text.trim()) return;
+        while (el.firstChild) el.removeChild(el.firstChild);
+        text.split('\n').forEach(function (part, index, arr) {
+            if (index) el.appendChild(document.createElement('br'));
+            el.appendChild(document.createTextNode(part));
+        });
+    }
+
+    function resolveSiteOverrideElements(key) {
+        try {
+            if (key.indexOf('i18n:') === 0) {
+                const k = key.slice(5);
+                return Array.from(document.querySelectorAll('[data-i18n="' + CSS.escape(k) + '"]'));
+            }
+            if (key.indexOf('programmeta:') === 0) {
+                const parts = key.split(':');
+                const id = parts[1] || '', meta = parts.slice(2).join(':');
+                return Array.from(document.querySelectorAll('.program-meta-value[data-program-id="' + CSS.escape(id) + '"][data-meta-key="' + CSS.escape(meta) + '"]'));
+            }
+            if (key.indexOf('id:') === 0) {
+                const el = document.getElementById(key.slice(3));
+                return el ? [el] : [];
+            }
+            if (key.indexOf('dom:') === 0) {
+                const el = document.querySelector(key.slice(4));
+                return el ? [el] : [];
+            }
+            if (key.indexOf('custom:') === 0) {
+                return Array.from(document.querySelectorAll('[data-site-edit-key="' + CSS.escape(key.slice(7)) + '"]'));
+            }
+        } catch (e) {}
+        return [];
+    }
+
+    function applySiteContentOverrides() {
+        const lang = typeof currentLang === 'string' ? currentLang : 'ru';
+        Object.keys(siteContentOverrides).forEach(function (key) {
+            const value = siteOverrideFor(key, lang);
+            if (value === null) return;
+            resolveSiteOverrideElements(key).forEach(function (el) {
+                if (document.activeElement === el && siteTextEditMode) return;
+                setSiteElementText(el, value);
+            });
+        });
+    }
+
+    function isSiteEditableElement(el) {
+        if (!el || el.nodeType !== 1) return false;
+        if (el.closest('#siteAdminPanel, #siteAdminLoginModal, #siteAdminReopen')) return false;
+        if (el.closest('script,style,noscript')) return false;
+        if (el.matches('input,textarea,select,option,img,svg,path,iframe,video,audio')) return false;
+        if (!siteEditKeyForElement(el)) return false;
+        const text = siteElementPlainText(el);
+        if (!text) return false;
+        const nonBrChildren = Array.from(el.children || []).filter(function (child) { return child.tagName !== 'BR'; });
+        return nonBrChildren.length === 0;
+    }
+
+    function decorateSiteEditableElements() {
+        if (!siteAdminMode || !siteTextEditMode) return;
+        const candidates = document.querySelectorAll(
+            '[data-i18n], .program-meta-value, [data-site-edit-key], h1, h2, h3, h4, p, span, button, a, summary, label, li, .position'
+        );
+        candidates.forEach(function (el) {
+            if (!isSiteEditableElement(el)) return;
+            el.classList.add('site-admin-editable');
+            el.setAttribute('contenteditable', 'true');
+            el.setAttribute('spellcheck', 'true');
+            el.title = 'Pro: нажмите и редактируйте текст';
+        });
+    }
+
+    function clearSiteEditableDecorations() {
+        document.querySelectorAll('.site-admin-editable').forEach(function (el) {
+            el.classList.remove('site-admin-editable');
+            el.removeAttribute('contenteditable');
+            if (el.title === 'Pro: нажмите и редактируйте текст') el.removeAttribute('title');
+        });
+    }
+
+    function toggleSiteTextEditMode(force) {
+        if (!siteAdminMode) return openSiteAdminLogin();
+        siteTextEditMode = typeof force === 'boolean' ? force : !siteTextEditMode;
+        document.body.classList.toggle('site-admin-text-editing', siteTextEditMode);
+        const btn = document.getElementById('siteAdminEditBtn');
+        const hint = document.getElementById('siteAdminEditHint');
+        if (btn) {
+            btn.classList.toggle('active', siteTextEditMode);
+            btn.textContent = siteTextEditMode ? '✅ Редактирование включено' : '✏ Редактировать тексты';
+        }
+        if (hint) hint.classList.toggle('active', siteTextEditMode);
+        if (siteTextEditMode) {
+            decorateSiteEditableElements();
+            siteAdminSetStatus('Можно редактировать подсвеченные тексты прямо на странице', 'ok');
+        } else {
+            clearSiteEditableDecorations();
+            applySiteContentOverrides();
+            siteAdminSetStatus('Редактирование текста выключено', 'ok');
+        }
+    }
+
+    function saveSiteTextElement(el) {
+        if (!siteAdminMode || !siteTextEditMode || !isSiteEditableElement(el)) return;
+        const key = siteEditKeyForElement(el);
+        if (!key) return;
+        const lang = typeof currentLang === 'string' ? currentLang : 'ru';
+        const text = siteElementPlainText(el);
+        const before = siteEditBefore.get(el);
+        if (before === text) return;
+        if (!siteContentOverrides[key] || typeof siteContentOverrides[key] !== 'object') siteContentOverrides[key] = {};
+        siteContentOverrides[key][lang] = text;
+        siteAdminSetStatus('Текст изменён — сохраняем…');
+        scheduleSiteSettingsSave();
+    }
+
+    function resetSiteTextOverrides() {
+        if (!siteAdminMode) return;
+        const count = Object.keys(siteContentOverrides).length;
+        if (!count) {
+            siteAdminSetStatus('Сохранённых текстовых правок нет', 'ok');
+            return;
+        }
+        if (!confirm('Удалить все текстовые правки Pro-режима и вернуть тексты из основной базы/кода?')) return;
+        siteContentOverrides = {};
+        cacheSiteSettings({ version:2, visibility:siteVisibility, content:siteContentOverrides, updatedAt:new Date().toISOString() });
+        scheduleSiteSettingsSave();
+        siteAdminSetStatus('Правки сброшены. Перезагружаем исходные тексты…', 'ok');
+        setTimeout(function () { location.reload(); }, 450);
+    }
+
     function renderSiteAdminPanel() {
         const box = document.getElementById('siteAdminControls');
         if (!box) return;
@@ -1928,13 +2146,18 @@
             if (!parsed) throw new Error('Служебные настройки повреждены');
             siteSettingsItem = item;
             siteVisibility = parsed.visibility || {};
-            cacheSiteVisibility(parsed);
+            siteContentOverrides = parsed.content || {};
+            cacheSiteSettings(parsed);
             applySiteVisibility();
-            if (siteAdminMode) renderSiteAdminPanel();
+            applySiteContentOverrides();
+            if (siteAdminMode) {
+                renderSiteAdminPanel();
+                if (siteTextEditMode) decorateSiteEditableElements();
+            }
             siteAdminSetStatus('Настройки синхронизированы', 'ok');
             return true;
         } catch (e) {
-            console.warn('Не удалось загрузить настройки видимости:', e);
+            console.warn('Не удалось загрузить настройки сайта:', e);
             siteAdminSetStatus('Не удалось обновить настройки: ' + e.message, 'err');
             return false;
         }
@@ -1942,16 +2165,22 @@
 
     async function saveSiteSettings() {
         if (!siteAdminToken) {
-            siteAdminSetStatus('Сессия администратора истекла', 'err');
+            siteAdminSetStatus('Сессия Pro-режима истекла', 'err');
             openSiteAdminLogin();
             return false;
         }
         const now = new Date().toISOString();
         const base = siteSettingsItem || {};
+        const payload = {
+            version: 2,
+            visibility: siteVisibility,
+            content: siteContentOverrides,
+            updatedAt: now
+        };
         const item = {
             id: SITE_SETTINGS_ID,
             title: '__SITE_ADMIN_SETTINGS__',
-            lead: JSON.stringify({ version:1, visibility:siteVisibility, updatedAt:now }),
+            lead: JSON.stringify(payload),
             tags: ['__system__'],
             blocks: [],
             coverImage: '',
@@ -1967,8 +2196,8 @@
             });
             if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Настройки не сохранены');
             siteSettingsItem = Object.assign({}, item, { id:data.id || SITE_SETTINGS_ID });
-            cacheSiteVisibility({ version:1, visibility:siteVisibility, updatedAt:now });
-            siteAdminSetStatus('Сохранено. Изменение действует на сайте.', 'ok');
+            cacheSiteSettings(payload);
+            siteAdminSetStatus('Сохранено. Изменение уже действует на сайте.', 'ok');
             return true;
         } catch (e) {
             siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
@@ -1978,7 +2207,7 @@
 
     function scheduleSiteSettingsSave() {
         if (siteAdminSaveTimer) clearTimeout(siteAdminSaveTimer);
-        siteAdminSaveTimer = setTimeout(saveSiteSettings, 250);
+        siteAdminSaveTimer = setTimeout(saveSiteSettings, 300);
     }
 
     function setSiteVisibility(key, visible) {
@@ -1991,19 +2220,28 @@
 
     function showAllSiteElements() {
         if (!siteAdminMode) return;
-        if (!confirm('Вернуть на сайт все элементы, скрытые через эту админ-панель?')) return;
+        if (!confirm('Вернуть на сайт все элементы, скрытые через Pro-панель?')) return;
         siteVisibility = {};
         applySiteVisibility();
         renderSiteAdminPanel();
         scheduleSiteSettingsSave();
     }
 
+    function openStudyPlanUpload() {
+        const win = window.open(API_URL + '?page=upload', '_blank', 'noopener');
+        if (!win) window.location.href = API_URL + '?page=upload';
+    }
+
     function openSiteAdminLogin() {
         if (siteAdminToken) {
             siteAdminMode = true;
             document.body.classList.add('site-admin-active');
-            document.getElementById('siteAdminPanel').classList.add('active');
+            const panel = document.getElementById('siteAdminPanel');
+            const reopen = document.getElementById('siteAdminReopen');
+            if (panel) panel.classList.add('active');
+            if (reopen) reopen.classList.remove('active');
             applySiteVisibility();
+            applySiteContentOverrides();
             renderSiteAdminPanel();
             loadSiteSettings(true);
             return;
@@ -2031,7 +2269,7 @@
         const err = document.getElementById('siteAdminLoginError');
         const password = input ? input.value : '';
         if (!password) {
-            if (err) { err.textContent = 'Введите пароль'; err.style.display = 'block'; }
+            if (err) { err.textContent = 'Введите пароль Pro-режима'; err.style.display = 'block'; }
             return;
         }
         if (btn) { btn.disabled = true; btn.textContent = 'Проверяем…'; }
@@ -2041,21 +2279,25 @@
                 method:'POST',
                 body: JSON.stringify({ action:'newsLogin', password:password })
             });
-            if (!data || !data.ok || !data.token) throw new Error('Пароль не подошёл');
+            if (!data || !data.ok || !data.token) throw new Error('Пароль Pro-режима не подошёл');
             siteAdminToken = data.token;
             sessionStorage.setItem('siteAdminToken', siteAdminToken);
             sessionStorage.setItem('newsAdminToken', siteAdminToken);
             closeSiteAdminLogin();
             siteAdminMode = true;
             document.body.classList.add('site-admin-active');
-            document.getElementById('siteAdminPanel').classList.add('active');
+            const panel = document.getElementById('siteAdminPanel');
+            const reopen = document.getElementById('siteAdminReopen');
+            if (panel) panel.classList.add('active');
+            if (reopen) reopen.classList.remove('active');
             await loadSiteSettings(true);
             applySiteVisibility();
+            applySiteContentOverrides();
             renderSiteAdminPanel();
         } catch (e) {
             if (err) { err.textContent = e.message; err.style.display = 'block'; }
         } finally {
-            if (btn) { btn.disabled = false; btn.textContent = 'Войти в режим администратора'; }
+            if (btn) { btn.disabled = false; btn.textContent = 'Войти в Pro режим'; }
         }
     }
 
@@ -2076,6 +2318,7 @@
     }
 
     function siteAdminLogout() {
+        toggleSiteTextEditMode(false);
         siteAdminToken = null;
         siteAdminMode = false;
         sessionStorage.removeItem('siteAdminToken');
@@ -2086,14 +2329,62 @@
         if (panel) panel.classList.remove('active');
         if (reopen) reopen.classList.remove('active');
         applySiteVisibility();
+        applySiteContentOverrides();
     }
 
     function initSiteAdminVisibility() {
-        readCachedSiteVisibility();
+        readCachedSiteSettings();
         applySiteVisibility();
+        applySiteContentOverrides();
         loadSiteSettings(false);
+
+        document.addEventListener('focusin', function (event) {
+            const el = event.target;
+            if (siteTextEditMode && el && el.classList && el.classList.contains('site-admin-editable')) {
+                siteEditBefore.set(el, siteElementPlainText(el));
+            }
+        }, true);
+
+        document.addEventListener('focusout', function (event) {
+            const el = event.target;
+            if (siteTextEditMode && el && el.classList && el.classList.contains('site-admin-editable')) {
+                saveSiteTextElement(el);
+            }
+        }, true);
+
+        document.addEventListener('keydown', function (event) {
+            const el = event.target;
+            if (!siteTextEditMode || !el || !el.classList || !el.classList.contains('site-admin-editable')) return;
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                const before = siteEditBefore.get(el);
+                if (before !== undefined) setSiteElementText(el, before);
+                el.blur();
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                event.preventDefault();
+                el.blur();
+            }
+        }, true);
+
+        document.addEventListener('click', function (event) {
+            if (!siteTextEditMode) return;
+            const el = event.target && event.target.closest ? event.target.closest('.site-admin-editable') : null;
+            if (!el) return;
+            event.preventDefault();
+            event.stopPropagation();
+            el.focus();
+        }, true);
+
         if (siteAdminObserver) siteAdminObserver.disconnect();
-        siteAdminObserver = new MutationObserver(function () { applySiteVisibility(); });
+        siteAdminObserver = new MutationObserver(function () {
+            if (siteAdminMutationTimer) clearTimeout(siteAdminMutationTimer);
+            siteAdminMutationTimer = setTimeout(function () {
+                applySiteVisibility();
+                applySiteContentOverrides();
+                if (siteTextEditMode) decorateSiteEditableElements();
+            }, 20);
+        });
         siteAdminObserver.observe(document.body, { childList:true, subtree:true });
 
         const pass = document.getElementById('siteAdminPasswordInput');
@@ -2112,7 +2403,7 @@
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSiteAdminVisibility);
     else initSiteAdminVisibility();
-    // ===== КОНЕЦ СЛУЖЕБНОГО РЕЖИМА =====
+    // ===== КОНЕЦ PRO РЕЖИМА =====
 
     let globalOwlFiles = [];
     let globalPrograms = [];
@@ -2722,6 +3013,8 @@
             renderUrgentAlertText();
         }
         renderDocsList(globalPrograms);
+        applySiteContentOverrides();
+        if (siteTextEditMode) decorateSiteEditableElements();
 
         if (isScheduleOverlayActive()) {
             if (lang === 'en') {
@@ -3367,12 +3660,13 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         addUserMsg(text);
         input.value = '';
 
-        // --- СКРЫТЫЙ СЛУЖЕБНЫЙ ВХОД ---
+        // --- СЛУЖЕБНЫЕ РЕЖИМЫ ---
 const staffCommand = normalizeText(text);
 
-const wantsSiteAdmin = [
+const wantsAdminChooser = [
     'служебный вход',
     'режим администратора',
+    'режим админа',
     'админ режим'
 ].some(cmd => staffCommand === cmd || staffCommand.includes(cmd));
 
@@ -3392,16 +3686,19 @@ const wantsStaffPortal = [
     'загрузка учебного плана'
 ].some(cmd => staffCommand.includes(cmd));
 
-if (wantsSiteAdmin) {
+if (wantsAdminChooser) {
     setTimeout(() => {
         addBotMsg(
             currentLang === 'ru'
-                ? '🔒 <b>Режим администратора</b><br><br>После проверки пароля вы сможете одной галочкой скрывать и возвращать разделы и отдельные программы на сайте.'
-                : '🔒 <b>Administrator mode</b><br><br>After password verification you can hide or restore site sections and individual programs with one switch.'
+                ? '🔐 <b>Служебный режим</b><br><br>Выберите уровень доступа. <b>Pro режим</b> предназначен для полного управления сайтом и требует отдельного пароля. <b>Загрузка учебных планов</b> откроется в новой вкладке и запросит свой PIN-код.'
+                : '🔐 <b>Staff mode</b><br><br>Choose an access level. <b>Pro mode</b> is for full site management and requires its own password. <b>Curriculum upload</b> opens in a new tab and uses its own PIN.'
         );
         setOptions(
             '<button class="chat-opt-btn" onclick="openSiteAdminLogin()" style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">' +
-            (currentLang === 'ru' ? 'Войти в режим администратора' : 'Open administrator mode') +
+            (currentLang === 'ru' ? '⚙ Pro режим' : '⚙ Pro mode') +
+            '</button>' +
+            '<button class="chat-opt-btn" onclick="openStudyPlanUpload()" style="background:rgba(56,189,248,.12);border-color:#38bdf8;color:#38bdf8;text-align:center;">' +
+            (currentLang === 'ru' ? '📄 Загрузка учебных планов' : '📄 Curriculum upload') +
             '</button>' +
             '<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>'
         );
@@ -3409,20 +3706,24 @@ if (wantsSiteAdmin) {
     return;
 }
 
-if (wantsNewsEditor || wantsStaffPortal) {
+if (wantsStaffPortal) {
     setTimeout(() => {
-        const targetUrl = wantsNewsEditor
-            ? 'news.html?editor=1'
-            : API_URL + '?page=upload';
-
         addBotMsg(
-            wantsNewsEditor
-                ? translationsHTML[currentLang].staffNewsMsg
-                : translationsHTML[currentLang].staffPortalMsg
+            currentLang === 'ru'
+                ? '📄 <b>Загрузка учебных планов</b><br><br>Открываю служебную страницу в новой вкладке. Для входа используйте выданный PIN-код.'
+                : '📄 <b>Curriculum upload</b><br><br>Opening the staff page in a new tab. Use the assigned PIN to sign in.'
         );
+        openStudyPlanUpload();
+        setOptions('<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>');
+    }, 250);
+    return;
+}
 
+if (wantsNewsEditor) {
+    setTimeout(() => {
+        addBotMsg(translationsHTML[currentLang].staffNewsMsg);
         setOptions(
-            '<button class="chat-opt-btn" onclick="window.location.href=&quot;' + targetUrl + '&quot;" style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">' +
+            '<button class="chat-opt-btn" onclick="window.location.href=&quot;news.html?editor=1&quot;" style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">' +
             translationsHTML[currentLang].staffContinue +
             '</button>' +
             '<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>'
@@ -3430,7 +3731,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
     }, 300);
     return;
 }
-// --- КОНЕЦ СКРЫТОГО СЛУЖЕБНОГО ВХОДА ---
+// --- КОНЕЦ СЛУЖЕБНЫХ РЕЖИМОВ ---
 
         const cleanCode = text.toUpperCase();
         let foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
