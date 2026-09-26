@@ -35,12 +35,28 @@ jobs:
               if str(p.get("id","")) == "c15":
                   wanted = p
                   break
+          sheet_url = "https://docs.google.com/spreadsheets/d/1K6mOJgoC_KnWlyRuPrnukfxSN6KywJ9VYbm-yzJipSA/export?format=csv&gid=0"
+          sheet_export = {"ok": False}
+          try:
+              req = urllib.request.Request(sheet_url, headers={"User-Agent": "Mozilla/5.0"})
+              with urllib.request.urlopen(req, timeout=30) as sr:
+                  raw = sr.read(4096)
+                  sheet_export = {
+                      "ok": sr.status == 200,
+                      "status": sr.status,
+                      "contentType": sr.headers.get("Content-Type"),
+                      "firstLine": raw.decode("utf-8", errors="replace").splitlines()[0] if raw else "",
+                  }
+          except Exception as e:
+              sheet_export = {"ok": False, "error": type(e).__name__ + ": " + str(e)}
+
           summary = {
               "checkedAt": datetime.now(timezone.utc).isoformat(),
               "programCount": len(programs),
               "topLevelKeys": sorted(data.keys()) if isinstance(data, dict) else [],
               "programKeys": sorted({k for p in programs if isinstance(p, dict) for k in p.keys()}),
               "c15": wanted,
+              "sheetCsvExport": sheet_export,
           }
           with open("api-program-diagnostic.json","w",encoding="utf-8") as f:
               json.dump(summary,f,ensure_ascii=False,indent=2)
