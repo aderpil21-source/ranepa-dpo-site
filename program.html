@@ -204,6 +204,14 @@ function field(base){
   const key=base+'_'+currentLang;
   return String(program[key]||'').trim();
 }
+function localizedMeta(base){
+  if(!program) return '—';
+  if(currentLang==='en'){
+    const exact=String(program[base+'_en']||'').trim();
+    return exact||metaValue(program[base],'en');
+  }
+  return String(program[base]||'').trim()||'—';
+}
 function setSection(id,value,renderer){
   const section=document.getElementById(id+'Section');
   if(!section) return;
@@ -249,16 +257,16 @@ function render(){
   document.getElementById('enBtn').classList.toggle('active',currentLang==='en');
 
   if(!program) return;
-  const title=field('title')||program.title_ru||program.title_en||program.id;
+  const title=field('title')||(currentLang==='en'?'Program':(program.title_ru||program.title_en||program.id));
   const lead=field('desc');
   document.title=title+' | RANEPA';
   document.getElementById('title').textContent=title;
   document.getElementById('lead').textContent=lead||(currentLang==='ru'?'Описание уточняется.':'Description is being prepared.');
-  document.getElementById('typeBadge').textContent=metaValue(program.type,currentLang);
-  document.getElementById('price').textContent=metaValue(program.price,currentLang);
-  document.getElementById('hours').textContent=metaValue(program.hours,currentLang);
-  document.getElementById('format').textContent=metaValue(program.format,currentLang);
-  document.getElementById('period').textContent=metaValue(program.dates,currentLang);
+  document.getElementById('typeBadge').textContent=localizedMeta('type');
+  document.getElementById('price').textContent=localizedMeta('price');
+  document.getElementById('hours').textContent=localizedMeta('hours');
+  document.getElementById('format').textContent=localizedMeta('format');
+  document.getElementById('period').textContent=localizedMeta('dates');
 
   setSection('about',field('long_desc'),v=>document.getElementById('about').textContent=v);
   setSection('audience',field('audience'),v=>document.getElementById('audience').textContent=v);
@@ -273,7 +281,7 @@ function render(){
     items.forEach(x=>{const li=document.createElement('li');li.textContent=x;el.appendChild(li);});
   });
   setSection('document',field('document'),v=>document.getElementById('document').textContent=v);
-  setSection('experts',field('experts'),v=>document.getElementById('experts').textContent=v);
+  setSection('experts',field('teachers')||field('experts'),v=>document.getElementById('experts').textContent=v);
   setSection('official',field('official_desc'),v=>document.getElementById('official').textContent=v);
 
   const complete=currentLang==='ru'
