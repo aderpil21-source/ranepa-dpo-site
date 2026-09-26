@@ -66,7 +66,7 @@
 <body>
 <header>
   <div class="wrap topbar">
-    <a class="brand" href="index.html">РАНХиГС<small id="brandSub">Западный филиал • Центр дополнительного образования</small></a>
+    <a class="brand" href="index.html"><span id="brandName">РАНХиГС</span><small id="brandSub">Западный филиал • Центр дополнительного образования</small></a>
     <div class="actions">
       <a class="back" id="backLink" href="index.html#programsSection">← <span id="backText">К программам</span></a>
       <div class="lang" aria-label="Language">
@@ -126,6 +126,7 @@ let program=null;
 
 const ui={
   ru:{
+    brandName:'РАНХиГС',pageTitle:'Программа ДПО | Западный филиал РАНХиГС',
     brand:'Западный филиал • Центр дополнительного образования',
     back:'К программам',loading:'Загрузка программы…',notFound:'Программа не найдена',
     notFoundText:'Проверьте ссылку или вернитесь в каталог программ.',
@@ -139,6 +140,7 @@ const ui={
     footer:'Западный филиал РАНХиГС • Центр дополнительного образования'
   },
   en:{
+    brandName:'RANEPA',pageTitle:'Continuing Education Program | RANEPA Western Branch',
     brand:'Western Branch • Center for Continuing Education',
     back:'Back to programs',loading:'Loading program…',notFound:'Program not found',
     notFoundText:'Please check the link or return to the program catalogue.',
@@ -231,7 +233,9 @@ function setLanguage(lang){
 }
 function render(){
   const t=ui[currentLang];
+  document.getElementById('brandName').textContent=t.brandName;
   document.getElementById('brandSub').textContent=t.brand;
+  if(!program) document.title=t.pageTitle;
   document.getElementById('backText').textContent=t.back;
   document.getElementById('footerText').textContent=t.footer;
   document.getElementById('priceLabel').textContent=t.price;
