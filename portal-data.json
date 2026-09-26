@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T11:28:22.492752+00:00",
+  "generatedAt": "2026-09-26T11:48:47.321907+00:00",
   "programs": [
     {
       "id": "c14",
@@ -2381,7 +2381,7 @@
       "official_desc_ru": "",
       "source_file": "Приказ №02-00245/122 от 08.06.2026; договор по программе",
       "source_pages": "приказ: 1; договор: 1",
-      "source_status": "Частичный источник: параметры, форма, документ об обучении",
+      "source_status": "Частичный источник: приказ и договор подтверждают название, 36 часов, срок 1,5–2 недели, очно-заочную форму с применением ЭО и ДОТ, стоимость 10 500 ₽ и удостоверение о повышении квалификации; содержательная ДПП/расписание в пакете отсутствуют.",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -2390,12 +2390,12 @@
       "outcomes_en": "",
       "topics_ru": "",
       "topics_en": "",
-      "document_ru": "Удостоверение о повышении квалификации РАНХиГС.",
-      "document_en": "RANEPA Certificate of Advanced Training.",
+      "document_ru": "Удостоверение о повышении квалификации (документ о квалификации; по договору выдается в электронной форме).",
+      "document_en": "Certificate of Advanced Training (qualification document; under the contract, issued electronically).",
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом/договором; подробный содержательный источник не предоставлен",
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры и документ по итогам подтверждены приказом/договором; подробный содержательный источник не предоставлен.",
       "price_en": "RUB 10,500",
       "hours_en": "36 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
