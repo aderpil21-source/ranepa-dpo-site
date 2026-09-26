@@ -1549,7 +1549,7 @@
     <div class="modal-overlay" id="urgentAlertModal" style="z-index: 25000;">
         <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
             <h3 style="color: var(--ranepa-red);" data-i18n="urgentTitle">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
-            <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
+            <p id="urgentAlertText" data-site-edit-key="alert:text" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
             <div class="buy-btn" onclick="closeUrgentAlertModal()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);" data-i18n="modClose">Закрыть</div>
         </div>
     </div>
@@ -1826,6 +1826,598 @@
             }
         });
     </script>
+
+<script>
+/* ===== DIRECT PRO CMS: Google Sheets source of truth ===== */
+let siteAdminCanUndoServer = false;
+let siteAdminCanRedoServer = false;
+let siteAdminProgramsById = {};
+let siteAdminScheduleByVisibilityKey = {};
+let siteAdminScheduleByRow = {};
+let siteAdminOwlByVisibilityKey = {};
+let siteAdminOwlByCode = {};
+let siteAdminAlertState = null;
+
+function siteAdminTruthy(value) {
+    return value === true || value === 1 || String(value == null ? '' : value).trim().toUpperCase() === 'TRUE';
+}
+
+function siteAdminNormalizeScheduleDate(value) {
+    const raw = String(value == null ? '' : value).trim();
+    const iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})T/);
+    if (iso) return iso[3] + '.' + iso[2] + '.' + iso[1];
+    return raw;
+}
+
+function siteAdminPublicSchedule(item) {
+    return Object.assign({}, item, {
+        _adminRow: Number(item.row || 0),
+        date: siteAdminNormalizeScheduleDate(item.date)
+    });
+}
+
+function siteAdminProgramForUi(item) {
+    const p = Object.assign({}, item);
+    p.bullets_ru = Array.isArray(p.bullets_ru) ? p.bullets_ru :
+        String(p.bullets_ru || '').split(/[|;]/).map(v => v.trim()).filter(Boolean);
+    p.bullets_en = Array.isArray(p.bullets_en) ? p.bullets_en :
+        String(p.bullets_en || '').split(/[|;]/).map(v => v.trim()).filter(Boolean);
+    return p;
+}
+
+function siteAdminIsDirectProgramContentKey(key) {
+    return /^programmeta:[^:]+:/.test(key) ||
+        /^i18n:.+_(?:title|desc|b\d+)$/.test(key);
+}
+
+function siteAdminContentRowsToMap(rows) {
+    const out = {};
+    (Array.isArray(rows) ? rows : []).forEach(item => {
+        if (!item || !item.key || !/^(ru|en)$/.test(String(item.lang || ''))) return;
+        if (siteAdminIsDirectProgramContentKey(String(item.key))) return;
+        if (!out[item.key]) out[item.key] = {};
+        out[item.key][item.lang] = String(item.value == null ? '' : item.value);
+    });
+    return out;
+}
+
+function siteAdminHistoryFromModel(model) {
+    siteVersionHistory = (Array.isArray(model.history) ? model.history : []).map(v => ({
+        id: v.versionId,
+        createdAt: v.createdAt || '',
+        parentId: v.parentId || null,
+        reason: v.label || '',
+        snapshot: null
+    }));
+    siteCurrentVersionId = model.currentVersionId || null;
+    siteAdminCanUndoServer = !!model.canUndo;
+    siteAdminCanRedoServer = !!model.canRedo;
+    renderSiteVersionUI();
+}
+
+function siteAdminHydrateModel(model, renderSourceData) {
+    siteAdminProgramsById = {};
+    (Array.isArray(model.programs) ? model.programs : []).forEach(p => {
+        if (p && p.id) siteAdminProgramsById[String(p.id)] = p;
+    });
+
+    siteAdminScheduleByVisibilityKey = {};
+    siteAdminScheduleByRow = {};
+    (Array.isArray(model.schedules) ? model.schedules : []).forEach(raw => {
+        if (!raw) return;
+        const item = siteAdminPublicSchedule(raw);
+        const key = scheduleVisibilityKey(item);
+        siteAdminScheduleByVisibilityKey[key] = raw;
+        if (raw.row) siteAdminScheduleByRow[String(raw.row)] = raw;
+    });
+
+    siteAdminOwlByVisibilityKey = {};
+    siteAdminOwlByCode = {};
+    (Array.isArray(model.owlFiles) ? model.owlFiles : []).forEach(file => {
+        if (!file || !file.code) return;
+        siteAdminOwlByCode[String(file.code)] = file;
+        siteAdminOwlByVisibilityKey[owlVisibilityKey(file)] = file;
+    });
+
+    siteAdminAlertState = model.alert && typeof model.alert === 'object'
+        ? model.alert
+        : { text:'', active:false };
+
+    siteVisibility = model.visibility && typeof model.visibility === 'object' ? model.visibility : {};
+    siteContentOverrides = siteAdminContentRowsToMap(model.siteContent);
+    siteAdminHistoryFromModel(model);
+
+    cacheSiteSettings({
+        version:4,
+        visibility:siteVisibility,
+        content:siteContentOverrides,
+        currentVersionId:siteCurrentVersionId,
+        updatedAt:new Date().toISOString()
+    });
+
+    if (renderSourceData) {
+        const activePrograms = Object.values(siteAdminProgramsById)
+            .filter(p => siteAdminTruthy(p.active))
+            .map(siteAdminProgramForUi);
+        if (activePrograms.length && typeof buildPrograms === 'function') {
+            buildPrograms(activePrograms);
+        }
+
+        window.schedules = (Array.isArray(model.schedules) ? model.schedules : [])
+            .filter(item => siteAdminTruthy(item.status))
+            .map(siteAdminPublicSchedule);
+        scheduleDataLoaded = true;
+        if (typeof isScheduleOverlayActive === 'function' && isScheduleOverlayActive()) renderSchedule();
+
+        globalOwlFiles = (Array.isArray(model.owlFiles) ? model.owlFiles : []).map(file => ({
+            code:String(file.code || ''),
+            title:file.title || '',
+            url:file.url || '',
+            date:file.date || '',
+            comment:file.comment || '',
+            isPublished:siteAdminTruthy(file.isPublished),
+            _adminRow:Number(file.row || 0)
+        }));
+
+        globalAlert = siteAdminTruthy(siteAdminAlertState.active) && siteAdminAlertState.text
+            ? { text:String(siteAdminAlertState.text) }
+            : null;
+        if (typeof renderGlobalAlertTicker === 'function') renderGlobalAlertTicker();
+        if (typeof renderUrgentAlertText === 'function') renderUrgentAlertText();
+    }
+
+    applySiteVisibility();
+    applySiteContentOverrides();
+    renderSiteAdminPanel();
+    if (siteTextEditMode) decorateSiteEditableElements();
+}
+
+async function siteAdminFetchModel(renderSourceData) {
+    if (!siteAdminToken) throw new Error('Нет Pro-сессии');
+    const model = await siteAdminRequest(API_URL, {
+        method:'POST',
+        body:JSON.stringify({ action:'adminGetModel', token:siteAdminToken })
+    });
+    if (!model || !model.ok) throw new Error(model && model.error ? model.error : 'Не удалось получить CMS-модель');
+    siteAdminHydrateModel(model, renderSourceData !== false);
+    return model;
+}
+
+async function loadSiteSettings(useAdmin) {
+    try {
+        if (useAdmin && siteAdminToken) {
+            await siteAdminFetchModel(true);
+            siteAdminSetStatus('Pro подключён напрямую к RANEPA_DB', 'ok');
+            return true;
+        }
+
+        try {
+            const bucket = Math.floor(Date.now() / (60 * 1000));
+            const response = await fetch('./site-settings.json?v=' + bucket, { cache:'no-store' });
+            if (response.ok) {
+                const snapshot = await response.json();
+                const settings = snapshot && snapshot.settings;
+                if (settings && typeof settings === 'object') {
+                    siteVisibility = settings.visibility && typeof settings.visibility === 'object' ? settings.visibility : {};
+                    const content = settings.content && typeof settings.content === 'object' ? settings.content : {};
+                    siteContentOverrides = {};
+                    Object.keys(content).forEach(key => {
+                        if (!siteAdminIsDirectProgramContentKey(key)) siteContentOverrides[key] = content[key];
+                    });
+                    cacheSiteSettings(settings);
+                    applySiteVisibility();
+                    applySiteContentOverrides();
+                }
+            }
+        } catch (snapshotError) {
+            console.warn('Статический снимок настроек недоступен:', snapshotError);
+        }
+
+        try {
+            const data = await siteAdminRequest(API_URL + '?type=siteSettings&_sitecfg=' + Date.now(), {
+                method:'GET', cache:'no-store'
+            });
+            if (data && data.ok && data.settings) {
+                siteVisibility = data.settings.visibility && typeof data.settings.visibility === 'object'
+                    ? data.settings.visibility : siteVisibility;
+                const content = data.settings.content && typeof data.settings.content === 'object'
+                    ? data.settings.content : {};
+                siteContentOverrides = {};
+                Object.keys(content).forEach(key => {
+                    if (!siteAdminIsDirectProgramContentKey(key)) siteContentOverrides[key] = content[key];
+                });
+                cacheSiteSettings(data.settings);
+                applySiteVisibility();
+                applySiteContentOverrides();
+            }
+        } catch (apiError) {
+            console.warn('Фоновое обновление CMS-настроек недоступно:', apiError);
+        }
+        return true;
+    } catch (e) {
+        console.warn('Не удалось загрузить настройки сайта:', e);
+        siteAdminSetStatus('Не удалось обновить настройки: ' + e.message, 'err');
+        return false;
+    }
+}
+
+async function siteAdminDirectUpdate(entity, field, target, value, label) {
+    if (!siteAdminToken) {
+        siteAdminSetStatus('Сессия Pro-режима истекла', 'err');
+        openSiteAdminLogin();
+        throw new Error('SESSION_EXPIRED');
+    }
+    const data = await siteAdminRequest(API_URL, {
+        method:'POST',
+        body:JSON.stringify({
+            action:'adminUpdate',
+            token:siteAdminToken,
+            entity:entity,
+            field:field,
+            target:target || {},
+            value:value,
+            label:label || ''
+        })
+    });
+    if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Изменение не сохранено');
+    siteCurrentVersionId = data.currentVersionId || siteCurrentVersionId;
+    siteAdminCanUndoServer = !!data.canUndo;
+    siteAdminCanRedoServer = !!data.canRedo;
+    return data;
+}
+
+function siteKeyIsVisible(key) {
+    if (key === 'alert') {
+        if (siteAdminAlertState) return siteAdminTruthy(siteAdminAlertState.active);
+        return !!(globalAlert && globalAlert.text);
+    }
+    if (key.indexOf('program:') === 0) {
+        const id = key.slice(8);
+        const p = siteAdminProgramsById[id];
+        if (p) return siteAdminTruthy(p.active);
+        return true;
+    }
+    if (key.indexOf('schedule:') === 0) {
+        const item = siteAdminScheduleByVisibilityKey[key];
+        return item ? siteAdminTruthy(item.status) : true;
+    }
+    if (key.indexOf('material:') === 0) {
+        const file = siteAdminOwlByVisibilityKey[key];
+        return file ? siteAdminTruthy(file.isPublished) : true;
+    }
+    return siteVisibility[key] !== false;
+}
+
+function siteVisibilityTargets() {
+    const out = SITE_ADMIN_REGISTRY.slice();
+
+    const programs = siteAdminMode && Object.keys(siteAdminProgramsById).length
+        ? Object.values(siteAdminProgramsById)
+        : (globalPrograms || []);
+    programs.forEach(prog => {
+        if (!prog || !prog.id) return;
+        out.push({
+            key:'program:' + prog.id,
+            label:prog.title_ru || prog.title_en || prog.id,
+            group:'Отдельные программы',
+            selector:'[data-site-program-id="' + String(prog.id).replace(/"/g, '\\"') + '"]'
+        });
+    });
+
+    const schedules = siteAdminMode && Object.keys(siteAdminScheduleByRow).length
+        ? Object.values(siteAdminScheduleByRow).map(siteAdminPublicSchedule)
+        : (Array.isArray(window.schedules) ? window.schedules : []);
+    schedules.forEach(item => {
+        if (!item) return;
+        out.push({
+            key:scheduleVisibilityKey(item),
+            label:[item.date, item.time, item.program, item.subject].filter(Boolean).join(' · '),
+            group:'Расписание: отдельные занятия',
+            selector:''
+        });
+    });
+
+    const owl = siteAdminMode && Object.keys(siteAdminOwlByCode).length
+        ? Object.values(siteAdminOwlByCode)
+        : (globalOwlFiles || []);
+    owl.forEach(file => {
+        if (!file || !file.code) return;
+        out.push({
+            key:owlVisibilityKey(file),
+            label:String(file.code) + (file.title ? ' — ' + file.title : ''),
+            group:'Материалы: коды доступа',
+            selector:''
+        });
+    });
+    return out;
+}
+
+async function setSiteVisibility(key, visible) {
+    if (!siteAdminMode) return openSiteAdminLogin();
+    const desired = !!visible;
+    siteAdminSetStatus('Сохраняем видимость…');
+
+    try {
+        if (key === 'alert') {
+            await siteAdminDirectUpdate('alert', 'active', {row:2}, desired, 'Видимость важного уведомления');
+            siteAdminAlertState = siteAdminAlertState || {text:'',active:false};
+            siteAdminAlertState.active = desired;
+        } else if (key.indexOf('program:') === 0) {
+            const id = key.slice(8);
+            await siteAdminDirectUpdate('program', 'active', {id:id}, desired, 'Видимость программы ' + id);
+            if (siteAdminProgramsById[id]) siteAdminProgramsById[id].active = desired;
+        } else if (key.indexOf('schedule:') === 0 && siteAdminScheduleByVisibilityKey[key]) {
+            const item = siteAdminScheduleByVisibilityKey[key];
+            await siteAdminDirectUpdate('schedule', 'status', {row:item.row}, desired, 'Видимость занятия');
+            item.status = desired;
+        } else if (key.indexOf('material:') === 0 && siteAdminOwlByVisibilityKey[key]) {
+            const file = siteAdminOwlByVisibilityKey[key];
+            await siteAdminDirectUpdate('owl', 'isPublished', {row:file.row, code:file.code}, desired, 'Публикация материала ' + file.code);
+            file.isPublished = desired;
+        } else {
+            await siteAdminDirectUpdate('visibility', 'visible', {key:key}, desired, 'Видимость: ' + key);
+            if (desired) delete siteVisibility[key];
+            else siteVisibility[key] = false;
+        }
+
+        await siteAdminFetchModel(true);
+        siteAdminSetStatus('Сохранено прямо в таблицу', 'ok');
+    } catch (e) {
+        siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
+        await siteAdminFetchModel(true).catch(() => {});
+    }
+}
+
+async function saveSiteTextElement(el) {
+    if (!siteAdminMode || !siteTextEditMode || !isSiteEditableElement(el)) return;
+    const key = siteEditKeyForElement(el);
+    if (!key) return;
+    const lang = typeof currentLang === 'string' ? currentLang : 'ru';
+    let text = siteElementPlainText(el);
+    const before = siteEditBefore.get(el);
+    if (before === text) return;
+
+    siteAdminSetStatus('Текст изменён — пишем в таблицу…');
+
+    try {
+        let handled = false;
+
+        let m = key.match(/^i18n:(.+)_(title|desc)$/);
+        if (m && siteAdminProgramsById[m[1]]) {
+            const field = m[2] + '_' + lang;
+            await siteAdminDirectUpdate('program', field, {id:m[1]}, text, 'Программа ' + m[1] + ': ' + field);
+            siteAdminProgramsById[m[1]][field] = text;
+            if (translationsHTML[lang]) translationsHTML[lang][m[1] + '_' + m[2]] = text;
+            const gp = (globalPrograms || []).find(p => String(p.id) === String(m[1]));
+            if (gp) gp[field] = text;
+            handled = true;
+        }
+
+        if (!handled) {
+            m = key.match(/^i18n:(.+)_b(\d+)$/);
+            if (m && siteAdminProgramsById[m[1]]) {
+                const field = 'bullets_' + lang;
+                const values = String(siteAdminProgramsById[m[1]][field] || '')
+                    .split(/[|;]/).map(v => v.trim()).filter(Boolean);
+                const idx = Number(m[2]);
+                while (values.length <= idx) values.push('');
+                values[idx] = text.replace(/^✔️\s*/, '').trim();
+                const joined = values.filter(Boolean).join(' | ');
+                await siteAdminDirectUpdate('program', field, {id:m[1]}, joined, 'Программа ' + m[1] + ': ' + field);
+                siteAdminProgramsById[m[1]][field] = joined;
+                if (translationsHTML[lang]) translationsHTML[lang][m[1] + '_b' + idx] = '✔️ ' + values[idx];
+                handled = true;
+            }
+        }
+
+        if (!handled) {
+            m = key.match(/^programmeta:([^:]+):(.+)$/);
+            if (m && siteAdminProgramsById[m[1]]) {
+                const base = m[2];
+                const localized = lang === 'en' && Object.prototype.hasOwnProperty.call(siteAdminProgramsById[m[1]], base + '_en')
+                    ? base + '_en' : base;
+                await siteAdminDirectUpdate('program', localized, {id:m[1]}, text, 'Программа ' + m[1] + ': ' + localized);
+                siteAdminProgramsById[m[1]][localized] = text;
+                const gp = (globalPrograms || []).find(p => String(p.id) === String(m[1]));
+                if (gp) gp[localized] = text;
+                handled = true;
+            }
+        }
+
+        if (!handled) {
+            m = key.match(/^custom:schedule:(\d+):(program|time|subject|teacher|room)$/);
+            if (m) {
+                const row = Number(m[1]);
+                const field = m[2];
+                if (field === 'time') text = text.replace(/^⏰\s*/, '').trim();
+                if (field === 'teacher') text = text.replace(/^👨‍🏫\s*/, '').trim();
+                if (field === 'room') text = text.replace(/^📍\s*/, '').trim();
+                await siteAdminDirectUpdate('schedule', field, {row:row}, text, 'Расписание, строка ' + row + ': ' + field);
+                handled = true;
+            }
+        }
+
+        if (!handled && key === 'custom:alert:text') {
+            await siteAdminDirectUpdate('alert', 'text', {row:2}, text, 'Текст важного уведомления');
+            handled = true;
+        }
+
+        if (!handled) {
+            await siteAdminDirectUpdate('siteContent', 'value', {key:key, lang:lang}, text, 'Текст сайта: ' + key);
+            if (!siteContentOverrides[key]) siteContentOverrides[key] = {};
+            siteContentOverrides[key][lang] = text;
+        }
+
+        await siteAdminFetchModel(true);
+        siteAdminSetStatus('Сохранено прямо в RANEPA_DB', 'ok');
+    } catch (e) {
+        siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
+        if (before !== undefined) setSiteElementText(el, before);
+        await siteAdminFetchModel(true).catch(() => {});
+    }
+}
+
+function renderSiteVersionUI() {
+    const undo = document.getElementById('siteAdminUndoBtn');
+    const redo = document.getElementById('siteAdminRedoBtn');
+    const toggle = document.getElementById('siteAdminHistoryToggle');
+    const list = document.getElementById('siteAdminVersionList');
+    const current = siteVersionHistory.find(v => v.id === siteCurrentVersionId) || null;
+
+    if (undo) undo.disabled = !siteAdminCanUndoServer;
+    if (redo) redo.disabled = !siteAdminCanRedoServer;
+    if (toggle) toggle.textContent = current ? 'Версия: ' + siteVersionDate(current.createdAt) : 'История версий';
+    if (!list) return;
+
+    list.innerHTML = siteVersionHistory.length ? siteVersionHistory.map(version => {
+        const active = version.id === siteCurrentVersionId ? ' current' : '';
+        return '<button type="button" class="site-admin-version-row' + active + '" data-site-version-id="' +
+            siteAdminEscape(version.id) + '"><span>' + siteAdminEscape(siteVersionDate(version.createdAt)) +
+            (version.reason ? '<br><small>' + siteAdminEscape(version.reason) + '</small>' : '') +
+            '</span><small>' + (active ? 'текущая' : 'восстановить') + '</small></button>';
+    }).join('') : '<div style="padding:8px;color:#94a3b8;font-size:.72rem;">История пока пуста.</div>';
+
+    list.querySelectorAll('[data-site-version-id]').forEach(button => {
+        button.addEventListener('click', () => restoreSiteVersion(button.dataset.siteVersionId));
+    });
+}
+
+async function undoSiteVersion() {
+    if (!siteAdminToken || !siteAdminCanUndoServer) return;
+    try {
+        siteAdminSetStatus('Отменяем последнее изменение…');
+        const data = await siteAdminRequest(API_URL, {
+            method:'POST',
+            body:JSON.stringify({action:'adminUndo', token:siteAdminToken})
+        });
+        if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Undo не выполнен');
+        await siteAdminFetchModel(true);
+        siteAdminSetStatus('Изменение отменено', 'ok');
+    } catch (e) {
+        siteAdminSetStatus('Ошибка Undo: ' + e.message, 'err');
+    }
+}
+
+async function redoSiteVersion() {
+    if (!siteAdminToken || !siteAdminCanRedoServer) return;
+    try {
+        siteAdminSetStatus('Возвращаем изменение…');
+        const data = await siteAdminRequest(API_URL, {
+            method:'POST',
+            body:JSON.stringify({action:'adminRedo', token:siteAdminToken})
+        });
+        if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Redo не выполнен');
+        await siteAdminFetchModel(true);
+        siteAdminSetStatus('Изменение возвращено', 'ok');
+    } catch (e) {
+        siteAdminSetStatus('Ошибка Redo: ' + e.message, 'err');
+    }
+}
+
+async function restoreSiteVersion(versionId) {
+    if (!siteAdminToken || !versionId || versionId === siteCurrentVersionId) return;
+    const version = siteVersionHistory.find(v => v.id === versionId);
+    if (!version) return;
+    if (!confirm('Восстановить версию от ' + siteVersionDate(version.createdAt) + '?')) return;
+    try {
+        siteAdminSetStatus('Восстанавливаем версию…');
+        const data = await siteAdminRequest(API_URL, {
+            method:'POST',
+            body:JSON.stringify({action:'adminRestore', token:siteAdminToken, versionId:versionId})
+        });
+        if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Версия не восстановлена');
+        await siteAdminFetchModel(true);
+        siteAdminSetStatus('Версия восстановлена', 'ok');
+    } catch (e) {
+        siteAdminSetStatus('Ошибка восстановления: ' + e.message, 'err');
+    }
+}
+
+function resetSiteTextOverrides() {
+    if (!siteAdminMode) return;
+    alert('В прямом Pro-режиме тексты записываются в исходные таблицы. Для отмены используйте ← или историю версий.');
+}
+
+async function showAllSiteElements() {
+    if (!siteAdminMode) return;
+    if (!confirm('Показать все элементы, программы, занятия и опубликованные материалы?')) return;
+    const targets = siteVisibilityTargets().filter(entry => !siteKeyIsVisible(entry.key));
+    for (const entry of targets) {
+        await setSiteVisibility(entry.key, true);
+    }
+}
+
+function initSiteAdminVisibility() {
+    readCachedSiteSettings();
+    applySiteVisibility();
+    applySiteContentOverrides();
+    loadSiteSettings(false);
+
+    document.addEventListener('focusin', function (event) {
+        const el = event.target;
+        if (siteTextEditMode && el && el.classList && el.classList.contains('site-admin-editable')) {
+            siteEditBefore.set(el, siteElementPlainText(el));
+        }
+    }, true);
+
+    document.addEventListener('focusout', function (event) {
+        const el = event.target;
+        if (siteTextEditMode && el && el.classList && el.classList.contains('site-admin-editable')) {
+            saveSiteTextElement(el);
+        }
+    }, true);
+
+    document.addEventListener('keydown', function (event) {
+        const el = event.target;
+        if (!siteTextEditMode || !el || !el.classList || !el.classList.contains('site-admin-editable')) return;
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            const before = siteEditBefore.get(el);
+            if (before !== undefined) setSiteElementText(el, before);
+            el.blur();
+        }
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+            event.preventDefault();
+            el.blur();
+        }
+    }, true);
+
+    document.addEventListener('click', function (event) {
+        if (!siteTextEditMode) return;
+        const el = event.target && event.target.closest ? event.target.closest('.site-admin-editable') : null;
+        if (!el) return;
+        event.preventDefault();
+        event.stopPropagation();
+        el.focus();
+    }, true);
+
+    if (siteAdminObserver) siteAdminObserver.disconnect();
+    siteAdminObserver = new MutationObserver(function () {
+        if (siteAdminMutationTimer) clearTimeout(siteAdminMutationTimer);
+        siteAdminMutationTimer = setTimeout(function () {
+            applySiteVisibility();
+            applySiteContentOverrides();
+            if (siteTextEditMode) decorateSiteEditableElements();
+        }, 20);
+    });
+    siteAdminObserver.observe(document.body, {childList:true, subtree:true});
+
+    const pass = document.getElementById('siteAdminPasswordInput');
+    if (pass) pass.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') submitSiteAdminLogin();
+    });
+
+    if (siteAdminToken) {
+        siteAdminMode = true;
+        document.body.classList.add('site-admin-active');
+        const panel = document.getElementById('siteAdminPanel');
+        if (panel) panel.classList.add('active');
+        loadSiteSettings(true);
+    }
+}
+/* ===== END DIRECT PRO CMS ===== */
+</script>
+
 </body>
 
     <script>
@@ -2767,8 +3359,8 @@
         }
     }
 
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initSiteAdminVisibility);
-    else initSiteAdminVisibility();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => initSiteAdminVisibility());
+    else setTimeout(() => initSiteAdminVisibility(), 0);
     // ===== КОНЕЦ PRO РЕЖИМА =====
 
     let globalOwlFiles = [];
@@ -4870,25 +5462,30 @@ if (wantsNewsEditor) {
 
                     const program = document.createElement('div');
                     program.className = 'sch-program';
+                    if (siteAdminMode && item._adminRow) program.dataset.siteEditKey = 'schedule:' + item._adminRow + ':program';
                     program.textContent = localizedScheduleValue(item, 'program');
 
                     const time = document.createElement('div');
                     time.className = 'sch-time';
+                    if (siteAdminMode && item._adminRow) time.dataset.siteEditKey = 'schedule:' + item._adminRow + ':time';
                     time.textContent = '⏰ ' + String(item.time || '—');
 
                     top.append(program, time);
 
                     const subject = document.createElement('div');
                     subject.className = 'sch-subject';
+                    if (siteAdminMode && item._adminRow) subject.dataset.siteEditKey = 'schedule:' + item._adminRow + ':subject';
                     subject.textContent = localizedScheduleValue(item, 'subject');
 
                     const bottom = document.createElement('div');
                     bottom.className = 'sch-bottom';
 
                     const teacher = document.createElement('span');
+                    if (siteAdminMode && item._adminRow) teacher.dataset.siteEditKey = 'schedule:' + item._adminRow + ':teacher';
                     teacher.textContent = '👨‍🏫 ' + localizedScheduleValue(item, 'teacher');
 
                     const room = document.createElement('span');
+                    if (siteAdminMode && item._adminRow) room.dataset.siteEditKey = 'schedule:' + item._adminRow + ':room';
                     room.textContent = '📍 ' + localizedScheduleValue(item, 'room');
 
                     bottom.append(teacher, room);
