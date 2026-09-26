@@ -2303,6 +2303,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                 });
             }
 
+            const variantBadgeHTML = prog.tab === 'tab-kadry'
+                ? '<div data-i18n="tabKadry" style="display:inline-flex;align-items:center;align-self:flex-start;margin-bottom:10px;padding:6px 10px;border-radius:999px;background:rgba(202,15,62,0.14);border:1px solid rgba(202,15,62,0.35);color:var(--text-main);font-size:0.78rem;font-weight:800;">🎓 Нацпроект «Кадры»</div>'
+                : '';
+
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
                 extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
@@ -2319,6 +2323,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             let cardHTML = `
             <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
                 <div class="card-meta"><span class="price program-meta-value" data-program-id="${prog.id}" data-meta-key="price" data-meta-value="${encodeURIComponent(prog.price)}">${localizedProgramMeta(prog, 'price', currentLang)}</span><span class="hours program-meta-value" data-program-id="${prog.id}" data-meta-key="hours" data-meta-value="${encodeURIComponent(prog.hours)}">${localizedProgramMeta(prog, 'hours', currentLang)}</span></div>
+                ${variantBadgeHTML}
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
                 <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
