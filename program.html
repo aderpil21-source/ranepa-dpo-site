@@ -153,6 +153,7 @@ const qs=new URLSearchParams(location.search);
 const programId=(qs.get('id')||'').trim();
 let currentLang=qs.get('lang')==='en'?'en':'ru';
 let program=null;
+let siteContentOverrides={};
 const SITE_SETTINGS_ID='__site_admin_settings__';
 const SITE_ADMIN_API='https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 
@@ -212,17 +213,25 @@ function findProgram(data){
   const arr=Array.isArray(data)?data:(data&&Array.isArray(data.programs)?data.programs:[]);
   return arr.find(p=>String(p.id||'')===programId&&truthyActive(p.active))||null;
 }
-async function loadSiteVisibility(){
+async function loadSiteSettings(){
   try{
     const data=await getJson(SITE_ADMIN_API+'?type=news&_sitecfg='+Date.now());
     const items=data&&Array.isArray(data.items)?data.items:[];
     const item=items.find(n=>n&&n.id===SITE_SETTINGS_ID);
-    if(!item) return {};
+    if(!item) return {visibility:{},content:{}};
     const parsed=JSON.parse(item.lead||'{}');
-    return parsed&&parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{};
+    return {
+      visibility: parsed&&parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{},
+      content: parsed&&parsed.content&&typeof parsed.content==='object'?parsed.content:{}
+    };
   }catch(e){
-    return {};
+    return {visibility:{},content:{}};
   }
+}
+function siteOverride(key){
+  const record=siteContentOverrides&&siteContentOverrides[key];
+  if(!record||typeof record!=='object') return '';
+  return Object.prototype.hasOwnProperty.call(record,currentLang)?String(record[currentLang]):'';
 }
 async function loadProgram(){
   const bucket=Math.floor(Date.now()/(5*60*1000));
@@ -257,11 +266,19 @@ function metaValue(value,lang){
 }
 function field(base){
   if(!program) return '';
+  if(base==='title'||base==='desc'){
+    const over=siteOverride('i18n:'+program.id+'_'+base);
+    if(over) return over;
+  }
+  const detailed=siteOverride('programdetail:'+program.id+':'+base);
+  if(detailed) return detailed;
   const key=base+'_'+currentLang;
   return String(program[key]||'').trim();
 }
 function localizedMeta(base){
   if(!program) return '—';
+  const over=siteOverride('programmeta:'+program.id+':'+base);
+  if(over) return over;
   if(currentLang==='en'){
     const exact=String(program[base+'_en']||'').trim();
     return exact||metaValue(program[base],'en');
@@ -391,9 +408,11 @@ async function init(){
     state.innerHTML='<h1>'+ui[currentLang].notFound+'</h1><p>'+ui[currentLang].notFoundText+'</p>';
     return;
   }
-  const loaded=await Promise.all([loadProgram(),loadSiteVisibility()]);
+  const loaded=await Promise.all([loadProgram(),loadSiteSettings()]);
   program=loaded[0];
-  const visibility=loaded[1]||{};
+  const settings=loaded[1]||{visibility:{},content:{}};
+  const visibility=settings.visibility||{};
+  siteContentOverrides=settings.content||{};
   if(program&&(visibility.programs===false||visibility['program:'+program.id]===false)) program=null;
   if(!program){
     state.className='error';
