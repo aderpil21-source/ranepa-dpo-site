@@ -1755,8 +1755,8 @@
     const SITE_ADMIN_REGISTRY = [
         { key:'header_controls', label:'Кнопки языка, шрифта и темы', group:'Шапка', selector:'.header-controls' },
         { key:'kadry_logo', label:'Логотип нацпроекта «Кадры»', group:'Шапка', selector:'.header-kadry, .footer-kadry-mobile' },
-        { key:'nav_news', label:'Пункт «Новости»', group:'Навигация', selector:'a.header-nav-link[href="news.html"]' },
-        { key:'nav_schedule', label:'Пункт «Расписание»', group:'Навигация', selector:'.header-nav [onclick*="showSchedule"], #chatOptions [onclick*="showSchedule"]' },
+        { key:'news_page', label:'Раздел новостей целиком', group:'Разделы', selector:'a.header-nav-link[href="news.html"]' },
+        { key:'schedule', label:'Расписание целиком', group:'Разделы', selector:'.header-nav [onclick*="showSchedule"], #chatOptions [onclick*="showSchedule"]' },
         { key:'nav_programs', label:'Пункт «Программы»', group:'Навигация', selector:'.header-nav [onclick*="programsSection"]' },
         { key:'nav_contacts', label:'Пункт «Контакты»', group:'Навигация', selector:'.header-nav [onclick*="openQuickContacts"]' },
         { key:'enroll_buttons', label:'Кнопки «Записаться»', group:'Навигация', selector:'.header-nav-btn, .buy-btn' },
@@ -1819,6 +1819,16 @@
         return siteVisibility[key] !== false;
     }
 
+    function scheduleVisibilityKey(item) {
+        const parts = [item && item.id, item && item.date, item && item.time, item && item.subject]
+            .map(function (value) { return encodeURIComponent(String(value || '').trim()); });
+        return 'schedule:' + parts.join('|');
+    }
+
+    function owlVisibilityKey(file) {
+        return 'material:' + encodeURIComponent(String(file && file.code || '').trim().toLowerCase());
+    }
+
     function siteVisibilityTargets() {
         const out = SITE_ADMIN_REGISTRY.slice();
         (globalPrograms || []).forEach(function (prog) {
@@ -1830,11 +1840,30 @@
                 selector: '[data-site-program-id="' + String(prog.id).replace(/"/g, '\\"') + '"]'
             });
         });
+        (Array.isArray(window.schedules) ? window.schedules : []).forEach(function (item) {
+            if (!item) return;
+            out.push({
+                key: scheduleVisibilityKey(item),
+                label: [item.date, item.time, item.program, item.subject].filter(Boolean).join(' · '),
+                group: 'Расписание: отдельные занятия',
+                selector: ''
+            });
+        });
+        (globalOwlFiles || []).forEach(function (file) {
+            if (!file || !file.code) return;
+            out.push({
+                key: owlVisibilityKey(file),
+                label: String(file.code) + (file.title ? ' — ' + file.title : ''),
+                group: 'Материалы: коды доступа',
+                selector: ''
+            });
+        });
         return out;
     }
 
     function applySiteVisibility() {
         siteVisibilityTargets().forEach(function (entry) {
+            if (!entry.selector) return;
             let nodes = [];
             try { nodes = Array.from(document.querySelectorAll(entry.selector)); } catch (e) { return; }
             const visible = siteKeyIsVisible(entry.key);
@@ -2140,6 +2169,7 @@
                 const changed = owlFilesFingerprint(data.owlFiles) !== owlFilesFingerprint(globalOwlFiles);
                 if (changed) {
                     globalOwlFiles = data.owlFiles;
+                    if (siteAdminMode) renderSiteAdminPanel();
                 }
 
                 return changed;
@@ -3412,6 +3442,10 @@ if (wantsNewsEditor || wantsStaffPortal) {
             foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
         }
 
+        if (foundFile && !siteKeyIsVisible(owlVisibilityKey(foundFile))) {
+            foundFile = Object.assign({}, foundFile, { isPublished:false });
+        }
+
         if (foundFile) {
             if (currentLang === 'en') {
                 await loadOwlI18n();
@@ -3805,6 +3839,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
                     window.schedules = freshSchedules;
                     scheduleDataLoaded = true;
                     renderSchedule();
+                    if (siteAdminMode) renderSiteAdminPanel();
 
                     if (overlay) {
                         requestAnimationFrame(() => {
@@ -3961,6 +3996,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
         const beforeCutoff = now.hour < SCHEDULE_CUTOFF_HOUR;
 
         return (Array.isArray(items) ? items : [])
+            .filter(item => siteKeyIsVisible(scheduleVisibilityKey(item)))
             .map(item => ({ item, parsed: parseScheduleDate(item && item.date) }))
             .filter(entry => {
                 // Если строка не содержит распознаваемой даты — не скрываем её молча.
@@ -4229,6 +4265,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
     }
 
     async function showSchedule() {
+        if (!siteKeyIsVisible('schedule') && !siteAdminMode) return;
         const overlay = document.getElementById('scheduleOverlay');
         const container = document.getElementById('scheduleTimeline');
         if (!overlay || !container) return;
