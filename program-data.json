@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:05:12.718Z",
+  "generatedAt": "2026-09-26T12:06:14.211Z",
   "programs": [
     {
       "id": "c14",
@@ -320,7 +320,7 @@
       "dates": "Срок обучения — 2 месяца; набор по мере формирования групп",
       "title_ru": "Логистика и\r\nуправление цепями\r\nпоставок",
       "desc_ru": "Содержание программы охватывает круг вопросов, связанных с осуществлением эффективного управления логистикой цепи поставок на основе рациональной организации процессов. Основываясь на теоретических концепциях, курс развивает практические навыки стимулирования сбыта и построения сетей. Успешно освоив материал, слушатели смогут принимать эффективные управленческие решения в области логистики.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа посвящена управлению логистикой и цепями поставок на основе рациональной организации процессов. Слушатели рассматривают подходы к управлению движением товаров и ресурсов, развитию сетей и стимулированию сбыта.\n\nОбучение сочетает теоретические основы логистики с практической направленностью и помогает формировать управленческие решения, связанные с организацией и развитием цепей поставок.",
       "bullets_ru": [
         "Управление цепями поставок",
         "Рациональная организация процессов",
@@ -328,7 +328,7 @@
       ],
       "title_en": "Logistics and Supply Chain Management",
       "desc_en": "The program covers issues related to implementing effective supply chain logistics management based on the rational organization of processes. Building on theoretical concepts, the course develops practical skills in sales promotion and network building. Having successfully mastered the material, participants will be able to make effective management decisions in the field of logistics.",
-      "long_desc_en": "",
+      "long_desc_en": "The program focuses on logistics and supply chain management through the rational organisation of business processes. Participants explore approaches to managing the movement of goods and resources, developing networks, and supporting sales activity.\n\nThe training combines the theoretical foundations of logistics with a practical focus and helps participants develop management decisions related to the organisation and development of supply chains.",
       "bullets_en": [
         "Supply chain management",
         "Rational process organization",
@@ -353,7 +353,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 35,000",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -371,7 +371,7 @@
       "dates": "Срок обучения — 2 месяца; набор по мере формирования групп",
       "title_ru": "Организация деятельности социально-ориентированных некоммерческих организаций",
       "desc_ru": "Программа направлена на подготовку руководителей и специалистов некоммерческих организаций. Изучая специфику СОНКО, слушатели осваивают особенности правового статуса и меры поддержки. Успешно завершив обучение, участники получат необходимые компетенции для решения актуальных социальных проблем.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для руководителей и специалистов социально ориентированных некоммерческих организаций. В рамках обучения рассматриваются особенности деятельности СОНКО, их правовой статус и меры государственной поддержки.\n\nОсвоение программы помогает систематизировать знания, необходимые для организации работы некоммерческой структуры и решения актуальных социальных задач в рамках её деятельности.",
       "bullets_ru": [
         "Правовой статус СОНКО",
         "Меры государственной поддержки",
@@ -379,7 +379,7 @@
       ],
       "title_en": "Organization of Socially Oriented NGOs",
       "desc_en": "The program is aimed at training leaders and specialists of non-profit organizations. Studying the specifics of socially oriented NGOs, participants master the features of legal status and support measures. Having successfully completed the training, participants will acquire the necessary competencies to solve relevant social problems.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for managers and specialists of socially oriented non-profit organisations. It covers the specific features of socially oriented NGOs, their legal status, and available public support measures.\n\nThe program helps participants systematise the knowledge required to organise the work of a non-profit organisation and address relevant social challenges within its activities.",
       "bullets_en": [
         "Legal status of NGOs",
         "State support measures",
@@ -404,7 +404,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 38,000",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -422,7 +422,7 @@
       "dates": "Срок обучения — 2 месяца; набор по мере формирования групп",
       "title_ru": "Таможенный декларант",
       "desc_ru": "Программа разработана для лиц, желающих освоить новую профессию или повысить квалификацию в сфере таможенного дела. Изучая правовое взаимодействие с таможенными органами, слушатели осваивают специфику декларирования товаров и грузов. Успешно освоив учебный материал, участники приобретут практические навыки оформления деклараций различных типов.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа ориентирована на слушателей, которые хотят развить или обновить компетенции в сфере таможенного дела. В ходе обучения рассматриваются вопросы правового взаимодействия с таможенными органами, декларирования товаров и грузов и подготовки таможенных деклараций.\n\nПрактическая направленность программы связана с освоением последовательности действий и документов, необходимых для корректного оформления различных типов деклараций.",
       "bullets_ru": [
         "Декларирование товаров и грузов",
         "Правовое взаимодействие с таможней",
@@ -430,7 +430,7 @@
       ],
       "title_en": "Customs Declarant",
       "desc_en": "The program is designed for individuals wishing to master a new profession or improve their qualifications in customs. Studying legal interaction with customs authorities, participants master the specifics of goods and cargo declaration. Having successfully mastered the study material, participants will acquire practical skills in processing various types of declarations.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is intended for participants who want to develop or update competencies in customs procedures. It covers legal interaction with customs authorities, the declaration of goods and cargo, and the preparation of customs declarations.\n\nIts practical focus is linked to understanding the sequence of actions and documents required for the correct completion of different types of customs declarations.",
       "bullets_en": [
         "Goods and cargo declaration",
         "Legal interaction with customs",
@@ -455,7 +455,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 27,000",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -473,7 +473,7 @@
       "dates": "2 месяца",
       "title_ru": "Управление\r\nгосударственными и\r\nмуниципальными\r\nзакупками\r\n",
       "desc_ru": "Программа предназначена для специалистов сферы закупок, стремящихся повысить уровень знаний и компетенций. Изучая механизмы организации контрактной системы, слушатели учатся эффективно использовать средства бюджета и внебюджетных источников. Успешно освоив материал, участники смогут минимизировать коррупционные риски и уверенно применять нормы антимонопольного законодательства.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для специалистов, работающих в сфере государственных и муниципальных закупок. Обучение направлено на систематизацию знаний об организации закупочной деятельности, механизмах контрактной системы и исполнении контрактов.\n\nВ рамках программы рассматриваются вопросы использования бюджетных и внебюджетных средств, соблюдения требований антимонопольного законодательства и снижения коррупционных рисков при организации и проведении закупок.",
       "bullets_ru": [
         "Организация закупок",
         "Исполнение контрактов",
@@ -481,7 +481,7 @@
       ],
       "title_en": "State and Municipal Procurement Management",
       "desc_en": "The program is designed for procurement professionals striving to improve their knowledge and competencies. Studying the mechanisms of contract system organization, participants learn to effectively use budgetary and extra-budgetary funds. Having successfully mastered the material, participants will be able to minimize corruption risks and confidently apply the norms of antitrust legislation.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for professionals working in state and municipal procurement. It systematises knowledge of procurement organisation, the mechanisms of the public procurement contract system, and contract performance.\n\nThe program addresses the use of budgetary and extra-budgetary funds, compliance with antitrust requirements, and approaches to reducing corruption risks in the organisation and conduct of procurement.",
       "bullets_en": [
         "Procurement organization",
         "Contract execution",
@@ -506,7 +506,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 43,000",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -524,7 +524,7 @@
       "dates": "Срок обучения — 2 месяца; набор по мере формирования групп",
       "title_ru": "1С: Предприятие 8.3",
       "desc_ru": "Программа предназначена для бухгалтеров и пользователей, стремящихся к освоению принципов работы с объектами и механизмами платформы. Изучая регламентные расчеты и заполнение данных, слушатели осваивают автоматизированное ведение учета. Успешно освоив учебный материал, участники приобретут практические навыки формирования отчетности с использованием программного продукта.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для бухгалтеров и пользователей, которым необходимо освоить работу с объектами и механизмами платформы «1С: Предприятие 8.3». В процессе обучения рассматриваются ввод и обработка данных, регламентные расчёты и автоматизированное ведение учёта.\n\nПрактическая часть связана с формированием отчётности и использованием возможностей программного продукта для решения типовых учётных задач.",
       "bullets_ru": [
         "Ведение бухгалтерского учета",
         "Регламентные расчеты",
@@ -532,7 +532,7 @@
       ],
       "title_en": "1C: Enterprise 8.3",
       "desc_en": "The program is designed for accountants and users seeking to master the principles of working with platform objects and mechanisms. Studying routine calculations and data entry, participants master automated accounting. Having successfully mastered the study material, participants will acquire practical skills in generating reports using the software product.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for accountants and users who need to master the objects and mechanisms of the 1C: Enterprise 8.3 platform. It covers data entry and processing, routine calculations, and automated accounting workflows.\n\nThe practical component focuses on generating reports and using the software product to solve typical accounting tasks.",
       "bullets_en": [
         "Accounting management",
         "Routine calculations",
@@ -557,7 +557,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 35,000",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
