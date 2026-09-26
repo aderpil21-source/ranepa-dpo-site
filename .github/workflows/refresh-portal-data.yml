@@ -1,9 +1,6 @@
 name: Refresh public portal snapshots
 
 on:
-  push:
-    branches:
-      - feature/program-detail-pages
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
