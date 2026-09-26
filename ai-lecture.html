@@ -584,6 +584,7 @@
             RATE_LIMIT: '⚠️ Слишком много сообщений подряд — подождите немного.',
             TIMEOUT: '⚠️ Сервер лаборатории не ответил вовремя, попробуйте ещё раз.',
             SERVER: '⚠️ Сервер лаборатории сейчас недоступен, попробуйте через минуту.',
+            NOT_CONFIGURED: '⚠️ ИИ-помощник временно не настроен. Остальные функции лаборатории работают.',
             BAD_REQUEST: '⚠️ Не получилось отправить сообщение.',
             EMPTY: '⚠️ Нейросеть не смогла ответить на этот запрос — попробуйте переформулировать.'
         };
@@ -623,7 +624,10 @@
                 });
 
                 if (!response.ok) {
+                    let errorBody = null;
+                    try { errorBody = await response.json(); } catch(e) {}
                     if (response.status === 429) throw new Error('RATE_LIMIT');
+                    if (errorBody && errorBody.code === 'AI_NOT_CONFIGURED') throw new Error('NOT_CONFIGURED');
                     if (response.status >= 500) throw new Error('SERVER');
                     throw new Error('BAD_REQUEST');
                 }
