@@ -342,6 +342,9 @@ const CONFIG = {
 /* ============================================================================
    БЛОК 2. СОСТОЯНИЕ
    ============================================================================ */
+const SYSTEM_NEWS_ID = '__site_admin_settings__';
+function isSystemNewsItem(item){ return !!item && item.id === SYSTEM_NEWS_ID; }
+
 let newsItems = [], adminToken = sessionStorage.getItem('newsAdminToken') || null;
 let vkState = { version:2, items:{} };
 let visitorPreview = false;
@@ -927,7 +930,7 @@ function publicNewsSnapshotUrl(){
 function applyPublicNewsItems(items, options){
     const opts = options || {};
     const freshItems = Array.isArray(items)
-        ? items.filter(n => n && n.status === 'published')
+        ? items.filter(n => n && n.status === 'published' && !isSystemNewsItem(n))
         : [];
 
     const changed = publicNewsFingerprint(freshItems) !== publicNewsFingerprint(newsItems);
@@ -987,7 +990,7 @@ async function fetchNews(){
         try {
             const url = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
             const data = await requestJson(url, { method:'GET' });
-            newsItems = data.items || [];
+            newsItems = (data.items || []).filter(n => !isSystemNewsItem(n));
             cacheNews(newsItems);
             renderGrid();
 
@@ -1050,7 +1053,7 @@ async function fetchNews(){
     try {
         const data = await requestJson(CONFIG.api + '?type=news', { method:'GET' });
         newsItems = Array.isArray(data.items)
-            ? data.items.filter(n => n && n.status === 'published')
+            ? data.items.filter(n => n && n.status === 'published' && !isSystemNewsItem(n))
             : [];
         cacheNews(newsItems);
         renderGrid();
@@ -1063,12 +1066,13 @@ async function fetchNews(){
 
 function renderGrid(){
     const grid = $('newsGrid');
-    const allTags = [...new Set(newsItems.flatMap(n => n.tags || []))];
+    const visibleNewsItems = newsItems.filter(n => !isSystemNewsItem(n));
+    const allTags = [...new Set(visibleNewsItems.flatMap(n => n.tags || []))];
     $('newsTagsBar').innerHTML = allTags.map((t,i) =>
         `<div class="filter-sector-chip ${activeTagFilter === t ? 'active' : ''}" data-tagindex="${i}">${escapeHtml(t)}</div>`).join('');
     $('newsTagsBar').dataset.tags = JSON.stringify(allTags);
 
-    let items = newsItems;
+    let items = visibleNewsItems;
     if (!adminToken || visitorPreview) items = items.filter(n => n.status === 'published');
     if (activeTagFilter) items = items.filter(n => (n.tags || []).includes(activeTagFilter));
 
@@ -1329,7 +1333,7 @@ function vkStatusHtml(news){
 }
 
 function renderAdminList(){
-    $('newsAdminList').innerHTML = newsItems.map(n => `
+    $('newsAdminList').innerHTML = newsItems.filter(n => !isSystemNewsItem(n)).map(n => `
         <div class="news-admin-row">
             <div style="min-width:0; flex:1;">
                 <div style="font-weight:700;">${n.status === 'published' ? 'Опубликовано' : 'Скрыто'} — ${escapeHtml(n.title)}</div>
