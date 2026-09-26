@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:09:45.882Z",
+  "generatedAt": "2026-09-26T12:10:36.262Z",
   "programs": [
     {
       "id": "c14",
@@ -1699,7 +1699,7 @@
       "dates": "Срок обучения — 2,5 месяца; набор по мере формирования групп",
       "title_ru": "Управление бизнесом",
       "desc_ru": "Программа предназначена для желающих создать бизнес с нуля или оптимизировать процессы действующего предприятия. В рамках курса слушатели получают прикладные компетенции в области современного управления, экономики и права. Успешное освоение программы профессиональной переподготовки заканчивается присвоением квалификации менеджера.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки предназначена для слушателей, которые планируют создать собственный бизнес или повысить эффективность действующего предприятия. Обучение охватывает современное управление, экономику и финансы, правовые вопросы и планирование деятельности.\n\nПрограмма помогает сформировать прикладное управленческое мышление и связать основные бизнес-функции в единую систему принятия решений. Успешное завершение обучения предусматривает присвоение квалификации менеджера.",
       "bullets_ru": [
         "Управление бизнесом",
         "Экономика и финансы",
@@ -1707,7 +1707,7 @@
       ],
       "title_en": "Business Management",
       "desc_en": "The program is designed for those wanting to build a business from scratch or optimize processes of an existing enterprise. Within the course, students acquire applied competencies in modern management, economics, and law. Successful completion of the professional retraining program results in the award of manager qualification.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program is designed for participants who plan to start their own business or improve the performance of an existing company. It covers modern management, economics and finance, legal issues, and business planning.\n\nThe program develops applied management thinking and helps participants connect core business functions into a coherent decision-making system. Successful completion results in the award of a manager qualification.",
       "bullets_en": [
         "Business management",
         "Economics and finance",
@@ -1732,7 +1732,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 46,300",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1750,7 +1750,7 @@
       "dates": "Срок обучения — 2,5 месяца; набор по мере формирования групп",
       "title_ru": "Финансовый менеджмент",
       "desc_ru": "Программа предназначена для руководителей предприятий, предпринимателей и специалистов финансовых служб. В рамках курса слушатели учатся управлять финансово-хозяйственной деятельностью, минимизируя риски предприятия. Успешное освоение программы профессиональной переподготовки заканчивается присвоением квалификации менеджера.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки предназначена для руководителей предприятий, предпринимателей и специалистов финансовых служб. В рамках обучения рассматриваются управление финансами, финансово-хозяйственная деятельность, построение финансовых моделей и подходы к минимизации рисков.\n\nПрограмма помогает систематизировать инструменты финансового управления и применять их при принятии управленческих решений. Успешное завершение обучения предусматривает присвоение квалификации менеджера.",
       "bullets_ru": [
         "Управление финансами",
         "Минимизация рисков",
@@ -1758,7 +1758,7 @@
       ],
       "title_en": "Financial Management",
       "desc_en": "The program is designed for enterprise executives, entrepreneurs, and financial service specialists. Within the course, students learn to manage financial and economic activities while minimizing enterprise risks. Successful completion of the professional retraining program results in the award of manager qualification.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program is designed for business executives, entrepreneurs, and finance professionals. It covers financial management, financial and economic activities, financial modelling, and approaches to risk reduction.\n\nThe program helps participants systematise financial management tools and apply them in managerial decision-making. Successful completion results in the award of a manager qualification.",
       "bullets_en": [
         "Financial management",
         "Risk minimization",
@@ -1783,7 +1783,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 45,000",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1801,7 +1801,7 @@
       "dates": "2,5 месяца",
       "title_ru": "Внешнеторговая, транспортная и таможенная логистика",
       "desc_ru": "Программа предназначена для специалистов, работающих в таможенных органах и на предприятиях внешней торговли. В процессе обучения слушатели осваивают международные перевозки, экспедирование грузов и таможенное регулирование. Полученные компетенции позволяют эффективно решать задачи в экспортно-импортных отделах компаний.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки предназначена для специалистов таможенных органов, внешнеторговых предприятий и подразделений, работающих с экспортно-импортными операциями. Обучение охватывает международные перевозки, транспортную и таможенную логистику, экспедирование грузов и таможенное регулирование.\n\nОсвоение программы помогает сформировать системное понимание движения товаров во внешней торговле и решать практические задачи, связанные с перевозкой, сопровождением и таможенным оформлением грузов.",
       "bullets_ru": [
         "Международные перевозки",
         "Таможенное регулирование",
@@ -1809,7 +1809,7 @@
       ],
       "title_en": "Foreign Trade, Transport and Customs Logistics",
       "desc_en": "The program is designed for specialists working in customs authorities and foreign trade enterprises. During the training, students master international transportation, cargo forwarding, and customs regulation. The acquired competencies enable efficient handling of tasks in export-import departments.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program is designed for specialists working in customs authorities, foreign trade companies, and export-import units. It covers international transportation, transport and customs logistics, cargo forwarding, and customs regulation.\n\nThe program develops a systematic understanding of the movement of goods in international trade and supports practical work involving transportation, forwarding, and customs clearance.",
       "bullets_en": [
         "International transport",
         "Customs regulation",
@@ -1834,7 +1834,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 45,000",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1852,7 +1852,7 @@
       "dates": "2,5 месяца",
       "title_ru": "Производственный менеджмент. Управление многоквартирным домом",
       "desc_ru": "Программа предназначена для руководителей управляющих компаний и товариществ собственников жилья. В процессе обучения слушатели изучают обязательные требования к компаниям и организацию работы диспетчерской службы. Полученные компетенции позволяют эффективно управлять содержанием общего имущества и взаимодействовать с собственниками помещений.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки предназначена для руководителей управляющих компаний, товариществ собственников жилья и специалистов, связанных с эксплуатацией многоквартирных домов. В рамках обучения рассматриваются обязательные требования к управляющим организациям, организация диспетчерской службы и содержание общего имущества.\n\nПолученные знания помогают выстраивать процессы управления многоквартирным домом и взаимодействия с собственниками помещений на основе системного подхода к эксплуатации и обслуживанию объекта.",
       "bullets_ru": [
         "Управление МКД",
         "Организация диспетчерской службы",
@@ -1860,7 +1860,7 @@
       ],
       "title_en": "Apartment Building Management",
       "desc_en": "The program is designed for executives of management companies and homeowners associations. During the training, students study mandatory requirements for companies and dispatch service organization. The acquired competencies enable efficient management of common property maintenance and cooperation with premises owners.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program is designed for managers of property management companies, homeowners associations, and professionals involved in apartment building operations. It covers mandatory requirements for management organisations, dispatch service organisation, and maintenance of common property.\n\nThe program helps participants build systematic processes for apartment building management and interaction with property owners, with a focus on effective operation and maintenance.",
       "bullets_en": [
         "Apartment building management",
         "Dispatch service organization",
@@ -1885,7 +1885,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 46,300",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -1903,7 +1903,7 @@
       "dates": "Срок обучения — 2,5 месяца; набор по мере формирования групп",
       "title_ru": "Комплексное развитие территорий",
       "desc_ru": "Программа направлена на профессиональную переподготовку специалистов в сфере комплексного развития территорий. В процессе обучения слушатели изучают градостроительные регламенты, механизмы планирования и экономические аспекты проектов. Полученные компетенции позволяют эффективно решать задачи пространственного развития и застройки.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессиональной переподготовки посвящена комплексному развитию территорий и подготовке специалистов к решению задач пространственного развития. В ходе обучения рассматриваются градостроительные регламенты, механизмы планирования, пространственное развитие и экономические аспекты проектов застройки.\n\nПрограмма помогает связать нормативные, планировочные и экономические компоненты территориального развития и применять их при подготовке и реализации проектов.",
       "bullets_ru": [
         "Градостроительное планирование",
         "Пространственное развитие",
@@ -1911,7 +1911,7 @@
       ],
       "title_en": "Comprehensive Territory Development",
       "desc_en": "The program is aimed at professional retraining of specialists in the field of comprehensive territory development. During the training, students study urban planning regulations, planning mechanisms, and economic aspects of projects. The acquired competencies enable efficient handling of spatial development and construction tasks.",
-      "long_desc_en": "",
+      "long_desc_en": "This professional retraining program focuses on comprehensive territory development and prepares specialists to address spatial development challenges. It covers urban planning regulations, planning mechanisms, spatial development, and the economic aspects of development projects.\n\nThe program helps participants connect regulatory, planning, and economic components of territorial development and apply them in the preparation and implementation of projects.",
       "bullets_en": [
         "Urban planning",
         "Spatial development",
@@ -1936,7 +1936,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 46,300",
       "hours_en": "252 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
