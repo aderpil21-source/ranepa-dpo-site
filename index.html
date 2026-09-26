@@ -2435,6 +2435,29 @@
 
     async function loadSiteSettings(useAdmin) {
         try {
+            if (!useAdmin) {
+                try {
+                    const bucket = Math.floor(Date.now() / (60 * 1000));
+                    const response = await fetch('./site-settings.json?v=' + bucket, { cache:'no-store' });
+                    if (response.ok) {
+                        const snapshot = await response.json();
+                        const cachedSettings = snapshot && snapshot.settings;
+                        if (cachedSettings && typeof cachedSettings === 'object') {
+                            siteVisibility = cachedSettings.visibility && typeof cachedSettings.visibility === 'object'
+                                ? cachedSettings.visibility : siteVisibility;
+                            siteContentOverrides = cachedSettings.content && typeof cachedSettings.content === 'object'
+                                ? cachedSettings.content : siteContentOverrides;
+                            siteCurrentVersionId = cachedSettings.currentVersionId || siteCurrentVersionId || null;
+                            cacheSiteSettings(cachedSettings);
+                            applySiteVisibility();
+                            applySiteContentOverrides();
+                        }
+                    }
+                } catch (snapshotError) {
+                    console.warn('Статический снимок настроек недоступен:', snapshotError);
+                }
+            }
+
             const url = useAdmin && siteAdminToken
                 ? API_URL + '?type=news&admin=1&token=' + encodeURIComponent(siteAdminToken) + '&_sitecfg=' + Date.now()
                 : API_URL + '?type=news&_sitecfg=' + Date.now();
