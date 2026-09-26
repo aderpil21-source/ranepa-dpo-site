@@ -3737,12 +3737,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             container.classList.add('scroll-mini');
             bubble.classList.remove('show');
         }
-        setOwlPlaybackRate(0.55);
 
         clearTimeout(scrollMiniTimeout);
         scrollMiniTimeout = setTimeout(() => {
             container.classList.remove('scroll-mini');
-            setOwlPlaybackRate(0.9);
         }, 450);
 
         updateScrollNav();
