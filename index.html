@@ -2046,12 +2046,35 @@
         );
     }
 
+    function localizedAlertText(alert, lang) {
+        const raw = String(alert && alert.text || '').trim();
+        if (!raw) return '';
+
+        const separator = '|||';
+        const markerIndex = raw.indexOf(separator);
+        if (markerIndex >= 0) {
+            const ru = raw.slice(0, markerIndex).trim();
+            const en = raw.slice(markerIndex + separator.length).trim();
+            if (lang === 'en') {
+                return en || 'An important notice is available. English translation is pending.';
+            }
+            return ru || raw;
+        }
+
+        if (lang === 'en') {
+            return 'An important notice is available in Russian. English translation is pending.';
+        }
+        return raw;
+    }
+
     function renderGlobalAlertTicker() {
         const tickerEl = document.getElementById('globalAlertTicker');
         const tickerTextEl = document.getElementById('tickerText');
         if (!tickerEl || !tickerTextEl) return;
         if (globalAlert && globalAlert.text) {
-            const alertText = String(globalAlert.text || '').replace(/\s*\n\s*/g, ' ').trim();
+            const alertText = localizedAlertText(globalAlert, currentLang)
+                .replace(/\s*\n\s*/g, ' ')
+                .trim();
             tickerTextEl.textContent =
                 translationsHTML[currentLang].tickerAlertPrefix +
                 alertText +
@@ -2061,6 +2084,13 @@
             tickerTextEl.textContent = translationsHTML[currentLang].tickerDefault;
             tickerEl.style.display = 'none';
         }
+    }
+
+    function renderUrgentAlertText() {
+        const alertTextEl = document.getElementById('urgentAlertText');
+        if (!alertTextEl) return;
+        alertTextEl.textContent = localizedAlertText(globalAlert, currentLang);
+        alertTextEl.style.whiteSpace = 'pre-line';
     }
 
     function translateProgramMeta(value, lang) {
@@ -2164,6 +2194,10 @@
             link.href = 'program.html?id=' + encodeURIComponent(id) + '&lang=' + lang;
         });
         renderGlobalAlertTicker();
+        const urgentAlertModal = document.getElementById('urgentAlertModal');
+        if (urgentAlertModal && urgentAlertModal.classList.contains('active')) {
+            renderUrgentAlertText();
+        }
         renderDocsList(globalPrograms);
 
         if (isScheduleOverlayActive()) {
@@ -3054,12 +3088,10 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
     function showUrgentAlert() {
         if (globalAlert && globalAlert.text) {
-            const alertTextEl = document.getElementById('urgentAlertText');
             const alertModal = document.getElementById('urgentAlertModal');
-            if (!alertTextEl || !alertModal) return;
+            if (!alertModal) return;
 
-            alertTextEl.textContent = String(globalAlert.text);
-            alertTextEl.style.whiteSpace = 'pre-line';
+            renderUrgentAlertText();
             alertModal.classList.add('active');
         }
     }
