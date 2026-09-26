@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Карточки программ — служебный редактор</title>
+<style>
+:root{--bg:#07101f;--p:#0d1729;--p2:#111e33;--t:#f4f7fb;--m:#9eabc0;--l:rgba(255,255,255,.12);--r:#ca0f3e;--ok:#166534;--off:#7f1d1d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}.w{width:min(1420px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:20;background:rgba(7,16,31,.95);border-bottom:1px solid var(--l);backdrop-filter:blur(14px)}.top{min-height:70px;display:flex;gap:12px;align-items:center;justify-content:space-between}.brand{font-weight:900}.brand small{display:block;color:var(--m);font-weight:500}
+button,input,textarea,select{font:inherit}.btn{border:1px solid var(--l);background:var(--p2);color:var(--t);padding:9px 12px;border-radius:10px;cursor:pointer;font-weight:800;text-decoration:none}.btn.red{background:var(--r);border:0}.btn.ok{background:var(--ok)}.btn.off{background:var(--off)}.btn:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:8px;flex-wrap:wrap}
+main{padding:24px 0 70px}.note{padding:13px 15px;border:1px solid var(--l);border-radius:13px;background:var(--p);margin-bottom:14px}.note.warn{border-color:#a16207}.note.ok{border-color:#15803d}
+.tools{display:grid;grid-template-columns:1fr 180px 180px auto;gap:9px;margin-bottom:14px}.f{width:100%;background:#081323;color:var(--t);border:1px solid var(--l);border-radius:9px;padding:10px}.list{display:grid;gap:9px}.card{display:grid;grid-template-columns:80px minmax(240px,1.4fr) 120px 100px 170px 230px;gap:10px;align-items:center;padding:13px;border:1px solid var(--l);border-radius:14px;background:var(--p)}.card.hidden{opacity:.62}.id{font:12px monospace;color:var(--m)}.title{font-weight:900}.sub{font-size:12px;color:var(--m);margin-top:3px}.badge{font-size:11px;font-weight:900;padding:4px 7px;border-radius:999px;background:#14532d}.badge.off{background:#334155}.rowact{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);display:none;overflow:auto;padding:20px}.modal.on{display:block}.box{width:min(1160px,100%);margin:auto;background:#091424;border:1px solid var(--l);border-radius:18px;overflow:hidden}.bh,.bf{padding:15px 18px;background:var(--p);display:flex;justify-content:space-between;gap:10px;align-items:center}.bh{position:sticky;top:0;z-index:3;border-bottom:1px solid var(--l)}.bf{position:sticky;bottom:0;border-top:1px solid var(--l);justify-content:flex-end}.bb{padding:16px}.sec{border:1px solid var(--l);border-radius:13px;padding:14px;margin-bottom:14px;background:rgba(255,255,255,.02)}.sec h3{margin:0 0 12px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}label{display:block;font-size:12px;font-weight:800;color:#cbd5e1;margin:0 0 5px}textarea.f{min-height:95px;resize:vertical}.tall{min-height:150px!important}.empty{text-align:center;color:var(--m);padding:45px}
+.lock{width:min(560px,calc(100% - 30px));margin:10vh auto;padding:24px;background:var(--p);border:1px solid var(--l);border-radius:18px}.lock p{color:var(--m)}
+@media(max-width:1000px){.card{grid-template-columns:80px 1fr 120px 1fr}.rowact{grid-column:1/-1;justify-content:flex-start}.tools{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}.fg{grid-template-columns:1fr}.full{grid-column:auto}}@media(max-width:620px){.top{padding:10px 0;align-items:flex-start;flex-direction:column}.tools,.card{grid-template-columns:1fr}.wide{grid-column:auto}.modal{padding:6px}}
+</style>
+</head>
+<body>
+<header><div class="w top"><div class="brand">Карточки программ<small>Служебный редактор Центра ДПО</small></div><div class="actions"><a class="btn" href="index.html">← На сайт</a><a class="btn" href="news.html?editor=1">Новости</a><a class="btn" id="uploadLink" href="#">Учебные программы</a><button class="btn" id="logout">Выйти</button></div></div></header>
+<main class="w">
+<div id="lock" class="lock" hidden><h2>Требуется служебный вход</h2><p>Для карточек программ используется тот же PIN, что и для редактора новостей. PIN вводится только на странице редактора новостей.</p><a class="btn red" href="news.html?editor=1&next=program-admin.html">Войти</a></div>
+<div id="app" hidden>
+<div id="note" class="note">Проверяем серверный модуль…</div>
+<div class="tools"><input id="q" class="f wide" placeholder="Поиск по названию или ID"><select id="state" class="f"><option value="all">Все</option><option value="on">На сайте</option><option value="off">Скрытые</option></select><select id="kind" class="f"><option value="">Все типы</option></select><button class="btn" id="reload">Обновить</button></div>
+<div id="list" class="list"></div>
+</div>
+</main>
+<div id="modal" class="modal"><div class="box"><div class="bh"><div><b id="mh"></b><div id="mid" class="sub"></div></div><button class="btn" id="x">✕</button></div><div id="form" class="bb"></div><div class="bf"><button class="btn" id="cancel">Отмена</button><button class="btn red" id="save">Сохранить</button></div></div></div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
+document.getElementById('uploadLink').href=API+'?page=upload';
+let token=sessionStorage.getItem('newsAdminToken')||'',items=[],editing=null,backend=false;
+const sections=[
+['Основные параметры',[['tab','Раздел tab'],['sector','Направление sector'],['price','Стоимость RU'],['price_en','Стоимость EN'],['hours','Часы RU'],['hours_en','Часы EN'],['format','Формат RU'],['format_en','Формат EN'],['type','Тип RU'],['type_en','Тип EN'],['dates','Срок / даты RU'],['dates_en','Срок / даты EN'],['pdf_link','PDF','full']]],
+['Карточка на главной',[['title_ru','Название RU'],['title_en','Title EN'],['desc_ru','Короткое описание RU','tall'],['desc_en','Short description EN','tall'],['bullets_ru','Ключевые пункты RU — через |'],['bullets_en','Key points EN — separated by |']]],
+['Подробная страница',[['long_desc_ru','Длинное описание RU','tall'],['long_desc_en','Long description EN','tall'],['audience_ru','Для кого RU'],['audience_en','Audience EN'],['goal_ru','Цель RU'],['goal_en','Objective EN'],['outcomes_ru','Результаты RU — через ;','tall'],['outcomes_en','Outcomes EN — separated by ;','tall'],['topics_ru','Темы RU — через |','tall'],['topics_en','Topics EN — separated by |','tall'],['document_ru','Документ RU'],['document_en','Qualification document EN'],['teachers_ru','Преподаватели / эксперты RU','tall'],['teachers_en','Instructors / experts EN','tall'],['official_desc_ru','Официальное описание RU','tall'],['official_desc_en','Official description EN','tall'],['relation_note_ru','Связь с другой карточкой RU'],['relation_note_en','Related listing EN']]],
+['Источник и контроль',[['source_file','Файл-источник'],['source_pages','Страницы'],['source_status','Статус источника','full'],['detail_status','Статус подробной карточки','full']]]
+];
+const keys=sections.flatMap(s=>s[1].map(x=>x[0]));
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function on(p){return !(p.active===false||String(p.active).toUpperCase()==='FALSE')}
+function val(v){return Array.isArray(v)?v.join(' | '):String(v??'')}
+function msg(t,k=''){const n=document.getElementById('note');n.className='note '+k;n.textContent=t}
+async function req(payload){const r=await fetch(API,{method:'POST',cache:'no-store',body:JSON.stringify(payload)});const txt=await r.text();let d;try{d=JSON.parse(txt)}catch(e){throw Error('Сервер вернул некорректный ответ')}if(!r.ok)throw Error(d.error||('HTTP '+r.status));return d}
+async function staticData(){const r=await fetch('program-data.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('Не удалось загрузить program-data.json');const d=await r.json();return Array.isArray(d.programs)?d.programs:[]}
+async function load(){
+ let fallback=[];try{fallback=await staticData()}catch(e){}
+ try{const d=await req({action:'programList',token});if(!d.ok||!Array.isArray(d.items))throw Error(d.error||'programList недоступен');items=d.items;backend=true;msg('Редактор подключён. Изменения записываются в таблицу; публичный сайт обновится после следующего снимка.','ok')}
+ catch(e){items=fallback;backend=false;msg('Серверный модуль редактирования программ ещё не подключён. Доступен просмотр; сохранение и скрытие отключены.','warn')}
+ fillKinds();render()
+}
+function fillKinds(){const s=document.getElementById('kind'),v=s.value,a=[...new Set(items.map(x=>String(x.type||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));s.innerHTML='<option value="">Все типы</option>'+a.map(x=>'<option>'+esc(x)+'</option>').join('');s.value=a.includes(v)?v:''}
+function render(){const q=document.getElementById('q').value.toLowerCase().trim(),st=document.getElementById('state').value,k=document.getElementById('kind').value;const a=items.filter(p=>(st==='all'||(st==='on'&&on(p))||(st==='off'&&!on(p)))&&(!k||p.type===k)&&(!q||(String(p.id)+' '+String(p.title_ru||'')+' '+String(p.title_en||'')).toLowerCase().includes(q))).sort((a,b)=>String(a.title_ru||'').localeCompare(String(b.title_ru||''),'ru'));document.getElementById('list').innerHTML=a.length?a.map(p=>`<div class="card ${on(p)?'':'hidden'}"><div><div class="id">${esc(p.id)}</div><span class="badge ${on(p)?'':'off'}">${on(p)?'НА САЙТЕ':'СКРЫТО'}</span></div><div><div class="title">${esc(p.title_ru||'Без названия')}</div><div class="sub">${esc(p.title_en||'')}</div></div><div><b>${esc(p.price||'—')}</b><div class="sub">${esc(p.price_en||'')}</div></div><div><b>${esc(p.hours||'—')}</b><div class="sub">${esc(p.hours_en||'')}</div></div><div>${esc(p.type||'')}<div class="sub">${esc(p.format||'')}</div></div><div class="rowact"><button class="btn" data-edit="${esc(p.id)}">Редактировать</button><button class="btn ${on(p)?'off':'ok'}" data-toggle="${esc(p.id)}" ${backend?'':'disabled'}>${on(p)?'Скрыть':'Вернуть'}</button></div></div>`).join(''):'<div class="empty">Ничего не найдено</div>'}
+function openEdit(id){editing=items.find(p=>String(p.id)===String(id));if(!editing)return;document.getElementById('mh').textContent=editing.title_ru||'Редактирование';document.getElementById('mid').textContent='ID: '+editing.id;document.getElementById('form').innerHTML=sections.map(s=>`<section class="sec"><h3>${s[0]}</h3><div class="fg">${s[1].map(f=>`<div class="${f[2]==='full'?'full':''}"><label>${f[1]}</label><textarea class="f edit ${f[2]==='tall'?'tall':''}" data-key="${f[0]}" ${backend?'':'disabled'}>${esc(val(editing[f[0]]))}</textarea></div>`).join('')}</div></section>`).join('');document.getElementById('save').disabled=!backend;document.getElementById('modal').classList.add('on')}
+function close(){editing=null;document.getElementById('modal').classList.remove('on')}
+async function save(){if(!backend||!editing)return;const patch={};document.querySelectorAll('.edit').forEach(e=>{if(keys.includes(e.dataset.key))patch[e.dataset.key]=e.value.trim()});const b=document.getElementById('save');b.disabled=true;b.textContent='Сохраняем…';try{const d=await req({action:'programSave',token,id:editing.id,patch});if(!d.ok)throw Error(d.error||'Сохранение отклонено');close();msg('Карточка сохранена.','ok');await load()}catch(e){alert('Не удалось сохранить: '+e.message)}finally{b.disabled=false;b.textContent='Сохранить'}}
+async function toggle(id){if(!backend)return;const p=items.find(x=>String(x.id)===String(id));if(!p)return;const next=!on(p);if(!confirm(next?'Вернуть программу на сайт?':'Скрыть программу? Её можно будет вернуть в любой момент.'))return;try{const d=await req({action:'programToggle',token,id:p.id,active:next});if(!d.ok)throw Error(d.error||'Операция отклонена');await load()}catch(e){alert('Не удалось изменить статус: '+e.message)}}
+function logout(){sessionStorage.removeItem('newsAdminToken');location.href='index.html'}
+document.getElementById('q').oninput=render;document.getElementById('state').onchange=render;document.getElementById('kind').onchange=render;document.getElementById('reload').onclick=load;document.getElementById('logout').onclick=logout;document.getElementById('x').onclick=close;document.getElementById('cancel').onclick=close;document.getElementById('save').onclick=save;document.getElementById('list').onclick=e=>{const a=e.target.closest('[data-edit]');if(a)return openEdit(a.dataset.edit);const b=e.target.closest('[data-toggle]');if(b)toggle(b.dataset.toggle)};
+if(!token){document.getElementById('lock').hidden=false}else{document.getElementById('app').hidden=false;load()}
+</script>
+</body>
+</html>
