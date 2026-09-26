@@ -305,6 +305,9 @@
 
         .buy-btn { display: inline-block; width: 100%; background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 18px; text-align: center; border-radius: 14px; font-weight: 900; text-decoration: none; text-transform: uppercase; transition: all 0.3s var(--bezier-bounce); cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; font-size: 1rem; box-shadow: 0 8px 20px rgba(202, 15, 62, 0.3); }
         .buy-btn:hover { background: linear-gradient(135deg, #f43f5e, var(--ranepa-red)); box-shadow: 0 12px 25px rgba(202, 15, 62, 0.5); transform: translateY(-3px) scale(1.02); }
+        .card-actions { display: grid; gap: 10px; margin-top: auto; }
+        .program-details-link { display: block; width: 100%; background: var(--btn-glass); border: 1px solid var(--border-glass); color: var(--text-main); padding: 15px; border-radius: 14px; font-weight: 800; font-size: 0.9rem; text-align: center; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s var(--bezier-bounce); }
+        .program-details-link:hover { background: var(--ranepa-red); color: #fff; border-color: var(--ranepa-red); box-shadow: 0 8px 20px rgba(202, 15, 62, 0.4); transform: translateY(-2px); }
 
         .section-header { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 900; color: var(--text-main); margin: 70px 0 35px; text-align: center; z-index: 5; position: relative; text-shadow: 0 4px 12px var(--shadow-color); scroll-margin-top: calc(var(--header-h) + 20px); }
 
@@ -1591,7 +1594,8 @@
 
     let globalOwlFiles = [];
     let globalPrograms = [];
-    let currentLang = 'ru';
+    const initialLang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ru';
+    let currentLang = initialLang;
     let globalAlert = null;
     let leavingSiteTargetUrl = '';
     let portalDataPromise = null;
@@ -1899,7 +1903,7 @@
             pageTitle: "Доп образование и профпереподготовка в Калининграде | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
             heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
             tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
-            studyPlanBtn: "Изучить учебный план", enrollBtn: "Записаться",
+            studyPlanBtn: "Изучить учебный план", detailsBtn: "Подробно о программе", enrollBtn: "Записаться", typeLabel: "Тип:", formatLabel: "Форма:", datesLabel: "Сроки:",
             filterSector: "Направление", filterMaxPrice: "Стоимость до, ₽", filterDuration: "Длительность",
             filterSort: "Сортировка", sortAlphaAsc: "По алфавиту (А-Я)", sortAlphaDesc: "По алфавиту (Я-А)", sortPriceAsc: "Сначала дешевле", sortPriceDesc: "Сначала дороже", sortHoursAsc: "Сначала короче", sortHoursDesc: "Сначала длиннее",
             filterDurAny: "Любая", filterDurShort: "до 50 ч.", filterDurMid: "50–200 ч.", filterDurLong: "от 200 ч.", filterReset: "Сбросить",
@@ -1945,7 +1949,7 @@
             pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
             heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
             tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
-            studyPlanBtn: "Explore Curriculum", enrollBtn: "Apply Now", faqTitle: "Frequently Asked Questions",
+            studyPlanBtn: "Explore Curriculum", detailsBtn: "Program details", enrollBtn: "Apply Now", typeLabel: "Type:", formatLabel: "Format:", datesLabel: "Study period:", faqTitle: "Frequently Asked Questions",
             filterSector: "Sector", filterMaxPrice: "Max price, ₽", filterDuration: "Duration",
             filterSort: "Sort by", sortAlphaAsc: "Alphabetical (A-Z)", sortAlphaDesc: "Alphabetical (Z-A)", sortPriceAsc: "Price (Low to High)", sortPriceDesc: "Price (High to Low)", sortHoursAsc: "Duration (Short to Long)", sortHoursDesc: "Duration (Long to Short)",
             filterDurAny: "Any", filterDurShort: "up to 50 hrs", filterDurMid: "50–200 hrs", filterDurLong: "200+ hrs", filterReset: "Reset",
@@ -1988,6 +1992,33 @@
         }
     };
 
+    function translateProgramMeta(value, lang) {
+        const raw = String(value || '').trim();
+        if (lang === 'ru') return raw;
+        const exact = {
+            'По запросу': 'On request',
+            'Повышение квалификации': 'Advanced training',
+            'Проф. переподготовка': 'Professional retraining',
+            'Проф. обучение': 'Vocational training',
+            'Семинар': 'Seminar',
+            'Очная': 'In-person',
+            'Очно-заочная': 'Blended',
+            'Очно-заочная с применением ЭО и ДОТ': 'Blended, with e-learning and distance learning technologies',
+            'Очно-заочная (с применением ЭО и ДОТ)': 'Blended, with e-learning and distance learning technologies',
+            'Очно с применением ДОТ': 'In-person, with distance learning technologies',
+            'По мере формирования групп': 'As groups are formed',
+            '1 месяц': '1 month',
+            '1,5 месяца': '1.5 months',
+            '2 месяца': '2 months',
+            '2,5 месяца': '2.5 months',
+            '1,5 – 2 недели': '1.5–2 weeks',
+            '1 - 2 дня': '1–2 days',
+            '10 недель': '10 weeks'
+        };
+        if (exact[raw]) return exact[raw];
+        return raw.replace(/ч\./gi, 'hrs');
+    }
+
     function setLanguage(lang) {
         currentLang = lang;
         document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
@@ -2016,11 +2047,14 @@
                 : translationsHTML[lang].consentToggleShow;
         }
 
-        document.querySelectorAll('.accordion-btn').forEach(btn => {
-            const card = btn.closest('.card');
-            btn.textContent = card.classList.contains('active')
-                ? (lang === 'ru' ? 'Свернуть учебный план' : 'Collapse Curriculum')
-                : (lang === 'ru' ? 'Изучить учебный план' : 'Explore Curriculum');
+        document.querySelectorAll('.program-meta-value').forEach(el => {
+            let raw = '';
+            try { raw = decodeURIComponent(el.dataset.metaValue || ''); } catch (e) { raw = el.dataset.metaValue || ''; }
+            el.textContent = translateProgramMeta(raw, lang);
+        });
+        document.querySelectorAll('.program-details-link').forEach(link => {
+            const id = link.dataset.programId || '';
+            link.href = 'program.html?id=' + encodeURIComponent(id) + '&lang=' + lang;
         });
 
         resetMenu();
@@ -2161,9 +2195,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
                 extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
-                if (prog.type) extraInfoHTML += `<div><b>Тип:</b> ${prog.type}</div>`;
-                if (prog.format) extraInfoHTML += `<div><b>Форма:</b> ${prog.format}</div>`;
-                if (prog.dates) extraInfoHTML += `<div><b>Сроки:</b> ${prog.dates}</div>`;
+                if (prog.type) extraInfoHTML += `<div><b data-i18n="typeLabel">Тип:</b> <span class="program-meta-value" data-meta-value="${encodeURIComponent(prog.type)}">${translateProgramMeta(prog.type, currentLang)}</span></div>`;
+                if (prog.format) extraInfoHTML += `<div><b data-i18n="formatLabel">Форма:</b> <span class="program-meta-value" data-meta-value="${encodeURIComponent(prog.format)}">${translateProgramMeta(prog.format, currentLang)}</span></div>`;
+                if (prog.dates) extraInfoHTML += `<div><b data-i18n="datesLabel">Сроки:</b> <span class="program-meta-value" data-meta-value="${encodeURIComponent(prog.dates)}">${translateProgramMeta(prog.dates, currentLang)}</span></div>`;
                 extraInfoHTML += `</div>`;
             }
 
@@ -2177,14 +2211,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
                 <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
-                <button class="accordion-btn" onclick="toggleCard(this)" data-i18n="studyPlanBtn">Изучить учебный план</button>
-                <div class="accordion-content">
-                    <ul style="list-style: none; color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-bottom: 15px;">
-                        ${bulletsHTML}
-                    </ul>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; border-left: 2px solid var(--ranepa-red); padding-left: 8px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 0 8px 8px 0;">
-                        📄 Полная официальная программа и аннотация доступны в <span onclick="openDocsModal()" style="color: #38bdf8; text-decoration: underline; cursor: pointer; font-weight: 700;">архиве программ</span> внизу страницы.
-                    </div>
+                <div class="card-actions">
+                    <a class="program-details-link" href="program.html?id=${encodeURIComponent(prog.id)}&lang=${currentLang}" target="_blank" rel="noopener" data-program-id="${prog.id}" data-i18n="detailsBtn">Подробно о программе</a>
                     <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
                 </div>
             </div>`;
