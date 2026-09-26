@@ -1,14 +1,19 @@
 {
-  "generatedAt": "2026-09-26T17:28:09.058467+00:00",
+  "generatedAt": "2026-09-26T20:06:09.676284+00:00",
   "settings": {
     "version": 3,
-    "visibility": {},
+    "visibility": {
+      "material:%D0%BF%D0%B0%D1%80%D0%B0%D0%B1%D0%BE%D0%BB%D0%B0203": false,
+      "material:%D0%BA%D0%B0%D1%80%D0%B0%D0%B1%D0%B0%D1%81": false,
+      "material:%D0%BB%D0%BA-1596": false,
+      "program:c50": false
+    },
     "content": {
       "dom:header > div:nth-of-type(1) > div > div:nth-of-type(1) > button:nth-of-type(2)": {
         "ru": "Аа"
       }
     },
-    "currentVersionId": "d5068e3a-692a-42d9-985e-c2e91e9e1e01",
-    "updatedAt": "2026-09-26T17:27:53.802Z"
+    "currentVersionId": "80052689-ee7d-4240-ae44-09bc5a37c451",
+    "updatedAt": "2026-09-26T17:54:39.035Z"
   }
 }
