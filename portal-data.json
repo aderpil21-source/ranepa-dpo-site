@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T09:07:21.551Z",
+  "generatedAt": "2026-09-26T09:17:45.501Z",
   "programs": [
     {
       "id": "c14",
@@ -29,9 +29,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -45,7 +45,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c15",
@@ -93,7 +93,7 @@
       "experts_ru": "Директор Центра ДПО Ирина Канаш. В подготовке и экспертизе программы участвовали представители Ассоциации профессиональных экскурсоводов Калининградской области. В материалах также указаны Антонина Максимова, руководитель Ассоциации, и Ольга Соловьёва, опытный экскурсовод.",
       "experts_en": "Irina Kanash, Director of the Center for Continuing Professional Education. Representatives of the Association of Professional Tour Guides of the Kaliningrad Region contributed to the development and expert review of the program. The source material also names Antonina Maksimova, Head of the Association, and Olga Solovyova, an experienced tour guide.",
       "official_desc_en": "The program is designed for practising professionals in the tourism sector and is practice-oriented. Participants learn to design excursion programs, manage projects, understand tourism development strategies, and make decisions in real working situations. After completing the program, participants can apply their knowledge in professional practice and in their own tourism and hospitality projects.",
-      "detail_status": "PARTIAL — RU/EN detail based on supplied program media material; qualification document not confirmed in source"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN подробности по материалу о программе; документ по итогам в источнике не подтверждён"
     },
     {
       "id": "c16",
@@ -123,9 +123,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -139,7 +139,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c17",
@@ -169,9 +169,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "5",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -185,7 +185,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c18",
@@ -215,9 +215,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -231,7 +231,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c19",
@@ -261,9 +261,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -277,7 +277,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c20",
@@ -307,9 +307,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -323,7 +323,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c21",
@@ -353,9 +353,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -369,7 +369,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c22",
@@ -399,9 +399,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -415,7 +415,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c23",
@@ -445,9 +445,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -461,7 +461,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c24",
@@ -491,9 +491,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -507,7 +507,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c1",
@@ -537,9 +537,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -553,7 +553,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c2",
@@ -583,9 +583,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -599,7 +599,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c3",
@@ -629,9 +629,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -645,7 +645,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c4",
@@ -675,9 +675,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -691,7 +691,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c5",
@@ -723,9 +723,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "По расписанию занятий рассматриваются: современная характеристика терроризма; терроризм как угроза национальной безопасности Российской Федерации; функционирование общегосударственной системы противодействия терроризму; мониторинг состояния системы противодействия терроризму; правовое регулирование; уровни террористической опасности; противодействие террористической и экстремистской идеологии; антитеррористическая защищённость объектов; практикум профилактики терроризма; итоговое тестирование.",
-      "source_file": "Расписание Вопросы профилактики терроризма 36 часов.pdf",
-      "source_pages": "1–2",
-      "source_status": "Частичный источник: официальное расписание; ДПП в пакете не обнаружена",
+      "source_file": "Расписание Вопросы профилактики терроризма 36 часов.pdf; Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "расписание: 1–2; приказ: 4",
+      "source_status": "Частичный источник: официальное расписание + приказ с параметрами; ДПП в пакете не обнаружена",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -739,7 +739,7 @@
       "experts_ru": "По расписанию занятия проводят Е.К. Артемов, О.Н. Пахомова, С.В. Шевчук, Е.Ю. Пронина, Б.И. Карасев и М.А. Мирюкова.",
       "experts_en": "According to the course schedule, sessions are taught by E. K. Artemov, O. N. Pakhomova, S. V. Shevchuk, E. Yu. Pronina, B. I. Karasev, and M. A. Miryukova.",
       "official_desc_en": "The course schedule includes: the contemporary characteristics of terrorism; terrorism as a threat to the national security of the Russian Federation; the operation of the national counter-terrorism system; monitoring of the counter-terrorism system; the legal framework; terrorism alert levels; countering terrorist and extremist ideology; anti-terrorist protection of facilities; a terrorism-prevention workshop; and final testing.",
-      "detail_status": "PARTIAL — RU/EN detail from official schedule; audience, formal objective and qualification document not confirmed"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по расписанию; цена/часы/форма подтверждены приказом; ДПП и документ по итогам не подтверждены"
     },
     {
       "id": "c6",
@@ -769,9 +769,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -785,7 +785,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c7",
@@ -815,9 +815,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -831,7 +831,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c8",
@@ -861,9 +861,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -877,7 +877,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c9",
@@ -907,9 +907,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -923,7 +923,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c10",
@@ -953,9 +953,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -969,7 +969,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c11",
@@ -1015,7 +1015,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c12",
@@ -1063,7 +1063,7 @@
       "experts_ru": "Директор Центра ДПО Ирина Канаш. В подготовке и экспертизе программы участвовали представители Ассоциации профессиональных экскурсоводов Калининградской области. В материалах также указаны Антонина Максимова, руководитель Ассоциации, и Ольга Соловьёва, опытный экскурсовод.",
       "experts_en": "Irina Kanash, Director of the Center for Continuing Professional Education. Representatives of the Association of Professional Tour Guides of the Kaliningrad Region contributed to the development and expert review of the program. The source material also names Antonina Maksimova, Head of the Association, and Olga Solovyova, an experienced tour guide.",
       "official_desc_en": "The program is designed for practising professionals in the tourism sector and is practice-oriented. Participants learn to design excursion programs, manage projects, understand tourism development strategies, and make decisions in real working situations. After completing the program, participants can apply their knowledge in professional practice and in their own tourism and hospitality projects.",
-      "detail_status": "PARTIAL — RU/EN detail based on supplied program media material; qualification document not confirmed in source"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN подробности по материалу о программе; документ по итогам в источнике не подтверждён"
     },
     {
       "id": "c13",
@@ -1093,9 +1093,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1109,7 +1109,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c39",
@@ -1139,9 +1139,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "3",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1155,7 +1155,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c40",
@@ -1185,9 +1185,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1201,7 +1201,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c41",
@@ -1239,7 +1239,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c42",
@@ -1269,9 +1269,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1285,7 +1285,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c43",
@@ -1315,9 +1315,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "5",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1331,7 +1331,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c44",
@@ -1361,9 +1361,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "1",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1377,7 +1377,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c45",
@@ -1407,9 +1407,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1423,7 +1423,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c46",
@@ -1453,9 +1453,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1469,7 +1469,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c47",
@@ -1499,9 +1499,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1515,7 +1515,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c25",
@@ -1545,9 +1545,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1561,7 +1561,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c26",
@@ -1591,9 +1591,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1607,7 +1607,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c27",
@@ -1637,9 +1637,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1653,7 +1653,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c28",
@@ -1683,9 +1683,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1699,7 +1699,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c29",
@@ -1729,9 +1729,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1745,7 +1745,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c30",
@@ -1775,9 +1775,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "2",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1791,7 +1791,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c31",
@@ -1821,9 +1821,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "4",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1837,7 +1837,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c32",
@@ -1867,9 +1867,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "5",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1883,7 +1883,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c33",
@@ -1913,9 +1913,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "5",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1929,7 +1929,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c34",
@@ -1959,9 +1959,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "5",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -1975,7 +1975,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c35",
@@ -2005,9 +2005,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "5",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -2021,7 +2021,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c36",
@@ -2051,9 +2051,9 @@
       "pdf_link": "",
       "active": true,
       "official_desc_ru": "",
-      "source_file": "",
-      "source_pages": "",
-      "source_status": "",
+      "source_file": "Приказ филиала №02-00029_122 от 24.02.2026 _Об установлении стоимости обучения по дополнительным про (4).pdf",
+      "source_pages": "5",
+      "source_status": "Частичный источник: приказ подтверждает наименование и параметры программы; содержательная ДПП/расписание в пакете отсутствует",
       "audience_ru": "",
       "audience_en": "",
       "goal_ru": "",
@@ -2067,7 +2067,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c37",
@@ -2113,7 +2113,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c38",
@@ -2159,7 +2159,7 @@
       "experts_ru": "",
       "experts_en": "",
       "official_desc_en": "",
-      "detail_status": ""
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом/договором; подробный содержательный источник не предоставлен"
     },
     {
       "id": "c48",
@@ -2211,7 +2211,7 @@
       "experts_ru": "Автор-составитель: И.О. Семенова, кандидат педагогических наук, доцент. Руководитель программы: И.С. Канаш, кандидат экономических наук. По расписанию занятия проводят Е.И. Мудрак, С.П. Козлов и С.Л. Дрибноход.",
       "experts_en": "Program author: I. O. Semenova, Candidate of Pedagogical Sciences, Associate Professor. Program Director: I. S. Kanash, Candidate of Economic Sciences. According to the schedule, sessions are taught by E. I. Mudrak, S. P. Kozlov, and S. L. Dribnokhod.",
       "official_desc_en": "The stated purpose of the program is to improve the professional performance of civil servants and to develop and enhance competencies in the procurement of goods, works, and services for state and municipal needs. The program objectives include examining the legal and organisational aspects of the contract system, studying procurement management processes, and addressing the digitalisation of the contract system.",
-      "detail_status": "READY — full RU/EN source-based detail"
+      "detail_status": "ГОТОВО / READY — полная RU/EN страница по утверждённой ДПП и расписанию"
     },
     {
       "id": "c49",
@@ -2261,7 +2261,7 @@
       "experts_ru": "По расписанию занятия проводят Е.И. Мудрак и С.Л. Дрибноход.",
       "experts_en": "According to the course schedule, sessions are taught by E. I. Mudrak and S. L. Dribnokhod.",
       "official_desc_en": "The course schedule covers procurement legislation and recent changes, the national procurement regime, common problems and errors, current administrative and arbitration practice, liability issues, and the use of information technologies in procurement.",
-      "detail_status": "PARTIAL — RU/EN detail from official schedule; price, study format, audience, formal objective and qualification document not confirmed"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
     },
     {
       "id": "c50",
@@ -2313,7 +2313,7 @@
       "experts_ru": "По расписанию участвуют Д.Л. Сергеев, эксперты Центрального банка, Социального фонда, системы обязательного медицинского страхования, Казначейства и другие приглашённые специалисты.",
       "experts_en": "According to the course schedule, contributors include D. L. Sergeev and experts from the Bank of Russia, the Social Fund, the compulsory medical insurance system, the Treasury, and other invited specialists.",
       "official_desc_en": "The course schedule covers the Russian Federation budget system and budget structure, the budget process, state extra-budgetary funds, intergovernmental fiscal relations, budget policy and planning, and budget control.",
-      "detail_status": "PARTIAL — RU/EN detail from official schedule; price, study format, audience, formal objective and qualification document not confirmed"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
     },
     {
       "id": "c51",
@@ -2365,7 +2365,7 @@
       "experts_ru": "По расписанию занятия проводят Е.К. Артемов, О.Н. Пахомова, С.В. Шевчук и Б.И. Карасев.",
       "experts_en": "According to the course schedule, sessions are taught by E. K. Artemov, O. N. Pakhomova, S. V. Shevchuk, and B. I. Karasev.",
       "official_desc_en": "The course schedule covers the legal framework for anti-terrorist protection of facilities and territories, security passport requirements, facility categorisation, protection measures, coordination and monitoring, and the preparedness of staff, security personnel, and visitors to respond to terrorist threats.",
-      "detail_status": "PARTIAL — RU/EN detail from official schedule; price, study format, audience, formal objective and qualification document not confirmed"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
     },
     {
       "id": "c52",
@@ -2417,7 +2417,7 @@
       "experts_ru": "По расписанию занятия проводят Эвелина Александровна Исакова, И.Г. Савченко, приглашённый эксперт Роскомнадзора; итоговую аттестацию проводит комиссия ИАК.",
       "experts_en": "According to the course schedule, sessions are taught by Evelina A. Isakova, I. G. Savchenko, and an invited Roskomnadzor expert; final assessment is conducted by the final assessment commission.",
       "official_desc_en": "The course schedule includes the legal and methodological framework for document management, current documentation requirements, organisation of records management services, records storage, electronic document workflow, and information technologies supporting the activities of public authorities.",
-      "detail_status": "PARTIAL — RU/EN detail from official schedule; price, study format, audience, formal objective and qualification document not confirmed"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
     },
     {
       "id": "c53",
@@ -2471,7 +2471,7 @@
       "experts_ru": "По расписанию в программе участвуют эксперты Банка России, Социального фонда, системы обязательного медицинского страхования, Казначейства, прокуратуры, а также преподаватели Западного филиала РАНХиГС.",
       "experts_en": "According to the course schedule, the program includes experts from the Bank of Russia, the Social Fund, the compulsory medical insurance system, the Treasury, the Prosecutor's Office, and instructors from the RANEPA Western Branch.",
       "official_desc_en": "The course schedule covers public financial and monetary policy, public finance management, the budget process, banking and insurance, taxation, pension savings, accounting, public procurement, and financial control.",
-      "detail_status": "PARTIAL — RU/EN detail from official schedule; price, study format, audience, formal objective and qualification document not confirmed"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
     },
     {
       "id": "c54",
@@ -2525,7 +2525,7 @@
       "experts_ru": "По расписанию занятия проводят Е.И. Мудрак, С.П. Козлов и С.Л. Дрибноход.",
       "experts_en": "According to the course schedule, sessions are taught by E. I. Mudrak, S. P. Kozlov, and S. L. Dribnokhod.",
       "official_desc_en": "The course schedule includes the foundations of the contract system, procurement legislation, prevention and counteraction of corruption, procurement planning and procedures, contract award and performance, monitoring and control, protection of participants' rights, and information support.",
-      "detail_status": "PARTIAL — RU/EN detail from official schedule; price, study format, audience, formal objective and qualification document not confirmed"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
     }
   ],
   "schedules": [
