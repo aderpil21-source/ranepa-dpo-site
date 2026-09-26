@@ -439,6 +439,30 @@ function imageUrl(url){
     return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1600` : url;
 }
 
+function toEmbedUrl(url){
+    if (!url) return null;
+    let m;
+
+    // VK: поддерживаем и прямые ссылки /video-123_456,
+    // и ссылки сообщества вида https://vk.ru/club?...&z=video-123_456
+    try {
+        const u = new URL(url, location.origin);
+        if (/^(?:www\.)?vk\.(?:com|ru)$/i.test(u.hostname)) {
+            const candidate = (u.searchParams.get('z') || '') + ' ' + u.pathname;
+            m = candidate.match(/video(-?\d+)_(\d+)/i);
+            if (m) return `https://vk.com/video_ext.php?oid=${m[1]}&id=${m[2]}&hd=2`;
+        }
+    } catch(e){}
+
+    if ((m = url.match(/rutube\.ru\/video\/([\w-]+)/))) return `https://rutube.ru/play/embed/${m[1]}`;
+    if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/))) return `https://www.youtube.com/embed/${m[1]}`;
+    if (url.includes('/embed') || url.includes('video_ext.php')) return url;
+    const gid = driveId(url);
+    if (gid) return `https://drive.google.com/file/d/${gid}/preview`;
+    return null;
+}
+
+
 /* ============================================================================
    БЛОК 4. СЕТЬ С ПОВТОРНЫМИ ПОПЫТКАМИ
    Страховка от разовых сбоев: три захода с нарастающей паузой.
