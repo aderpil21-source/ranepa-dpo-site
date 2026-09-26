@@ -61,7 +61,9 @@ jobs:
 
           public_items = [
               item for item in items
-              if isinstance(item, dict) and item.get("status") == "published"
+              if isinstance(item, dict)
+              and item.get("status") == "published"
+              and item.get("id") != "__site_admin_settings__"
           ]
 
           current_items = None
