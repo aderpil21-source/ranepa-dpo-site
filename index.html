@@ -2091,6 +2091,15 @@
         return raw.replace(/ч\./gi, 'hrs');
     }
 
+    function localizedProgramMeta(prog, key, lang) {
+        if (!prog) return '';
+        if (lang === 'en') {
+            const exact = String(prog[key + '_en'] || '').trim();
+            if (exact) return exact;
+        }
+        return translateProgramMeta(prog[key], lang);
+    }
+
     function setLanguage(lang) {
         currentLang = lang;
         document.getElementById('langRuBtn').classList.toggle('lang-active', lang === 'ru');
@@ -2139,6 +2148,13 @@
         }
 
         document.querySelectorAll('.program-meta-value').forEach(el => {
+            const programId = el.dataset.programId || '';
+            const metaKey = el.dataset.metaKey || '';
+            const prog = globalPrograms.find(item => String(item.id || '') === programId);
+            if (prog && metaKey) {
+                el.textContent = localizedProgramMeta(prog, metaKey, lang);
+                return;
+            }
             let raw = '';
             try { raw = decodeURIComponent(el.dataset.metaValue || ''); } catch (e) { raw = el.dataset.metaValue || ''; }
             el.textContent = translateProgramMeta(raw, lang);
@@ -2248,8 +2264,8 @@
             const title = currentLang === 'en'
                 ? (prog.title_en || prog.title_ru || '')
                 : (prog.title_ru || prog.title_en || '');
-            const type = translateProgramMeta(prog.type, currentLang);
-            const hours = translateProgramMeta(prog.hours, currentLang);
+            const type = localizedProgramMeta(prog, 'type', currentLang);
+            const hours = localizedProgramMeta(prog, 'hours', currentLang);
             let docTitle = type ? type + ' “' + title + '”' : '“' + title + '”';
             if (hours) docTitle += ' (' + hours + ')';
             return '<div>📄 <a href="' + String(prog.pdf_link) +
@@ -2290,9 +2306,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
                 extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
-                if (prog.type) extraInfoHTML += `<div><b data-i18n="typeLabel">Тип:</b> <span class="program-meta-value" data-meta-value="${encodeURIComponent(prog.type)}">${translateProgramMeta(prog.type, currentLang)}</span></div>`;
-                if (prog.format) extraInfoHTML += `<div><b data-i18n="formatLabel">Форма:</b> <span class="program-meta-value" data-meta-value="${encodeURIComponent(prog.format)}">${translateProgramMeta(prog.format, currentLang)}</span></div>`;
-                if (prog.dates) extraInfoHTML += `<div><b data-i18n="datesLabel">Сроки:</b> <span class="program-meta-value" data-meta-value="${encodeURIComponent(prog.dates)}">${translateProgramMeta(prog.dates, currentLang)}</span></div>`;
+                if (prog.type) extraInfoHTML += `<div><b data-i18n="typeLabel">Тип:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="type" data-meta-value="${encodeURIComponent(prog.type)}">${localizedProgramMeta(prog, 'type', currentLang)}</span></div>`;
+                if (prog.format) extraInfoHTML += `<div><b data-i18n="formatLabel">Форма:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="format" data-meta-value="${encodeURIComponent(prog.format)}">${localizedProgramMeta(prog, 'format', currentLang)}</span></div>`;
+                if (prog.dates) extraInfoHTML += `<div><b data-i18n="datesLabel">Сроки:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="dates" data-meta-value="${encodeURIComponent(prog.dates)}">${localizedProgramMeta(prog, 'dates', currentLang)}</span></div>`;
                 extraInfoHTML += `</div>`;
             }
 
@@ -2302,7 +2318,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
             let cardHTML = `
             <div class="card" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
-                <div class="card-meta"><span class="price program-meta-value" data-meta-value="${encodeURIComponent(prog.price)}">${translateProgramMeta(prog.price, currentLang)}</span><span class="hours program-meta-value" data-meta-value="${encodeURIComponent(prog.hours)}">${translateProgramMeta(prog.hours, currentLang)}</span></div>
+                <div class="card-meta"><span class="price program-meta-value" data-program-id="${prog.id}" data-meta-key="price" data-meta-value="${encodeURIComponent(prog.price)}">${localizedProgramMeta(prog, 'price', currentLang)}</span><span class="hours program-meta-value" data-program-id="${prog.id}" data-meta-key="hours" data-meta-value="${encodeURIComponent(prog.hours)}">${localizedProgramMeta(prog, 'hours', currentLang)}</span></div>
                 ${extraInfoHTML}
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
                 <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
