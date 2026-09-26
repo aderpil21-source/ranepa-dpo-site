@@ -119,7 +119,6 @@
 <footer><div class="wrap" id="footerText">Западный филиал РАНХиГС • Центр дополнительного образования</div></footer>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
 const qs=new URLSearchParams(location.search);
 const programId=(qs.get('id')||'').trim();
 let currentLang=qs.get('lang')==='en'?'en':'ru';
@@ -178,11 +177,6 @@ async function loadProgram(){
     const portal=findProgram(await getJson('./portal-data.json?v='+bucket));
     if(portal&&hasDetailedData(portal)) return portal;
     if(!local&&portal) local=portal;
-  }catch(e){}
-  try{
-    const fresh=findProgram(await getJson(API_URL+'?type=portal&_cb='+Date.now()));
-    if(fresh&&hasDetailedData(fresh)) return fresh;
-    if(!local&&fresh) local=fresh;
   }catch(e){}
   return local;
 }
