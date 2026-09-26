@@ -28,7 +28,7 @@ jobs:
       - name: Download and validate portal data
         shell: bash
         env:
-          API_URL: https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec
+          API_URL: https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec
         run: |
           set -euo pipefail
 
