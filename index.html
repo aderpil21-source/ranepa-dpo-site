@@ -915,10 +915,10 @@
     </div>
 
     <div class="bg-tags-container" id="bgTags">
-        <div class="bg-tag">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
-        <div class="bg-tag">#БЫСТРЫЙ_СТАРТ</div>
-        <div class="bg-tag">#СИСТЕМНЫЙ_БИЗНЕС</div>
-        <div class="bg-tag">#ПРОФЕССИОНАЛИЗМ</div>
+        <div class="bg-tag" data-i18n="bgTag1">#ЭКСПЕРТЫ_УПРАВЛЕНИЯ</div>
+        <div class="bg-tag" data-i18n="bgTag2">#БЫСТРЫЙ_СТАРТ</div>
+        <div class="bg-tag" data-i18n="bgTag3">#СИСТЕМНЫЙ_БИЗНЕС</div>
+        <div class="bg-tag" data-i18n="bgTag4">#ПРОФЕССИОНАЛИЗМ</div>
     </div>
 
     <div class="ambient-3d-bg">
@@ -928,7 +928,7 @@
 
     <header>
         <a href="#" class="logo-group" onclick="window.scrollTo({top:0, behavior:'smooth'}); return false;">
-            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия">
+            <img src="./img/logo.png" alt="РАНХиГС Президентская Академия" data-i18n-alt="logoAlt">
             <div class="logo-subtitle" data-i18n="logoSub">Западный филиал • Центр дополнительного образования</div>
         </a>
 
@@ -949,7 +949,7 @@
             </div>
 
             <nav class="header-nav">
-                <a href="news.html" class="header-nav-link" style="text-decoration: none;">Новости</a>
+                <a href="news.html" class="header-nav-link" style="text-decoration: none;" data-i18n="navNews">Новости</a>
                 <span class="header-nav-link" onclick="showSchedule()" data-i18n="navSchedule">Расписание</span>
                 <span class="header-nav-link" onclick="document.getElementById('programsSection').scrollIntoView({behavior: 'smooth'});" data-i18n="navProg">Программы</span>
                 <span class="header-nav-link" onclick="openQuickContacts()" data-i18n="navCont">Контакты</span>
@@ -958,12 +958,12 @@
         </div>
 
         <div class="header-kadry">
-            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
+            <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" data-i18n-alt="kadryAlt">
         </div>
     </header>
 
     <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()">
-        <div class="ticker-inner" id="tickerText">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
+        <div class="ticker-inner" id="tickerText" data-i18n="tickerDefault">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
     </div>
 
     <section class="hero">
@@ -983,7 +983,7 @@
                 <button class="tab-btn" onclick="filterPrograms(event,'tab-sem')" data-i18n="tabSem">🗣️ Семинары</button>
             </div>
         </div>
-        <div class="swipe-hint" id="swipeHint">← 👉 листайте вкладки вправо →</div>
+        <div class="swipe-hint" id="swipeHint" data-i18n="swipeHint">← 👉 листайте вкладки вправо →</div>
 
         <div class="filters-bar" id="filtersBar" style="display:none;">
             <div class="filter-group">
@@ -1005,7 +1005,7 @@
 
             <div class="filter-group">
                 <label data-i18n="filterMaxPrice">Стоимость до, ₽</label>
-                <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500">
+                <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500" data-i18n="filterNoLimit">
             </div>
             <div class="filter-group">
                 <label data-i18n="filterDuration">Длительность</label>
@@ -1059,55 +1059,55 @@
 
     <!-- БЛОК ДОКУМЕНТОВ И ДИПЛОМОВ -->
     <div class="documents-section" style="max-width: 1350px; margin: 70px auto; padding: 0 max(15px, env(safe-area-inset-right)); text-align: center; position: relative; z-index: 5;">
-        <h2 class="section-header" style="margin: 0 0 15px 0;">Официальные документы об образовании</h2>
+        <h2 class="section-header" style="margin: 0 0 15px 0;" data-i18n="educationDocsTitle">Официальные документы об образовании</h2>
         <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto 40px; font-size: 1.05rem;">
-            Официальные дипломы и удостоверения установленного образца с внесением данных в государственную систему ФИС ФРДО.
+            <span data-i18n="educationDocsDesc">Официальные дипломы и удостоверения установленного образца с внесением данных в государственную систему ФИС ФРДО.</span>
         </p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
             <!-- Документ 1 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-1.jpg', 'Удостоверение о повышении квалификации')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-1.jpg', translationsHTML[currentLang].docAdvanced)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-1.jpg" alt="Удостоверение о повышении квалификации" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-1.jpg" alt="Удостоверение о повышении квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Удостоверение о повышении квалификации</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Образец установленного образца</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docAdvanced">Удостоверение о повышении квалификации</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образца</p>
             </div>
 
             <!-- Документ 2 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-2.jpg', 'Удостоверение о повышении квалификации')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-2.jpg', translationsHTML[currentLang].docAdvanced)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-2.jpg" alt="Повышение квалификации" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-2.jpg" alt="Повышение квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Повышение квалификации</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Официальное удостоверение</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docAdvancedShort">Повышение квалификации</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docOfficialCertificate">Официальное удостоверение</p>
             </div>
 
             <!-- Документ 3 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-3.jpg', 'Сертификат')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-3.jpg', translationsHTML[currentLang].docCertificate)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-3.jpg" alt="Сертификат" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-3.jpg" alt="Сертификат" data-i18n-alt="docCertificate" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Сертификат</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Государственный стандарт</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docCertificate">Сертификат</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStateStandard">Государственный стандарт</p>
             </div>
 
             <!-- Документ 4 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-4.jpg', 'Диплом о профессиональной переподготовке')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-4.jpg', translationsHTML[currentLang].docRetraining)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-4.jpg" alt="Диплом о профессиональной переподготовке" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-4.jpg" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Диплом о профессиональной переподготовке</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Образец установленного образцан</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docRetraining">Диплом о профессиональной переподготовке</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образцан</p>
             </div>
 
             <!-- Документ 5 -->
-            <div class="doc-card" onclick="openDocLightbox('img/doc-5.jpg', 'Диплом о профессиональной переподготовке')" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
+            <div class="doc-card" onclick="openDocLightbox('img/doc-5.jpg', translationsHTML[currentLang].docRetraining)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-5.jpg" alt="Диплом о профессиональной переподготовке" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-5.jpg" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
-                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">Диплом о профессиональной переподготовке</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Образец установленного образца</p>
+                <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docRetraining">Диплом о профессиональной переподготовке</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образца</p>
             </div>
         </div>
     </div>
@@ -1130,7 +1130,7 @@
             <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
-                    <h4>Канаш Ирина Степановна</h4>
+                    <h4 data-i18n="nameKanash">Канаш Ирина Степановна</h4>
                     <div class="position" data-i18n="dirCenter">Директор центра</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 304</p>
@@ -1139,7 +1139,7 @@
                     </div>
                 </div>
                 <div class="contact-card">
-                    <h4>Крупин Артур Леонидович</h4>
+                    <h4 data-i18n="nameKrupin">Крупин Артур Леонидович</h4>
                     <div class="position" data-i18n="depDir">Заместитель директора центра</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1148,7 +1148,7 @@
                     </div>
                 </div>
                 <div class="contact-card">
-                    <h4>Перетяка Нина Петровна</h4>
+                    <h4 data-i18n="namePeretyaka">Перетяка Нина Петровна</h4>
                     <div class="position" data-i18n="projDir">Директор проекта</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1157,7 +1157,7 @@
                     </div>
                 </div>
                 <div class="contact-card">
-                    <h4>Лощилова М.А.</h4>
+                    <h4 data-i18n="nameLoshchilova">Лощилова М.А.</h4>
                     <div class="position" data-i18n="spec">Специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1170,7 +1170,7 @@
             <h3 class="department-title" data-i18n="dept2" style="margin-top:40px;">Отдел ПК и переподготовки государственных служащих</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
-                    <h4>Михина Елена Владимировна</h4>
+                    <h4 data-i18n="nameMikhina">Михина Елена Владимировна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1179,7 +1179,7 @@
                     </div>
                 </div>
                <!-- <div class="contact-card">
-                    <h4>Беспалова Валерия Вадимовна</h4>
+                    <h4 data-i18n="nameBespalova">Беспалова Валерия Вадимовна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1192,7 +1192,7 @@
             <h3 class="department-title" data-i18n="dept3" style="margin-top:40px;">Отдел дополнительного образования</h3>
             <div class="contacts-grid">
                 <div class="contact-card">
-                    <h4>Дацун Татьяна Григорьевна</h4>
+                    <h4 data-i18n="nameDatsun">Дацун Татьяна Григорьевна</h4>
                     <div class="position" data-i18n="headDep">Начальник отдела</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1201,7 +1201,7 @@
                     </div>
                 </div>
                <!-- <div class="contact-card">
-                    <h4>Чижекова Наталья Владимировна</h4>
+                    <h4 data-i18n="nameChizhekova">Чижекова Наталья Владимировна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1210,7 +1210,7 @@
         </div>
     </div> -->
                 <div class="contact-card">
-                    <h4>Хамзина Ирина Александровна</h4>
+                    <h4 data-i18n="nameKhamzina">Хамзина Ирина Александровна</h4>
                     <div class="position" data-i18n="leadSpec">Ведущий специалист</div>
                     <div class="details">
                         <p><span data-i18n="cabText">Каб.</span> 312</p>
@@ -1226,18 +1226,18 @@
                 <div class="legal-footer-links">
                     <span onclick="openPolicyModal()" data-i18n="polLink">Политика конфиденциальности и обработки персональных данных (ФЗ-152)</span>
                     <span onclick="openTermsModal()" data-i18n="termLink">Пользовательское соглашение и оферта</span>
-                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;">📄 Официальные образовательные программы (Архив)</span>
+                    <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;" data-i18n="docsArchiveLink">📄 Официальные образовательные программы (Архив)</span>
                 </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center;">
                     <a href="https://vk.ru/ranepa_dpo39" target="_blank" rel="noopener" class="vk-btn">
-    <img src="./img/logo-vk.png" alt="ВКонтакте" style="width: 22px; height: 22px; object-fit: contain; display: block;">
+    <img src="./img/logo-vk.png" alt="ВКонтакте" data-i18n-alt="vkAlt" style="width: 22px; height: 22px; object-fit: contain; display: block;">
     <span data-i18n="vkText">ВКонтакте</span>
 </a>
                 </div>
             </div>
             <div class="footer-kadry-mobile">
-                <img src="./img/logo-kadry.png" alt="Национальный проект Кадры">
+                <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" data-i18n-alt="kadryAlt">
             </div>
         </div>
     </div>
@@ -1328,8 +1328,8 @@
     <!-- ОКНО АРХИВА ПРОГРАММ -->
     <div class="modal-overlay" id="docsModal">
         <div class="modal-box" style="text-align: left; max-width: 650px;">
-            <h3>Официальные образовательные программы</h3>
-            <p style="font-size: 0.95rem; line-height: 1.8;">
+            <h3 data-i18n="docsModalTitle">Официальные образовательные программы</h3>
+            <p style="font-size: 0.95rem; line-height: 1.8;" data-i18n="docsModalDesc">
                 В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:
             </p>
             
@@ -1343,7 +1343,7 @@
 
     <div class="modal-overlay" id="urgentAlertModal" style="z-index: 25000;">
         <div class="modal-box" style="border-color: var(--ranepa-red); box-shadow: 0 0 60px rgba(202, 15, 62, 0.4);">
-            <h3 style="color: var(--ranepa-red);">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
+            <h3 style="color: var(--ranepa-red);" data-i18n="urgentTitle">⚠️ ВАЖНАЯ ИНФОРМАЦИЯ</h3>
             <p id="urgentAlertText" style="font-size: 1.05rem; font-weight: 600; text-align: left; margin-bottom: 30px;"></p>
             <div class="buy-btn" onclick="closeUrgentAlertModal()" style="box-shadow: 0 10px 25px rgba(202, 15, 62, 0.6);" data-i18n="modClose">Закрыть</div>
         </div>
@@ -1354,10 +1354,10 @@
         <div class="schedule-container">
             <div class="schedule-header">
                 <h2 class="schedule-title"><span data-i18n="schTitleMain">Расписание</span> <span data-i18n="schTitleSub">занятий</span></h2>
-                <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание">✕</button>
+                <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание" data-i18n-aria-label="scheduleCloseAria">✕</button>
             </div>
             <div class="schedule-layout">
-                <nav class="schedule-months" id="scheduleMonthsNav" aria-label="Месяцы расписания"></nav>
+                <nav class="schedule-months" id="scheduleMonthsNav" aria-label="Месяцы расписания" data-i18n-aria-label="scheduleMonthsAria"></nav>
                 <div class="schedule-content" id="scheduleTimeline"></div>
             </div>
         </div>
@@ -1533,7 +1533,7 @@
         </div>
         
         <div class="chat-input-box">
-            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции, название программы или вопрос..." onkeydown="if(event.key === 'Enter') handleUserMessage()">
+            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции, название программы или вопрос..." data-i18n-placeholder="chatPlaceholder" onkeydown="if(event.key === 'Enter') handleUserMessage()">
             <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
         </div>
 
@@ -1559,10 +1559,10 @@
     </div>
 
     <div class="scroll-nav" id="scrollNav">
-        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх">
+        <button class="scroll-nav-btn" id="scrollTopBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Наверх" data-i18n-aria-label="scrollTopAria">
             <svg viewBox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>
         </button>
-        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз">
+        <button class="scroll-nav-btn show" id="scrollBottomBtn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior:'smooth'})" aria-label="Вниз" data-i18n-aria-label="scrollBottomAria">
             <svg viewBox="0 0 24 24"><path d="M12 20l8-8h-5V4h-6v8H4z"/></svg>
         </button>
     </div>
@@ -1916,7 +1916,14 @@
 
     const translationsHTML = {
         ru: {
-            pageTitle: "Доп образование и профпереподготовка в Калининграде | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
+            pageTitle: "Доп образование и профпереподготовка в Калининграде | Западный филиал РАНХиГС", logoSub: "Западный филиал • Центр дополнительного образования", navNews: "Новости", navProg: "Программы", navCont: "Контакты", navBtn: "Записаться", navSchedule: "Расписание",
+            bgTag1: "#ЭКСПЕРТЫ_УПРАВЛЕНИЯ", bgTag2: "#БЫСТРЫЙ_СТАРТ", bgTag3: "#СИСТЕМНЫЙ_БИЗНЕС", bgTag4: "#ПРОФЕССИОНАЛИЗМ",
+            logoAlt: "РАНХиГС Президентская академия", kadryAlt: "Национальный проект Кадры", vkAlt: "ВКонтакте", tickerDefault: "⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)", swipeHint: "← 👉 листайте вкладки вправо →", filterNoLimit: "без ограничения",
+            educationDocsTitle: "Официальные документы об образовании", educationDocsDesc: "Официальные дипломы и удостоверения установленного образца с внесением данных в государственную систему ФИС ФРДО.",
+            docAdvanced: "Удостоверение о повышении квалификации", docAdvancedShort: "Повышение квалификации", docCertificate: "Сертификат", docRetraining: "Диплом о профессиональной переподготовке", docStandardSample: "Образец установленного образца", docOfficialCertificate: "Официальное удостоверение", docStateStandard: "Государственный стандарт",
+            nameKanash: "Канаш Ирина Степановна", nameKrupin: "Крупин Артур Леонидович", namePeretyaka: "Перетяка Нина Петровна", nameLoshchilova: "Лощилова М.А.", nameMikhina: "Михина Елена Владимировна", nameBespalova: "Беспалова Валерия Вадимовна", nameDatsun: "Дацун Татьяна Григорьевна", nameChizhekova: "Чижекова Наталья Владимировна", nameKhamzina: "Хамзина Ирина Александровна",
+            docsArchiveLink: "📄 Официальные образовательные программы (Архив)", docsModalTitle: "Официальные образовательные программы", docsModalDesc: "В соответствии с требованиями законодательства РФ, здесь представлены полные тексты и аннотации дополнительных профессиональных программ:", urgentTitle: "⚠️ ВАЖНАЯ ИНФОРМАЦИЯ",
+            scheduleCloseAria: "Закрыть расписание", scheduleMonthsAria: "Месяцы расписания", chatPlaceholder: "Введите код лекции, название программы или вопрос...", scrollTopAria: "Наверх", scrollBottomAria: "Вниз",
             heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
             tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
             studyPlanBtn: "Изучить учебный план", detailsBtn: "Подробно о программе", enrollBtn: "Записаться", typeLabel: "Тип:", formatLabel: "Форма:", datesLabel: "Сроки:",
@@ -1962,7 +1969,14 @@
             leaveCancel: "Отмена"
         },
         en: {
-            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
+            pageTitle: "Personnel Academy | RANEPA Western Branch", logoSub: "Western Branch • Center for Continuing Education", navNews: "News", navProg: "Programs", navCont: "Contacts", navBtn: "Apply Now", navSchedule: "Schedule",
+            bgTag1: "#MANAGEMENT_EXPERTS", bgTag2: "#FAST_START", bgTag3: "#SYSTEMATIC_BUSINESS", bgTag4: "#PROFESSIONALISM",
+            logoAlt: "RANEPA Presidential Academy", kadryAlt: "National Project Kadry", vkAlt: "VKontakte", tickerDefault: "⚠️ IMPORTANT NOTICE FROM AN INSTRUCTOR (Click to read in full)", swipeHint: "← 👉 swipe the tabs to the right →", filterNoLimit: "no limit",
+            educationDocsTitle: "Official Education Credentials", educationDocsDesc: "Official diplomas and certificates in the approved format, with records entered into the federal FIS FRDO education credentials system.",
+            docAdvanced: "Certificate of Advanced Training", docAdvancedShort: "Advanced Training", docCertificate: "Certificate", docRetraining: "Professional Retraining Diploma", docStandardSample: "Approved-format sample", docOfficialCertificate: "Official certificate", docStateStandard: "Official standard",
+            nameKanash: "Irina Stepanovna Kanash", nameKrupin: "Artur Leonidovich Krupin", namePeretyaka: "Nina Petrovna Peretyaka", nameLoshchilova: "M. A. Loshchilova", nameMikhina: "Elena Vladimirovna Mikhina", nameBespalova: "Valeria Vadimovna Bespalova", nameDatsun: "Tatyana Grigoryevna Datsun", nameChizhekova: "Natalya Vladimirovna Chizhekova", nameKhamzina: "Irina Aleksandrovna Khamzina",
+            docsArchiveLink: "📄 Official Educational Programs (Archive)", docsModalTitle: "Official Educational Programs", docsModalDesc: "In accordance with applicable Russian legislation, this archive contains full texts and summaries of continuing professional education programs:", urgentTitle: "⚠️ IMPORTANT INFORMATION",
+            scheduleCloseAria: "Close schedule", scheduleMonthsAria: "Schedule months", chatPlaceholder: "Enter a lecture code, program title, or question...", scrollTopAria: "Scroll to top", scrollBottomAria: "Scroll to bottom",
             heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
             tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
             studyPlanBtn: "Explore Curriculum", detailsBtn: "Program details", enrollBtn: "Apply Now", typeLabel: "Type:", formatLabel: "Format:", datesLabel: "Study period:", faqTitle: "Frequently Asked Questions",
@@ -2053,6 +2067,25 @@
                 } else {
                     el.innerHTML = dict[key];
                 }
+            }
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translationsHTML[lang] && translationsHTML[lang][key] !== undefined) {
+                el.placeholder = translationsHTML[lang][key];
+            }
+        });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+            const key = el.getAttribute('data-i18n-alt');
+            if (translationsHTML[lang] && translationsHTML[lang][key] !== undefined) {
+                el.alt = translationsHTML[lang][key];
+            }
+        });
+        document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+            const key = el.getAttribute('data-i18n-aria-label');
+            if (translationsHTML[lang] && translationsHTML[lang][key] !== undefined) {
+                el.setAttribute('aria-label', translationsHTML[lang][key]);
             }
         });
 
