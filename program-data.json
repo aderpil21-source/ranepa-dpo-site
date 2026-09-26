@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T09:17:45.501Z",
+  "generatedAt": "2026-09-26T09:36:00.000Z",
   "programs": [
     {
       "id": "c14",
@@ -42,10 +42,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "Upon request",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "15 June 2026 – 27 October 2026"
     },
     {
       "id": "c15",
@@ -90,10 +95,15 @@
       "topics_en": "Excursion program design | Project management | Tourism development strategies | Real-world professional situations | Best practices in tourism in the Kaliningrad Region",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "Директор Центра ДПО Ирина Канаш. В подготовке и экспертизе программы участвовали представители Ассоциации профессиональных экскурсоводов Калининградской области. В материалах также указаны Антонина Максимова, руководитель Ассоциации, и Ольга Соловьёва, опытный экскурсовод.",
-      "experts_en": "Irina Kanash, Director of the Center for Continuing Professional Education. Representatives of the Association of Professional Tour Guides of the Kaliningrad Region contributed to the development and expert review of the program. The source material also names Antonina Maksimova, Head of the Association, and Olga Solovyova, an experienced tour guide.",
+      "teachers_ru": "Директор Центра ДПО Ирина Канаш. В подготовке и экспертизе программы участвовали представители Ассоциации профессиональных экскурсоводов Калининградской области. В материалах также указаны Антонина Максимова, руководитель Ассоциации, и Ольга Соловьёва, опытный экскурсовод.",
+      "teachers_en": "Irina Kanash, Director of the Center for Continuing Professional Education. Representatives of the Association of Professional Tour Guides of the Kaliningrad Region contributed to the development and expert review of the program. The source material also names Antonina Maksimova, Head of the Association, and Olga Solovyova, an experienced tour guide.",
       "official_desc_en": "The program is designed for practising professionals in the tourism sector and is practice-oriented. Participants learn to design excursion programs, manage projects, understand tourism development strategies, and make decisions in real working situations. After completing the program, participants can apply their knowledge in professional practice and in their own tourism and hospitality projects.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN подробности по материалу о программе; документ по итогам в источнике не подтверждён"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN подробности по материалу о программе; документ по итогам в источнике не подтверждён",
+      "price_en": "Upon request",
+      "hours_en": "98 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "28 September 2026"
     },
     {
       "id": "c16",
@@ -136,10 +146,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "Upon request",
+      "hours_en": "98 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "3 August 2026 – 10 September 2026"
     },
     {
       "id": "c17",
@@ -182,10 +197,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "Upon request",
+      "hours_en": "124 academic hours",
+      "format_en": "In-person",
+      "type_en": "Vocational training",
+      "dates_en": "12 May 2026 – 10 June 2026; 2 September 2026 – 1 October 2026"
     },
     {
       "id": "c18",
@@ -228,10 +248,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 43,000",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c19",
@@ -274,10 +299,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 25,000",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c20",
@@ -320,10 +350,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 35,000",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c21",
@@ -366,10 +401,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 38,000",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c22",
@@ -412,10 +452,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 27,000",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c23",
@@ -458,10 +503,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 27,000",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "2 months"
     },
     {
       "id": "c24",
@@ -504,10 +554,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 35,000",
+      "hours_en": "144 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c1",
@@ -550,10 +605,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 24,000",
+      "hours_en": "72 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c2",
@@ -596,10 +656,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 24,000",
+      "hours_en": "72 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c3",
@@ -642,10 +707,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 24,000",
+      "hours_en": "72 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c4",
@@ -688,10 +758,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 13,500",
+      "hours_en": "36 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c5",
@@ -736,10 +811,15 @@
       "topics_en": "Contemporary characteristics of terrorism | Terrorism as a national security threat | National counter-terrorism system | Threat monitoring | Counter-terrorism legal framework | Terrorism alert levels | Countering terrorist and extremist ideology | Anti-terrorist protection of facilities | Workshop and simulation exercise | Final testing",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "По расписанию занятия проводят Е.К. Артемов, О.Н. Пахомова, С.В. Шевчук, Е.Ю. Пронина, Б.И. Карасев и М.А. Мирюкова.",
-      "experts_en": "According to the course schedule, sessions are taught by E. K. Artemov, O. N. Pakhomova, S. V. Shevchuk, E. Yu. Pronina, B. I. Karasev, and M. A. Miryukova.",
+      "teachers_ru": "По расписанию занятия проводят Е.К. Артемов, О.Н. Пахомова, С.В. Шевчук, Е.Ю. Пронина, Б.И. Карасев и М.А. Мирюкова.",
+      "teachers_en": "According to the course schedule, sessions are taught by E. K. Artemov, O. N. Pakhomova, S. V. Shevchuk, E. Yu. Pronina, B. I. Karasev, and M. A. Miryukova.",
       "official_desc_en": "The course schedule includes: the contemporary characteristics of terrorism; terrorism as a threat to the national security of the Russian Federation; the operation of the national counter-terrorism system; monitoring of the counter-terrorism system; the legal framework; terrorism alert levels; countering terrorist and extremist ideology; anti-terrorist protection of facilities; a terrorism-prevention workshop; and final testing.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по расписанию; цена/часы/форма подтверждены приказом; ДПП и документ по итогам не подтверждены"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по расписанию; цена/часы/форма подтверждены приказом; ДПП и документ по итогам не подтверждены",
+      "price_en": "RUB 10,500",
+      "hours_en": "36 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c6",
@@ -782,10 +862,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 10,500",
+      "hours_en": "36 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c7",
@@ -828,10 +913,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 10,500",
+      "hours_en": "36 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c8",
@@ -874,10 +964,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 10,500",
+      "hours_en": "36 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c9",
@@ -920,10 +1015,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 10,500",
+      "hours_en": "36 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c10",
@@ -966,10 +1066,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 37,000",
+      "hours_en": "98 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c11",
@@ -1012,10 +1117,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 40,000",
+      "hours_en": "98 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c12",
@@ -1060,10 +1170,15 @@
       "topics_en": "Excursion program design | Project management | Tourism development strategies | Real-world professional situations | Best practices in tourism in the Kaliningrad Region",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "Директор Центра ДПО Ирина Канаш. В подготовке и экспертизе программы участвовали представители Ассоциации профессиональных экскурсоводов Калининградской области. В материалах также указаны Антонина Максимова, руководитель Ассоциации, и Ольга Соловьёва, опытный экскурсовод.",
-      "experts_en": "Irina Kanash, Director of the Center for Continuing Professional Education. Representatives of the Association of Professional Tour Guides of the Kaliningrad Region contributed to the development and expert review of the program. The source material also names Antonina Maksimova, Head of the Association, and Olga Solovyova, an experienced tour guide.",
+      "teachers_ru": "Директор Центра ДПО Ирина Канаш. В подготовке и экспертизе программы участвовали представители Ассоциации профессиональных экскурсоводов Калининградской области. В материалах также указаны Антонина Максимова, руководитель Ассоциации, и Ольга Соловьёва, опытный экскурсовод.",
+      "teachers_en": "Irina Kanash, Director of the Center for Continuing Professional Education. Representatives of the Association of Professional Tour Guides of the Kaliningrad Region contributed to the development and expert review of the program. The source material also names Antonina Maksimova, Head of the Association, and Olga Solovyova, an experienced tour guide.",
       "official_desc_en": "The program is designed for practising professionals in the tourism sector and is practice-oriented. Participants learn to design excursion programs, manage projects, understand tourism development strategies, and make decisions in real working situations. After completing the program, participants can apply their knowledge in professional practice and in their own tourism and hospitality projects.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN подробности по материалу о программе; документ по итогам в источнике не подтверждён"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN подробности по материалу о программе; документ по итогам в источнике не подтверждён",
+      "price_en": "RUB 40,000",
+      "hours_en": "98 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c13",
@@ -1106,10 +1221,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 38,000",
+      "hours_en": "72 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c39",
@@ -1152,10 +1272,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 10,500 (basic level) / RUB 38,000 (specialised level)",
+      "hours_en": "98 academic hours (specialised level) / 36 academic hours (basic level) ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "1.5 months"
     },
     {
       "id": "c40",
@@ -1198,10 +1323,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 10,500",
+      "hours_en": "36 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "1.5–2 weeks"
     },
     {
       "id": "c41",
@@ -1236,10 +1366,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 38,000",
+      "hours_en": "98 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "1.5 months"
     },
     {
       "id": "c42",
@@ -1282,10 +1417,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 41,000",
+      "hours_en": "40 academic hours ⚡",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "1 week"
     },
     {
       "id": "c43",
@@ -1328,10 +1468,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 60,000",
+      "hours_en": "150 academic hours",
+      "format_en": "In-person",
+      "type_en": "Vocational training",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c44",
@@ -1374,10 +1519,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 56,000",
+      "hours_en": "506 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c45",
@@ -1420,10 +1570,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 46,300",
+      "hours_en": "256 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "2.5 months"
     },
     {
       "id": "c46",
@@ -1466,10 +1621,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 45,000",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c47",
@@ -1512,10 +1672,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 43,000",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "2.5 months"
     },
     {
       "id": "c25",
@@ -1558,10 +1723,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 46,300",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c26",
@@ -1604,10 +1774,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 45,000",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c27",
@@ -1650,10 +1825,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 45,000",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "2.5 months"
     },
     {
       "id": "c28",
@@ -1696,10 +1876,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 46,300",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "2.5 months"
     },
     {
       "id": "c29",
@@ -1742,10 +1927,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 46,300",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "As groups are formed"
     },
     {
       "id": "c30",
@@ -1788,10 +1978,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 46,300",
+      "hours_en": "252 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Professional retraining",
+      "dates_en": "2.5 months"
     },
     {
       "id": "c31",
@@ -1834,10 +2029,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 8,500",
+      "hours_en": "16 academic hours ⚡",
+      "format_en": "Blended",
+      "type_en": "Seminar",
+      "dates_en": "1–2 days"
     },
     {
       "id": "c32",
@@ -1880,10 +2080,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 8,500",
+      "hours_en": "16 academic hours ⚡",
+      "format_en": "Blended",
+      "type_en": "Seminar",
+      "dates_en": "1–2 days"
     },
     {
       "id": "c33",
@@ -1926,10 +2131,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 8,500",
+      "hours_en": "16 academic hours ⚡",
+      "format_en": "Blended",
+      "type_en": "Seminar",
+      "dates_en": "1–2 days"
     },
     {
       "id": "c34",
@@ -1972,10 +2182,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 8,500",
+      "hours_en": "16 academic hours ⚡",
+      "format_en": "Blended",
+      "type_en": "Seminar",
+      "dates_en": "1–2 days"
     },
     {
       "id": "c35",
@@ -2018,10 +2233,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 8,500",
+      "hours_en": "16 academic hours ⚡",
+      "format_en": "Blended",
+      "type_en": "Seminar",
+      "dates_en": "1–2 days"
     },
     {
       "id": "c36",
@@ -2064,10 +2284,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 8,500",
+      "hours_en": "16 academic hours ⚡",
+      "format_en": "Blended",
+      "type_en": "Seminar",
+      "dates_en": "1–2 days"
     },
     {
       "id": "c37",
@@ -2110,10 +2335,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 13,500",
+      "hours_en": "48 academic hours",
+      "format_en": "In-person, with distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "1 month"
     },
     {
       "id": "c38",
@@ -2156,10 +2386,15 @@
       "topics_en": "",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "",
-      "experts_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом/договором; подробный содержательный источник не предоставлен"
+      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом/договором; подробный содержательный источник не предоставлен",
+      "price_en": "RUB 10,500",
+      "hours_en": "36 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "1.5–2 weeks"
     },
     {
       "id": "c48",
@@ -2208,10 +2443,15 @@
       "topics_en": "1. Foundations of the contract system | 2. Russian Federation public procurement legislation | 3. Prevention and counteraction of corruption in procurement | 4. Procurement planning | 5. Procurement procedures | 6. Contracts: terms, award and performance | 7. Monitoring, control, audit and protection of procurement participants' rights | 8. Information support for the contract system",
       "document_ru": "Удостоверение о повышении квалификации ФГБОУ ВО «Российская академия народного хозяйства и государственной службы при Президенте Российской Федерации».",
       "document_en": "Certificate of Advanced Training issued by the Russian Presidential Academy of National Economy and Public Administration (RANEPA).",
-      "experts_ru": "Автор-составитель: И.О. Семенова, кандидат педагогических наук, доцент. Руководитель программы: И.С. Канаш, кандидат экономических наук. По расписанию занятия проводят Е.И. Мудрак, С.П. Козлов и С.Л. Дрибноход.",
-      "experts_en": "Program author: I. O. Semenova, Candidate of Pedagogical Sciences, Associate Professor. Program Director: I. S. Kanash, Candidate of Economic Sciences. According to the schedule, sessions are taught by E. I. Mudrak, S. P. Kozlov, and S. L. Dribnokhod.",
+      "teachers_ru": "Автор-составитель: И.О. Семенова, кандидат педагогических наук, доцент. Руководитель программы: И.С. Канаш, кандидат экономических наук. По расписанию занятия проводят Е.И. Мудрак, С.П. Козлов и С.Л. Дрибноход.",
+      "teachers_en": "Program author: I. O. Semenova, Candidate of Pedagogical Sciences, Associate Professor. Program Director: I. S. Kanash, Candidate of Economic Sciences. According to the schedule, sessions are taught by E. I. Mudrak, S. P. Kozlov, and S. L. Dribnokhod.",
       "official_desc_en": "The stated purpose of the program is to improve the professional performance of civil servants and to develop and enhance competencies in the procurement of goods, works, and services for state and municipal needs. The program objectives include examining the legal and organisational aspects of the contract system, studying procurement management processes, and addressing the digitalisation of the contract system.",
-      "detail_status": "ГОТОВО / READY — полная RU/EN страница по утверждённой ДПП и расписанию"
+      "detail_status": "ГОТОВО / READY — полная RU/EN страница по утверждённой ДПП и расписанию",
+      "price_en": "Upon request",
+      "hours_en": "108 academic hours",
+      "format_en": "In-person",
+      "type_en": "Advanced training",
+      "dates_en": "10 weeks"
     },
     {
       "id": "c49",
@@ -2258,10 +2498,15 @@
       "topics_en": "Procurement legislation and recent changes | National procurement regime | Common problems and errors | Administrative and arbitration practice | Liability of contracting authorities | Information technologies and the Unified Information System | Final testing",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "По расписанию занятия проводят Е.И. Мудрак и С.Л. Дрибноход.",
-      "experts_en": "According to the course schedule, sessions are taught by E. I. Mudrak and S. L. Dribnokhod.",
+      "teachers_ru": "По расписанию занятия проводят Е.И. Мудрак и С.Л. Дрибноход.",
+      "teachers_en": "According to the course schedule, sessions are taught by E. I. Mudrak and S. L. Dribnokhod.",
       "official_desc_en": "The course schedule covers procurement legislation and recent changes, the national procurement regime, common problems and errors, current administrative and arbitration practice, liability issues, and the use of information technologies in procurement.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены",
+      "price_en": "Upon request",
+      "hours_en": "36 academic hours",
+      "format_en": "To be confirmed",
+      "type_en": "Advanced training",
+      "dates_en": "7 September 2026 – 5 October 2026"
     },
     {
       "id": "c50",
@@ -2310,10 +2555,15 @@
       "topics_en": "Budget and budget structure of the Russian Federation | Budget classification | State extra-budgetary funds | Intergovernmental fiscal relations | Budget policy and planning | Budget control | Final testing",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "По расписанию участвуют Д.Л. Сергеев, эксперты Центрального банка, Социального фонда, системы обязательного медицинского страхования, Казначейства и другие приглашённые специалисты.",
-      "experts_en": "According to the course schedule, contributors include D. L. Sergeev and experts from the Bank of Russia, the Social Fund, the compulsory medical insurance system, the Treasury, and other invited specialists.",
+      "teachers_ru": "По расписанию участвуют Д.Л. Сергеев, эксперты Центрального банка, Социального фонда, системы обязательного медицинского страхования, Казначейства и другие приглашённые специалисты.",
+      "teachers_en": "According to the course schedule, contributors include D. L. Sergeev and experts from the Bank of Russia, the Social Fund, the compulsory medical insurance system, the Treasury, and other invited specialists.",
       "official_desc_en": "The course schedule covers the Russian Federation budget system and budget structure, the budget process, state extra-budgetary funds, intergovernmental fiscal relations, budget policy and planning, and budget control.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены",
+      "price_en": "Upon request",
+      "hours_en": "36 academic hours",
+      "format_en": "To be confirmed",
+      "type_en": "Advanced training",
+      "dates_en": "7 September 2026 – 13 October 2026"
     },
     {
       "id": "c51",
@@ -2362,10 +2612,15 @@
       "topics_en": "Methodology of terrorism and extremism | Legal framework for anti-terrorist protection | Security passport | Categorisation of facilities and territories | Anti-terrorist protection measures | Coordination and monitoring | Staff preparedness | Final round-table assessment",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "По расписанию занятия проводят Е.К. Артемов, О.Н. Пахомова, С.В. Шевчук и Б.И. Карасев.",
-      "experts_en": "According to the course schedule, sessions are taught by E. K. Artemov, O. N. Pakhomova, S. V. Shevchuk, and B. I. Karasev.",
+      "teachers_ru": "По расписанию занятия проводят Е.К. Артемов, О.Н. Пахомова, С.В. Шевчук и Б.И. Карасев.",
+      "teachers_en": "According to the course schedule, sessions are taught by E. K. Artemov, O. N. Pakhomova, S. V. Shevchuk, and B. I. Karasev.",
       "official_desc_en": "The course schedule covers the legal framework for anti-terrorist protection of facilities and territories, security passport requirements, facility categorisation, protection measures, coordination and monitoring, and the preparedness of staff, security personnel, and visitors to respond to terrorist threats.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены",
+      "price_en": "Upon request",
+      "hours_en": "36 academic hours",
+      "format_en": "To be confirmed",
+      "type_en": "Advanced training",
+      "dates_en": "24 September 2026 – 28 October 2026"
     },
     {
       "id": "c52",
@@ -2414,10 +2669,15 @@
       "topics_en": "Legal framework for document management | Electronic document management | Organisation of records management services | File classification plans | Organisational archives | Electronic records storage | Electronic signature | Modern information technologies | Final testing",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "По расписанию занятия проводят Эвелина Александровна Исакова, И.Г. Савченко, приглашённый эксперт Роскомнадзора; итоговую аттестацию проводит комиссия ИАК.",
-      "experts_en": "According to the course schedule, sessions are taught by Evelina A. Isakova, I. G. Savchenko, and an invited Roskomnadzor expert; final assessment is conducted by the final assessment commission.",
+      "teachers_ru": "По расписанию занятия проводят Эвелина Александровна Исакова, И.Г. Савченко, приглашённый эксперт Роскомнадзора; итоговую аттестацию проводит комиссия ИАК.",
+      "teachers_en": "According to the course schedule, sessions are taught by Evelina A. Isakova, I. G. Savchenko, and an invited Roskomnadzor expert; final assessment is conducted by the final assessment commission.",
       "official_desc_en": "The course schedule includes the legal and methodological framework for document management, current documentation requirements, organisation of records management services, records storage, electronic document workflow, and information technologies supporting the activities of public authorities.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены",
+      "price_en": "Upon request",
+      "hours_en": "36 academic hours",
+      "format_en": "To be confirmed",
+      "type_en": "Advanced training",
+      "dates_en": "11 September 2026 – 21 October 2026"
     },
     {
       "id": "c53",
@@ -2468,10 +2728,15 @@
       "topics_en": "Public financial and monetary policy | Public finance management | Budget process | Banking and insurance | Tax system | Pension savings | Accounting | Public procurement | Financial control | Final assessment",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "По расписанию в программе участвуют эксперты Банка России, Социального фонда, системы обязательного медицинского страхования, Казначейства, прокуратуры, а также преподаватели Западного филиала РАНХиГС.",
-      "experts_en": "According to the course schedule, the program includes experts from the Bank of Russia, the Social Fund, the compulsory medical insurance system, the Treasury, the Prosecutor's Office, and instructors from the RANEPA Western Branch.",
+      "teachers_ru": "По расписанию в программе участвуют эксперты Банка России, Социального фонда, системы обязательного медицинского страхования, Казначейства, прокуратуры, а также преподаватели Западного филиала РАНХиГС.",
+      "teachers_en": "According to the course schedule, the program includes experts from the Bank of Russia, the Social Fund, the compulsory medical insurance system, the Treasury, the Prosecutor's Office, and instructors from the RANEPA Western Branch.",
       "official_desc_en": "The course schedule covers public financial and monetary policy, public finance management, the budget process, banking and insurance, taxation, pension savings, accounting, public procurement, and financial control.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены",
+      "price_en": "Upon request",
+      "hours_en": "36 academic hours",
+      "format_en": "To be confirmed",
+      "type_en": "Advanced training",
+      "dates_en": "7 September 2026 – 15 October 2026"
     },
     {
       "id": "c54",
@@ -2522,10 +2787,15 @@
       "topics_en": "Foundations of the contract system | Russian Federation public procurement legislation | Anti-corruption in procurement | Procurement planning | Procurement procedures | Contract award and performance | Monitoring, control and protection of rights | Information support | Final testing",
       "document_ru": "",
       "document_en": "",
-      "experts_ru": "По расписанию занятия проводят Е.И. Мудрак, С.П. Козлов и С.Л. Дрибноход.",
-      "experts_en": "According to the course schedule, sessions are taught by E. I. Mudrak, S. P. Kozlov, and S. L. Dribnokhod.",
+      "teachers_ru": "По расписанию занятия проводят Е.И. Мудрак, С.П. Козлов и С.Л. Дрибноход.",
+      "teachers_en": "According to the course schedule, sessions are taught by E. I. Mudrak, S. P. Kozlov, and S. L. Dribnokhod.",
       "official_desc_en": "The course schedule includes the foundations of the contract system, procurement legislation, prevention and counteraction of corruption, procurement planning and procedures, contract award and performance, monitoring and control, protection of participants' rights, and information support.",
-      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены"
+      "detail_status": "ЧАСТИЧНО / PARTIAL — RU/EN содержание по официальному расписанию; стоимость, форма, аудитория, формальная цель и документ по итогам не подтверждены",
+      "price_en": "Upon request",
+      "hours_en": "36 academic hours",
+      "format_en": "To be confirmed",
+      "type_en": "Advanced training",
+      "dates_en": "4 September 2026 – 8 October 2026"
     }
   ]
 }
