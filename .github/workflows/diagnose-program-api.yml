@@ -1,0 +1,56 @@
+name: Diagnose program API
+
+on:
+  push:
+    branches:
+      - feature/program-detail-pages
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/program-detail-pages
+      - name: Fetch and summarize live portal API
+        env:
+          API_URL: https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          from datetime import datetime, timezone
+          url = os.environ["API_URL"] + "?_cb=" + str(int(datetime.now(timezone.utc).timestamp()))
+          with urllib.request.urlopen(url, timeout=30) as r:
+              data = json.load(r)
+          programs = data.get("programs") if isinstance(data, dict) else None
+          if not isinstance(programs, list):
+              programs = []
+          wanted = None
+          for p in programs:
+              if str(p.get("id","")) == "c15":
+                  wanted = p
+                  break
+          summary = {
+              "checkedAt": datetime.now(timezone.utc).isoformat(),
+              "programCount": len(programs),
+              "topLevelKeys": sorted(data.keys()) if isinstance(data, dict) else [],
+              "programKeys": sorted({k for p in programs if isinstance(p, dict) for k in p.keys()}),
+              "c15": wanted,
+          }
+          with open("api-program-diagnostic.json","w",encoding="utf-8") as f:
+              json.dump(summary,f,ensure_ascii=False,indent=2)
+              f.write("\n")
+          PY
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add api-program-diagnostic.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore: capture program API diagnostic [skip ci]"
+          git push origin HEAD:feature/program-detail-pages
