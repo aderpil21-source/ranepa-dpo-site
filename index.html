@@ -931,6 +931,15 @@
             font-family: 'Montserrat', sans-serif;
         }
         .site-admin-panel.active { display: flex; }
+        .site-admin-reopen {
+            position: fixed; left: 16px; bottom: 18px; z-index: 30040;
+            display: none; border: 1px solid rgba(202,15,62,.55);
+            background: linear-gradient(135deg,#29345B,#A00F33);
+            color:#fff; border-radius:999px; padding:10px 14px;
+            font-family:'Montserrat',sans-serif; font-size:.72rem; font-weight:900;
+            box-shadow:0 12px 28px rgba(0,0,0,.4); cursor:pointer;
+        }
+        .site-admin-reopen.active { display:block; }
         .site-admin-head {
             padding: 15px 16px 13px;
             display: flex;
@@ -1469,6 +1478,8 @@
             <div class="close-modal" onclick="closeSiteAdminLogin()">Отмена</div>
         </div>
     </div>
+
+    <button type="button" class="site-admin-reopen" id="siteAdminReopen" onclick="reopenSiteAdminPanel()">⚙ ADMIN</button>
 
     <aside class="site-admin-panel" id="siteAdminPanel" aria-label="Панель администратора">
         <div class="site-admin-head">
@@ -2021,7 +2032,18 @@
 
     function hideSiteAdminPanel() {
         const panel = document.getElementById('siteAdminPanel');
+        const reopen = document.getElementById('siteAdminReopen');
         if (panel) panel.classList.remove('active');
+        if (reopen && siteAdminMode) reopen.classList.add('active');
+    }
+
+    function reopenSiteAdminPanel() {
+        if (!siteAdminMode) return openSiteAdminLogin();
+        const panel = document.getElementById('siteAdminPanel');
+        const reopen = document.getElementById('siteAdminReopen');
+        if (panel) panel.classList.add('active');
+        if (reopen) reopen.classList.remove('active');
+        renderSiteAdminPanel();
     }
 
     function siteAdminLogout() {
@@ -2031,7 +2053,9 @@
         sessionStorage.removeItem('newsAdminToken');
         document.body.classList.remove('site-admin-active');
         const panel = document.getElementById('siteAdminPanel');
+        const reopen = document.getElementById('siteAdminReopen');
         if (panel) panel.classList.remove('active');
+        if (reopen) reopen.classList.remove('active');
         applySiteVisibility();
     }
 
