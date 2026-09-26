@@ -3707,15 +3707,13 @@ if (wantsAdminChooser) {
 }
 
 if (wantsStaffPortal) {
-    setTimeout(() => {
-        addBotMsg(
-            currentLang === 'ru'
-                ? '📄 <b>Загрузка учебных планов</b><br><br>Открываю служебную страницу в новой вкладке. Для входа используйте выданный PIN-код.'
-                : '📄 <b>Curriculum upload</b><br><br>Opening the staff page in a new tab. Use the assigned PIN to sign in.'
-        );
-        openStudyPlanUpload();
-        setOptions('<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>');
-    }, 250);
+    addBotMsg(
+        currentLang === 'ru'
+            ? '📄 <b>Загрузка учебных планов</b><br><br>Открываю служебную страницу в новой вкладке. Для входа используйте выданный PIN-код.'
+            : '📄 <b>Curriculum upload</b><br><br>Opening the staff page in a new tab. Use the assigned PIN to sign in.'
+    );
+    openStudyPlanUpload();
+    setOptions('<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>');
     return;
 }
 
