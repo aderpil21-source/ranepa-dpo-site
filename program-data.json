@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T13:05:00+02:00",
+  "generatedAt": "2026-09-26T12:05:12.718Z",
   "programs": [
     {
       "id": "c14",
@@ -12,7 +12,7 @@
       "dates": " 15.06.2026 – 27.10.2026",
       "title_ru": "Менеджмент в сфере гостеприимства",
       "desc_ru": "Программа разработана для формирования ключевых управленческих компетенций, необходимых для эффективного руководства предприятиями индустрии гостеприимства в условиях высокой конкуренции. Модули программы сформированы с учетом новых стандартов, позволяя слушателям повысить квалификацию. Успешно освоив материал, участники смогут масштабировать собственный бизнес и повысить качество услуг.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа развивает управленческие компетенции, необходимые для эффективного руководства предприятиями индустрии гостеприимства в условиях высокой конкуренции. В центре внимания — организация работы предприятия, применение современных управленческих инструментов, масштабирование бизнеса и повышение качества услуг.\n\nОбучение помогает связать управленческие подходы с практическими задачами индустрии гостеприимства и использовать полученные знания для повышения эффективности работы организации.",
       "bullets_ru": [
         "Управление предприятиями HoReCa",
         "Масштабирование собственного бизнеса",
@@ -20,7 +20,7 @@
       ],
       "title_en": "Hospitality Management",
       "desc_en": "The program is designed to build key management competencies necessary for effective leadership of hospitality enterprises in a high-competition environment. \nThe modules are formed taking into account new standards, allowing participants to improve their qualifications. Having successfully mastered the material, participants will be able to scale their own business and improve service quality.",
-      "long_desc_en": "",
+      "long_desc_en": "The program develops the management competencies required to lead hospitality businesses effectively in a highly competitive environment. It focuses on business operations, the use of modern management tools, business scaling, and service quality improvement.\n\nThe training connects management approaches with practical challenges in the hospitality industry and helps participants apply what they learn to improve organisational effectiveness.",
       "bullets_en": [
         "HoReCa enterprise management",
         "Scaling own business",
@@ -45,7 +45,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "Upon request",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -116,7 +116,7 @@
       "dates": "03.08.2026 – 10.09.2026",
       "title_ru": "Искусственный интеллект: практическое применение",
       "desc_ru": "Программа направлена на формирование у слушателей системного понимания и практических навыков применения технологий искусственного интеллекта для решения актуальных бизнес-задач. Переходя от теории к уверенному использованию инструментов, участники смогут инициировать и реализовывать проекты внедрения ИИ. Успешно освоив методы проектирования запросов, специалисты получат измеримые преимущества для своей организации.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа формирует системное понимание технологий искусственного интеллекта и практические навыки их применения для решения актуальных бизнес-задач. Слушатели переходят от понимания принципов работы ИИ к уверенному использованию инструментов, созданию эффективных запросов и применению технологий в рабочих процессах.\n\nОтдельный акцент сделан на практическом использовании искусственного интеллекта и подготовке к инициированию и реализации проектов внедрения ИИ в организации.",
       "bullets_ru": [
         "Применение ИИ в бизнесе",
         "Создание эффективных запросов",
@@ -124,7 +124,7 @@
       ],
       "title_en": "Artificial Intelligence: Practical Application",
       "desc_en": "The program is designed to develop a systemic understanding and practical skills in applying artificial\nintelligence technologies to solve real-world business problems. \nMoving from theory to confident tool usage, participants will be able to initiate and implement \nAI integration projects. Having successfully mastered prompt engineering methods, specialists will gain measurable advantages for their organization.",
-      "long_desc_en": "",
+      "long_desc_en": "The program builds a systematic understanding of artificial intelligence technologies and practical skills for applying them to current business challenges. Participants move from understanding how AI works to confident use of AI tools, effective prompt design, and the application of these technologies in work processes.\n\nParticular emphasis is placed on practical AI use and on preparing participants to initiate and implement AI adoption projects within their organisations.",
       "bullets_en": [
         "AI application in business",
         "Creating effective prompts",
@@ -149,7 +149,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "Upon request",
       "hours_en": "98 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -167,7 +167,7 @@
       "dates": "Срок обучения — 1,5 месяца; набор по мере формирования групп",
       "title_ru": "Горничная",
       "desc_ru": "Программа профессионального обучения направлена на приобретение слушателями компетенций, необходимых для выполнения нового вида деятельности. Успешно освоив технические навыки уборки, выпускники смогут обеспечивать высокие стандарты чистоты и комфорта. Полученные знания напрямую влияют на удовлетворенность гостей и репутацию отеля.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа профессионального обучения направлена на приобретение компетенций, необходимых для выполнения профессиональной деятельности по профессии горничной. Обучение охватывает технические навыки уборки, принципы гостеприимства и практические задачи, связанные с уборкой и подготовкой номеров.\n\nОсвоение программы позволяет применять стандарты чистоты и комфорта в повседневной работе. Полученные навыки напрямую связаны с качеством обслуживания гостей и репутацией гостиничного предприятия.",
       "bullets_ru": [
         "Технические навыки уборки",
         "Принципы гостеприимства",
@@ -175,7 +175,7 @@
       ],
       "title_en": "Housemaid",
       "desc_en": "The vocational training program is aimed at providing students with the competencies necessary to perform a new type of professional activity. \nHaving successfully mastered technical cleaning skills, graduates will be able to ensure high standards of cleanliness and comfort. \nThe acquired knowledge directly affects guest satisfaction and the hotel's reputation.",
-      "long_desc_en": "",
+      "long_desc_en": "This vocational training program is designed to develop the competencies required to work as a housemaid in the hospitality industry. The training covers technical cleaning skills, hospitality principles, and practical tasks related to cleaning and preparing guest rooms.\n\nCompletion of the program helps participants apply standards of cleanliness and comfort in day-to-day work. These skills are directly connected with guest service quality and the reputation of a hospitality business.",
       "bullets_en": [
         "Technical cleaning skills",
         "Hospitality principles",
@@ -200,7 +200,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 43,000",
       "hours_en": "124 academic hours",
       "format_en": "In-person",
@@ -218,7 +218,7 @@
       "dates": "Срок обучения — 2 месяца; набор по мере формирования групп",
       "title_ru": "Менеджмент в сфере гостеприимства",
       "desc_ru": "Программа предлагает слушателям углубленное изучение принципов и стратегий управления в индустрии гостеприимства. Фокусируясь на развитии ключевых компетенций, курс охватывает лидерство, маркетинг, финансы и операционный менеджмент. Успешно освоив материал, выпускники будут готовы к карьере ведущих руководителей, способных эффективно развивать бизнес в этой отрасли.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предлагает углублённое изучение принципов и стратегий управления в индустрии гостеприимства. В рамках обучения рассматриваются лидерство, маркетинг, финансы и операционный менеджмент как взаимосвязанные элементы эффективного управления предприятием.\n\nПрограмма ориентирована на развитие управленческих компетенций, необходимых для принятия решений и развития бизнеса в сфере гостеприимства.",
       "bullets_ru": [
         "Управление в гостеприимстве",
         "Стратегическое планирование",
@@ -226,7 +226,7 @@
       ],
       "title_en": "Hospitality Management",
       "desc_en": "The program offers students an in-depth study of management principles and strategies in the hospitality industry. Focusing on the development of core competencies, the course covers leadership, marketing, finance, and operational management. Having successfully mastered the material, graduates will be ready for careers as leading executives capable of effectively developing business in this industry.",
-      "long_desc_en": "",
+      "long_desc_en": "The program provides an in-depth study of management principles and strategies in the hospitality industry. It covers leadership, marketing, finance, and operational management as interconnected elements of effective business management.\n\nThe program is designed to develop the management competencies required for decision-making and business development in the hospitality sector.",
       "bullets_en": [
         "Hospitality management",
         "Strategic planning",
@@ -251,7 +251,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 43,000",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
@@ -269,7 +269,7 @@
       "dates": "Срок обучения — 2 месяца; набор по мере формирования групп",
       "title_ru": "Менеджмент организации",
       "desc_ru": "Программа предназначена для универсальных управленцев, стремящихся к освоению ключевых вопросов современного менеджмента. Формируя профессиональное мышление, курс способствует глубокому пониманию сущности управленческих процессов. Успешно освоив материал, слушатели приобретут компетенции, необходимые для эффективной организации работы персонала в соответствии с целями организации.",
-      "long_desc_ru": "",
+      "long_desc_ru": "Программа предназначена для управленцев, которым необходимо системное понимание ключевых вопросов современного менеджмента. Обучение помогает развивать профессиональное управленческое мышление, понимать содержание управленческих процессов и связывать их с целями организации.\n\nОсобое внимание уделяется организации работы персонала и применению управленческих подходов для повышения согласованности и результативности деятельности организации.",
       "bullets_ru": [
         "Современное управление",
         "Профессиональное мышление",
@@ -277,7 +277,7 @@
       ],
       "title_en": "Organization Management",
       "desc_en": "The program is designed for universal managers striving to master key issues of modern management. Forming professional thinking, the course promotes a deep understanding of the essence of management processes. Having successfully mastered the material, participants will acquire the competencies necessary for the effective organization of personnel work in accordance with the organization's goals.",
-      "long_desc_en": "",
+      "long_desc_en": "The program is designed for managers who need a systematic understanding of key issues in modern management. It develops professional managerial thinking, helps participants understand management processes, and links those processes to organisational goals.\n\nParticular attention is given to organising staff work and applying management approaches to improve coordination and organisational performance.",
       "bullets_en": [
         "Modern management",
         "Professional thinking",
@@ -302,7 +302,7 @@
       "teachers_ru": "",
       "teachers_en": "",
       "official_desc_en": "",
-      "detail_status": "ОЖИДАЕТ ИСТОЧНИК / PENDING — параметры подтверждены приказом; подробный содержательный источник не предоставлен",
+      "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 25,000",
       "hours_en": "144 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
