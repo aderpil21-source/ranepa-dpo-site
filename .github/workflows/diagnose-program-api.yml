@@ -25,8 +25,13 @@ jobs:
           import json, os, urllib.request
           from datetime import datetime, timezone
           url = os.environ["API_URL"] + "?_cb=" + str(int(datetime.now(timezone.utc).timestamp()))
-          with urllib.request.urlopen(url, timeout=30) as r:
-              data = json.load(r)
+          data = {}
+          api_error = None
+          try:
+              with urllib.request.urlopen(url, timeout=30) as r:
+                  data = json.load(r)
+          except Exception as e:
+              api_error = type(e).__name__ + ": " + str(e)
           programs = data.get("programs") if isinstance(data, dict) else None
           if not isinstance(programs, list):
               programs = []
@@ -55,6 +60,7 @@ jobs:
               "programCount": len(programs),
               "topLevelKeys": sorted(data.keys()) if isinstance(data, dict) else [],
               "programKeys": sorted({k for p in programs if isinstance(p, dict) for k in p.keys()}),
+              "apiError": api_error,
               "c15": wanted,
               "sheetCsvExport": sheet_export,
           }
