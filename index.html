@@ -2166,6 +2166,14 @@
         renderGlobalAlertTicker();
         renderDocsList(globalPrograms);
 
+        if (isScheduleOverlayActive()) {
+            if (lang === 'en') {
+                loadScheduleI18n().finally(() => renderSchedule());
+            } else {
+                renderSchedule();
+            }
+        }
+
         resetMenu();
     }
 
@@ -3063,6 +3071,78 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
     let scheduleSnapshotPollTimer = null;
     let scheduleSnapshotRefreshInFlight = null;
+    let scheduleI18nData = null;
+    let scheduleI18nPromise = null;
+
+    function scheduleI18nUrl() {
+        const fiveMinuteBucket = Math.floor(Date.now() / (5 * 60 * 1000));
+        return './schedule-i18n.json?v=' + fiveMinuteBucket;
+    }
+
+    async function loadScheduleI18n() {
+        if (scheduleI18nData) return scheduleI18nData;
+        if (scheduleI18nPromise) return scheduleI18nPromise;
+
+        scheduleI18nPromise = fetch(scheduleI18nUrl(), { cache: 'no-store' })
+            .then(response => {
+                if (!response.ok) throw new Error('Schedule i18n HTTP ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if (!data || typeof data !== 'object') {
+                    throw new Error('Schedule i18n has invalid format');
+                }
+                scheduleI18nData = data;
+                return data;
+            })
+            .catch(error => {
+                console.warn('Не удалось загрузить английские переводы расписания:', error);
+                return null;
+            })
+            .finally(() => {
+                scheduleI18nPromise = null;
+            });
+
+        return scheduleI18nPromise;
+    }
+
+    function localizedScheduleValue(item, key) {
+        const raw = String(item && item[key] || '').trim();
+
+        if (currentLang === 'ru') {
+            if (raw) return raw;
+            const ruFallbacks = {
+                program: 'Программа уточняется',
+                subject: 'Тема занятия уточняется',
+                teacher: 'Преподаватель уточняется',
+                room: 'Аудитория уточняется'
+            };
+            return ruFallbacks[key] || '—';
+        }
+
+        const sections = {
+            program: 'programs',
+            subject: 'subjects',
+            teacher: 'teachers',
+            room: 'rooms'
+        };
+        const section = sections[key];
+        const translated = section && scheduleI18nData && scheduleI18nData[section]
+            ? String(scheduleI18nData[section][raw] || '').trim()
+            : '';
+
+        if (translated) return translated;
+
+        // Не подмешиваем русский контент в EN-режим, если в будущем появится
+        // новая строка расписания раньше, чем для неё будет подготовлен перевод.
+        const enFallbacks = {
+            program: 'Program translation pending',
+            subject: 'Class topic translation pending',
+            teacher: 'Instructor information pending',
+            room: 'Location translation pending'
+        };
+        return enFallbacks[key] || '—';
+    }
 
     function scheduleSnapshotUrl() {
         const minuteBucket = Math.floor(Date.now() / SCHEDULE_SNAPSHOT_POLL_MS);
@@ -3472,10 +3552,7 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
                     const program = document.createElement('div');
                     program.className = 'sch-program';
-                    program.textContent = String(
-                        item.program ||
-                        (currentLang === 'ru' ? 'Программа уточняется' : 'Program to be confirmed')
-                    );
+                    program.textContent = localizedScheduleValue(item, 'program');
 
                     const time = document.createElement('div');
                     time.className = 'sch-time';
@@ -3485,19 +3562,16 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
                     const subject = document.createElement('div');
                     subject.className = 'sch-subject';
-                    subject.textContent = String(
-                        item.subject ||
-                        (currentLang === 'ru' ? 'Тема занятия уточняется' : 'Class topic to be confirmed')
-                    );
+                    subject.textContent = localizedScheduleValue(item, 'subject');
 
                     const bottom = document.createElement('div');
                     bottom.className = 'sch-bottom';
 
                     const teacher = document.createElement('span');
-                    teacher.textContent = '👨‍🏫 ' + String(item.teacher || '—');
+                    teacher.textContent = '👨‍🏫 ' + localizedScheduleValue(item, 'teacher');
 
                     const room = document.createElement('span');
-                    room.textContent = '📍 ' + String(item.room || '—');
+                    room.textContent = '📍 ' + localizedScheduleValue(item, 'room');
 
                     bottom.append(teacher, room);
                     card.append(top, subject, bottom);
@@ -3544,8 +3618,13 @@ if (wantsNewsEditor || wantsStaffPortal) {
 
         overlay.classList.add('active');
 
-        // Если расписание уже приехало вместе с программами — открываем мгновенно, без второго fetch.
+        // Если расписание уже приехало вместе с программами — открываем без второго fetch.
+        // Для EN один раз подгружаем небольшой same-origin словарь переводов.
         if (scheduleDataLoaded) {
+            if (currentLang === 'en') {
+                container.replaceChildren(makeScheduleState(translationsHTML[currentLang].schLoading));
+                await loadScheduleI18n();
+            }
             renderSchedule();
             scheduleNextCutoffRefresh();
             refreshScheduleSnapshot({ silent: true });
@@ -3559,6 +3638,9 @@ if (wantsNewsEditor || wantsStaffPortal) {
             const data = await loadPortalData();
             window.schedules = Array.isArray(data.schedules) ? data.schedules : [];
             scheduleDataLoaded = true;
+            if (currentLang === 'en') {
+                await loadScheduleI18n();
+            }
             renderSchedule();
             scheduleNextCutoffRefresh();
             refreshScheduleSnapshot({ silent: true });
