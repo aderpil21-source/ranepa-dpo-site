@@ -19,12 +19,32 @@ jobs:
           API_URL: https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec
         run: |
           set -euo pipefail
-          settings="$(curl --fail --silent --show-error --location --max-time 45 "$API_URL?type=siteSettings")"
-          protected="$(curl --fail --silent --show-error --location --max-time 45 -H 'Content-Type: text/plain;charset=utf-8' --data '{"action":"adminHistory","token":""}' "$API_URL")"
-          python - "$settings" "$protected" <<'PY'
+          settings_file="$(mktemp)"
+          protected_file="$(mktemp)"
+
+          curl --fail --silent --show-error --location --max-time 45 \
+            "$API_URL?type=siteSettings" --output "$settings_file"
+
+          curl --fail --silent --show-error --location --max-time 45 \
+            -H 'Content-Type: text/plain;charset=utf-8' \
+            --data '{"action":"adminHistory","token":""}' \
+            "$API_URL" --output "$protected_file"
+
+          python - "$settings_file" "$protected_file" <<'PY'
           import json, sys
-          settings = json.loads(sys.argv[1])
-          protected = json.loads(sys.argv[2])
+          from pathlib import Path
+
+          settings_path = Path(sys.argv[1])
+          protected_path = Path(sys.argv[2])
+          print("settings bytes:", settings_path.stat().st_size)
+          print("protected bytes:", protected_path.stat().st_size)
+
+          settings = json.loads(settings_path.read_text(encoding="utf-8"))
+          protected = json.loads(protected_path.read_text(encoding="utf-8"))
+
+          print("settings keys:", sorted(settings.keys()))
+          print("protected:", protected)
+
           assert settings.get("ok") is True, settings
           payload = settings.get("settings")
           assert isinstance(payload, dict), settings
@@ -33,7 +53,6 @@ jobs:
           assert isinstance(payload.get("content"), dict), settings
           assert protected.get("ok") is False, protected
           assert protected.get("code") == "SESSION_EXPIRED", protected
+
           print("ADMIN_CMS_DEPLOYED_OK")
-          print("settings version:", payload.get("version"))
-          print("protected route:", protected.get("code"))
           PY
