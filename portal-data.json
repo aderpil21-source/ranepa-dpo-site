@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T12:44:53.658382+00:00",
+  "generatedAt": "2026-09-26T13:09:26.672064+00:00",
   "programs": [
     {
       "id": "c14",
@@ -1036,7 +1036,7 @@
       "tab": "tab-pk",
       "sector": "prof",
       "price": "37 000 ₽",
-      "hours": "98 ч. ⚡",
+      "hours": "98 ч.",
       "format": "Очно-заочная с применением ЭО и ДОТ",
       "type": "Повышение квалификации",
       "dates": "Срок обучения — 1,5 месяца; набор по мере формирования групп",
@@ -1077,7 +1077,7 @@
       "official_desc_en": "",
       "detail_status": "РЕДАКТОРСКОЕ / EDITORIAL — длинное RU/EN-описание подготовлено только на основе текущей карточки и подтверждённых параметров; официальный содержательный источник пока не предоставлен.",
       "price_en": "RUB 37,000",
-      "hours_en": "98 academic hours ⚡",
+      "hours_en": "98 academic hours",
       "format_en": "Blended, with e-learning and distance learning technologies",
       "type_en": "Advanced training",
       "dates_en": "Duration: 1.5 months; enrolment as groups are formed"
