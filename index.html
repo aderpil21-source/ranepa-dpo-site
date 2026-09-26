@@ -444,7 +444,6 @@
             overflow: visible;
             pointer-events: none;
         }
-        .owl-animated,
         .owl-poster {
             position: absolute;
             left: 50%;
@@ -458,30 +457,15 @@
                 drop-shadow(0 18px 20px rgba(0,0,0,.62))
                 drop-shadow(0 3px 3px rgba(0,0,0,.36));
         }
-        .owl-animated {
-            width: 287px;
-            height: 500px;
-            max-height: 260px;
-            opacity: 0;
-            transition: opacity .28s ease;
-        }
         .owl-poster {
             width: 164px;
             height: 224px;
             opacity: 1;
             transition: opacity .28s ease;
         }
-        .owl-media-animated-ready .owl-animated { opacity: 1; }
-        .owl-media-animated-ready .owl-poster { opacity: 0; }
-        .owl-media-static .owl-animated,
-        .owl-media-failed .owl-animated { display: none; }
         .owl-media-static .owl-poster,
         .owl-media-failed .owl-poster { opacity: 1; }
 
-        @media (prefers-reduced-motion: reduce) {
-            .owl-animated { display: none !important; }
-            .owl-poster { opacity: 1 !important; }
-        }
 
         .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -1647,16 +1631,7 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
 
-            <div class="owl-media-stage" id="owlMediaStage" aria-hidden="true">
-                <img
-                    class="owl-animated"
-                    id="owlAnimated"
-                    src="./img/owl-main.webp"
-                    alt=""
-                    draggable="false"
-                    decoding="async"
-                    fetchpriority="low"
-                >
+            <div class="owl-media-stage owl-media-static" id="owlMediaStage" aria-hidden="true">
                 <img
                     class="owl-poster"
                     id="owlPoster"
@@ -3678,51 +3653,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     // Сова по ТЗ работает полностью без звука.
     function playHoot() {}
 
-    const OWL_MEDIA = {
-        animated: './img/owl-main.webp'
-    };
-    let owlMediaMode = 'static';
-
-    function detectOwlMediaMode() {
-        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            return 'static';
-        }
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (connection && connection.saveData) return 'static';
-
-        const memory = Number(navigator.deviceMemory || 0);
-        const cores = Number(navigator.hardwareConcurrency || 0);
-        if ((memory && memory <= 2) || (cores && cores <= 2)) return 'static';
-        return 'animated';
-    }
-
+    // До появления настоящего фотореалистичного видео показываем только качественный статичный fallback.
     function initOwlMedia() {
         const container = document.getElementById('owlContainer');
-        const animated = document.getElementById('owlAnimated');
-        if (!container || !animated) return;
-
-        owlMediaMode = detectOwlMediaMode();
-        container.classList.remove('owl-media-animated-ready', 'owl-media-failed', 'owl-media-static');
-
-        if (owlMediaMode === 'static') {
-            container.classList.add('owl-media-static');
-            return;
-        }
-
-        const revealAnimated = () => {
-            container.classList.remove('owl-media-failed', 'owl-media-static');
-            container.classList.add('owl-media-animated-ready');
-        };
-
-        if (animated.complete && animated.naturalWidth > 0) {
-            revealAnimated();
-        } else {
-            animated.addEventListener('load', revealAnimated, { once: true });
-            animated.addEventListener('error', () => {
-                container.classList.remove('owl-media-animated-ready');
-                container.classList.add('owl-media-failed');
-            }, { once: true });
-        }
+        if (container) container.classList.add('owl-media-static');
     }
 
     let scrollMiniTimeout;
