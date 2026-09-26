@@ -444,10 +444,23 @@
             overflow: visible;
             pointer-events: none;
         }
-        .owl-poster {
+        .owl-media-stage {
+            transform-origin: 50% 100%;
+            animation: owlBreathV2 5.2s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes owlBreathV2 {
+            0%, 100% { transform: scale3d(1, 1, 1); }
+            45%      { transform: scale3d(1.006, 1.016, 1); }
+            58%      { transform: scale3d(1.004, 1.010, 1); }
+        }
+
+        .owl-frame {
             position: absolute;
             left: 50%;
             bottom: 0;
+            width: 168px;
+            height: 224px;
             object-fit: contain;
             transform: translateX(-50%);
             pointer-events: none;
@@ -456,16 +469,17 @@
             filter:
                 drop-shadow(0 18px 20px rgba(0,0,0,.62))
                 drop-shadow(0 3px 3px rgba(0,0,0,.36));
+            transition: opacity 45ms linear;
         }
-        .owl-poster {
-            width: 164px;
-            height: 224px;
-            opacity: 1;
-            transition: opacity .28s ease;
-        }
-        .owl-media-static .owl-poster,
-        .owl-media-failed .owl-poster { opacity: 1; }
+        .owl-frame-open { opacity: 1; }
+        .owl-frame-closed { opacity: 0; }
+        .owl-container.owl-blink .owl-frame-open { opacity: 0; }
+        .owl-container.owl-blink .owl-frame-closed { opacity: 1; }
 
+        @media (prefers-reduced-motion: reduce) {
+            .owl-media-stage { animation: none !important; }
+            .owl-frame-closed { display: none !important; }
+        }
 
         .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
         .owl-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
@@ -542,6 +556,7 @@
                 pointer-events: auto; z-index: 10000;
             }
             .owl-walker { display: none; }
+            .owl-media-stage { display: none !important; }
             .mobile-chat-icon { display: block; width: 30px; height: 30px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
             .owl-bubble { right: 0; left: auto; bottom: 72px; transform: translateX(0) scale(0.5); }
             .owl-bubble.show { transform: translateX(0) scale(1); }
@@ -1631,14 +1646,24 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
 
-            <div class="owl-media-stage owl-media-static" id="owlMediaStage" aria-hidden="true">
+            <div class="owl-media-stage" id="owlMediaStage" aria-hidden="true">
                 <img
-                    class="owl-poster"
-                    id="owlPoster"
-                    src="./img/owl-professional.webp"
+                    class="owl-frame owl-frame-open"
+                    id="owlFrameOpen"
+                    src="./img/owl-v2-open.webp"
                     alt=""
                     draggable="false"
                     decoding="async"
+                    fetchpriority="low"
+                >
+                <img
+                    class="owl-frame owl-frame-closed"
+                    id="owlFrameClosed"
+                    src="./img/owl-v2-closed.webp"
+                    alt=""
+                    draggable="false"
+                    decoding="async"
+                    fetchpriority="low"
                 >
             </div>
 
@@ -3653,10 +3678,54 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     // Сова по ТЗ работает полностью без звука.
     function playHoot() {}
 
-    // До появления настоящего фотореалистичного видео показываем только качественный статичный fallback.
+    let owlBlinkTimer = null;
+    let owlBlinkResetTimer = null;
+
+    function owlMotionReduced() {
+        return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+
+    function scheduleOwlBlink() {
+        clearTimeout(owlBlinkTimer);
+        if (owlMotionReduced() || isMobile()) return;
+
+        const delay = 4800 + Math.random() * 6200;
+        owlBlinkTimer = setTimeout(() => {
+            const sprite = document.getElementById('owlSprite');
+            const container = document.getElementById('owlContainer');
+            if (!sprite || !container || !container.classList.contains('visible')) {
+                scheduleOwlBlink();
+                return;
+            }
+
+            sprite.classList.add('owl-blink');
+            clearTimeout(owlBlinkResetTimer);
+            owlBlinkResetTimer = setTimeout(() => {
+                sprite.classList.remove('owl-blink');
+
+                // Иногда естественный двойной морг, но не чаще примерно 1 раза из 6.
+                if (Math.random() < 0.16) {
+                    setTimeout(() => {
+                        sprite.classList.add('owl-blink');
+                        setTimeout(() => sprite.classList.remove('owl-blink'), 115);
+                    }, 165);
+                }
+                scheduleOwlBlink();
+            }, 135);
+        }, delay);
+    }
+
     function initOwlMedia() {
-        const container = document.getElementById('owlContainer');
-        if (container) container.classList.add('owl-media-static');
+        const openFrame = document.getElementById('owlFrameOpen');
+        const closedFrame = document.getElementById('owlFrameClosed');
+        if (!openFrame || !closedFrame) return;
+
+        // Оба файла локальные и маленькие; декодируем заранее, чтобы первый морг не мигнул пустотой.
+        const ready = [];
+        if (typeof openFrame.decode === 'function') ready.push(openFrame.decode().catch(() => {}));
+        if (typeof closedFrame.decode === 'function') ready.push(closedFrame.decode().catch(() => {}));
+
+        Promise.all(ready).finally(scheduleOwlBlink);
     }
 
     let scrollMiniTimeout;
