@@ -4119,16 +4119,25 @@ if (wantsNewsEditor) {
                 await loadOwlI18n();
             }
 
-            const localizedTitle = escapeOwlText(localizedOwlField(foundFile, 'title'));
-            const localizedComment = localizedOwlField(foundFile, 'comment');
+            const owlAdminRow = siteAdminMode && currentLang === 'ru'
+                ? Number(foundFile._adminRow || 0)
+                : 0;
+            const localizedTitleText = escapeOwlText(localizedOwlField(foundFile, 'title'));
+            const localizedCommentText = localizedOwlField(foundFile, 'comment');
+            const localizedTitle = owlAdminRow
+                ? `<span data-site-edit-key="owl:${owlAdminRow}:title">${localizedTitleText}</span>`
+                : localizedTitleText;
+            const localizedComment = localizedCommentText && owlAdminRow
+                ? `<span data-site-edit-key="owl:${owlAdminRow}:comment">${escapeOwlText(localizedCommentText).replace(/\n/g, '<br>')}</span>`
+                : escapeOwlText(localizedCommentText).replace(/\n/g, '<br>');
 
             setTimeout(() => {
                 if (foundFile.isPublished) {
                     let responseMsg =
                         formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: localizedTitle }) +
                         `<br><br><a href="${foundFile.url}" target="_blank" rel="noopener" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">${translationsHTML[currentLang].owlMaterialsOpen}</a>`;
-                    if (localizedComment) {
-                        responseMsg += `<br><br>${translationsHTML[currentLang].owlTeacherComment}<br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${escapeOwlText(localizedComment).replace(/\n/g, '<br>')}</i>`;
+                    if (localizedCommentText) {
+                        responseMsg += `<br><br>${translationsHTML[currentLang].owlTeacherComment}<br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${localizedComment}</i>`;
                     }
                     responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlMaterialsUpdated} ${foundFile.date}</span>`;
                     addBotMsg(responseMsg);
@@ -5451,6 +5460,17 @@ async function saveSiteTextElement(el) {
                 if (field === 'teacher') text = text.replace(/^👨‍🏫\s*/, '').trim();
                 if (field === 'room') text = text.replace(/^📍\s*/, '').trim();
                 await siteAdminDirectUpdate('schedule', field, {row:row}, text, 'Расписание, строка ' + row + ': ' + field);
+                handled = true;
+            }
+        }
+
+        if (!handled) {
+            m = key.match(/^custom:owl:(\d+):(title|comment)$/);
+            if (m) {
+                if (lang !== 'ru') throw new Error('Материалы Совы редактируются в русской версии сайта');
+                const row = Number(m[1]);
+                const field = m[2];
+                await siteAdminDirectUpdate('owl', field, {row:row}, text, 'Материал Совы, строка ' + row + ': ' + field);
                 handled = true;
             }
         }
