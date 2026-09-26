@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-26T09:36:00.000Z",
+  "generatedAt": "2026-09-26T11:13:23.580Z",
   "programs": [
     {
       "id": "c14",
@@ -2802,6 +2802,61 @@
       "format_en": "To be confirmed",
       "type_en": "Advanced training",
       "dates_en": "4 September 2026 – 8 October 2026"
+    },
+    {
+      "id": "c55",
+      "tab": "tab-pk",
+      "sector": "biz",
+      "price": "16 000 ₽",
+      "hours": "40 ч.",
+      "format": "Очно-заочная с применением ЭО и ДОТ",
+      "type": "Повышение квалификации",
+      "dates": "Старт 05.10.2026; срок обучения — 1 месяц",
+      "title_ru": "Лидерство и личная эффективность руководителя",
+      "desc_ru": "Практико-ориентированная программа для руководителей всех уровней и специалистов кадрового резерва. Участники развивают управленческую эффективность через диагностику собственного стиля, целеполагание, делегирование, эмоциональный интеллект, профилактику выгорания и персональный план развития.",
+      "long_desc_ru": "Программа ориентирована на руководителей всех уровней и специалистов кадрового резерва и построена вокруг практических управленческих задач. По опубликованному материалу Центра более 70% учебного времени отводится тренингам, деловым играм и разбору реальных бизнес-кейсов. Перед обучением предусмотрена диагностика управленческого потенциала, а содержание может адаптироваться под особенности конкретной группы.\n\nОбучение объединяет пять взаимосвязанных направлений: диагностику текущего стиля управления; целеполагание, тайм-менеджмент и делегирование; управление вниманием и профилактику профессионального выгорания; применение эмоционального интеллекта в коммуникации с командой в стрессовых условиях; разработку пошагового плана личностно-профессионального развития.\n\nПо итогам программы слушатели получают инструменты для более уверенного управления командой, мотивации сотрудников, достижения стратегических целей организации и поддержания собственной профессиональной устойчивости.",
+      "bullets_ru": [
+        "Диагностика управленческого стиля",
+        "Целеполагание, тайм-менеджмент и делегирование",
+        "Управление вниманием и профилактика выгорания",
+        "Эмоциональный интеллект и командные коммуникации",
+        "План личностно-профессионального развития"
+      ],
+      "title_en": "Leadership and Personal Effectiveness for Managers",
+      "desc_en": "A practice-oriented program for managers at all levels and members of management talent pools. Participants develop managerial effectiveness through leadership-style diagnostics, goal setting, delegation, emotional intelligence, burnout prevention, and a personal development plan.",
+      "long_desc_en": "The program is designed for managers at all levels and members of management talent pools and is built around practical management challenges. According to the Center's published material, more than 70% of study time is devoted to training exercises, business simulations, and analysis of real business cases. The program also includes an initial assessment of managerial potential, and the content may be adapted to the needs of a particular group.\n\nThe program brings together five connected areas: assessment of the participant's current management style; goal setting, time management, and delegation; attention management and prevention of professional burnout; the use of emotional intelligence in communication with teams under stress; and the development of a step-by-step personal and professional development plan.\n\nUpon completion, participants gain tools for more confident team management, employee motivation, achievement of strategic organisational goals, and maintaining their own professional resilience.",
+      "bullets_en": [
+        "Management style diagnostics",
+        "Goal setting, time management and delegation",
+        "Attention management and burnout prevention",
+        "Emotional intelligence and team communication",
+        "Personal and professional development plan"
+      ],
+      "pdf_link": "",
+      "active": true,
+      "official_desc_ru": "",
+      "source_file": "Приказ филиала №02-00029/122 от 24.02.2026; News ID 6f70c10a-8079-4159-b6f5-318522d8c2da",
+      "source_pages": "Приказ: стр. 4; News: опубликовано 19.09.2026",
+      "source_status": "Два источника. Приказ подтверждает: повышение квалификации, 40 часов, 1 месяц, очно-заочная форма с ЭО и ДОТ, 16 000 ₽. Опубликованный материал News подтверждает старт 05.10.2026, аудиторию, практико-ориентированный формат, 5 модулей и заявленные результаты. Тег News «Профессиональная переподготовка» противоречит тексту новости и приказу; тип программы установлен по приказу и тексту новости как «Повышение квалификации». Утверждённая ДПП/расписание в пакете отсутствуют.",
+      "audience_ru": "Руководители всех уровней и специалисты кадрового резерва.",
+      "audience_en": "Managers at all levels and members of management talent pools.",
+      "goal_ru": "Дать слушателям персональный практический инструментарий для повышения управленческой эффективности.",
+      "goal_en": "To provide participants with a practical, personalised toolkit for improving managerial effectiveness.",
+      "outcomes_ru": "По итогам программы слушатели смогут увереннее управлять командой; применять инструменты мотивации сотрудников; использовать эмоциональный интеллект в стрессовых коммуникациях; выстраивать целеполагание, тайм-менеджмент и делегирование; применять техники профилактики профессионального выгорания; разработать пошаговый план личностно-профессионального развития; работать над достижением стратегических целей организации с сохранением собственной профессиональной устойчивости.",
+      "outcomes_en": "Upon completion, participants will be able to manage teams more confidently; apply employee motivation tools; use emotional intelligence in stressful communication; improve goal setting, time management, and delegation; apply approaches to preventing professional burnout; develop a step-by-step personal and professional development plan; and work towards strategic organisational goals while maintaining their own professional resilience.",
+      "topics_ru": "Диагностика: оценка текущего стиля управления | Целеполагание: тайм-менеджмент и делегирование полномочий | Энергия: управление фокусом внимания и профилактика выгорания | Коммуникации: эмоциональный интеллект в управлении собой и командой | Развитие: пошаговый план личностно-профессионального развития",
+      "topics_en": "Diagnostics: assessment of current management style | Goal setting: time management and delegation | Energy: attention management and burnout prevention | Communication: emotional intelligence in self-management and team leadership | Development: a step-by-step personal and professional development plan",
+      "document_ru": "",
+      "document_en": "",
+      "teachers_ru": "",
+      "teachers_en": "",
+      "official_desc_en": "",
+      "detail_status": "ЧАСТИЧНО / PARTIAL — параметры подтверждены приказом; содержание, аудитория, старт и результаты подтверждены опубликованным материалом Центра; утверждённая ДПП, расписание, преподаватели и документ по итогам не предоставлены",
+      "price_en": "RUB 16,000",
+      "hours_en": "40 academic hours",
+      "format_en": "Blended, with e-learning and distance learning technologies",
+      "type_en": "Advanced training",
+      "dates_en": "Starts 5 October 2026; duration: 1 month"
     }
   ]
 }
