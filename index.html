@@ -1603,8 +1603,8 @@
     let scheduleRefreshTimer = null;
     let portalRefreshStarted = false;
 
-    const PORTAL_BROWSER_CACHE_KEY = 'ranepa_portal_data_v1';
-    const PORTAL_BROWSER_CACHE_TTL = 5 * 60 * 1000;
+    const PORTAL_BROWSER_CACHE_KEY = 'ranepa_portal_data_v2';
+    const PORTAL_BROWSER_CACHE_TTL = 60 * 1000;
     const OWL_FILES_SNAPSHOT_POLL_MS = 60 * 1000;
 
     let owlFilesSnapshotPollTimer = null;
@@ -1739,9 +1739,9 @@
         if (portalRefreshStarted) return;
         portalRefreshStarted = true;
 
-        const fiveMinuteBucket = Math.floor(Date.now() / (5 * 60 * 1000));
+        const minuteBucket = Math.floor(Date.now() / (60 * 1000));
 
-        fetch('./portal-data.json?v=' + fiveMinuteBucket)
+        fetch('./portal-data.json?v=' + minuteBucket, { cache: 'no-store' })
             .then(response => {
                 if (!response.ok) throw new Error('Local data HTTP ' + response.status);
                 return response.json();
