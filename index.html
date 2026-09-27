@@ -4649,7 +4649,15 @@ if (wantsNewsEditor) {
             return;
         }
 
-        const topicResolution = owlTopicProgramResult(text);
+        const hasFactQuestion = owlRequestedFacets(text).length > 0;
+        const isProgramDiscovery =
+            owlIntent('programs', text) ||
+            /(^|\s)(что есть|что у вас есть|покажи|найди|подбери|варианты)(\s|$)/i.test(owlSmartNormalize(text));
+
+        const topicResolution = (!hasFactQuestion && isProgramDiscovery)
+            ? owlTopicProgramResult(text)
+            : null;
+
         if (topicResolution && topicResolution.handled) {
             await presentOwlLocal(topicResolution, text);
             return;
