@@ -3,6 +3,8 @@
 <head>
    <meta charset="UTF-8">
     <title data-i18n="pageTitle">Доп образование и профпереподготовка в Калининграде | Западный филиал РАНХиГС</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="./favicon.png">
     <link rel="preload" href="./portal-snapshot.js" as="script">
@@ -1639,7 +1641,7 @@
         <p data-i18n="heroDesc">Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.</p>
     </section>
 
-    <div class="container" id="programsSection">
+    <div class="container" id="programsSection" role="main" aria-label="Каталог образовательных программ">
 
         <div class="tabs-nav-wrapper">
             <div class="tabs-nav">
@@ -1660,8 +1662,8 @@
             </div>
             
             <div class="filter-group">
-                <label data-i18n="filterSort">Сортировка</label>
-                <select id="filterSort">
+                <label for="filterSort" data-i18n="filterSort">Сортировка</label>
+                <select id="filterSort" aria-label="Сортировка программ">
                     <option value="alpha_asc" data-i18n="sortAlphaAsc">По алфавиту (А-Я)</option>
                     <option value="alpha_desc" data-i18n="sortAlphaDesc">По алфавиту (Я-А)</option>
                     <option value="price_asc" data-i18n="sortPriceAsc">Сначала дешевле</option>
@@ -1676,8 +1678,8 @@
                 <input type="number" id="filterMaxPrice" placeholder="без ограничения" min="0" step="500" data-i18n="filterNoLimit">
             </div>
             <div class="filter-group">
-                <label data-i18n="filterDuration">Длительность</label>
-                <select id="filterDuration">
+                <label for="filterDuration" data-i18n="filterDuration">Длительность</label>
+                <select id="filterDuration" aria-label="Длительность программы">
                     <option value="" data-i18n="filterDurAny">Любая</option>
                     <option value="short" data-i18n="filterDurShort">до 50 ч.</option>
                     <option value="mid" data-i18n="filterDurMid">50–200 ч.</option>
@@ -1731,7 +1733,7 @@
             <!-- Документ 1 -->
             <div class="doc-card" onclick="openDocLightbox('img/doc-1.jpg', translationsHTML[currentLang].docAdvanced)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-1.jpg" alt="Удостоверение о повышении квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-1.jpg" loading="lazy" decoding="async" fetchpriority="low" alt="Удостоверение о повышении квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
                 <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docAdvanced">Удостоверение о повышении квалификации</h4>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образца</p>
@@ -1740,7 +1742,7 @@
             <!-- Документ 2 -->
             <div class="doc-card" onclick="openDocLightbox('img/doc-2.jpg', translationsHTML[currentLang].docAdvanced)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-2.jpg" alt="Повышение квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-2.jpg" loading="lazy" decoding="async" fetchpriority="low" alt="Повышение квалификации" data-i18n-alt="docAdvanced" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
                 <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docAdvancedShort">Повышение квалификации</h4>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docOfficialCertificate">Официальное удостоверение</p>
@@ -1749,7 +1751,7 @@
             <!-- Документ 3 -->
             <div class="doc-card" onclick="openDocLightbox('img/doc-3.jpg', translationsHTML[currentLang].docCertificate)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-3.jpg" alt="Сертификат" data-i18n-alt="docCertificate" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-3.jpg" loading="lazy" decoding="async" fetchpriority="low" alt="Сертификат" data-i18n-alt="docCertificate" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
                 <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docCertificate">Сертификат</h4>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStateStandard">Государственный стандарт</p>
@@ -1758,7 +1760,7 @@
             <!-- Документ 4 -->
             <div class="doc-card" onclick="openDocLightbox('img/doc-4.jpg', translationsHTML[currentLang].docRetraining)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-4.jpg" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-4.jpg" loading="lazy" decoding="async" fetchpriority="low" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
                 <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docRetraining">Диплом о профессиональной переподготовке</h4>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образцан</p>
@@ -1767,7 +1769,7 @@
             <!-- Документ 5 -->
             <div class="doc-card" onclick="openDocLightbox('img/doc-5.jpg', translationsHTML[currentLang].docRetraining)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
-                    <img src="img/doc-5.jpg" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
+                    <img src="img/doc-5.jpg" loading="lazy" decoding="async" fetchpriority="low" alt="Диплом о профессиональной переподготовке" data-i18n-alt="docRetraining" style="width: 100%; height: 100%; object-fit: contain; padding: 10px; box-sizing: border-box;">
                 </div>
                 <h4 style="font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;" data-i18n="docRetraining">Диплом о профессиональной переподготовке</h4>
                 <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="docStandardSample">Образец установленного образца</p>
