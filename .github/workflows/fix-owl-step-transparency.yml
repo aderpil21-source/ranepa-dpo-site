@@ -1,0 +1,79 @@
+name: Fix owl step transparency
+
+on:
+  push:
+    branches:
+      - feature/owl-v2-realistic
+    paths:
+      - .github/workflows/fix-owl-step-transparency.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/owl-v2-realistic
+      - name: Remove only edge-connected light background
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from PIL import Image
+          from collections import deque
+          from pathlib import Path
+
+          for path in sorted(Path("img").glob("owl-step-*.webp")):
+              im = Image.open(path).convert("RGBA")
+              px = im.load()
+              w,h = im.size
+              seen = bytearray(w*h)
+              q = deque()
+
+              def bg(x,y):
+                  r,g,b,a = px[x,y]
+                  # Generated background is white/very light neutral.
+                  # Only pixels connected to an outer edge are eligible,
+                  # so white feathers and eyes inside the owl stay intact.
+                  return a > 0 and r >= 225 and g >= 225 and b >= 225 and max(r,g,b)-min(r,g,b) <= 24
+
+              for x in range(w):
+                  if bg(x,0): q.append((x,0))
+                  if bg(x,h-1): q.append((x,h-1))
+              for y in range(h):
+                  if bg(0,y): q.append((0,y))
+                  if bg(w-1,y): q.append((w-1,y))
+
+              while q:
+                  x,y=q.popleft()
+                  i=y*w+x
+                  if seen[i] or not bg(x,y): continue
+                  seen[i]=1
+                  r,g,b,a=px[x,y]
+                  # feather edge anti-alias: fade near-white edge instead of hard clipping
+                  lum=(r+g+b)/3
+                  alpha=0 if lum >= 242 else max(0, min(255, int((242-lum)/17*255)))
+                  px[x,y]=(r,g,b,alpha)
+                  if x: q.append((x-1,y))
+                  if x+1<w: q.append((x+1,y))
+                  if y: q.append((x,y-1))
+                  if y+1<h: q.append((x,y+1))
+
+              im.save(path, "WEBP", quality=82, method=6, exact=True)
+              print(path, im.size)
+
+          PY
+      - name: Commit fixed frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img/owl-step-*.webp
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: remove white backgrounds from owl step frames"
+          git push origin HEAD:feature/owl-v2-realistic
