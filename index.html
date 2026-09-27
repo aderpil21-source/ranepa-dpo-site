@@ -3954,7 +3954,10 @@
                 scheduleDataLoaded = true;
             }
 
-            globalAlert = data.currentAlert && data.currentAlert.text ? data.currentAlert : null;
+            // Не поднимаем уведомление из portal-data/snapshot здесь:
+            // эти данные могут быть устаревшими. Live-уведомление обслуживает
+            // только portal-live-alert.js, который сверяется с Apps Script.
+            globalAlert = null;
             renderGlobalAlertTicker();
 
             let programs = Array.isArray(data.programs)
