@@ -448,7 +448,7 @@
             transform-origin: 50% 100%;
             animation:
                 owlBreathV2 6.8s ease-in-out infinite,
-                owlBranchGlide 22s cubic-bezier(.45, 0, .55, 1) infinite;
+                owlBranchGlide 11s cubic-bezier(.22, .61, .36, 1) infinite;
             will-change: transform, left;
         }
         @keyframes owlBreathV2 {
@@ -456,9 +456,29 @@
             50% { transform: translateY(-1.4px) scale(1.008); }
         }
         @keyframes owlBranchGlide {
-            0%, 10%   { left: var(--owl-start-left, 58px); }
-            44%, 56%  { left: var(--owl-end-left, 58px); }
-            90%, 100% { left: var(--owl-start-left, 58px); }
+            0%, 6%    { left: var(--owl-start-left, 58px); }
+            46%, 54%  { left: var(--owl-end-left, 58px); }
+            94%, 100% { left: var(--owl-start-left, 58px); }
+        }
+
+        .owl-media-stage::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 8px;
+            width: 116px;
+            height: 14px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,.22) 0%, rgba(0,0,0,.10) 45%, rgba(0,0,0,0) 72%);
+            filter: blur(4px);
+            opacity: .55;
+            pointer-events: none;
+            animation: owlGlideShadow 11s cubic-bezier(.22, .61, .36, 1) infinite;
+        }
+        @keyframes owlGlideShadow {
+            0%, 6%, 94%, 100% { transform: translateX(-50%) scaleX(.92); opacity: .42; }
+            46%, 54% { transform: translateX(-50%) scaleX(1.08); opacity: .58; }
         }
 
         .owl-frame {
