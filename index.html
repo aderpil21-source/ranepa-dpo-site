@@ -3913,14 +3913,16 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const stage = document.getElementById('owlMediaStage');
         if (!container || !stage || isMobile()) return;
 
-        const startLeft = 58;
-        const rightPadding = 24;
+        // Use almost the full visible branch length. The owl stays slightly
+        // inside both ends so its body does not clip against the viewport.
+        const startLeft = 6;
+        const rightPadding = 6;
         const availableTrack = Math.max(
             0,
             container.clientWidth - stage.offsetWidth - startLeft - rightPadding
         );
 
-        const travelDistance = Math.round(availableTrack * 0.70);
+        const travelDistance = Math.round(availableTrack);
         const endLeft = startLeft + travelDistance;
 
         stage.style.setProperty('--owl-start-left', startLeft + 'px');
