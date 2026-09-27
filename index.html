@@ -447,7 +447,8 @@
         .owl-media-stage {
             transform-origin: 50% 100%;
             animation: owlBreathV2 5.2s ease-in-out infinite;
-            will-change: transform;
+            will-change: transform, left;
+            transition: left 190ms cubic-bezier(.22,.61,.36,1);
         }
         @keyframes owlBreathV2 {
             0%, 100% { transform: scale3d(1, 1, 1); }
@@ -1715,7 +1716,16 @@
         </button>
     </div>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            clearTimeout(owlWalkTimer);
+            if (owlWalking) cancelOwlWalk();
+        } else {
+            scheduleOwlWalk();
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
             const fakeFieldName = 'hp_' + Math.random().toString(36).substring(2, 8);
             sessionStorage.setItem('trap_field', fakeFieldName);
 
@@ -3680,9 +3690,51 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
     let owlBlinkTimer = null;
     let owlBlinkResetTimer = null;
+    let owlWalkTimer = null;
+    let owlWalking = false;
+    let owlWalkSequence = 0;
+    let owlWalkOffset = 0;
+    let owlWalkFramesReady = false;
+
+    const OWL_IDLE_FRAME = './img/owl-v2-open.webp';
+    const OWL_WALK_FRAMES = [
+        './img/owl-step-1.webp',
+        './img/owl-step-2.webp',
+        './img/owl-step-3.webp',
+        './img/owl-step-4.webp'
+    ];
+    const OWL_STAGE_LEFT = 58;
 
     function owlMotionReduced() {
         return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+
+    function owlWalkingLimited() {
+        if (owlMotionReduced() || isMobile()) return true;
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection && connection.saveData) return true;
+        const memory = Number(navigator.deviceMemory || 0);
+        const cores = Number(navigator.hardwareConcurrency || 0);
+        return (memory && memory <= 2) || (cores && cores <= 2);
+    }
+
+    function owlSleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function owlCanWalk() {
+        const container = document.getElementById('owlContainer');
+        const chat = document.getElementById('owlChat');
+        return !!(
+            owlWalkFramesReady &&
+            !owlWalkingLimited() &&
+            container &&
+            container.classList.contains('visible') &&
+            !container.classList.contains('scroll-mini') &&
+            chat &&
+            !chat.classList.contains('active') &&
+            document.visibilityState !== 'hidden'
+        );
     }
 
     function scheduleOwlBlink() {
@@ -3693,7 +3745,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         owlBlinkTimer = setTimeout(() => {
             const sprite = document.getElementById('owlSprite');
             const container = document.getElementById('owlContainer');
-            if (!sprite || !container || !container.classList.contains('visible')) {
+            if (!sprite || !container || !container.classList.contains('visible') || owlWalking) {
                 scheduleOwlBlink();
                 return;
             }
@@ -3715,6 +3767,112 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         }, delay);
     }
 
+    function scheduleOwlWalk() {
+        clearTimeout(owlWalkTimer);
+        if (owlWalkingLimited()) return;
+
+        const delay = 8000 + Math.random() * 7000;
+        owlWalkTimer = setTimeout(() => {
+            if (owlCanWalk()) {
+                runOwlWalk();
+            } else {
+                scheduleOwlWalk();
+            }
+        }, delay);
+    }
+
+    function cancelOwlWalk() {
+        owlWalkSequence += 1;
+        owlWalking = false;
+        const sprite = document.getElementById('owlSprite');
+        const openFrame = document.getElementById('owlFrameOpen');
+        const stage = document.getElementById('owlMediaStage');
+        if (sprite) sprite.classList.remove('owl-blink');
+        if (openFrame) openFrame.src = OWL_IDLE_FRAME;
+        if (stage) stage.style.left = (OWL_STAGE_LEFT + owlWalkOffset) + 'px';
+    }
+
+    async function runOwlWalk() {
+        if (!owlCanWalk() || owlWalking) {
+            scheduleOwlWalk();
+            return;
+        }
+
+        const openFrame = document.getElementById('owlFrameOpen');
+        const stage = document.getElementById('owlMediaStage');
+        const sprite = document.getElementById('owlSprite');
+        if (!openFrame || !stage || !sprite) return;
+
+        owlWalking = true;
+        sprite.classList.remove('owl-blink');
+        clearTimeout(owlBlinkTimer);
+        clearTimeout(owlBlinkResetTimer);
+
+        const seq = ++owlWalkSequence;
+        let direction;
+        if (owlWalkOffset >= 28) direction = -1;
+        else if (owlWalkOffset <= -28) direction = 1;
+        else direction = Math.random() < 0.5 ? -1 : 1;
+
+        const start = owlWalkOffset;
+        const target = Math.max(-28, Math.min(28, start + direction * 28));
+        const frames = direction > 0
+            ? OWL_WALK_FRAMES
+            : [OWL_WALK_FRAMES[2], OWL_WALK_FRAMES[3], OWL_WALK_FRAMES[0], OWL_WALK_FRAMES[1]];
+
+        const holds = [185, 205, 185, 245];
+
+        for (let i = 0; i < frames.length; i++) {
+            if (seq !== owlWalkSequence || !owlCanWalk()) {
+                cancelOwlWalk();
+                scheduleOwlBlink();
+                scheduleOwlWalk();
+                return;
+            }
+
+            openFrame.src = frames[i];
+            const progress = (i + 1) / frames.length;
+            const nextOffset = start + (target - start) * progress;
+            stage.style.left = (OWL_STAGE_LEFT + nextOffset) + 'px';
+            await owlSleep(holds[i]);
+        }
+
+        if (seq !== owlWalkSequence) return;
+
+        owlWalkOffset = target;
+        openFrame.src = OWL_IDLE_FRAME;
+        stage.style.left = (OWL_STAGE_LEFT + owlWalkOffset) + 'px';
+        owlWalking = false;
+
+        scheduleOwlBlink();
+        scheduleOwlWalk();
+    }
+
+    async function preloadOwlWalkFrames() {
+        if (owlWalkingLimited()) return;
+
+        const loaders = OWL_WALK_FRAMES.map(src => new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = async () => {
+                try {
+                    if (typeof img.decode === 'function') await img.decode();
+                } catch (e) {}
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = src;
+        }));
+
+        try {
+            await Promise.all(loaders);
+            owlWalkFramesReady = true;
+            scheduleOwlWalk();
+        } catch (error) {
+            owlWalkFramesReady = false;
+            console.warn('Owl walking frames unavailable; idle animation remains active.', error);
+        }
+    }
+
     function initOwlMedia() {
         const openFrame = document.getElementById('owlFrameOpen');
         const closedFrame = document.getElementById('owlFrameClosed');
@@ -3725,13 +3883,18 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (typeof openFrame.decode === 'function') ready.push(openFrame.decode().catch(() => {}));
         if (typeof closedFrame.decode === 'function') ready.push(closedFrame.decode().catch(() => {}));
 
-        Promise.all(ready).finally(scheduleOwlBlink);
+        Promise.all(ready).finally(() => {
+            scheduleOwlBlink();
+            preloadOwlWalkFrames();
+        });
     }
 
     let scrollMiniTimeout;
     window.addEventListener('scroll', () => {
         const container = document.getElementById('owlContainer');
         const bubble = document.getElementById('owlBubble');
+
+        if (owlWalking) cancelOwlWalk();
 
         if (!container.classList.contains('scroll-mini')) {
             container.classList.add('scroll-mini');
@@ -3741,6 +3904,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         clearTimeout(scrollMiniTimeout);
         scrollMiniTimeout = setTimeout(() => {
             container.classList.remove('scroll-mini');
+            scheduleOwlWalk();
         }, 450);
 
         updateScrollNav();
@@ -3754,7 +3918,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             chat.classList.remove('active');
             ecosystem.classList.remove('chat-opened');
             stopOwlFilesSnapshotPolling();
+            scheduleOwlWalk();
         } else {
+            if (owlWalking) cancelOwlWalk();
+            clearTimeout(owlWalkTimer);
             chat.classList.add('active');
             ecosystem.classList.add('chat-opened');
             refreshOwlFilesSnapshot({ silent: true });
