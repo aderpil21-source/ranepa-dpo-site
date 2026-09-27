@@ -671,6 +671,33 @@
         .msg-bot { background: var(--btn-glass); padding: 14px; border-radius: 14px; border-bottom-left-radius: 0; color: var(--text-main); align-self: flex-start; max-width: 92%; border: 1px solid var(--border-glass); line-height: 1.5; }
         .msg-bot b { color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 6px; }
         .msg-user { background: linear-gradient(135deg, var(--ranepa-red), #e11d48); color: #fff; padding: 14px; border-radius: 14px; border-bottom-right-radius: 0; align-self: flex-end; max-width: 92%; font-weight: 600; box-shadow: 0 5px 15px rgba(202, 15, 62, 0.3); }
+
+        .msg-bot-thinking {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 132px;
+        }
+        .owl-thinking-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            height: 14px;
+        }
+        .owl-thinking-dots i {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--ranepa-red);
+            opacity: .35;
+            animation: owlThinkingDot 1.05s ease-in-out infinite;
+        }
+        .owl-thinking-dots i:nth-child(2) { animation-delay: .14s; }
+        .owl-thinking-dots i:nth-child(3) { animation-delay: .28s; }
+        @keyframes owlThinkingDot {
+            0%, 60%, 100% { transform: translateY(0) scale(.9); opacity: .3; }
+            30% { transform: translateY(-3px) scale(1); opacity: 1; }
+        }
         
         .chat-input-box { display: flex; padding: 10px 14px; background: rgba(5, 8, 14, 0.9); border-top: 1px solid var(--border-glass); gap: 8px; align-items: center; }
         .chat-text-input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid var(--border-glass); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
@@ -4282,8 +4309,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (owlAiRequestInFlight) return;
 
         setOwlAiBusy(true);
+        showOwlThinking();
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 9500);
+        const timer = setTimeout(() => controller.abort(), 12000);
 
         try {
             const response = await fetch(OWL_AI_ENDPOINT, {
@@ -4301,12 +4329,19 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             try { data = await response.json(); } catch (e) {}
 
             if (!response.ok || !data || !data.answer) {
+                console.warn('AI backend response:', {
+                    status: response.status,
+                    ok: response.ok,
+                    error: data && data.error ? data.error : null
+                });
                 throw new Error('assistant_unavailable');
             }
 
+            removeOwlThinking();
             const safeAnswer = escapeOwlText(data.answer).replace(/\n/g, '<br>');
             addBotMsg(safeAnswer);
         } catch (error) {
+            removeOwlThinking();
             console.warn('AI assistant fallback:', error && error.name ? error.name : error);
             addBotMsg(
                 currentLang === 'ru'
@@ -4316,6 +4351,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             offerAllPrograms(true);
         } finally {
             clearTimeout(timer);
+            removeOwlThinking();
             setOwlAiBusy(false);
             const input = document.getElementById('chatUserInput');
             if (input) input.focus();
@@ -4576,6 +4612,26 @@ if (wantsNewsEditor) {
         const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
         chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`;
         scrollToBottom();
+    }
+
+    function showOwlThinking() {
+        removeOwlThinking();
+        const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
+        const label = currentLang === 'ru' ? 'думает' : 'is thinking';
+        chatBody.insertAdjacentHTML('beforeend',
+            `<div class="msg-bot" id="owlThinkingMsg"><b>${botName}</b>
+                <span class="msg-bot-thinking">
+                    <span>${label}</span>
+                    <span class="owl-thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                </span>
+            </div>`
+        );
+        scrollToBottom();
+    }
+
+    function removeOwlThinking() {
+        const thinking = document.getElementById('owlThinkingMsg');
+        if (thinking) thinking.remove();
     }
     function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
     function setOptions(html) { chatOptions.innerHTML = html; }
