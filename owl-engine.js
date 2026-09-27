@@ -4,6 +4,15 @@
 // Словари, интенты, синонимы и статические правила — в owl-brain.js.
 // Обучаемая память — в owl-learning.js.
 
+function safeOwlHttpUrl(value) {
+    try {
+        const url = new URL(String(value || '').trim(), location.origin);
+        return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : '';
+    } catch (error) {
+        return '';
+    }
+}
+
 function escapeOwlText(value) {
     return String(value || '').replace(/[&<>"']/g, ch => ({
         '&': '&amp;',
@@ -424,9 +433,13 @@ return;
 
         setTimeout(() => {
             if (foundFile.isPublished) {
+                const safeFileUrl = safeOwlHttpUrl(foundFile.url);
                 let responseMsg =
-                    formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: localizedTitle }) +
-                    `<br><br><a href="${foundFile.url}" target="_blank" rel="noopener" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">${translationsHTML[currentLang].owlMaterialsOpen}</a>`;
+                    formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: localizedTitle });
+                if (safeFileUrl) {
+                    responseMsg +=
+                        `<br><br><a href="${escapeOwlText(safeFileUrl)}" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">${translationsHTML[currentLang].owlMaterialsOpen}</a>`;
+                }
                 if (localizedComment) {
                     responseMsg += `<br><br>${translationsHTML[currentLang].owlTeacherComment}<br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${escapeOwlText(localizedComment).replace(/\n/g, '<br>')}</i>`;
                 }
@@ -1865,7 +1878,7 @@ function owlContactOptions() {
             escapeOwlText(contacts.phoneDisplay || '+7 (4012) 97-23-79') + '</a>' +
         '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.emailHref || 'mailto:cdo-zf@ranepa.ru') + '" style="display:block;text-align:center;text-decoration:none;">✉️ ' +
             escapeOwlText(contacts.email || 'cdo-zf@ranepa.ru') + '</a>' +
-        '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.vkUrl || 'https://vk.ru/ranepa_dpo39') + '" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:rgba(0,119,255,.12);border-color:#2787f5;color:#5aa7ff;">💬 Написать в VK</a>' +
+        '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.vkUrl || 'https://vk.ru/ranepa_dpo39') + '" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;background:rgba(0,119,255,.12);border-color:#2787f5;color:#5aa7ff;">💬 Написать в VK</a>' +
         '<button class="chat-opt-btn" onclick="resetMenu()">⬅️ В меню</button>'
     );
 }
@@ -2513,7 +2526,7 @@ function resetMenu() {
         <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
         
         <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
-        <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+        <a href="ai-lecture.html" target="_blank" rel="noopener noreferrer" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
             🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
         </a>
     `);
