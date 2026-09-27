@@ -3822,6 +3822,10 @@
                     document.title = dict[key];
                 } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                     el.placeholder = dict[key];
+                } else if (el.closest('.card')) {
+                    // Данные программ приходят из таблицы/API и должны быть только текстом.
+                    // Это исключает DOM-XSS через название, описание и метаданные программы.
+                    el.textContent = dict[key];
                 } else {
                     el.innerHTML = dict[key];
                 }
@@ -4073,7 +4077,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                     let bulletKey = `${prog.id}_b${i}`;
                     translationsHTML.ru[bulletKey] = `✔️ ${b_ru.trim()}`;
                     translationsHTML.en[bulletKey] = (prog.bullets_en && prog.bullets_en[i]) ? `✔️ ${prog.bullets_en[i].trim()}` : `✔️ ${b_ru.trim()}`;
-                    bulletsHTML += `<li data-i18n="${bulletKey}">✔️ ${b_ru.trim()}</li>`;
+                    bulletsHTML += `<li data-i18n="${siteAdminEscape(bulletKey)}">✔️ ${siteAdminEscape(b_ru.trim())}</li>`;
                 });
             }
 
@@ -4084,25 +4088,31 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
                 extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
-                if (prog.type) extraInfoHTML += `<div><b data-i18n="typeLabel">Тип:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="type" data-meta-value="${encodeURIComponent(prog.type)}">${localizedProgramMeta(prog, 'type', currentLang)}</span></div>`;
-                if (prog.format) extraInfoHTML += `<div><b data-i18n="formatLabel">Форма:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="format" data-meta-value="${encodeURIComponent(prog.format)}">${localizedProgramMeta(prog, 'format', currentLang)}</span></div>`;
-                if (prog.dates) extraInfoHTML += `<div><b data-i18n="datesLabel">Сроки:</b> <span class="program-meta-value" data-program-id="${prog.id}" data-meta-key="dates" data-meta-value="${encodeURIComponent(prog.dates)}">${localizedProgramMeta(prog, 'dates', currentLang)}</span></div>`;
+                const safeProgramId = siteAdminEscape(String(prog.id || ''));
+                if (prog.type) extraInfoHTML += `<div><b data-i18n="typeLabel">Тип:</b> <span class="program-meta-value" data-program-id="${safeProgramId}" data-meta-key="type" data-meta-value="${encodeURIComponent(prog.type)}">${siteAdminEscape(localizedProgramMeta(prog, 'type', currentLang))}</span></div>`;
+                if (prog.format) extraInfoHTML += `<div><b data-i18n="formatLabel">Форма:</b> <span class="program-meta-value" data-program-id="${safeProgramId}" data-meta-key="format" data-meta-value="${encodeURIComponent(prog.format)}">${siteAdminEscape(localizedProgramMeta(prog, 'format', currentLang))}</span></div>`;
+                if (prog.dates) extraInfoHTML += `<div><b data-i18n="datesLabel">Сроки:</b> <span class="program-meta-value" data-program-id="${safeProgramId}" data-meta-key="dates" data-meta-value="${encodeURIComponent(prog.dates)}">${siteAdminEscape(localizedProgramMeta(prog, 'dates', currentLang))}</span></div>`;
                 extraInfoHTML += `</div>`;
             }
 
             const priceNum = parseInt(String(prog.price).replace(/[^\d]/g, ''), 10) || 0;
             const hoursNum = parseInt(String(prog.hours).replace(/[^\d]/g, ''), 10) || 0;
-            const safeTitle = String(prog.title_ru).replace(/"/g, '&quot;');
+            const safeId = siteAdminEscape(String(prog.id || ''));
+            const safeSector = siteAdminEscape(String(prog.sector || ''));
+            const safeTitle = siteAdminEscape(String(prog.title_ru || ''));
+            const safeDesc = siteAdminEscape(String(prog.desc_ru || ''));
+            const safePrice = siteAdminEscape(localizedProgramMeta(prog, 'price', currentLang));
+            const safeHours = siteAdminEscape(localizedProgramMeta(prog, 'hours', currentLang));
 
             let cardHTML = `
-            <div class="card" data-site-program-id="${prog.id}" data-sector="${prog.sector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
-                <div class="card-meta"><span class="price program-meta-value" data-program-id="${prog.id}" data-meta-key="price" data-meta-value="${encodeURIComponent(prog.price)}">${localizedProgramMeta(prog, 'price', currentLang)}</span><span class="hours program-meta-value" data-program-id="${prog.id}" data-meta-key="hours" data-meta-value="${encodeURIComponent(prog.hours)}">${localizedProgramMeta(prog, 'hours', currentLang)}</span></div>
+            <div class="card" data-site-program-id="${safeId}" data-sector="${safeSector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
+                <div class="card-meta"><span class="price program-meta-value" data-program-id="${safeId}" data-meta-key="price" data-meta-value="${encodeURIComponent(prog.price)}">${safePrice}</span><span class="hours program-meta-value" data-program-id="${safeId}" data-meta-key="hours" data-meta-value="${encodeURIComponent(prog.hours)}">${safeHours}</span></div>
                 ${variantBadgeHTML}
                 ${extraInfoHTML}
-                <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
-                <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
+                <h3 data-i18n="${safeId}_title">${safeTitle}</h3>
+                <p class="desc-text" data-i18n="${safeId}_desc">${safeDesc}</p>
                 <div class="card-actions">
-                    <a class="program-details-link" href="program.html?id=${encodeURIComponent(prog.id)}&lang=${currentLang}" target="_blank" rel="noopener noreferrer" data-program-id="${prog.id}" data-i18n="detailsBtn">Подробно о программе</a>
+                    <a class="program-details-link" href="program.html?id=${encodeURIComponent(prog.id)}&lang=${encodeURIComponent(currentLang)}" target="_blank" rel="noopener noreferrer" data-program-id="${safeId}" data-i18n="detailsBtn">Подробно о программе</a>
                     <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
                 </div>
             </div>`;
