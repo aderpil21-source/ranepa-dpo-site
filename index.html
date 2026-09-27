@@ -448,7 +448,7 @@
             transform-origin: 50% 100%;
             animation:
                 owlBreathV2 6.8s ease-in-out infinite,
-                owlBranchGlide 18s cubic-bezier(.45, 0, .55, 1) infinite;
+                owlBranchGlide 22s cubic-bezier(.45, 0, .55, 1) infinite;
             will-change: transform, left;
         }
         @keyframes owlBreathV2 {
@@ -456,9 +456,9 @@
             50% { transform: translateY(-1.4px) scale(1.008); }
         }
         @keyframes owlBranchGlide {
-            0%, 16%   { left: 58px; }
-            42%, 58%  { left: 90px; }
-            84%, 100% { left: 58px; }
+            0%, 10%   { left: var(--owl-start-left, 58px); }
+            44%, 56%  { left: var(--owl-end-left, 58px); }
+            90%, 100% { left: var(--owl-start-left, 58px); }
         }
 
         .owl-frame {
@@ -3888,8 +3888,27 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         clearTimeout(owlStepTimer);
     }
 
+    function updateOwlTravelRange() {
+        const container = document.getElementById('owlContainer');
+        const stage = document.getElementById('owlMediaStage');
+        if (!container || !stage || isMobile()) return;
+
+        const startLeft = 58;
+        const rightPadding = 24;
+        const availableTrack = Math.max(
+            0,
+            container.clientWidth - stage.offsetWidth - startLeft - rightPadding
+        );
+
+        const travelDistance = Math.round(availableTrack * 0.70);
+        const endLeft = startLeft + travelDistance;
+
+        stage.style.setProperty('--owl-start-left', startLeft + 'px');
+        stage.style.setProperty('--owl-end-left', endLeft + 'px');
+    }
+
     function initOwlMedia() {
-        // Premium idle baseline: one stable transparent owl + restrained breathing only.
+        updateOwlTravelRange();
         scheduleOwlBlink();
         scheduleOwlStep();
     }
@@ -3966,6 +3985,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         bottomBtn.classList.toggle('show', maxScroll - scrollY > 300);
     }
     window.addEventListener('resize', updateScrollNav, { passive: true });
+    window.addEventListener('resize', updateOwlTravelRange, { passive: true });
 
     let owlI18nData = null;
     let owlI18nPromise = null;
