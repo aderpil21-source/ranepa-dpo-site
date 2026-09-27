@@ -2269,6 +2269,7 @@
             }
         });
     </script>
+    <script src="./owl-learning.js"></script>
     <script src="./owl-brain.js"></script>
     <script src="./portal-snapshot.js"></script>
 </body>
@@ -4881,11 +4882,12 @@ if (wantsNewsEditor) {
         }
 
         const hasFactQuestion = owlRequestedFacets(text).length > 0;
+        const hasStaffMatch = owlFindStaffMatches(text).length > 0;
         const isProgramDiscovery =
             owlIntent('programs', text) ||
             /(^|\s)(что есть|что у вас есть|покажи|найди|подбери|варианты)(\s|$)/i.test(owlSmartNormalize(text));
 
-        const topicResolution = (!hasFactQuestion && isProgramDiscovery)
+        const topicResolution = (!hasFactQuestion && !hasStaffMatch && isProgramDiscovery)
             ? owlTopicProgramResult(text)
             : null;
 
@@ -5109,7 +5111,8 @@ if (wantsNewsEditor) {
         advancedNegativeCount: 0,
         advancedUnlocked: false,
         mode: 'normal',
-        lastCandidateIds: []
+        lastCandidateIds: [],
+        lastStaffKey: null
     };
 
     function loadOwlConversationState() {
@@ -5139,6 +5142,19 @@ if (wantsNewsEditor) {
             const normalizedTo = normalizeText(String(replacements[from] || '').replace(/ё/g, 'е'));
             if (normalizedFrom) text = (' ' + text + ' ').split(' ' + normalizedFrom + ' ').join(' ' + normalizedTo + ' ').trim();
         });
+
+        if (window.OwlLearning && typeof window.OwlLearning.correctText === 'function') {
+            const extras = [];
+            try {
+                document.querySelectorAll('#contactsSection .contact-card h4, #contactsSection .contact-card .position')
+                    .forEach(node => extras.push(node.textContent || ''));
+                if (Array.isArray(globalPrograms)) {
+                    globalPrograms.slice(0, 120).forEach(program => extras.push(program.title_ru || ''));
+                }
+                text = window.OwlLearning.correctText(text, extras);
+            } catch (e) {}
+        }
+
         return text.replace(/\s+/g, ' ').trim();
     }
 
@@ -5998,6 +6014,230 @@ if (wantsNewsEditor) {
         return owlConversationState.unresolvedStreak;
     }
 
+    function owlCollectStaffContacts() {
+        const cards = Array.from(document.querySelectorAll('#contactsSection .contact-card'));
+
+        return cards.map((card, index) => {
+            const name = String(card.querySelector('h4')?.textContent || '').trim();
+            const position = String(card.querySelector('.position')?.textContent || '').trim();
+            const details = String(card.querySelector('.details')?.innerText || '').replace(/\s+/g, ' ').trim();
+            const tel = card.querySelector('a[href^="tel:"]');
+            const email = card.querySelector('a[href^="mailto:"]');
+
+            const roomMatch = details.match(/(?:Каб\.?|Room)\s*([A-Za-zА-Яа-я0-9-]+)/i);
+            const extMatch = details.match(/(?:доб\.?|ext\.?|extension)\s*([0-9]+)/i);
+
+            const normalizedName = owlSmartNormalize(name);
+            const nameParts = normalizedName.split(' ').filter(Boolean);
+
+            return {
+                key: 'staff-' + index + '-' + (nameParts[0] || 'person'),
+                name,
+                position,
+                details,
+                phoneDisplay: String(tel?.textContent || '').trim(),
+                phoneHref: String(tel?.getAttribute('href') || '').trim(),
+                email: String(email?.textContent || '').trim(),
+                emailHref: String(email?.getAttribute('href') || '').trim(),
+                room: roomMatch ? roomMatch[1] : '',
+                extension: extMatch ? extMatch[1] : '',
+                normalizedName,
+                normalizedPosition: owlSmartNormalize(position),
+                nameParts
+            };
+        }).filter(person => person.name);
+    }
+
+    function owlStaffByKey(key) {
+        if (!key) return null;
+        return owlCollectStaffContacts().find(person => person.key === key) || null;
+    }
+
+    function owlFuzzyStaffWord(queryWord, staffWord) {
+        if (!queryWord || !staffWord) return false;
+        if (queryWord === staffWord || queryWord.includes(staffWord) || staffWord.includes(queryWord)) return true;
+
+        if (window.OwlLearning && typeof window.OwlLearning.fuzzyWordEqual === 'function') {
+            return window.OwlLearning.fuzzyWordEqual(queryWord, staffWord);
+        }
+
+        return queryWord.length >= 5 &&
+            staffWord.length >= 5 &&
+            queryWord.slice(0, 5) === staffWord.slice(0, 5);
+    }
+
+    function owlStaffContextRequested(query) {
+        const q = owlSmartNormalize(query);
+        return /\b(он|она|ее|её|его|ней|нем|нём|такая|такой|этот человек|эта сотрудница|этот сотрудник)\b/i.test(q) ||
+            /^(кто такая|кто такой|кто это|а телефон|а номер|а почта|а email|а кабинет)/i.test(q);
+    }
+
+    function owlFindStaffMatches(query) {
+        const q = owlSmartNormalize(query);
+        const qWords = q.split(' ').filter(word => word.length >= 3);
+        const staff = owlCollectStaffContacts();
+
+        if (owlStaffContextRequested(query) && owlConversationState.lastStaffKey) {
+            const contextual = owlStaffByKey(owlConversationState.lastStaffKey);
+            if (contextual) return [contextual];
+        }
+
+        const ranked = staff.map(person => {
+            let score = 0;
+            const surname = person.nameParts[0] || '';
+            const first = person.nameParts[1] || '';
+            const patronymic = person.nameParts[2] || '';
+            const positionWords = person.normalizedPosition.split(' ').filter(word => word.length >= 4);
+
+            qWords.forEach(word => {
+                if (owlFuzzyStaffWord(word, surname)) score += 14;
+                else if (first && owlFuzzyStaffWord(word, first)) score += 9;
+                else if (patronymic && owlFuzzyStaffWord(word, patronymic)) score += 6;
+
+                positionWords.forEach(positionWord => {
+                    if (owlFuzzyStaffWord(word, positionWord)) score += 3;
+                });
+            });
+
+            if (person.normalizedName && q.includes(person.normalizedName)) score += 20;
+            if (person.normalizedPosition && q.includes(person.normalizedPosition)) score += 18;
+
+            const asksDirector = /директор\s+центра/i.test(q);
+            if (asksDirector && person.normalizedPosition === 'директор центра') score += 30;
+
+            const asksDeputy = /заместител.*директор/i.test(q);
+            if (asksDeputy && person.normalizedPosition.includes('заместитель директора')) score += 30;
+
+            return { person, score };
+        })
+        .filter(item => item.score >= 8)
+        .sort((a,b) => b.score - a.score);
+
+        if (!ranked.length) return [];
+
+        const top = ranked[0].score;
+        return ranked
+            .filter(item => item.score >= Math.max(8, top - 3))
+            .slice(0, 4)
+            .map(item => item.person);
+    }
+
+    function owlRememberStaff(person) {
+        if (!person) return;
+        owlConversationState.lastStaffKey = person.key;
+        saveOwlConversationState();
+    }
+
+    function owlStaffOptions(person) {
+        if (!person) return owlContactOptions();
+
+        let html = '';
+        if (person.phoneHref) {
+            html += '<a class="chat-opt-btn" href="' + escapeOwlText(person.phoneHref) +
+                '" style="display:block;text-align:center;text-decoration:none;">📞 Позвонить: ' +
+                escapeOwlText(person.phoneDisplay) +
+                (person.extension ? ' · доб. ' + escapeOwlText(person.extension) : '') +
+                '</a>';
+        }
+        if (person.emailHref) {
+            html += '<a class="chat-opt-btn" href="' + escapeOwlText(person.emailHref) +
+                '" style="display:block;text-align:center;text-decoration:none;">✉️ Написать: ' +
+                escapeOwlText(person.email) + '</a>';
+        }
+        html += '<button class="chat-opt-btn" onclick="document.getElementById(\'contactsSection\').scrollIntoView({behavior:\'smooth\'});">👤 Открыть раздел сотрудников</button>';
+        html += '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>';
+        return html;
+    }
+
+    function owlStaffAnswer(person, query) {
+        const q = owlSmartNormalize(query);
+        const asksPhone = /телефон|номер|позвон|связат/i.test(q);
+        const asksEmail = /email|почт|написат/i.test(q);
+        const asksRoom = /кабинет|каб\b/i.test(q);
+        const asksWho = /кто|должност|кем|такая|такой/i.test(q);
+        const disputesPhone = /не\s+(ее|её|его|такой|тот).*телефон|телефон.*не\s+(ее|её|его|такой|тот)/i.test(q);
+
+        let html = '<b>' + escapeOwlText(person.name) + '</b>';
+        if (person.position) html += '<br>' + escapeOwlText(person.position);
+
+        if (disputesPhone) {
+            html += '<br><br>В карточке сотрудника на этом сайте сейчас указан рабочий телефон: <b>' +
+                escapeOwlText(person.phoneDisplay || 'не указан') + '</b>' +
+                (person.extension ? ', доб. <b>' + escapeOwlText(person.extension) + '</b>' : '') + '.';
+            html += '<br><span class="owl-guided-hint">Если контакт недавно изменился, данные на сайте могли ещё не обновиться.</span>';
+            return html;
+        }
+
+        if (asksPhone) {
+            html += '<br><br>📞 <b>' + escapeOwlText(person.phoneDisplay || 'Телефон не указан') + '</b>';
+            if (person.extension) html += ' · доб. <b>' + escapeOwlText(person.extension) + '</b>';
+        }
+
+        if (asksEmail) {
+            html += '<br>✉️ <b>' + escapeOwlText(person.email || 'E-mail не указан') + '</b>';
+        }
+
+        if (asksRoom) {
+            html += '<br>🚪 Кабинет: <b>' + escapeOwlText(person.room || 'не указан') + '</b>';
+        }
+
+        if (!asksPhone && !asksEmail && !asksRoom) {
+            if (person.phoneDisplay) {
+                html += '<br><br>📞 ' + escapeOwlText(person.phoneDisplay) +
+                    (person.extension ? ' · доб. ' + escapeOwlText(person.extension) : '');
+            }
+            if (person.email) html += '<br>✉️ ' + escapeOwlText(person.email);
+            if (person.room) html += '<br>🚪 Каб. ' + escapeOwlText(person.room);
+        }
+
+        if (asksWho && person.position) {
+            html += '<br><span class="owl-guided-hint">Это сотрудник, указанный в официальном разделе контактов сайта.</span>';
+        }
+
+        return html;
+    }
+
+    function owlResolveStaff(query) {
+        const matches = owlFindStaffMatches(query);
+        if (!matches.length) return null;
+
+        if (matches.length === 1) {
+            const person = matches[0];
+            owlRememberStaff(person);
+            return {
+                handled: true,
+                html: owlStaffAnswer(person, query),
+                options: owlStaffOptions(person),
+                intent: 'staff-contact'
+            };
+        }
+
+        let options = '';
+        matches.forEach(person => {
+            options += '<button class="chat-opt-btn" onclick="owlSelectStaff(\'' +
+                String(person.key).replace(/'/g, "\\'") + '\')">' +
+                escapeOwlText(person.name) +
+                (person.position ? '<br><span style="font-size:.76rem;opacity:.72;">' + escapeOwlText(person.position) + '</span>' : '') +
+                '</button>';
+        });
+        options += '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>';
+
+        return {
+            handled: true,
+            html: 'Нашёл несколько сотрудников, подходящих под запрос. Выберите нужного:',
+            options,
+            intent: 'staff-clarify'
+        };
+    }
+
+    function owlSelectStaff(key) {
+        const person = owlStaffByKey(key);
+        if (!person) return;
+        owlRememberStaff(person);
+        addBotMsg(owlStaffAnswer(person, person.name));
+        setOptions(owlStaffOptions(person));
+    }
+
     function owlContactOptions() {
         const contacts = owlBrainConfig().contacts || {};
         return (
@@ -6265,6 +6505,11 @@ if (wantsNewsEditor) {
         const brain = owlBrainConfig();
         const replies = brain.replies || {};
         const facets = owlRequestedFacets(query);
+
+        const staffResolution = owlResolveStaff(query);
+        if (staffResolution && staffResolution.handled) {
+            return staffResolution;
+        }
 
         if (owlIntent('contacts', query)) {
             return {
