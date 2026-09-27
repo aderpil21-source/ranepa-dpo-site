@@ -1,0 +1,47 @@
+name: Stage owl v2 assets
+
+on:
+  push:
+    branches:
+      - feature/owl-v2-realistic
+    paths:
+      - .github/workflows/stage-owl-v2-assets.yml
+
+permissions:
+  contents: write
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/owl-v2-realistic
+
+      - name: Download approved owl frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p img
+          curl -fL --retry 3 --retry-delay 2 \
+            'https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/8a5d9cd3-e35a-48df-94c5-90e1309c7715/c32d2484-93f9-4a10-a0e3-b4f868ae17bf/Edit_the_supplied_owl_image_only__Preserve_the_exact_same_ow.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYWNlMDY3Mjk2YzY0ZGZmYyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDU3OTYyNX0.RhwAxpYwpzSAA6c6I30UgAuE2HIZW8RIUzPPb1ETSGc' \
+            -o img/owl-v2-open.png
+          curl -fL --retry 3 --retry-delay 2 \
+            'https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/890d60c8-8d1d-41b7-8820-3ab0f5573f4d/52ebabdd-12c8-49ce-85eb-9bd4954b0cfa/Edit__owl_only__Preserve_the_exact_same_owl_identity__face_s.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNzAxZmZjNjY1MzI0ZDI4MyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDU5NzIyMn0.AkOcLGlnDlmQccg6IR4OXwZvwdhM4H5ePoPKfCB4yJM' \
+            -o img/owl-v2-closed.png
+          file img/owl-v2-open.png img/owl-v2-closed.png
+
+      - name: Commit owl frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img/owl-v2-open.png img/owl-v2-closed.png
+          if git diff --cached --quiet; then
+            echo "No asset changes."
+            exit 0
+          fi
+          git commit -m "feat: add approved owl v2 animation frames"
+          git push origin HEAD:feature/owl-v2-realistic
