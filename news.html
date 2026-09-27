@@ -464,9 +464,19 @@ function driveId(url){
     const m = url.match(/\/file\/d\/([\w-]+)/) || url.match(/[?&]id=([\w-]+)/);
     return m ? m[1] : null;
 }
+function safeMediaUrl(url){
+    try {
+        const parsed = new URL(String(url || '').trim(), location.origin);
+        return (parsed.protocol === 'https:' || parsed.protocol === 'http:') ? parsed.href : '';
+    } catch(e){
+        return '';
+    }
+}
+
 function imageUrl(url){
     const id = driveId(url);
-    return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w1600` : url;
+    if (id) return `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+    return safeMediaUrl(url);
 }
 
 function toEmbedUrl(url){
@@ -486,7 +496,7 @@ function toEmbedUrl(url){
 
     if ((m = url.match(/rutube\.ru\/video\/([\w-]+)/))) return `https://rutube.ru/play/embed/${m[1]}`;
     if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/))) return `https://www.youtube.com/embed/${m[1]}`;
-    if (url.includes('/embed') || url.includes('video_ext.php')) return url;
+    if (url.includes('/embed') || url.includes('video_ext.php')) return safeMediaUrl(url) || null;
     const gid = driveId(url);
     if (gid) return `https://drive.google.com/file/d/${gid}/preview`;
     return null;
@@ -1248,7 +1258,10 @@ function openDetail(id){
         if (b.type === 'video' && b.url){
             const embed = toEmbedUrl(b.url);
             if (embed) return `<figure class="news-media-figure">${videoShellHtml(`<div class="news-video-embed-wrap"><iframe src="${escapeHtml(embed)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`)}${cap}</figure>`;
-            return `<figure class="news-media-figure">${videoShellHtml(`<video src="${escapeHtml(b.url)}" controls playsinline preload="metadata"></video>`)}${cap}</figure>`;
+            const safeVideo = safeMediaUrl(b.url);
+            return safeVideo
+                ? `<figure class="news-media-figure">${videoShellHtml(`<video src="${escapeHtml(safeVideo)}" controls playsinline preload="metadata"></video>`)}${cap}</figure>`
+                : '';
         }
         return '';
     }).join('');
