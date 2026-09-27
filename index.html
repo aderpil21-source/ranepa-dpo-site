@@ -411,33 +411,68 @@
 
         .owl-visibility-toggle {
             position: absolute;
-            right: 10px;
-            top: 118px;
+            right: 18px;
+            bottom: 54px;
+            top: auto;
             z-index: 10020;
-            border: 1px solid rgba(255,255,255,.18);
-            background: rgba(5,8,20,.82);
-            color: #fff;
-            padding: 8px 11px;
+            min-height: 32px;
+            border: 1px solid var(--border-glass);
+            background: color-mix(in srgb, var(--bg-glass) 92%, transparent);
+            color: var(--text-main);
+            padding: 7px 12px;
             border-radius: 999px;
-            font-size: .72rem;
+            font-size: .70rem;
             font-weight: 800;
+            line-height: 1;
             letter-spacing: .01em;
             cursor: pointer;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 8px 22px rgba(0,0,0,.34);
-            transition: transform .2s ease, opacity .2s ease, background .2s ease;
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            box-shadow:
+                0 8px 22px var(--shadow-color),
+                inset 0 1px 0 rgba(255,255,255,.08);
+            transition:
+                transform .22s var(--bezier-smooth),
+                background .22s ease,
+                border-color .22s ease,
+                color .22s ease,
+                opacity .22s ease;
             pointer-events: auto;
             white-space: nowrap;
         }
-        .owl-visibility-toggle:hover { transform: translateY(-1px); background: rgba(15,23,42,.94); }
+        .owl-visibility-toggle::before {
+            content: "◉";
+            display: inline-block;
+            margin-right: 6px;
+            color: var(--ranepa-red);
+            font-size: .72rem;
+            transform: translateY(-.2px);
+        }
+        .owl-visibility-toggle:hover {
+            transform: translateY(-2px);
+            border-color: color-mix(in srgb, var(--ranepa-red) 55%, var(--border-glass));
+            background: var(--bg-glass);
+        }
+        [data-theme="dark"] .owl-visibility-toggle {
+            background: rgba(10,15,28,.82);
+            color: #F8FAFC;
+            border-color: rgba(255,255,255,.14);
+        }
+        [data-theme="light"] .owl-visibility-toggle {
+            background: rgba(255,255,255,.88);
+            color: #0F172A;
+            border-color: rgba(15,23,42,.12);
+            box-shadow:
+                0 8px 22px rgba(15,23,42,.14),
+                inset 0 1px 0 rgba(255,255,255,.82);
+        }
         .owl-ecosystem.owl-user-hidden .oak-branch,
         .owl-ecosystem.owl-user-hidden .owl-container { display: none !important; }
         .owl-ecosystem.owl-user-hidden {
-            width: 150px;
-            height: 56px;
-            right: 8px;
-            bottom: 8px;
+            width: 160px;
+            height: 48px;
+            right: 10px;
+            bottom: 10px;
             transform: none !important;
             pointer-events: none;
         }
@@ -446,7 +481,13 @@
             right: 14px;
             bottom: 14px;
             top: auto;
+            min-height: 36px;
             pointer-events: auto;
+        }
+        .owl-ecosystem.owl-user-hidden .owl-visibility-toggle::before { content: "◉"; }
+
+        @media (max-width: 768px) {
+            .owl-visibility-toggle { display: none !important; }
         }
 
         .oak-branch {
