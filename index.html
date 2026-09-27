@@ -488,7 +488,6 @@
             translate: var(--owl-step-x, 0px) 0;
             transition: translate 120ms cubic-bezier(.22,.61,.36,1);
         }
-        .owl-container.owl-returning .owl-frame-step { transform: translateX(-50%) scaleX(-1); }
 
         @media (prefers-reduced-motion: reduce) {
             .owl-media-stage { animation: none !important; }
@@ -1731,16 +1730,7 @@
         </button>
     </div>
     <script>
-        document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') {
-            clearTimeout(owlWalkTimer);
-            if (owlWalking) cancelOwlWalk();
-        } else {
-            scheduleOwlWalk();
-        }
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', () => {
             const fakeFieldName = 'hp_' + Math.random().toString(36).substring(2, 8);
             sessionStorage.setItem('trap_field', fakeFieldName);
 
@@ -3707,6 +3697,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     let owlBlinkResetTimer = null;
     let owlStepTimer = null;
     let owlStepping = false;
+    let owlStepSequence = 0;
+    let owlStepFramesReady = false;
 
     const OWL_STEP_FRAMES = [
         './img/owl-step-1.webp',
@@ -3725,6 +3717,41 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const memory = Number(navigator.deviceMemory || 0);
         const cores = Number(navigator.hardwareConcurrency || 0);
         return (memory && memory <= 2) || (cores && cores <= 2);
+    }
+
+    function owlCanStep() {
+        const container = document.getElementById('owlContainer');
+        const chat = document.getElementById('owlChat');
+        return !!(
+            owlStepFramesReady &&
+            !owlMotionReduced() &&
+            !owlLowPowerMode() &&
+            !isMobile() &&
+            container &&
+            container.classList.contains('visible') &&
+            !container.classList.contains('scroll-mini') &&
+            chat &&
+            !chat.classList.contains('active') &&
+            document.visibilityState !== 'hidden'
+        );
+    }
+
+    function cancelOwlStep() {
+        owlStepSequence += 1;
+        clearTimeout(owlStepTimer);
+        owlStepping = false;
+
+        const sprite = document.getElementById('owlSprite');
+        const stage = document.getElementById('owlMediaStage');
+        const a = document.getElementById('owlStepA');
+        const b = document.getElementById('owlStepB');
+
+        if (sprite) {
+            sprite.classList.remove('owl-stepping', 'owl-returning');
+        }
+        if (stage) stage.style.setProperty('--owl-step-x', '0px');
+        if (a) a.classList.remove('owl-step-visible');
+        if (b) b.classList.remove('owl-step-visible');
     }
 
     function scheduleOwlBlink() {
@@ -3760,7 +3787,12 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     function preloadOwlStepFrames() {
         return Promise.all(OWL_STEP_FRAMES.map(src => new Promise(resolve => {
             const img = new Image();
-            img.onload = () => resolve(true);
+            img.onload = async () => {
+                try {
+                    if (typeof img.decode === 'function') await img.decode();
+                } catch (e) {}
+                resolve(true);
+            };
             img.onerror = () => resolve(false);
             img.src = src;
         })));
@@ -3778,61 +3810,78 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
 
     function runOwlWalkCycle() {
-        if (owlStepping || owlMotionReduced() || owlLowPowerMode() || isMobile()) {
+        if (owlStepping || !owlCanStep()) {
             scheduleOwlStep();
             return;
         }
 
         const sprite = document.getElementById('owlSprite');
         const stage = document.getElementById('owlMediaStage');
-        const container = document.getElementById('owlContainer');
-        if (!sprite || !stage || !container || !container.classList.contains('visible')) {
+        if (!sprite || !stage) {
             scheduleOwlStep();
             return;
         }
 
         owlStepping = true;
+        const sequenceId = ++owlStepSequence;
+
         sprite.classList.remove('owl-blink');
         sprite.classList.add('owl-stepping');
+        clearTimeout(owlBlinkTimer);
+        clearTimeout(owlBlinkResetTimer);
 
-        // 4 фазы вправо, короткая пауза, затем зеркальный возврат.
+        // Настоящий перебор лап: 4 шага вправо и 4 шага обратно.
+        // Корпус перемещается только вместе с фазой постановки лап.
         const frames = [
-            {src:OWL_STEP_FRAMES[0], x:4,  back:false},
-            {src:OWL_STEP_FRAMES[1], x:10, back:false},
-            {src:OWL_STEP_FRAMES[2], x:17, back:false},
-            {src:OWL_STEP_FRAMES[3], x:24, back:false},
-            {src:OWL_STEP_FRAMES[2], x:20, back:true},
-            {src:OWL_STEP_FRAMES[1], x:13, back:true},
-            {src:OWL_STEP_FRAMES[0], x:6,  back:true},
-            {src:OWL_STEP_FRAMES[3], x:0,  back:true}
+            {src:OWL_STEP_FRAMES[0], x:6},
+            {src:OWL_STEP_FRAMES[1], x:15},
+            {src:OWL_STEP_FRAMES[2], x:26},
+            {src:OWL_STEP_FRAMES[3], x:36},
+            {src:OWL_STEP_FRAMES[2], x:30},
+            {src:OWL_STEP_FRAMES[1], x:20},
+            {src:OWL_STEP_FRAMES[0], x:10},
+            {src:OWL_STEP_FRAMES[3], x:0}
         ];
 
         let i = 0;
         let slot = 0;
 
+        const finish = () => {
+            if (sequenceId !== owlStepSequence) return;
+
+            const a = document.getElementById('owlStepA');
+            const b = document.getElementById('owlStepB');
+            if (a) a.classList.remove('owl-step-visible');
+            if (b) b.classList.remove('owl-step-visible');
+
+            stage.style.setProperty('--owl-step-x', '0px');
+            sprite.classList.remove('owl-stepping', 'owl-returning');
+            owlStepping = false;
+
+            scheduleOwlBlink();
+            scheduleOwlStep();
+        };
+
         const advance = () => {
+            if (sequenceId !== owlStepSequence) return;
+            if (!owlCanStep()) {
+                cancelOwlStep();
+                scheduleOwlBlink();
+                scheduleOwlStep();
+                return;
+            }
+
             if (i >= frames.length) {
-                const a = document.getElementById('owlStepA');
-                const b = document.getElementById('owlStepB');
-                if (a) a.classList.remove('owl-step-visible');
-                if (b) b.classList.remove('owl-step-visible');
-                sprite.classList.remove('owl-returning');
-                stage.style.setProperty('--owl-step-x', '0px');
-                setTimeout(() => {
-                    sprite.classList.remove('owl-stepping');
-                    owlStepping = false;
-                    scheduleOwlStep();
-                }, 120);
+                setTimeout(finish, 130);
                 return;
             }
 
             const step = frames[i++];
-            sprite.classList.toggle('owl-returning', step.back);
             stage.style.setProperty('--owl-step-x', step.x + 'px');
             setOwlStepFrame(step.src, slot);
             slot = 1 - slot;
 
-            const pause = i === 4 ? 330 : 155;
+            const pause = i === 4 ? 360 : 175;
             setTimeout(advance, pause);
         };
 
@@ -3841,8 +3890,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
     function scheduleOwlStep() {
         clearTimeout(owlStepTimer);
-        if (owlMotionReduced() || owlLowPowerMode() || isMobile()) return;
-        owlStepTimer = setTimeout(runOwlWalkCycle, 9500 + Math.random() * 8500);
+        if (!owlStepFramesReady || owlMotionReduced() || owlLowPowerMode() || isMobile()) return;
+        owlStepTimer = setTimeout(runOwlWalkCycle, 8000 + Math.random() * 7000);
     }
 
     function initOwlMedia() {
@@ -3857,7 +3906,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         Promise.all(ready).finally(() => {
             scheduleOwlBlink();
             preloadOwlStepFrames().then(results => {
-                if (results.some(Boolean)) scheduleOwlStep();
+                owlStepFramesReady = results.every(Boolean);
+                if (owlStepFramesReady) scheduleOwlStep();
             });
         });
     }
@@ -3867,7 +3917,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const container = document.getElementById('owlContainer');
         const bubble = document.getElementById('owlBubble');
 
-        if (owlWalking) cancelOwlWalk();
+        if (owlStepping) cancelOwlStep();
 
         if (!container.classList.contains('scroll-mini')) {
             container.classList.add('scroll-mini');
@@ -3877,7 +3927,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         clearTimeout(scrollMiniTimeout);
         scrollMiniTimeout = setTimeout(() => {
             container.classList.remove('scroll-mini');
-            scheduleOwlWalk();
+            scheduleOwlStep();
         }, 450);
 
         updateScrollNav();
@@ -3891,10 +3941,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             chat.classList.remove('active');
             ecosystem.classList.remove('chat-opened');
             stopOwlFilesSnapshotPolling();
-            scheduleOwlWalk();
+            scheduleOwlStep();
         } else {
-            if (owlWalking) cancelOwlWalk();
-            clearTimeout(owlWalkTimer);
+            if (owlStepping) cancelOwlStep();
+            clearTimeout(owlStepTimer);
             chat.classList.add('active');
             ecosystem.classList.add('chat-opened');
             refreshOwlFilesSnapshot({ silent: true });
@@ -3903,6 +3953,13 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
 
     document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            clearTimeout(owlStepTimer);
+            if (owlStepping) cancelOwlStep();
+        } else {
+            scheduleOwlStep();
+        }
+
         if (!isOwlChatActive()) {
             stopOwlFilesSnapshotPolling();
             return;
