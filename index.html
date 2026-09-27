@@ -446,13 +446,19 @@
         }
         .owl-media-stage {
             transform-origin: 50% 100%;
-            animation: owlBreathV2 6.8s ease-in-out infinite;
+            animation:
+                owlBreathV2 6.8s ease-in-out infinite,
+                owlBranchGlide 18s cubic-bezier(.45, 0, .55, 1) infinite;
             will-change: transform, left;
-            transition: left 190ms cubic-bezier(.22,.61,.36,1);
         }
         @keyframes owlBreathV2 {
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-1.4px) scale(1.008); }
+        }
+        @keyframes owlBranchGlide {
+            0%, 16%   { left: 58px; }
+            42%, 58%  { left: 90px; }
+            84%, 100% { left: 58px; }
         }
 
         .owl-frame {
@@ -487,8 +493,7 @@
         .owl-container.owl-stepping .owl-frame-open,
         .owl-container.owl-stepping .owl-frame-closed { opacity: 0 !important; }
         .owl-media-stage {
-            translate: var(--owl-step-x, 0px) 0;
-            transition: translate 230ms cubic-bezier(.22,.61,.36,1);
+            translate: 0 0;
         }
 
         @media (prefers-reduced-motion: reduce) {
