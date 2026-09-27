@@ -25,6 +25,9 @@
                 if (!response.ok) throw new Error('Live alert API HTTP ' + response.status);
 
                 const data = await response.json();
+                if (typeof globalAlertLiveVerified !== 'undefined') {
+                    globalAlertLiveVerified = true;
+                }
                 const nextAlert = data && data.currentAlert && data.currentAlert.text
                     ? data.currentAlert
                     : null;
