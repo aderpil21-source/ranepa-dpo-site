@@ -5301,7 +5301,22 @@ if (wantsNewsEditor) {
     function owlIntent(name, query) {
         const list = (owlBrainConfig().intents || {})[name] || [];
         const normalized = owlSmartNormalize(query);
-        return list.some(phrase => normalized.includes(owlSmartNormalize(phrase)));
+        if (!normalized) return false;
+
+        const padded = ' ' + normalized + ' ';
+        return list.some(rawPhrase => {
+            const phrase = owlSmartNormalize(rawPhrase);
+            if (!phrase) return false;
+
+            // Однословные короткие интенты ("ок", "да", "нет") должны
+            // совпадать только как самостоятельное слово, иначе "ок"
+            // срабатывает внутри "документы".
+            if (!phrase.includes(' ')) {
+                return normalized === phrase || padded.includes(' ' + phrase + ' ');
+            }
+
+            return normalized === phrase || padded.includes(' ' + phrase + ' ');
+        });
     }
 
     const OWL_REPLY_HISTORY_KEY = 'ranepa_owl_reply_history_v1';
@@ -6483,6 +6498,14 @@ if (wantsNewsEditor) {
             facets.push('dates');
         }
 
+        if (
+            !facets.includes('documents') &&
+            /\b(диплом|удостоверение|сертификат|фрдо|документ\w*)\b/i.test(raw) &&
+            /\b(выдают|получу|получить|после|окончани|итог|какой)\w*/i.test(raw)
+        ) {
+            facets.push('documents');
+        }
+
         return facets;
     }
 
@@ -6820,6 +6843,41 @@ if (wantsNewsEditor) {
             };
         }
 
+        const rawDocsQuery = normalizeText(String(query || '').replace(/ё/g, 'е'));
+        const asksAdmissionDocs =
+            /\b(какие|какой|что|нужн\w*|требу\w*|принести|предоставить|подать)\b.*\bдокумент\w*\b/i.test(rawDocsQuery) ||
+            /\bдокумент\w*\b.*\b(для поступления|для записи|для зачисления|для обучения|нужн\w*|требу\w*)\b/i.test(rawDocsQuery);
+
+        const asksOutcomeDoc =
+            /\b(что выдают|что получу|после окончания|по окончании|диплом|удостоверение|сертификат|фрдо)\b/i.test(rawDocsQuery);
+
+        const bareDocuments =
+            /^\s*документ(ы|а|ов)?[!?.\s]*$/i.test(rawDocsQuery);
+
+        if (asksAdmissionDocs && !asksOutcomeDoc) {
+            return {
+                handled:true,
+                html:
+                    'Если вы спрашиваете о <b>документах для поступления/записи</b>: в данных сайта сейчас нет единого подтверждённого перечня для всех программ. Он может зависеть от программы и категории слушателя.' +
+                    '<br><br>Могу помочь по конкретной программе или открыть контакты Центра, чтобы уточнить точный список без догадок.',
+                options:
+                    '<button class="chat-opt-btn" onclick="openModal()">✍️ Открыть форму записи</button>' +
+                    owlContactOptions(),
+                intent:'admission-documents'
+            };
+        }
+
+        if (bareDocuments) {
+            return {
+                handled:true,
+                html:'Уточните, пожалуйста: нужны <b>документы для поступления</b> или вы спрашиваете, <b>какой документ выдадут после обучения</b>?',
+                options:
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие документы нужны для поступления\')">📎 Для поступления</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 После обучения</button>',
+                intent:'documents-clarify'
+            };
+        }
+
         if (owlIntent('enroll', query) && !facets.length) {
             return {
                 handled: true,
@@ -6834,7 +6892,14 @@ if (wantsNewsEditor) {
         }
 
         if (owlIntent('thanks', query)) {
-            return { handled:true, html:owlPickReply(replies.thanks, 'thanks'), options:'', intent:'thanks' };
+            const normalizedThanks = owlSmartNormalize(query);
+            const thankWords = normalizedThanks.split(' ').filter(Boolean);
+            const isPureThanks = thankWords.length <= 4 &&
+                !/\b(документ|программ|курс|цена|стоим|срок|учиться|формат|закуп|логист|бухгалт|горнич)\w*/i.test(normalizedThanks);
+
+            if (isPureThanks) {
+                return { handled:true, html:owlPickReply(replies.thanks, 'thanks'), options:'', intent:'thanks' };
+            }
         }
 
         if (owlIntent('capabilities', query)) {
@@ -6921,6 +6986,9 @@ if (wantsNewsEditor) {
                         intent:'topic-program'
                     };
                 }
+
+                owlConversationState.lastProgramId = null;
+                saveOwlConversationState();
 
                 return {
                     handled:true,
