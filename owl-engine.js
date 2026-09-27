@@ -162,8 +162,6 @@ function owlResolveSiteFaq(query) {
     const raw = normalizeText(String(query || '').replace(/ё/g, 'е')).trim();
     if (!raw) return null;
 
-    // Не используем \b/\w для русских окончаний: в JS без Unicode-классов
-    // они работают в основном по ASCII и ломают "документы", "поступления" и т.п.
     const hasDocumentWord = /документ[а-я-]*/i.test(raw);
     const asksAdmissionDocs =
         hasDocumentWord &&
@@ -172,13 +170,20 @@ function owlResolveSiteFaq(query) {
             /(для поступлен[а-я]*|для запис[а-я]*|для зачислен[а-я]*|при поступлен[а-я]*|при зачислен[а-я]*)/i.test(raw)
         );
 
+    const asksOutcomeDoc =
+        (
+            /(какой|какие|что).*?(документ[а-я]*|диплом[а-я]*|удостоверен[а-я]*|сертификат[а-я]*)/i.test(raw) &&
+            /(выда[а-я]*|получ[а-я]*|после обучен[а-я]*|после окончан[а-я]*|по окончан[а-я]*|итог[а-я]*)/i.test(raw)
+        ) ||
+        /(что выдают|что получу|диплом после|удостоверение после|документ после|фрдо)/i.test(raw);
+
     const bareDocuments = /^документ[а-я-]*$/i.test(raw);
 
     if (asksAdmissionDocs) {
         const facts = (owlBrainConfig().siteFacts || {}).admissionDocuments || {};
         const items = Array.isArray(facts.items) ? facts.items : [];
         const list = items.length
-            ? items.map(item => '• ' + escapeOwlText(item) + ';').join('<br>').replace(/;<br>$/, '.')
+            ? items.map((item, index) => '• ' + escapeOwlText(item) + (index === items.length - 1 ? '.' : ';')).join('<br>')
             : '• копия паспорта;<br>• СНИЛС;<br>• документ о текущем образовании — диплом СПО или ВО.';
 
         return {
@@ -193,6 +198,28 @@ function owlResolveSiteFaq(query) {
                 '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 Что выдадут после обучения</button>' +
                 '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
             intent:'faq-admission-documents'
+        };
+    }
+
+    if (asksOutcomeDoc) {
+        const facts = (owlBrainConfig().siteFacts || {}).outcomeDocuments || {};
+        const byType = facts.byType || {};
+        const pk = byType['повышение квалификации'] || 'удостоверение о повышении квалификации';
+        const pp = byType['профессиональная переподготовка'] || byType['проф. переподготовка'] || 'диплом о профессиональной переподготовке';
+
+        return {
+            handled:true,
+            html:
+                '<b>Документ зависит от вида программы:</b><br>' +
+                '• повышение квалификации — <b>' + escapeOwlText(pk) + '</b>;<br>' +
+                '• профессиональная переподготовка — <b>' + escapeOwlText(pp) + '</b>.' +
+                '<br><br>На сайте указано, что сведения о таких документах вносятся в <b>ФИС ФРДО</b>.' +
+                '<br><br><span class="owl-guided-hint">Если назовёте конкретную программу, я уточню документ именно по ней. Источник: ' +
+                escapeOwlText(facts.source || 'раздел «Официальные документы об образовании» на сайте') + '.</span>',
+            options:
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие документы нужны для поступления\')">📎 Документы для поступления</button>' +
+                '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
+            intent:'faq-outcome-documents'
         };
     }
 
@@ -2053,8 +2080,21 @@ function owlProgramAnswer(program, facets) {
         if (facet === 'dates') rows.push('📅 Сроки: <b>' + escapeOwlText(localizedProgramMeta(program, 'dates', currentLang) || 'не указаны') + '</b>');
         if (facet === 'format') rows.push('🎓 Форма: <b>' + escapeOwlText(localizedProgramMeta(program, 'format', currentLang) || 'не указана') + '</b>');
         if (facet === 'documents') {
-            const doc = currentLang === 'ru' ? program.document_ru : program.document_en;
-            rows.push('📄 Документ: <b>' + escapeOwlText(doc || 'в данных программы не указан') + '</b>');
+            let doc = currentLang === 'ru' ? program.document_ru : program.document_en;
+
+            if (!doc && currentLang === 'ru') {
+                const facts = (owlBrainConfig().siteFacts || {}).outcomeDocuments || {};
+                const byType = facts.byType || {};
+                const type = owlSmartNormalize(program.type || '');
+
+                if (type.includes('повышение квалификации')) {
+                    doc = byType['повышение квалификации'] || '';
+                } else if (type.includes('переподготов')) {
+                    doc = byType['профессиональная переподготовка'] || byType['проф. переподготовка'] || '';
+                }
+            }
+
+            rows.push('📄 Документ: <b>' + escapeOwlText(doc || 'для этой программы на сайте отдельно не указан') + '</b>');
         }
         if (facet === 'audience') {
             const value = currentLang === 'ru' ? program.audience_ru : program.audience_en;
@@ -2243,41 +2283,6 @@ function resolveOwlLocally(query) {
             html: 'Расписание можно открыть прямо здесь, не выходя из чата.',
             options: '<button class="chat-opt-btn" onclick="showSchedule()">📅 Открыть расписание</button>' + owlContactOptions(),
             intent: 'schedule'
-        };
-    }
-
-    const rawDocsQuery = normalizeText(String(query || '').replace(/ё/g, 'е'));
-    const asksAdmissionDocs =
-        /\b(какие|какой|что|нужн\w*|требу\w*|принести|предоставить|подать)\b.*\bдокумент\w*\b/i.test(rawDocsQuery) ||
-        /\bдокумент\w*\b.*\b(для поступления|для записи|для зачисления|для обучения|нужн\w*|требу\w*)\b/i.test(rawDocsQuery);
-
-    const asksOutcomeDoc =
-        /\b(что выдают|что получу|после окончания|по окончании|диплом|удостоверение|сертификат|фрдо)\b/i.test(rawDocsQuery);
-
-    const bareDocuments =
-        /^\s*документ(ы|а|ов)?[!?.\s]*$/i.test(rawDocsQuery);
-
-    if (asksAdmissionDocs && !asksOutcomeDoc) {
-        return {
-            handled:true,
-            html:
-                'Если вы спрашиваете о <b>документах для поступления/записи</b>: в данных сайта сейчас нет единого подтверждённого перечня для всех программ. Он может зависеть от программы и категории слушателя.' +
-                '<br><br>Могу помочь по конкретной программе или открыть контакты Центра, чтобы уточнить точный список без догадок.',
-            options:
-                '<button class="chat-opt-btn" onclick="openModal()">✍️ Открыть форму записи</button>' +
-                owlContactOptions(),
-            intent:'admission-documents'
-        };
-    }
-
-    if (bareDocuments) {
-        return {
-            handled:true,
-            html:'Уточните, пожалуйста: нужны <b>документы для поступления</b> или вы спрашиваете, <b>какой документ выдадут после обучения</b>?',
-            options:
-                '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие документы нужны для поступления\')">📎 Для поступления</button>' +
-                '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 После обучения</button>',
-            intent:'documents-clarify'
         };
     }
 
