@@ -13,7 +13,9 @@ window.OWL_BRAIN = {
     },
     escalation: {
         softOfferAfter: 2,
-        humanHandoffAfter: 4
+        humanHandoffAfter: 4,
+        unlockAdvancedAfter: 5,
+        extendedHandoffAfter: 3
     },
     conversationRules: {
         localFirst: true,
