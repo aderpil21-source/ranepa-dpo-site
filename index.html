@@ -3752,6 +3752,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (stage) stage.style.setProperty('--owl-step-x', '0px');
         if (a) a.classList.remove('owl-step-visible');
         if (b) b.classList.remove('owl-step-visible');
+
+        scheduleOwlBlink();
     }
 
     function scheduleOwlBlink() {
@@ -3762,7 +3764,15 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         owlBlinkTimer = setTimeout(() => {
             const sprite = document.getElementById('owlSprite');
             const container = document.getElementById('owlContainer');
-            if (!sprite || !container || !container.classList.contains('visible') || owlStepping) {
+            const chat = document.getElementById('owlChat');
+            if (
+                !sprite ||
+                !container ||
+                !container.classList.contains('visible') ||
+                owlStepping ||
+                document.visibilityState === 'hidden' ||
+                (chat && chat.classList.contains('active'))
+            ) {
                 scheduleOwlBlink();
                 return;
             }
