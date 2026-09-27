@@ -447,9 +447,9 @@ function renderRelated(){
   document.getElementById('relatedIntro').textContent=t.relatedIntro;
 
   const items=findRelatedPrograms(program,3);
-  if(!items.length){section.hidden=true;grid.innerHTML='';return;}
+  if(!items.length){section.hidden=true;grid.replaceChildren();return;}
 
-  grid.innerHTML='';
+  grid.replaceChildren();
   items.forEach(item=>{
     const a=document.createElement('a');
     a.className='related-card';
@@ -469,7 +469,11 @@ function renderRelated(){
 
     const meta=document.createElement('span');
     meta.className='related-meta';
-    meta.innerHTML='<span>💰 '+metaValue(item.price,currentLang)+'</span><span>⏱ '+metaValue(item.hours,currentLang)+'</span>';
+    const priceMeta=document.createElement('span');
+    priceMeta.textContent='💰 '+metaValue(item.price,currentLang);
+    const hoursMeta=document.createElement('span');
+    hoursMeta.textContent='⏱ '+metaValue(item.hours,currentLang);
+    meta.append(priceMeta,hoursMeta);
 
     const open=document.createElement('span');
     open.className='related-open';
@@ -527,11 +531,11 @@ function render(){
   setSection('audience',field('audience'),v=>document.getElementById('audience').textContent=v);
   setSection('goal',field('goal'),v=>document.getElementById('goal').textContent=v);
   setSection('outcomes',field('outcomes'),v=>{
-    const el=document.getElementById('outcomes');el.innerHTML='';
+    const el=document.getElementById('outcomes');el.replaceChildren();
     splitOutcomes(v).forEach(x=>{const li=document.createElement('li');li.textContent=x;el.appendChild(li);});
   });
   setSection('topics',field('topics')||((program['bullets_'+currentLang]||[])),v=>{
-    const el=document.getElementById('topics');el.innerHTML='';
+    const el=document.getElementById('topics');el.replaceChildren();
     const items=Array.isArray(v)?v:splitPipe(v);
     items.forEach(x=>{const li=document.createElement('li');li.textContent=x;el.appendChild(li);});
   });
@@ -553,7 +557,12 @@ async function init(){
   render();
   if(!programId){
     state.className='error';
-    state.innerHTML='<h1>'+ui[currentLang].notFound+'</h1><p>'+ui[currentLang].notFoundText+'</p>';
+    state.replaceChildren();
+    const h=document.createElement('h1');
+    h.textContent=ui[currentLang].notFound;
+    const p=document.createElement('p');
+    p.textContent=ui[currentLang].notFoundText;
+    state.append(h,p);
     return;
   }
   const loaded=await Promise.all([loadProgram(),loadSiteSettings(),loadProgramCatalog()]);
@@ -565,7 +574,12 @@ async function init(){
   if(program&&(siteVisibility.programs===false||siteVisibility['program:'+program.id]===false)) program=null;
   if(!program){
     state.className='error';
-    state.innerHTML='<h1>'+ui[currentLang].notFound+'</h1><p>'+ui[currentLang].notFoundText+'</p>';
+    state.replaceChildren();
+    const h=document.createElement('h1');
+    h.textContent=ui[currentLang].notFound;
+    const p=document.createElement('p');
+    p.textContent=ui[currentLang].notFoundText;
+    state.append(h,p);
     return;
   }
   state.hidden=true;
