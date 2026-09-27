@@ -1488,7 +1488,7 @@ function renderMediaLibrary(){
     $('mediaLibrary').innerHTML = items.map(m => `
         <div class="media-thumb ${m.isCover ? 'is-cover' : ''}">
             ${m.type === 'video'
-                ? `<video src="${escapeHtml(m.url)}" muted preload="metadata"></video>`
+                ? `<video src="${escapeHtml(safeMediaUrl(m.url))}" muted preload="metadata"></video>`
                 : `<img src="${escapeHtml(imageUrl(m.url))}" alt="" loading="lazy">`}
             ${m.isCover ? '<span class="media-thumb-badge">Обложка</span>' : ''}
             <div class="media-thumb-actions">
