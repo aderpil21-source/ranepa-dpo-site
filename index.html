@@ -1946,6 +1946,7 @@
             }
         });
     </script>
+    <script src="./owl-brain.js"></script>
     <script src="./portal-snapshot.js"></script>
 </body>
 
@@ -4382,15 +4383,29 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
             const safeAnswer = escapeOwlText(answerText).replace(/\n/g, '<br>');
             addBotMsg(safeAnswer);
+            owlResetUnresolved();
         } catch (error) {
             removeOwlThinking();
             console.warn('AI assistant fallback:', error && error.name ? error.name : error);
-            addBotMsg(
-                currentLang === 'ru'
-                    ? 'Сейчас не удалось получить расширенный ответ. Можно воспользоваться каталогом программ или попробовать ещё раз чуть позже.'
-                    : 'I could not get an extended answer right now. Please use the program catalog or try again a little later.'
-            );
-            offerAllPrograms(true);
+            const failures = owlRegisterUnresolved();
+            const escalation = owlBrainConfig().escalation || {};
+            if (failures >= Number(escalation.humanHandoffAfter || 4)) {
+                showOwlHumanHandoff('repeated');
+            } else {
+                addBotMsg(
+                    currentLang === 'ru'
+                        ? 'Сейчас не удалось получить расширенный ответ. Я могу попробовать помочь через каталог или передать вас сотруднику Центра.'
+                        : 'I could not get an extended answer right now. I can use the catalog or connect you with the Center staff.'
+                );
+                if (failures >= Number(escalation.softOfferAfter || 2)) {
+                    setOptions(
+                        '<button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Каталог программ</button>' +
+                        owlContactOptions()
+                    );
+                } else {
+                    offerAllPrograms(true);
+                }
+            }
         } finally {
             clearTimeout(timer);
             removeOwlThinking();
@@ -4522,6 +4537,12 @@ if (wantsNewsEditor) {
             return;
         }
 
+        const localResolution = resolveOwlLocally(text);
+        if (localResolution && localResolution.handled) {
+            await presentOwlLocal(localResolution, text);
+            return;
+        }
+
         const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
         const explicitlyNamed = findProgramsExplicitlyNamed(text);
 
@@ -4588,6 +4609,7 @@ if (wantsNewsEditor) {
     }
 
     function showProgramDetails(p) {
+        owlRememberProgram(p);
         const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
         const descKey = currentLang === 'ru' ? 'desc_ru' : 'desc_en';
         const bulletsKey = currentLang === 'ru' ? 'bullets_ru' : 'bullets_en';
@@ -4711,6 +4733,341 @@ if (wantsNewsEditor) {
     }
     function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
     function setOptions(html) { chatOptions.innerHTML = html; }
+
+    const OWL_STATE_KEY = 'ranepa_owl_conversation_v1';
+    let owlConversationState = {
+        unresolvedStreak: 0,
+        lastProgramId: null,
+        lastIntent: null
+    };
+
+    function loadOwlConversationState() {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem(OWL_STATE_KEY) || '{}');
+            if (saved && typeof saved === 'object') {
+                owlConversationState = Object.assign(owlConversationState, saved);
+            }
+        } catch (e) {}
+    }
+
+    function saveOwlConversationState() {
+        try {
+            sessionStorage.setItem(OWL_STATE_KEY, JSON.stringify(owlConversationState));
+        } catch (e) {}
+    }
+
+    function owlBrainConfig() {
+        return window.OWL_BRAIN || { intents:{}, replies:{}, contacts:{}, escalation:{} };
+    }
+
+    function owlSmartNormalize(value) {
+        let text = normalizeText(String(value || '').replace(/ё/g, 'е'));
+        const replacements = owlBrainConfig().replacements || {};
+        Object.keys(replacements).forEach(from => {
+            const normalizedFrom = normalizeText(from.replace(/ё/g, 'е'));
+            const normalizedTo = normalizeText(String(replacements[from] || '').replace(/ё/g, 'е'));
+            if (normalizedFrom) text = (' ' + text + ' ').split(' ' + normalizedFrom + ' ').join(' ' + normalizedTo + ' ').trim();
+        });
+        return text.replace(/\s+/g, ' ').trim();
+    }
+
+    function owlIntent(name, query) {
+        const list = (owlBrainConfig().intents || {})[name] || [];
+        const normalized = owlSmartNormalize(query);
+        return list.some(phrase => normalized.includes(owlSmartNormalize(phrase)));
+    }
+
+    function owlPickReply(value) {
+        if (Array.isArray(value)) {
+            if (!value.length) return '';
+            return value[Math.floor(Math.random() * value.length)];
+        }
+        return String(value || '');
+    }
+
+    function owlRememberProgram(program) {
+        if (!program || !program.id) return;
+        owlConversationState.lastProgramId = String(program.id);
+        owlConversationState.unresolvedStreak = 0;
+        saveOwlConversationState();
+    }
+
+    function owlResetUnresolved() {
+        owlConversationState.unresolvedStreak = 0;
+        saveOwlConversationState();
+    }
+
+    function owlRegisterUnresolved() {
+        owlConversationState.unresolvedStreak = Number(owlConversationState.unresolvedStreak || 0) + 1;
+        saveOwlConversationState();
+        return owlConversationState.unresolvedStreak;
+    }
+
+    function owlContactOptions() {
+        const contacts = owlBrainConfig().contacts || {};
+        return (
+            '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.phoneHref || 'tel:+74012972379') + '" style="display:block;text-align:center;text-decoration:none;">📞 ' +
+                escapeOwlText(contacts.phoneDisplay || '+7 (4012) 97-23-79') + '</a>' +
+            '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.emailHref || 'mailto:cdo-zf@ranepa.ru') + '" style="display:block;text-align:center;text-decoration:none;">✉️ ' +
+                escapeOwlText(contacts.email || 'cdo-zf@ranepa.ru') + '</a>' +
+            '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.vkUrl || 'https://vk.ru/ranepa_dpo39') + '" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:rgba(0,119,255,.12);border-color:#2787f5;color:#5aa7ff;">💬 Написать в VK</a>' +
+            '<button class="chat-opt-btn" onclick="resetMenu()">⬅️ В меню</button>'
+        );
+    }
+
+    function showOwlHumanHandoff(reason) {
+        removeOwlThinking();
+        const contacts = owlBrainConfig().contacts || {};
+        const prefix = reason === 'repeated'
+            ? 'Похоже, я несколько раз не смог точно понять ваш вопрос. Не хочу заставлять вас переформулировать его снова.'
+            : 'Если удобнее, можно сразу связаться с сотрудником Центра.';
+        addBotMsg(
+            prefix +
+            '<br><br>📞 <b>' + escapeOwlText(contacts.phoneDisplay || '+7 (4012) 97-23-79') + '</b>' +
+            '<br>✉️ <b>' + escapeOwlText(contacts.email || 'cdo-zf@ranepa.ru') + '</b>'
+        );
+        setOptions(owlContactOptions());
+    }
+
+    function owlVisibleProgramContext() {
+        let bestId = '';
+        let bestRatio = 0;
+        document.querySelectorAll('.tab-content.active .card[data-site-program-id]').forEach(card => {
+            const r = card.getBoundingClientRect();
+            const w = Math.max(0, Math.min(r.right, window.innerWidth) - Math.max(r.left, 0));
+            const h = Math.max(0, Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0));
+            const area = Math.max(1, r.width * r.height);
+            const ratio = (w * h) / area;
+            if (ratio > bestRatio) {
+                bestRatio = ratio;
+                bestId = card.dataset.siteProgramId || '';
+            }
+        });
+        if (bestRatio < .22 || !bestId) return null;
+        return globalPrograms.find(p => String(p.id || '') === bestId) || null;
+    }
+
+    function owlLastProgramContext() {
+        const id = owlConversationState.lastProgramId;
+        if (id) {
+            const remembered = globalPrograms.find(p => String(p.id || '') === String(id));
+            if (remembered) return remembered;
+        }
+        return owlVisibleProgramContext();
+    }
+
+    function owlRequestedFacets(query) {
+        const facets = [];
+        ['price','hours','dates','format','documents'].forEach(name => {
+            if (owlIntent(name, query)) facets.push(name);
+        });
+        return facets;
+    }
+
+    function owlQueryProgramTokens(query) {
+        const generic = new Set([
+            'сколько','цена','стоимость','стоит','часы','часов','объем','объём',
+            'срок','сроки','дата','даты','форма','обучение','программа','программы',
+            'курс','курсы','документ','диплом','удостоверение','сертификат','рублей',
+            'руб','какая','какой','какие','есть','меня','вас','этой','эта','этот',
+            'моей','моя','мой','про','для','скажите','подскажите','пожалуйста'
+        ]);
+        return owlSmartNormalize(query).split(' ').filter(w => w.length > 2 && !generic.has(w));
+    }
+
+    function owlProgramCandidates(query) {
+        const q = owlSmartNormalize(query);
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+
+        const exact = globalPrograms.filter(p => {
+            const title = owlSmartNormalize(p[titleKey] || '');
+            return title.length >= 8 && q.includes(title);
+        });
+        if (exact.length) return exact;
+
+        const tokens = owlQueryProgramTokens(query);
+        if (!tokens.length) {
+            const contextual = owlLastProgramContext();
+            return contextual ? [contextual] : [];
+        }
+
+        const scored = globalPrograms.map(program => {
+            const title = owlSmartNormalize(program[titleKey] || '');
+            const desc = owlSmartNormalize(program.desc_ru || '');
+            let score = 0;
+            tokens.forEach(token => {
+                if (title.includes(token)) score += 5;
+                else if (desc.includes(token)) score += 1;
+            });
+            return { program, score };
+        }).filter(x => x.score > 0).sort((a,b) => b.score - a.score);
+
+        if (!scored.length) {
+            const contextual = owlLastProgramContext();
+            return contextual ? [contextual] : [];
+        }
+
+        const top = scored[0].score;
+        return scored.filter(x => x.score >= Math.max(4, top - 1)).slice(0, 5).map(x => x.program);
+    }
+
+    function owlProgramAnswer(program, facets) {
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+        const rows = [];
+        const wanted = facets.length ? facets : ['price','hours','dates','format'];
+
+        wanted.forEach(facet => {
+            if (facet === 'price') rows.push('💰 Стоимость: <b>' + escapeOwlText(localizedProgramMeta(program, 'price', currentLang) || 'не указана') + '</b>');
+            if (facet === 'hours') rows.push('⏱ Объём: <b>' + escapeOwlText(localizedProgramMeta(program, 'hours', currentLang) || 'не указан') + '</b>');
+            if (facet === 'dates') rows.push('📅 Сроки: <b>' + escapeOwlText(localizedProgramMeta(program, 'dates', currentLang) || 'не указаны') + '</b>');
+            if (facet === 'format') rows.push('🎓 Форма: <b>' + escapeOwlText(localizedProgramMeta(program, 'format', currentLang) || 'не указана') + '</b>');
+            if (facet === 'documents') {
+                const doc = currentLang === 'ru' ? program.document_ru : program.document_en;
+                rows.push('📄 Документ: <b>' + escapeOwlText(doc || 'в данных программы не указан') + '</b>');
+            }
+        });
+
+        return '<b>' + escapeOwlText(program[titleKey] || '') + '</b><br><br>' + rows.join('<br>');
+    }
+
+    function owlProgramActionOptions(program) {
+        return (
+            '<button class="chat-opt-btn" onclick="showProgramDetailsById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">📘 Подробнее о программе</button>' +
+            '<button class="chat-opt-btn" onclick="openModal()">✍️ Записаться</button>' +
+            '<button class="chat-opt-btn" onclick="resetMenu()">⬅️ В меню</button>'
+        );
+    }
+
+    function owlCategoryPrograms(query) {
+        let filtered = [];
+        if (owlIntent('advancedTraining', query)) {
+            filtered = globalPrograms.filter(p => owlSmartNormalize(p.type || '').includes('повышение квалификации'));
+        } else if (owlIntent('retraining', query)) {
+            filtered = globalPrograms.filter(p => owlSmartNormalize(p.type || '').includes('переподготов'));
+        } else if (owlIntent('professionalTraining', query)) {
+            filtered = globalPrograms.filter(p => owlSmartNormalize(p.type || '').includes('профессиональн'));
+        } else if (owlIntent('seminars', query)) {
+            filtered = globalPrograms.filter(p => String(p.tab || '') === 'tab-sem');
+        }
+        return filtered.filter(p => p.active !== false);
+    }
+
+    function resolveOwlLocally(query) {
+        const brain = owlBrainConfig();
+        const replies = brain.replies || {};
+        const facets = owlRequestedFacets(query);
+
+        if (owlIntent('contacts', query)) {
+            return {
+                handled: true,
+                html: 'Конечно. Можно связаться с сотрудниками Центра напрямую:',
+                options: owlContactOptions(),
+                intent: 'contacts'
+            };
+        }
+
+        if (owlIntent('schedule', query)) {
+            return {
+                handled: true,
+                html: 'Расписание можно открыть прямо здесь, не выходя из чата.',
+                options: '<button class="chat-opt-btn" onclick="showSchedule()">📅 Открыть расписание</button>' + owlContactOptions(),
+                intent: 'schedule'
+            };
+        }
+
+        if (owlIntent('enroll', query) && !facets.length) {
+            return {
+                handled: true,
+                html: 'Помогу с записью. Можно сразу открыть форму записи или связаться с сотрудником, если нужна консультация.',
+                options: '<button class="chat-opt-btn" onclick="openModal()">✍️ Записаться на обучение</button>' + owlContactOptions(),
+                intent: 'enroll'
+            };
+        }
+
+        if (owlIntent('greeting', query)) {
+            return { handled:true, html:owlPickReply(replies.greeting), options:'', intent:'greeting' };
+        }
+
+        if (owlIntent('thanks', query)) {
+            return { handled:true, html:owlPickReply(replies.thanks), options:'', intent:'thanks' };
+        }
+
+        if (owlIntent('capabilities', query)) {
+            return { handled:true, html:owlPickReply(replies.capabilities), options:'', intent:'capabilities' };
+        }
+
+        const categoryPrograms = owlCategoryPrograms(query);
+        const asksPrograms = owlIntent('programs', query) || categoryPrograms.length > 0;
+
+        if (asksPrograms && categoryPrograms.length) {
+            const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+            let html = 'В этой категории сейчас <b>' + categoryPrograms.length + '</b> программ. Вот несколько вариантов:';
+            let options = '';
+            categoryPrograms.slice(0, 6).forEach(program => {
+                options += '<button class="chat-opt-btn" onclick="showProgramDetailsById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">' +
+                    escapeOwlText(program[titleKey] || '') + '<br><span style="font-size:.76rem;opacity:.75;">' +
+                    escapeOwlText(localizedProgramMeta(program, 'price', currentLang)) + ' · ' +
+                    escapeOwlText(localizedProgramMeta(program, 'hours', currentLang)) + '</span></button>';
+            });
+            options += '<button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Показать весь каталог</button>';
+            return { handled:true, html, options, intent:'programs' };
+        }
+
+        if (facets.length) {
+            const candidates = owlProgramCandidates(query);
+            if (candidates.length === 1) {
+                const program = candidates[0];
+                owlRememberProgram(program);
+                return {
+                    handled:true,
+                    html:owlProgramAnswer(program, facets),
+                    options:owlProgramActionOptions(program),
+                    intent:'program-facts'
+                };
+            }
+
+            if (candidates.length > 1) {
+                const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+                const titles = new Set(candidates.map(p => owlSmartNormalize(p[titleKey] || '')));
+                let options = '';
+                candidates.forEach(program => {
+                    options += '<button class="chat-opt-btn" onclick="showProgramDetailsById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">' +
+                        escapeOwlText(program[titleKey] || '') + '<br><span style="font-size:.76rem;opacity:.75;">' +
+                        escapeOwlText(localizedProgramMeta(program, 'price', currentLang)) + ' · ' +
+                        escapeOwlText(localizedProgramMeta(program, 'hours', currentLang)) + '</span></button>';
+                });
+                return {
+                    handled:true,
+                    html: titles.size === 1
+                        ? 'У этой программы есть несколько вариантов. Чтобы не назвать неверную стоимость или срок, выберите нужный:'
+                        : 'Нашёл несколько похожих программ. Какая из них имеется в виду?',
+                    options,
+                    intent:'program-clarify'
+                };
+            }
+        }
+
+        return { handled:false };
+    }
+
+    async function presentOwlLocal(result, query) {
+        if (!result || !result.handled) return false;
+        setOwlAiBusy(true);
+        showOwlThinking();
+        const delay = Math.min(720, 260 + String(query || '').length * 5 + Math.floor(Math.random() * 140));
+        await new Promise(resolve => setTimeout(resolve, delay));
+        removeOwlThinking();
+        addBotMsg(result.html || '');
+        if (result.options) setOptions(result.options);
+        owlConversationState.lastIntent = result.intent || null;
+        owlResetUnresolved();
+        setOwlAiBusy(false);
+        const input = document.getElementById('chatUserInput');
+        if (input) input.focus();
+        return true;
+    }
+
+    loadOwlConversationState();
 
     function resetMenu() {
         chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
