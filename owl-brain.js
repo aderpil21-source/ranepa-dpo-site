@@ -29,6 +29,17 @@ window.OWL_BRAIN = {
         avoidSendingUserBackToCurrentSite: true,
         askClarifyingQuestionOnlyWhenFactsWouldOtherwiseBeMixed: true
     },
+
+    siteFacts: {
+        admissionDocuments: {
+            source: "FAQ на главной странице сайта",
+            items: [
+                "копия паспорта",
+                "СНИЛС",
+                "документ о текущем образовании — диплом СПО или ВО"
+            ]
+        }
+    },
     replacements: {
         "скока": "сколько",
         "скоко": "сколько",
