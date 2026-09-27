@@ -446,14 +446,13 @@
         }
         .owl-media-stage {
             transform-origin: 50% 100%;
-            animation: owlBreathV2 5.2s ease-in-out infinite;
+            animation: owlBreathV2 6.8s ease-in-out infinite;
             will-change: transform, left;
             transition: left 190ms cubic-bezier(.22,.61,.36,1);
         }
         @keyframes owlBreathV2 {
-            0%, 100% { transform: scale3d(1, 1, 1); }
-            45%      { transform: scale3d(1.006, 1.016, 1); }
-            58%      { transform: scale3d(1.004, 1.010, 1); }
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-1.4px) scale(1.008); }
         }
 
         .owl-frame {
@@ -476,26 +475,9 @@
         .owl-frame-closed { opacity: 0; }
         .owl-container.owl-blink .owl-frame-open { opacity: 1; }
         .owl-container.owl-blink .owl-frame-closed { opacity: 0; }
-        /* Do not crop or swap the whole owl during a blink: that caused the
-           visible flash/jump in the screen recording. Eyelids are drawn as
-           two tiny overlays over the eyes, so body/feet remain pixel-stable. */
-        .owl-frame-open::before { content: none; }
-        .owl-eye-lid {
-            position: absolute;
-            top: 27.5%;
-            width: 17%;
-            height: 0;
-            border-radius: 50% 50% 58% 58%;
-            background: rgba(111,75,42,.96);
-            opacity: 0;
-            transform-origin: 50% 0;
-            transition: height 68ms ease-in, opacity 35ms linear;
-            pointer-events: none;
-            z-index: 6;
-        }
-        .owl-eye-lid.left { left: 29.5%; }
-        .owl-eye-lid.right { right: 29.5%; }
-        .owl-container.owl-blink .owl-eye-lid { height: 12%; opacity: 1; }
+        /* No synthetic eyelids: the photographic owl stays pixel-stable.
+           A real blink will only return when we have a matching transparent asset. */
+        .owl-eye-lid { display: none !important; }
 
         .owl-frame-step {
             opacity: 0;
@@ -3779,36 +3761,11 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
 
     function scheduleOwlBlink() {
+        // Deliberately disabled. CSS eyelids and whole-frame swaps both looked synthetic.
         clearTimeout(owlBlinkTimer);
-        if (owlMotionReduced() || isMobile()) return;
-
-        const delay = 4800 + Math.random() * 6200;
-        owlBlinkTimer = setTimeout(() => {
-            const sprite = document.getElementById('owlSprite');
-            const container = document.getElementById('owlContainer');
-            const chat = document.getElementById('owlChat');
-            if (
-                !sprite ||
-                !container ||
-                !container.classList.contains('visible') ||
-                owlStepping ||
-                document.visibilityState === 'hidden' ||
-                (chat && chat.classList.contains('active'))
-            ) {
-                scheduleOwlBlink();
-                return;
-            }
-
-            // Реалистичное моргание без смены всего изображения:
-            // сжимаем только верхнюю область кадра по вертикали. Это исключает
-            // прежнюю "вспышку" всего спрайта при переключении двух картинок.
-            sprite.classList.add('owl-blink');
-            clearTimeout(owlBlinkResetTimer);
-            owlBlinkResetTimer = setTimeout(() => {
-                sprite.classList.remove('owl-blink');
-                scheduleOwlBlink();
-            }, 165);
-        }, delay);
+        clearTimeout(owlBlinkResetTimer);
+        const sprite = document.getElementById('owlSprite');
+        if (sprite) sprite.classList.remove('owl-blink');
     }
 
     function preloadOwlStepFrames() {
@@ -3921,27 +3878,15 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
 
     function scheduleOwlStep() {
+        // Deliberately disabled until both legs exist in one anatomically consistent asset.
+        // Cycling separate AI frames changes face/feathers and reads as morphing.
         clearTimeout(owlStepTimer);
-        if (!owlStepFramesReady || owlMotionReduced() || owlLowPowerMode() || isMobile()) return;
-        owlStepTimer = setTimeout(runOwlWalkCycle, 8000 + Math.random() * 7000);
     }
 
     function initOwlMedia() {
-        const openFrame = document.getElementById('owlFrameOpen');
-        const closedFrame = document.getElementById('owlFrameClosed');
-        if (!openFrame || !closedFrame) return;
-
-        const ready = [];
-        if (typeof openFrame.decode === 'function') ready.push(openFrame.decode().catch(() => {}));
-        if (typeof closedFrame.decode === 'function') ready.push(closedFrame.decode().catch(() => {}));
-
-        Promise.all(ready).finally(() => {
-            scheduleOwlBlink();
-            preloadOwlStepFrames().then(results => {
-                owlStepFramesReady = results.every(Boolean);
-                if (owlStepFramesReady) scheduleOwlStep();
-            });
-        });
+        // Premium idle baseline: one stable transparent owl + restrained breathing only.
+        scheduleOwlBlink();
+        scheduleOwlStep();
     }
 
     let scrollMiniTimeout;
