@@ -677,7 +677,13 @@ const testQuestionsData = {
 const chatBody = document.getElementById('chatBody');
 const chatOptions = document.getElementById('chatOptions');
 
-function addUserMsg(text) { chatBody.innerHTML += `<div class="msg-user">${escapeOwlText(text)}</div>`; scrollToBottom(); }
+function addUserMsg(text) {
+    const node = document.createElement('div');
+    node.className = 'msg-user';
+    node.textContent = String(text || '');
+    chatBody.appendChild(node);
+    scrollToBottom();
+}
 function addBotMsg(text) {
     const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
     chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`;
@@ -688,14 +694,28 @@ function showOwlThinking() {
     removeOwlThinking();
     const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
     const label = currentLang === 'ru' ? 'думает' : 'is thinking';
-    chatBody.insertAdjacentHTML('beforeend',
-        `<div class="msg-bot" id="owlThinkingMsg"><b>${botName}</b>
-            <span class="msg-bot-thinking">
-                <span>${label}</span>
-                <span class="owl-thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            </span>
-        </div>`
-    );
+
+    const msg = document.createElement('div');
+    msg.className = 'msg-bot';
+    msg.id = 'owlThinkingMsg';
+
+    const name = document.createElement('b');
+    name.textContent = botName + ' ';
+
+    const thinking = document.createElement('span');
+    thinking.className = 'msg-bot-thinking';
+
+    const labelNode = document.createElement('span');
+    labelNode.textContent = label;
+
+    const dots = document.createElement('span');
+    dots.className = 'owl-thinking-dots';
+    dots.setAttribute('aria-hidden', 'true');
+    dots.append(document.createElement('i'), document.createElement('i'), document.createElement('i'));
+
+    thinking.append(labelNode, dots);
+    msg.append(name, thinking);
+    chatBody.appendChild(msg);
     scrollToBottom();
 }
 
@@ -1351,7 +1371,7 @@ function owlCandidateKeywordOptions() {
         .slice(0, 4)
         .map(([word]) =>
             '<button class="chat-opt-btn" onclick="owlAskPreset(\'что есть по ' +
-            String(word).replace(/'/g, "\\'") +
+            escapeOwlJsString(word) +
             '\')">🔎 ' + escapeOwlText(word.charAt(0).toUpperCase() + word.slice(1)) + '</button>'
         )
         .join('');
@@ -2596,7 +2616,9 @@ function askQuestion() {
     const q = testQuestionsData[currentLang][currentQ];
     addBotMsg(q.q);
     let html = '';
-    q.answers.forEach(a => { html += `<button class="chat-opt-btn" onclick="answerTest('${a.t.replace(/'/g, "\\'")}', '${a.v}')">${a.t}</button>`; });
+    q.answers.forEach(a => {
+        html += `<button class="chat-opt-btn" onclick="answerTest('${escapeOwlJsString(a.t)}', '${escapeOwlJsString(a.v)}')">${escapeOwlText(a.t)}</button>`;
+    });
     setOptions(html);
 }
 
