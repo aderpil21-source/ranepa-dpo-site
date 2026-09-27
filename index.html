@@ -4957,7 +4957,7 @@ if (wantsNewsEditor) {
 }
 // --- КОНЕЦ СЛУЖЕБНЫХ РЕЖИМОВ ---
 
-        if (await handleOwlNegativeFeedback(text)) {
+        if (await handleOwlNegativeFeedback(originalText)) {
             return;
         }
 
@@ -5724,19 +5724,29 @@ if (wantsNewsEditor) {
     }
 
     function owlIsNegativeFeedback(query) {
-        const normalized = owlSmartNormalize(query);
-        if (!normalized) return false;
+        const raw = normalizeText(String(query || '').replace(/ё/g, 'е')).trim();
+        if (!raw) return false;
 
+        // Обычный вопрос о программе нельзя принимать за отрицательную реакцию.
+        // Это особенно важно для фраз "сколько учиться...", "дорого ли...",
+        // "долго учиться..." и похожих естественных формулировок.
+        const looksLikeQuestion =
+            /^(сколько|какой|какая|какие|когда|где|как|можно|есть|что|чем|кому|для кого)\b/i.test(raw) ||
+            /\b(учиться|обучение|курс|программа|срок|цена|стоимость|час|формат|документ|закуп|горнич|бухгалт|туриз|гостин|кадр)\w*/i.test(raw);
+
+        const strongNegative =
+            /\b(неправильно|неверно|ошибка|мимо|бред|чушь|ерунда|фигня|тупишь|не понял|не поняла|не понимаешь|не то|не это|не подходит|не работает|не помогло|бесполезно|ответ не тот|это не ответ)\b/i.test(raw);
+
+        if (looksLikeQuestion && !strongNegative) return false;
+
+        const normalized = owlSmartNormalize(raw);
         const words = normalized.split(' ').filter(Boolean);
         const phrases = owlBrainConfig().negativeFeedback || [];
 
-        return phrases.some(raw => {
-            const phrase = owlSmartNormalize(raw);
+        return phrases.some(rawPhrase => {
+            const phrase = owlSmartNormalize(rawPhrase);
             if (!phrase || phrase === 'не') return false;
 
-            // Короткие отрицательные реакции часто приходят внутри фразы:
-            // "ты тупишь", "это бред", "совсем мимо".
-            // Ищем их как отдельное слово, а не требуем полного совпадения сообщения.
             if (!phrase.includes(' ') && phrase.length <= 8) {
                 return normalized === phrase || words.includes(phrase);
             }
@@ -6451,6 +6461,63 @@ if (wantsNewsEditor) {
         return facets;
     }
 
+    function owlWordRoot(word) {
+        let w = owlSmartNormalize(word).replace(/[^а-яa-z0-9-]/gi, '');
+        if (w.length <= 4) return w;
+
+        // Лёгкий русский стемминг для разговорных падежей:
+        // горничную -> горничн, закупками -> закупк, бухгалтерского -> бухгалтерск.
+        const endings = [
+            'иями','ями','ами','ого','ему','ому','ыми','ими','ую','юю','ая','яя','ое','ее',
+            'ые','ие','ый','ий','ой','ых','их','ам','ям','ах','ях','ом','ем','ов','ев',
+            'а','я','ы','и','у','ю','е','о','й','ь'
+        ];
+        for (const ending of endings) {
+            if (w.length - ending.length >= 4 && w.endsWith(ending)) {
+                w = w.slice(0, -ending.length);
+                break;
+            }
+        }
+        return w;
+    }
+
+    function owlTokenSimilar(a, b) {
+        const ra = owlWordRoot(a);
+        const rb = owlWordRoot(b);
+        if (!ra || !rb) return false;
+        if (ra === rb) return true;
+        const min = Math.min(ra.length, rb.length);
+        if (min < 4) return false;
+        const prefix = min >= 7 ? 6 : (min >= 5 ? 5 : 4);
+        return ra.slice(0, prefix) === rb.slice(0, prefix);
+    }
+
+    function owlProgramSearchAliases(tokens) {
+        const result = tokens.slice();
+        const add = (...words) => words.forEach(w => {
+            if (!result.includes(w)) result.push(w);
+        });
+
+        result.forEach(token => {
+            const r = owlWordRoot(token);
+            if (r.startsWith('закуп') || r === 'госзакуп') add('закупки','контрактная','контрактной','44-фз','223-фз');
+            if (r.startsWith('горнич')) add('горничная','гостиница','гостиничный','уборка','номеров');
+            if (r.startsWith('бухгалт')) add('бухгалтерский','учет','учёт');
+            if (r.startsWith('логист')) add('логистика','цепи','поставок');
+            if (r.startsWith('кадр')) add('кадры','персонал','управление персоналом');
+            if (r.startsWith('туриз')) add('туризм','гостеприимство','гостиничный');
+            if (r.startsWith('гостин')) add('гостиничный','гостеприимство','отель');
+            if (r.startsWith('антитер')) add('антитеррор','терроризм','безопасность');
+            if (r.startsWith('антикор')) add('антикоррупция','коррупция');
+            if (r.startsWith('охран') || r.startsWith('труд')) add('охрана труда','безопасность труда');
+            if (r.startsWith('пожар')) add('пожарная','безопасность');
+            if (r.startsWith('менедж')) add('менеджмент','управление');
+            if (r === 'ии' || r.startsWith('искусствен') || r.startsWith('нейросет')) add('ии','искусственный интеллект','нейросети');
+        });
+
+        return result;
+    }
+
     function owlQueryProgramTokens(query) {
         const generic = new Set([
             'сколько','цена','стоимость','стоит','часы','часов','объем','объём',
@@ -6458,22 +6525,13 @@ if (wantsNewsEditor) {
             'курс','курсы','документ','диплом','удостоверение','сертификат','рублей',
             'руб','какая','какой','какие','есть','меня','вас','этой','эта','этот',
             'моей','моя','мой','про','для','скажите','подскажите','пожалуйста',
-            'учиться','учатся','длится','идет','идёт'
+            'учиться','учатся','учусь','обучаться','длится','идет','идёт','занимает',
+            'время','долго','длительность','продолжительность','на'
         ]);
 
         const normalized = owlSmartNormalize(query);
         const tokens = normalized.split(' ').filter(w => w.length > 2 && !generic.has(w));
-
-        // Тема закупок в каталоге называется по-разному: "закупки",
-        // "контрактная система", "государственные и муниципальные закупки".
-        // Добавляем синонимы только для поиска по программе.
-        if (tokens.some(w => /^закуп/.test(w) || w === 'госзакупки')) {
-            ['закупки','контрактной','контрактная'].forEach(w => {
-                if (!tokens.includes(w)) tokens.push(w);
-            });
-        }
-
-        return tokens;
+        return owlProgramSearchAliases(tokens);
     }
 
     function owlProgramCandidates(query) {
@@ -6482,7 +6540,7 @@ if (wantsNewsEditor) {
 
         const exact = globalPrograms.filter(p => {
             const title = owlSmartNormalize(p[titleKey] || '');
-            return title.length >= 8 && q.includes(title);
+            return title.length >= 4 && (q.includes(title) || title.includes(q));
         });
         if (exact.length) return exact;
 
@@ -6494,12 +6552,30 @@ if (wantsNewsEditor) {
 
         const scored = globalPrograms.map(program => {
             const title = owlSmartNormalize(program[titleKey] || '');
-            const desc = owlSmartNormalize(program.desc_ru || '');
+            const titleWords = title.split(' ').filter(Boolean);
+            const desc = owlSmartNormalize([
+                program.desc_ru || '',
+                program.long_desc_ru || '',
+                program.topics_ru || '',
+                Array.isArray(program.bullets_ru) ? program.bullets_ru.join(' ') : '',
+                program.type || '',
+                program.sector || ''
+            ].join(' '));
+            const descWords = desc.split(' ').filter(Boolean);
+
             let score = 0;
             tokens.forEach(token => {
-                if (title.includes(token)) score += 5;
-                else if (desc.includes(token)) score += 1;
+                const titleExact = title.includes(token);
+                const titleRoot = titleWords.some(word => owlTokenSimilar(token, word));
+                const descExact = desc.includes(token);
+                const descRoot = descWords.some(word => owlTokenSimilar(token, word));
+
+                if (titleExact) score += 7;
+                else if (titleRoot) score += 6;
+                else if (descExact) score += 2;
+                else if (descRoot) score += 1.5;
             });
+
             return { program, score };
         }).filter(x => x.score > 0).sort((a,b) => b.score - a.score);
 
@@ -6509,7 +6585,10 @@ if (wantsNewsEditor) {
         }
 
         const top = scored[0].score;
-        return scored.filter(x => x.score >= Math.max(4, top - 1)).slice(0, 5).map(x => x.program);
+        return scored
+            .filter(x => x.score >= Math.max(4.5, top - 2))
+            .slice(0, 6)
+            .map(x => x.program);
     }
 
     function owlProgramAnswer(program, facets) {
