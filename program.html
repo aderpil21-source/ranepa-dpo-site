@@ -70,10 +70,22 @@
     body.modal-open{overflow:hidden}
     .secondary{display:block;text-align:center;text-decoration:none;border:1px solid var(--border);padding:12px 16px;border-radius:13px;font-weight:800;margin-top:9px}
     .status{padding:18px;border-radius:18px;border:1px dashed var(--border);color:var(--muted);background:rgba(255,255,255,.02)}
+    .related-section{margin-top:28px;padding:28px;border-radius:24px;background:linear-gradient(145deg,rgba(202,15,62,.10),rgba(56,189,248,.05)),var(--surface);border:1px solid var(--border);box-shadow:var(--shadow)}
+    .related-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:18px}
+    .related-head h2{margin:0;font-size:1.55rem}
+    .related-head p{margin:5px 0 0;color:var(--muted);max-width:720px}
+    .related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .related-card{display:flex;flex-direction:column;min-height:250px;padding:18px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid var(--border);text-decoration:none;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+    .related-card:hover{transform:translateY(-4px);border-color:rgba(202,15,62,.72);box-shadow:0 18px 40px rgba(0,0,0,.22)}
+    .related-type{font-size:.76rem;font-weight:850;color:#ff6b8e;margin-bottom:8px}
+    .related-title{font-weight:900;font-size:1.05rem;line-height:1.3;margin-bottom:9px}
+    .related-desc{color:var(--muted);font-size:.88rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+    .related-meta{display:flex;flex-wrap:wrap;gap:7px 10px;margin-top:auto;padding-top:16px;color:#dfe7f3;font-size:.8rem;font-weight:750}
+    .related-open{display:inline-block;margin-top:12px;color:#fff;font-weight:900;font-size:.84rem}
     .loading,.error{padding:60px 0;text-align:center;color:var(--muted)}
     .error h1{font-size:2rem;color:var(--text)}
     footer{padding:28px 0 48px;color:var(--muted);border-top:1px solid var(--border)}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}.side-card{position:static}.meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}.side-card{position:static}.meta{grid-template-columns:repeat(2,minmax(0,1fr))}.related-grid{grid-template-columns:1fr}}
     @media(max-width:620px){.wrap{width:min(100% - 20px,1180px)}.topbar{padding:10px 0}.hero{padding:22px;border-radius:20px}.meta{grid-template-columns:1fr}.section{padding:20px}.topic-grid{grid-template-columns:1fr}.back span{display:none}}
   </style>
 </head>
@@ -127,6 +139,16 @@
         </div>
       </aside>
     </div>
+
+    <section class="related-section" id="relatedSection" hidden>
+      <div class="related-head">
+        <div>
+          <h2 id="relatedTitle">Вас также может заинтересовать</h2>
+          <p id="relatedIntro">Похожие программы по тематике, формату и объёму обучения.</p>
+        </div>
+      </div>
+      <div class="related-grid" id="relatedGrid"></div>
+    </section>
   </div>
 </main>
 
@@ -153,6 +175,8 @@ const qs=new URLSearchParams(location.search);
 const programId=(qs.get('id')||'').trim();
 let currentLang=qs.get('lang')==='en'?'en':'ru';
 let program=null;
+let allPrograms=[];
+let siteVisibility={};
 let siteContentOverrides={};
 const SITE_SETTINGS_ID='__site_admin_settings__';
 const SITE_ADMIN_API='https://script.google.com/macros/s/AKfycbznjvWDxlxxlANkzTCChnvlyEbW3N74vpOEE8pJaccExiXQG7DZU1SghQApDslMNEOk/exec';
@@ -175,6 +199,9 @@ const ui={
     enrollPolicy:'Переход к сервису регистрации откроется в новой вкладке. Условия обработки данных применяются в соответствии с политиками РАНХиГС и выбранного сервиса.',
     enrollClose:'Закрыть окно',
     preparing:'Подробная информация по этой программе ещё сверяется с официальными источниками. Короткое описание и основные параметры уже доступны.',
+    relatedTitle:'Вас также может заинтересовать',
+    relatedIntro:'Три похожие программы по тематике, типу, объёму и стоимости.',
+    relatedOpen:'Открыть программу →',
     footer:'Западный филиал РАНХиГС • Центр дополнительного образования'
   },
   en:{
@@ -194,6 +221,9 @@ const ui={
     enrollPolicy:'The registration service will open in a new tab. Personal data is processed under the applicable RANEPA and selected service policies.',
     enrollClose:'Close dialog',
     preparing:'Detailed information for this program is still being verified against official source documents. The short description and core program details are already available.',
+    relatedTitle:'You may also be interested in',
+    relatedIntro:'Three similar programs based on topic, type, duration, and tuition.',
+    relatedOpen:'Open program →',
     footer:'RANEPA Western Branch • Center for Continuing Professional Education'
   }
 };
@@ -244,6 +274,17 @@ async function loadProgram(){
     if(!local&&portal) local=portal;
   }catch(e){}
   return local;
+}
+
+async function loadProgramCatalog(){
+  const bucket=Math.floor(Date.now()/(5*60*1000));
+  try{
+    const data=await getJson('./portal-data.json?v='+bucket);
+    const arr=Array.isArray(data)?data:(data&&Array.isArray(data.programs)?data.programs:[]);
+    return arr.filter(p=>truthyActive(p.active));
+  }catch(e){
+    return [];
+  }
 }
 
 function metaValue(value,lang){
@@ -335,6 +376,110 @@ function setLanguage(lang){
   history.replaceState(null,'',u);
   render();
 }
+function relatedNormalize(value){
+  return String(value||'').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9\s-]/gi,' ').replace(/\s+/g,' ').trim();
+}
+function relatedWords(value){
+  const stop=new Set(['для','или','при','что','это','как','курс','программа','обучение','повышение','квалификации','профессиональная','профессиональной']);
+  return relatedNormalize(value).split(' ').filter(w=>w.length>3&&!stop.has(w));
+}
+function relatedNumber(value){
+  const n=parseInt(String(value||'').replace(/[^\d]/g,''),10);
+  return Number.isFinite(n)?n:0;
+}
+function findRelatedPrograms(source,limit){
+  if(!source) return [];
+  const sourceWords=new Set(relatedWords(
+    (source.title_ru||'')+' '+(source.desc_ru||'')+' '+(Array.isArray(source.bullets_ru)?source.bullets_ru.join(' '):'')
+  ));
+  const sourceHours=relatedNumber(source.hours);
+  const sourcePrice=relatedNumber(source.price);
+
+  return allPrograms
+    .filter(p=>p&&String(p.id||'')!==String(source.id||''))
+    .filter(p=>siteVisibility['program:'+p.id]!==false)
+    .filter(p=>relatedNormalize(p.title_ru||'')!==relatedNormalize(source.title_ru||''))
+    .map(p=>{
+      let score=0;
+      if(p.type&&source.type&&relatedNormalize(p.type)===relatedNormalize(source.type)) score+=8;
+      if(p.sector&&source.sector&&p.sector===source.sector) score+=7;
+      if(p.tab&&source.tab&&p.tab===source.tab) score+=4;
+
+      relatedWords(
+        (p.title_ru||'')+' '+(p.desc_ru||'')+' '+(Array.isArray(p.bullets_ru)?p.bullets_ru.join(' '):'')
+      ).forEach(w=>{if(sourceWords.has(w)) score+=1.4;});
+
+      const h=relatedNumber(p.hours);
+      if(sourceHours&&h){
+        const d=Math.abs(h-sourceHours)/Math.max(h,sourceHours);
+        if(d<.15) score+=3; else if(d<.35) score+=1.5;
+      }
+
+      const price=relatedNumber(p.price);
+      if(sourcePrice&&price){
+        const d=Math.abs(price-sourcePrice)/Math.max(price,sourcePrice);
+        if(d<.18) score+=2; else if(d<.4) score+=1;
+      }
+
+      return {p,score};
+    })
+    .filter(x=>x.score>0)
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,limit||3)
+    .map(x=>x.p);
+}
+function relatedText(program,field){
+  if(currentLang==='en'){
+    const en=String(program[field+'_en']||'').trim();
+    if(en) return en;
+  }
+  return String(program[field]||program[field+'_ru']||'').trim();
+}
+function renderRelated(){
+  const section=document.getElementById('relatedSection');
+  const grid=document.getElementById('relatedGrid');
+  if(!section||!grid||!program){return;}
+
+  const t=ui[currentLang];
+  document.getElementById('relatedTitle').textContent=t.relatedTitle;
+  document.getElementById('relatedIntro').textContent=t.relatedIntro;
+
+  const items=findRelatedPrograms(program,3);
+  if(!items.length){section.hidden=true;grid.innerHTML='';return;}
+
+  grid.innerHTML='';
+  items.forEach(item=>{
+    const a=document.createElement('a');
+    a.className='related-card';
+    a.href='program.html?id='+encodeURIComponent(item.id)+'&lang='+encodeURIComponent(currentLang);
+
+    const type=document.createElement('span');
+    type.className='related-type';
+    type.textContent=metaValue(item.type,currentLang);
+
+    const title=document.createElement('span');
+    title.className='related-title';
+    title.textContent=currentLang==='en'?(item.title_en||item.title_ru):(item.title_ru||item.title_en);
+
+    const desc=document.createElement('span');
+    desc.className='related-desc';
+    desc.textContent=currentLang==='en'?(item.desc_en||item.desc_ru):(item.desc_ru||item.desc_en);
+
+    const meta=document.createElement('span');
+    meta.className='related-meta';
+    meta.innerHTML='<span>💰 '+metaValue(item.price,currentLang)+'</span><span>⏱ '+metaValue(item.hours,currentLang)+'</span>';
+
+    const open=document.createElement('span');
+    open.className='related-open';
+    open.textContent=t.relatedOpen;
+
+    a.append(type,title,desc,meta,open);
+    grid.appendChild(a);
+  });
+
+  section.hidden=false;
+}
+
 function render(){
   const t=ui[currentLang];
   document.getElementById('brandName').textContent=t.brandName;
@@ -398,6 +543,7 @@ function render(){
   const note=document.getElementById('detailNote');
   note.hidden=complete;
   note.textContent=t.preparing;
+  renderRelated();
 }
 async function init(){
   const state=document.getElementById('state');
@@ -408,12 +554,13 @@ async function init(){
     state.innerHTML='<h1>'+ui[currentLang].notFound+'</h1><p>'+ui[currentLang].notFoundText+'</p>';
     return;
   }
-  const loaded=await Promise.all([loadProgram(),loadSiteSettings()]);
+  const loaded=await Promise.all([loadProgram(),loadSiteSettings(),loadProgramCatalog()]);
   program=loaded[0];
   const settings=loaded[1]||{visibility:{},content:{}};
-  const visibility=settings.visibility||{};
+  allPrograms=loaded[2]||[];
+  siteVisibility=settings.visibility||{};
   siteContentOverrides=settings.content||{};
-  if(program&&(visibility.programs===false||visibility['program:'+program.id]===false)) program=null;
+  if(program&&(siteVisibility.programs===false||siteVisibility['program:'+program.id]===false)) program=null;
   if(!program){
     state.className='error';
     state.innerHTML='<h1>'+ui[currentLang].notFound+'</h1><p>'+ui[currentLang].notFoundText+'</p>';
