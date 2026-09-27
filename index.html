@@ -406,12 +406,8 @@
             pointer-events: none;
             transform-origin: bottom right;
         }
-        .owl-ecosystem.visible {
-            bottom: 0;
-            right: var(--owl-safe-right, -12px);
-            pointer-events: auto;
-        }
-        .owl-ecosystem.scroll-mini { transform: scale(0.5); }
+        .owl-ecosystem.visible { bottom: 0; right: -12px; pointer-events: auto; }
+        .owl-ecosystem.scroll-mini { transform: scale(0.65); }
 
         .oak-branch {
             position: absolute;
@@ -519,9 +515,9 @@
         }
         @keyframes owlBreathV2 {
             0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
-            28% { transform: translateX(-50%) translateY(-0.8px) scale(1.004); }
-            52% { transform: translateX(-50%) translateY(-1.9px) scale(1.010); }
-            74% { transform: translateX(-50%) translateY(-0.5px) scale(1.003); }
+            28% { transform: translateX(-50%) translateY(-1.04px) scale(1.0052); }
+            52% { transform: translateX(-50%) translateY(-2.47px) scale(1.013); }
+            74% { transform: translateX(-50%) translateY(-0.65px) scale(1.0039); }
         }
         @keyframes owlMicroDepth {
             0%, 100% { filter:
@@ -3949,40 +3945,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         clearTimeout(owlStepTimer);
     }
 
-    function updateOwlSafeLane() {
-        const ecosystem = document.getElementById('owlContainer');
-        if (!ecosystem || isMobile()) return;
-
-        const activeCards = Array.from(document.querySelectorAll('.tab-content.active .card'));
-        if (!activeCards.length) {
-            ecosystem.style.setProperty('--owl-safe-right', '-12px');
-            return;
-        }
-
-        // Right edge of the actual program-card grid, not the outer page container.
-        const cardsRight = activeCards.reduce((maxRight, card) => {
-            const r = card.getBoundingClientRect();
-            return Math.max(maxRight, r.right);
-        }, 0);
-
-        // At the left end of the branch the visible owl begins ~117px inside
-        // the 500px ecosystem (6px stage start + centered 168px owl in 390px stage).
-        // Keep an additional visual gap so feathers/shadow never touch a card.
-        const owlLeftInsideEcosystem = 117;
-        const safeGap = 18;
-        const ecosystemWidth = 500;
-
-        const desiredEcosystemLeft = cardsRight + safeGap - owlLeftInsideEcosystem;
-        let safeRight = window.innerWidth - desiredEcosystemLeft - ecosystemWidth;
-
-        // Never pull the owl left of its original position. Allow it to move
-        // further off-screen to preserve the card-safe lane on narrower desktops.
-        safeRight = Math.min(-12, safeRight);
-        safeRight = Math.max(-280, safeRight);
-
-        ecosystem.style.setProperty('--owl-safe-right', Math.round(safeRight) + 'px');
-    }
-
     function updateOwlTravelRange() {
         const container = document.getElementById('owlContainer');
         const stage = document.getElementById('owlMediaStage');
@@ -4004,7 +3966,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
 
     function initOwlMedia() {
-        updateOwlSafeLane();
         updateOwlTravelRange();
         scheduleOwlBlink();
         scheduleOwlStep();
@@ -4025,7 +3986,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         clearTimeout(scrollMiniTimeout);
         scrollMiniTimeout = setTimeout(() => {
             container.classList.remove('scroll-mini');
-            updateOwlSafeLane();
             scheduleOwlStep();
         }, 450);
 
@@ -4084,7 +4044,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
     window.addEventListener('resize', updateScrollNav, { passive: true });
     window.addEventListener('resize', updateOwlTravelRange, { passive: true });
-    window.addEventListener('resize', updateOwlSafeLane, { passive: true });
 
     let owlI18nData = null;
     let owlI18nPromise = null;
