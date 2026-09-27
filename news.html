@@ -1041,8 +1041,20 @@ async function fetchNews(){
     if (adminToken){
         stopPublicNewsPolling();
         try {
-            const url = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
-            const data = await requestJson(url, { method:'GET' });
+            let data;
+            try {
+                data = await requestJson(CONFIG.api, {
+                    method:'POST',
+                    headers:{ 'Content-Type':'application/json' },
+                    body: JSON.stringify({ action:'newsReadAdmin', token:adminToken })
+                });
+                if (!data || data.error === 'unknown_action') throw new Error('NEWS_READ_ADMIN_UNAVAILABLE');
+            } catch(postError) {
+                // Временная совместимость со старым Apps Script deployment.
+                // После выкладки newsReadAdmin этот GET-fallback можно удалить.
+                const legacyUrl = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
+                data = await requestJson(legacyUrl, { method:'GET' });
+            }
             newsItems = (data.items || []).filter(n => !isSystemNewsItem(n));
             cacheNews(newsItems);
             renderGrid();
