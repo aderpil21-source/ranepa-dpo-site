@@ -474,19 +474,25 @@
         }
         .owl-frame-open { opacity: 1; }
         .owl-frame-closed { opacity: 0; }
-        .owl-container.owl-blink .owl-frame-open { opacity: 0; }
-        .owl-container.owl-blink .owl-frame-closed { opacity: 1; }
+        .owl-container.owl-blink .owl-frame-open { opacity: 1; }
+        .owl-container.owl-blink .owl-frame-closed { opacity: 0; }
+        /* Blink is a local eyelid-like squash, not a whole-frame flash. */
+        .owl-container.owl-blink .owl-frame-open {
+            clip-path: inset(0 0 48% 0);
+            transform: translateX(-50%) scaleY(.985);
+            transition: clip-path 82ms ease-in-out, transform 82ms ease-in-out;
+        }
 
         .owl-frame-step {
             opacity: 0;
-            transition: opacity 75ms linear;
+            transition: opacity 120ms ease-in-out;
         }
         .owl-frame-step.owl-step-visible { opacity: 1; }
         .owl-container.owl-stepping .owl-frame-open,
         .owl-container.owl-stepping .owl-frame-closed { opacity: 0 !important; }
         .owl-media-stage {
             translate: var(--owl-step-x, 0px) 0;
-            transition: translate 120ms cubic-bezier(.22,.61,.36,1);
+            transition: translate 230ms cubic-bezier(.22,.61,.36,1);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -3777,20 +3783,15 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                 return;
             }
 
+            // Реалистичное моргание без смены всего изображения:
+            // сжимаем только верхнюю область кадра по вертикали. Это исключает
+            // прежнюю "вспышку" всего спрайта при переключении двух картинок.
             sprite.classList.add('owl-blink');
             clearTimeout(owlBlinkResetTimer);
             owlBlinkResetTimer = setTimeout(() => {
                 sprite.classList.remove('owl-blink');
-
-                if (Math.random() < 0.16) {
-                    setTimeout(() => {
-                        if (owlStepping) return;
-                        sprite.classList.add('owl-blink');
-                        setTimeout(() => sprite.classList.remove('owl-blink'), 115);
-                    }, 165);
-                }
                 scheduleOwlBlink();
-            }, 135);
+            }, 165);
         }, delay);
     }
 
@@ -3843,14 +3844,17 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         // Настоящий перебор лап: 4 шага вправо и 4 шага обратно.
         // Корпус перемещается только вместе с фазой постановки лап.
         const frames = [
-            {src:OWL_STEP_FRAMES[0], x:6},
-            {src:OWL_STEP_FRAMES[1], x:15},
-            {src:OWL_STEP_FRAMES[2], x:26},
-            {src:OWL_STEP_FRAMES[3], x:36},
-            {src:OWL_STEP_FRAMES[2], x:30},
-            {src:OWL_STEP_FRAMES[1], x:20},
-            {src:OWL_STEP_FRAMES[0], x:10},
-            {src:OWL_STEP_FRAMES[3], x:0}
+            // 1→2 lifts the owl's right foot, 2→3 transfers weight,
+            // 3→4 plants both feet; reverse order animates the other leg.
+            {src:OWL_STEP_FRAMES[3], x:0,   ms:220},
+            {src:OWL_STEP_FRAMES[0], x:5,   ms:240},
+            {src:OWL_STEP_FRAMES[1], x:11,  ms:250},
+            {src:OWL_STEP_FRAMES[2], x:17,  ms:240},
+            {src:OWL_STEP_FRAMES[3], x:23,  ms:300},
+            {src:OWL_STEP_FRAMES[2], x:18,  ms:240, mirror:true},
+            {src:OWL_STEP_FRAMES[1], x:12,  ms:250, mirror:true},
+            {src:OWL_STEP_FRAMES[0], x:6,   ms:240, mirror:true},
+            {src:OWL_STEP_FRAMES[3], x:0,   ms:320}
         ];
 
         let i = 0;
@@ -3888,11 +3892,13 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
             const step = frames[i++];
             stage.style.setProperty('--owl-step-x', step.x + 'px');
+            // Mirroring the return half makes the opposite leg lead instead
+            // of replaying the same foot motion twice.
+            const current = document.getElementById(slot ? 'owlStepB' : 'owlStepA');
+            if (current) current.style.scale = step.mirror ? '-1 1' : '1 1';
             setOwlStepFrame(step.src, slot);
             slot = 1 - slot;
-
-            const pause = i === 4 ? 360 : 175;
-            setTimeout(advance, pause);
+            setTimeout(advance, step.ms);
         };
 
         advance();
