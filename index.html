@@ -409,6 +409,46 @@
         .owl-ecosystem.visible { bottom: 0; right: -12px; pointer-events: auto; }
         .owl-ecosystem.scroll-mini { transform: scale(0.65); }
 
+        .owl-visibility-toggle {
+            position: absolute;
+            right: 10px;
+            top: 118px;
+            z-index: 10020;
+            border: 1px solid rgba(255,255,255,.18);
+            background: rgba(5,8,20,.82);
+            color: #fff;
+            padding: 8px 11px;
+            border-radius: 999px;
+            font-size: .72rem;
+            font-weight: 800;
+            letter-spacing: .01em;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 22px rgba(0,0,0,.34);
+            transition: transform .2s ease, opacity .2s ease, background .2s ease;
+            pointer-events: auto;
+            white-space: nowrap;
+        }
+        .owl-visibility-toggle:hover { transform: translateY(-1px); background: rgba(15,23,42,.94); }
+        .owl-ecosystem.owl-user-hidden .oak-branch,
+        .owl-ecosystem.owl-user-hidden .owl-container { display: none !important; }
+        .owl-ecosystem.owl-user-hidden {
+            width: 150px;
+            height: 56px;
+            right: 8px;
+            bottom: 8px;
+            transform: none !important;
+            pointer-events: none;
+        }
+        .owl-ecosystem.owl-user-hidden .owl-visibility-toggle {
+            position: fixed;
+            right: 14px;
+            bottom: 14px;
+            top: auto;
+            pointer-events: auto;
+        }
+
         .oak-branch {
             position: absolute;
             bottom: 7px;
@@ -1702,6 +1742,14 @@
     </div>
 
     <div class="owl-ecosystem" id="owlContainer">
+        <button
+            class="owl-visibility-toggle"
+            id="owlVisibilityToggle"
+            type="button"
+            aria-pressed="false"
+            aria-label="Скрыть сову"
+            onclick="event.stopPropagation(); toggleOwlVisibility();"
+        >Скрыть сову</button>
         <svg class="oak-branch" viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
                 <linearGradient id="barkGrad" x1="0" y1="0" x2="0" y2="1">
@@ -3965,7 +4013,33 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         stage.style.setProperty('--owl-travel-x', travelDistance + 'px');
     }
 
+    const OWL_VISIBILITY_KEY = 'ranepa_owl_hidden_v1';
+
+    function applyOwlVisibilityPreference() {
+        const ecosystem = document.getElementById('owlContainer');
+        const toggle = document.getElementById('owlVisibilityToggle');
+        if (!ecosystem || !toggle) return;
+
+        let hidden = false;
+        try { hidden = localStorage.getItem(OWL_VISIBILITY_KEY) === '1'; } catch (e) {}
+
+        ecosystem.classList.toggle('owl-user-hidden', hidden);
+        toggle.textContent = hidden ? 'Показать сову' : 'Скрыть сову';
+        toggle.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+        toggle.setAttribute('aria-label', hidden ? 'Показать сову' : 'Скрыть сову');
+    }
+
+    function toggleOwlVisibility() {
+        const ecosystem = document.getElementById('owlContainer');
+        if (!ecosystem) return;
+
+        const hidden = !ecosystem.classList.contains('owl-user-hidden');
+        try { localStorage.setItem(OWL_VISIBILITY_KEY, hidden ? '1' : '0'); } catch (e) {}
+        applyOwlVisibilityPreference();
+    }
+
     function initOwlMedia() {
+        applyOwlVisibilityPreference();
         updateOwlTravelRange();
         scheduleOwlBlink();
         scheduleOwlStep();
