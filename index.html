@@ -1846,7 +1846,28 @@
         <div class="modal-box chrome-glass" style="max-width:460px;">
             <h3 style="margin-bottom:10px;">Pro режим</h3>
             <p class="site-admin-login-note">Введите пароль Pro-режима. Он проверяется сервером и не хранится в коде сайта.</p>
-            <input type="password" id="siteAdminPasswordInput" class="chat-text-input" autocomplete="current-password" placeholder="Пароль">
+            <form id="siteAdminCredentialForm" autocomplete="off" onsubmit="event.preventDefault(); submitSiteAdminLogin();">
+                <input
+                    type="text"
+                    name="username"
+                    value="ranepa-site-admin"
+                    autocomplete="username"
+                    tabindex="-1"
+                    aria-hidden="true"
+                    style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-10000px;top:auto;"
+                >
+                <input
+                    type="password"
+                    id="siteAdminPasswordInput"
+                    name="site_admin_password"
+                    class="chat-text-input"
+                    autocomplete="current-password"
+                    placeholder="Пароль"
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                    data-bwignore="true"
+                >
+            </form>
             <div id="siteAdminLoginError" style="display:none;color:var(--ranepa-red);font-weight:800;margin:10px 0;"></div>
             <button class="modal-btn" id="siteAdminLoginBtn" type="button" onclick="submitSiteAdminLogin()" style="background:linear-gradient(135deg,#29345B,#CA0F3E);border:none;text-align:center;">Войти в Pro режим</button>
             <div class="close-modal" onclick="closeSiteAdminLogin()">Отмена</div>
@@ -2001,7 +2022,25 @@
         </div>
         
         <div class="chat-input-box">
-            <input type="text" id="chatUserInput" class="chat-text-input" placeholder="Введите код лекции, название программы или вопрос..." data-i18n-placeholder="chatPlaceholder" onkeydown="if(event.key === 'Enter') handleUserMessage()">
+            <input
+                type="text"
+                id="chatUserInput"
+                class="chat-text-input"
+                name="owl_chat_query"
+                placeholder="Введите код лекции, название программы или вопрос..."
+                data-i18n-placeholder="chatPlaceholder"
+                aria-label="Сообщение цифровому ассистенту"
+                autocomplete="off"
+                autocapitalize="sentences"
+                autocorrect="on"
+                spellcheck="true"
+                enterkeyhint="send"
+                inputmode="text"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                data-bwignore="true"
+                onkeydown="if(event.key === 'Enter') handleUserMessage()"
+            >
             <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
         </div>
 
