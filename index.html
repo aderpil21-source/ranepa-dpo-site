@@ -4282,12 +4282,28 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         return (s || '').toLowerCase().replace(/[«»"'.,!?;:()]/g, '').replace(/\s+/g, ' ').trim();
     }
     function matchScore(query, title) {
-        const qWords = normalizeText(query).split(' ').filter(w => w.length > 2);
-        const tWords = normalizeText(title).split(' ').filter(w => w.length > 2);
+        const normalizedQuery = normalizeText(query);
+        const normalizedTitle = normalizeText(title);
+        if (normalizedTitle && normalizedTitle.length >= 8 && normalizedQuery.includes(normalizedTitle)) {
+            return 1;
+        }
+
+        const qWords = normalizedQuery.split(' ').filter(w => w.length > 2);
+        const tWords = normalizedTitle.split(' ').filter(w => w.length > 2);
         if (!qWords.length || !tWords.length) return 0;
         let hits = 0;
         qWords.forEach(qw => { if (tWords.some(tw => tw.includes(qw) || qw.includes(tw))) hits++; });
         return hits / qWords.length;
+    }
+
+    function findProgramsExplicitlyNamed(query) {
+        const normalizedQuery = normalizeText(query);
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+
+        return globalPrograms.filter(program => {
+            const title = normalizeText(program[titleKey] || '');
+            return title.length >= 8 && normalizedQuery.includes(title);
+        });
     }
 
     const OWL_AI_ENDPOINT = 'https://functions.yandexcloud.net/d4eatbt80ae5r5402i3g';
@@ -4507,6 +4523,40 @@ if (wantsNewsEditor) {
         }
 
         const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+        const explicitlyNamed = findProgramsExplicitlyNamed(text);
+
+        if (explicitlyNamed.length === 1) {
+            showProgramDetails(explicitlyNamed[0]);
+            return;
+        }
+
+        if (explicitlyNamed.length > 1) {
+            const sameTitle = explicitlyNamed.every(
+                item => normalizeText(item[titleKey]) === normalizeText(explicitlyNamed[0][titleKey])
+            );
+
+            if (sameTitle) {
+                addBotMsg(
+                    currentLang === 'ru'
+                        ? 'В каталоге есть несколько вариантов этой программы. У них отличаются стоимость и сроки. Выберите нужный вариант:'
+                        : 'There are several variants of this program with different tuition and dates. Choose the relevant one:'
+                );
+
+                let html = '';
+                explicitlyNamed.forEach(program => {
+                    const price = localizedProgramMeta(program, 'price', currentLang);
+                    const hours = localizedProgramMeta(program, 'hours', currentLang);
+                    const dates = localizedProgramMeta(program, 'dates', currentLang);
+                    const badge = program.tab === 'tab-kadry'
+                        ? (currentLang === 'ru' ? ' · Кадры' : ' · Kadry')
+                        : '';
+                    html += `<button class="chat-opt-btn" onclick="showProgramDetailsById('${program.id}')">${escapeOwlText(price)} · ${escapeOwlText(hours)}${badge}<br><span style="font-size:.76rem;opacity:.75;">${escapeOwlText(dates)}</span></button>`;
+                });
+                setOptions(html);
+                return;
+            }
+        }
+
         const scored = globalPrograms
             .map(p => ({ p, score: matchScore(text, p[titleKey]) }))
             .filter(x => x.score > 0.4)
