@@ -4322,7 +4322,14 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message: String(message || '').slice(0, 800) })
+                body: JSON.stringify({
+                    message: String(message || '').slice(0, 800),
+                    pageContext: {
+                        site: 'ranepa-dpo39.ru',
+                        page: location.pathname || '/',
+                        alreadyOnSite: true
+                    }
+                })
             });
 
             let data = null;
@@ -4338,7 +4345,26 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             }
 
             removeOwlThinking();
-            const safeAnswer = escapeOwlText(data.answer).replace(/\n/g, '<br>');
+
+            let answerText = String(data.answer || '').trim();
+
+            // Посетитель уже находится на ranepa-dpo39.ru.
+            // Убираем бессмысленные рекомендации "посетить сайт" из ответа модели.
+            answerText = answerText
+                .replace(/Для получения подробной информации[^.?!]*ranepa-dpo39\.ru\.?/gi, '')
+                .replace(/Рекомендую посетить[^.?!]*ranepa-dpo39\.ru\.?/gi, '')
+                .replace(/Посетите[^.?!]*ranepa-dpo39\.ru\.?/gi, '')
+                .replace(/На сайте ranepa-dpo39\.ru[^.?!]*[.?!]?/gi, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+
+            if (!answerText) {
+                answerText = currentLang === 'ru'
+                    ? 'Могу помочь подобрать программу, уточнить стоимость, сроки, форму обучения или документы.'
+                    : 'I can help you choose a program or clarify tuition, duration, format, or required documents.';
+            }
+
+            const safeAnswer = escapeOwlText(answerText).replace(/\n/g, '<br>');
             addBotMsg(safeAnswer);
         } catch (error) {
             removeOwlThinking();
