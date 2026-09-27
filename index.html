@@ -690,50 +690,165 @@
         .owl-advanced-yes { background:linear-gradient(135deg,#6d28d9,#2563eb); color:#fff; border-color:transparent !important; }
         .owl-advanced-no { background:var(--btn-glass); color:var(--text-main); }
 
-        .owl-chat-panel.owl-chat-fullscreen {
-            inset:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)) !important;
-            width:auto !important;
-            height:auto !important;
-            max-width:none !important;
+        .owl-chat-panel,
+        .owl-chat-panel * { min-width:0; }
+        .msg-bot,
+        .msg-user,
+        .owl-program-link,
+        .chat-opt-btn {
+            overflow-wrap:anywhere;
+            word-break:normal;
+            white-space:normal;
+        }
+
+        .owl-chat-panel.owl-chat-free {
             bottom:auto !important;
             right:auto !important;
-            left:auto !important;
-            border-radius:24px;
+            max-width:none !important;
+            max-height:none !important;
+            min-width:340px;
+            min-height:420px;
             overflow:hidden;
             display:flex !important;
             flex-direction:column;
+            transition:opacity .18s ease, box-shadow .18s ease !important;
         }
-        .owl-chat-panel.owl-chat-fullscreen .owl-chat-header,
-        .owl-chat-panel.owl-chat-fullscreen .owl-mode-switch {
+        .owl-chat-panel.owl-chat-free .owl-chat-header {
+            flex:0 0 auto;
+            cursor:move;
+            user-select:none;
+        }
+        .owl-chat-panel.owl-chat-free .owl-mode-switch {
             flex:0 0 auto;
         }
-        .owl-chat-panel.owl-chat-fullscreen .owl-chat-body {
+        .owl-chat-panel.owl-chat-free .owl-chat-body {
+            flex:1 1 0 !important;
             height:0 !important;
             min-height:0 !important;
-            flex:1 1 0 !important;
-            overflow-y:auto !important;
-            overscroll-behavior:contain;
-            padding:clamp(18px,3vw,34px);
-            font-size:clamp(.94rem,1.5vw,1.05rem);
-        }
-        .owl-chat-panel.owl-chat-fullscreen .chat-input-box {
-            flex:0 0 auto;
-            position:relative;
-            z-index:4;
-            width:100%;
-        }
-        .owl-chat-panel.owl-chat-fullscreen .chat-options {
-            flex:0 1 auto;
-            min-height:0;
-            max-height:min(30vh,280px);
             overflow-y:auto;
             overscroll-behavior:contain;
-            border-radius:0 0 24px 24px;
+            padding:clamp(16px,2vw,26px);
         }
-        .owl-chat-panel.owl-chat-fullscreen .chat-text-input {
-            min-width:0;
+        .owl-chat-panel.owl-chat-free .chat-input-box {
+            flex:0 0 auto;
+            width:100%;
         }
-        body.owl-chat-fullscreen-open { overflow:hidden !important; }
+        .owl-chat-panel.owl-chat-free .chat-options {
+            flex:0 1 auto;
+            min-height:0;
+            max-height:min(34%,300px);
+            overflow-y:auto;
+            overscroll-behavior:contain;
+        }
+        .owl-chat-panel.owl-chat-free .msg-bot,
+        .owl-chat-panel.owl-chat-free .msg-user {
+            max-width:min(86%,900px);
+        }
+
+        .owl-resize-handle {
+            position:absolute;
+            z-index:80;
+            display:none;
+            touch-action:none;
+        }
+        .owl-chat-panel.owl-chat-free .owl-resize-handle { display:block; }
+        .owl-resize-n,.owl-resize-s { left:12px; right:12px; height:10px; cursor:ns-resize; }
+        .owl-resize-n { top:-5px; }
+        .owl-resize-s { bottom:-5px; }
+        .owl-resize-e,.owl-resize-w { top:12px; bottom:12px; width:10px; cursor:ew-resize; }
+        .owl-resize-e { right:-5px; }
+        .owl-resize-w { left:-5px; }
+        .owl-resize-ne,.owl-resize-nw,.owl-resize-se,.owl-resize-sw { width:16px; height:16px; }
+        .owl-resize-ne { top:-7px; right:-7px; cursor:nesw-resize; }
+        .owl-resize-nw { top:-7px; left:-7px; cursor:nwse-resize; }
+        .owl-resize-se { bottom:-7px; right:-7px; cursor:nwse-resize; }
+        .owl-resize-sw { bottom:-7px; left:-7px; cursor:nesw-resize; }
+
+        body.owl-chat-split-open {
+            --owl-split-width: clamp(380px,42vw,680px);
+            padding-right:var(--owl-split-width);
+            transition:padding-right .22s ease;
+        }
+        body.owl-chat-split-open .owl-container {
+            opacity:0 !important;
+            pointer-events:none !important;
+        }
+        .owl-chat-panel.owl-chat-split {
+            top:0 !important;
+            right:0 !important;
+            bottom:0 !important;
+            left:auto !important;
+            width:var(--owl-split-width) !important;
+            height:100dvh !important;
+            max-width:none !important;
+            max-height:none !important;
+            min-width:360px;
+            border-radius:0 !important;
+            overflow:hidden;
+            display:flex !important;
+            flex-direction:column;
+            transform:none !important;
+            transition:none !important;
+            box-shadow:-20px 0 50px rgba(0,0,0,.28);
+        }
+        .owl-chat-panel.owl-chat-split .owl-chat-header {
+            flex:0 0 auto;
+            border-radius:0;
+        }
+        .owl-chat-panel.owl-chat-split .owl-mode-switch { flex:0 0 auto; }
+        .owl-chat-panel.owl-chat-split .owl-chat-body {
+            flex:1 1 0 !important;
+            height:0 !important;
+            min-height:0 !important;
+            overflow-y:auto !important;
+            overscroll-behavior:contain;
+            padding:20px;
+        }
+        .owl-chat-panel.owl-chat-split .chat-input-box { flex:0 0 auto; }
+        .owl-chat-panel.owl-chat-split .chat-options {
+            flex:0 1 auto;
+            min-height:0;
+            max-height:34dvh;
+            overflow-y:auto;
+            overscroll-behavior:contain;
+            border-radius:0;
+        }
+        .owl-chat-panel.owl-chat-split .owl-resize-handle { display:none; }
+        .owl-chat-panel.owl-chat-split .owl-resize-w {
+            display:block;
+            left:-6px;
+            top:0;
+            bottom:0;
+            width:12px;
+            cursor:ew-resize;
+            background:transparent;
+        }
+        .owl-chat-panel.owl-chat-split .msg-bot,
+        .owl-chat-panel.owl-chat-split .msg-user {
+            max-width:94%;
+        }
+
+        @media (max-width:900px) {
+            #owlSplitBtn { display:none !important; }
+            body.owl-chat-split-open { padding-right:0 !important; }
+            .owl-resize-handle { display:none !important; }
+            .owl-chat-panel.owl-chat-free {
+                inset:0 !important;
+                width:100vw !important;
+                height:100dvh !important;
+                min-width:0 !important;
+                min-height:0 !important;
+                border-radius:0 !important;
+            }
+            .owl-chat-panel.owl-chat-free .owl-chat-header {
+                cursor:default;
+                padding-top:max(12px,env(safe-area-inset-top));
+            }
+            .owl-chat-panel.owl-chat-free .chat-options {
+                max-height:32dvh;
+                padding-bottom:max(12px,env(safe-area-inset-bottom));
+            }
+        }
         .owl-chat-body { padding: 20px; height: 270px; overflow-y: auto; background: transparent; font-size: 0.92rem; display: flex; flex-direction: column; gap: 14px; color: var(--text-main); }
         .msg-bot { background: var(--btn-glass); padding: 14px; border-radius: 14px; border-bottom-left-radius: 0; color: var(--text-main); align-self: flex-start; max-width: 92%; border: 1px solid var(--border-glass); line-height: 1.5; }
         .msg-bot b { color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 6px; }
@@ -880,30 +995,6 @@
             .owl-bubble.show { transform: translateX(0) scale(1); }
             .owl-chat-panel { width: calc(100vw - 24px); left: 12px; right: 12px; bottom: max(90px, calc(env(safe-area-inset-bottom) + 90px)); height: min(70vh, 520px); max-width: 100vw; }
             .owl-chat-body { height: auto; flex: 1 1 auto; }
-            .owl-chat-panel.owl-chat-fullscreen {
-                inset:0 !important;
-                width:100vw !important;
-                height:100dvh !important;
-                max-height:100dvh !important;
-                border-radius:0 !important;
-                overflow:hidden !important;
-            }
-            .owl-chat-panel.owl-chat-fullscreen .owl-chat-header {
-                border-radius:0;
-                padding-top:max(12px,env(safe-area-inset-top));
-            }
-            .owl-chat-panel.owl-chat-fullscreen .owl-chat-body {
-                min-height:0 !important;
-                height:0 !important;
-            }
-            .owl-chat-panel.owl-chat-fullscreen .chat-input-box {
-                padding-left:max(12px,env(safe-area-inset-left));
-                padding-right:max(12px,env(safe-area-inset-right));
-            }
-            .owl-chat-panel.owl-chat-fullscreen .chat-options {
-                max-height:32dvh;
-                padding-bottom:max(12px,env(safe-area-inset-bottom));
-            }
 
             .modal-box { padding: 26px 22px; border-radius: 24px; }
 
@@ -2057,7 +2148,8 @@
                 <span class="owl-mode-badge" id="owlModeBadge">Обычный</span>
             </div>
             <div class="owl-chat-header-actions">
-                <button class="owl-header-btn" id="owlFullscreenBtn" type="button" onclick="toggleOwlFullscreen()" aria-label="Развернуть чат" title="Развернуть чат">⛶</button>
+                <button class="owl-header-btn" id="owlSplitBtn" type="button" onclick="toggleOwlSplitView()" aria-label="Двойной экран" title="Сайт слева, чат справа">◫</button>
+                <button class="owl-header-btn" id="owlFullscreenBtn" type="button" onclick="toggleOwlFullscreen()" aria-label="Свободное окно" title="Развернуть свободное окно">⛶</button>
                 <button class="owl-header-btn" type="button" onclick="toggleChat()" aria-label="Закрыть чат" title="Закрыть чат">✕</button>
             </div>
         </div>
@@ -2125,6 +2217,15 @@
                 🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
             </a>
         </div>
+
+        <div class="owl-resize-handle owl-resize-n" data-dir="n" aria-hidden="true"></div>
+        <div class="owl-resize-handle owl-resize-s" data-dir="s" aria-hidden="true"></div>
+        <div class="owl-resize-handle owl-resize-e" data-dir="e" aria-hidden="true"></div>
+        <div class="owl-resize-handle owl-resize-w" data-dir="w" aria-hidden="true"></div>
+        <div class="owl-resize-handle owl-resize-ne" data-dir="ne" aria-hidden="true"></div>
+        <div class="owl-resize-handle owl-resize-nw" data-dir="nw" aria-hidden="true"></div>
+        <div class="owl-resize-handle owl-resize-se" data-dir="se" aria-hidden="true"></div>
+        <div class="owl-resize-handle owl-resize-sw" data-dir="sw" aria-hidden="true"></div>
     </div>
 
     <div class="scroll-nav" id="scrollNav">
@@ -4371,10 +4472,14 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const ecosystem = document.getElementById('owlContainer');
         if (chat.classList.contains('active')) {
             chat.classList.remove('active');
-            chat.classList.remove('owl-chat-fullscreen');
-            document.body.classList.remove('owl-chat-fullscreen-open');
-            const fsBtn = document.getElementById('owlFullscreenBtn');
-            if (fsBtn) fsBtn.textContent = '⛶';
+            saveOwlWindowRect();
+            if (chat.classList.contains('owl-chat-split')) {
+                exitOwlSplitView({toCompact:true});
+            }
+            chat.classList.remove('owl-chat-free');
+            clearOwlWindowInlineRect();
+            document.body.classList.remove('owl-chat-split-open');
+            updateOwlWindowButtons();
             ecosystem.classList.remove('chat-opened');
             stopOwlFilesSnapshotPolling();
             scheduleOwlStep();
@@ -5090,20 +5195,332 @@ if (wantsNewsEditor) {
         }
     }
 
-    function toggleOwlFullscreen() {
+    const OWL_WINDOW_STATE_KEY = 'ranepa_owl_window_v2';
+    let owlWindowDrag = null;
+    let owlResizeDrag = null;
+    let owlSplitBeforeRect = null;
+
+    function owlClamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    function saveOwlWindowRect() {
         const chat = document.getElementById('owlChat');
-        const btn = document.getElementById('owlFullscreenBtn');
-        if (!chat) return;
-        const enabled = !chat.classList.contains('owl-chat-fullscreen');
-        chat.classList.toggle('owl-chat-fullscreen', enabled);
-        document.body.classList.toggle('owl-chat-fullscreen-open', enabled);
-        if (btn) {
-            btn.textContent = enabled ? '🗗' : '⛶';
-            btn.setAttribute('aria-label', enabled ? 'Свернуть чат' : 'Развернуть чат');
-            btn.title = enabled ? 'Свернуть чат' : 'Развернуть чат';
+        if (!chat || !chat.classList.contains('owl-chat-free') || chat.classList.contains('owl-chat-split')) return;
+        const rect = chat.getBoundingClientRect();
+        try {
+            localStorage.setItem(OWL_WINDOW_STATE_KEY, JSON.stringify({
+                left: Math.round(rect.left),
+                top: Math.round(rect.top),
+                width: Math.round(rect.width),
+                height: Math.round(rect.height)
+            }));
+        } catch (e) {}
+    }
+
+    function readOwlWindowRect() {
+        try {
+            const value = JSON.parse(localStorage.getItem(OWL_WINDOW_STATE_KEY) || 'null');
+            return value && typeof value === 'object' ? value : null;
+        } catch (e) {
+            return null;
         }
+    }
+
+    function applyOwlFreeRect(rect) {
+        const chat = document.getElementById('owlChat');
+        if (!chat) return;
+
+        const gap = 12;
+        const minW = 340;
+        const minH = 420;
+        const maxW = Math.max(minW, window.innerWidth - gap * 2);
+        const maxH = Math.max(minH, window.innerHeight - gap * 2);
+
+        const width = owlClamp(Number(rect && rect.width) || Math.min(760, window.innerWidth * .62), minW, maxW);
+        const height = owlClamp(Number(rect && rect.height) || Math.min(760, window.innerHeight * .78), minH, maxH);
+        const left = owlClamp(Number(rect && rect.left) || (window.innerWidth - width) / 2, gap, Math.max(gap, window.innerWidth - width - gap));
+        const top = owlClamp(Number(rect && rect.top) || (window.innerHeight - height) / 2, gap, Math.max(gap, window.innerHeight - height - gap));
+
+        chat.style.left = Math.round(left) + 'px';
+        chat.style.top = Math.round(top) + 'px';
+        chat.style.width = Math.round(width) + 'px';
+        chat.style.height = Math.round(height) + 'px';
+        chat.style.right = 'auto';
+        chat.style.bottom = 'auto';
+    }
+
+    function clearOwlWindowInlineRect() {
+        const chat = document.getElementById('owlChat');
+        if (!chat) return;
+        ['left','top','width','height','right','bottom'].forEach(prop => chat.style.removeProperty(prop));
+    }
+
+    function updateOwlWindowButtons() {
+        const chat = document.getElementById('owlChat');
+        const expand = document.getElementById('owlFullscreenBtn');
+        const split = document.getElementById('owlSplitBtn');
+        if (!chat) return;
+
+        const isFree = chat.classList.contains('owl-chat-free');
+        const isSplit = chat.classList.contains('owl-chat-split');
+
+        if (expand) {
+            expand.textContent = isFree && !isSplit ? '↙' : '⛶';
+            expand.title = isFree && !isSplit ? 'Вернуть компактный размер' : 'Свободное изменяемое окно';
+            expand.setAttribute('aria-label', expand.title);
+        }
+        if (split) {
+            split.classList.toggle('active', isSplit);
+            split.title = isSplit ? 'Выйти из двойного экрана' : 'Сайт слева, чат справа';
+            split.setAttribute('aria-label', split.title);
+        }
+    }
+
+    function exitOwlSplitView(options) {
+        const opts = options || {};
+        const chat = document.getElementById('owlChat');
+        if (!chat) return;
+
+        document.body.classList.remove('owl-chat-split-open');
+        chat.classList.remove('owl-chat-split');
+        document.body.style.removeProperty('--owl-split-width');
+
+        if (!opts.toCompact) {
+            chat.classList.add('owl-chat-free');
+            applyOwlFreeRect(owlSplitBeforeRect || readOwlWindowRect());
+        } else {
+            chat.classList.remove('owl-chat-free');
+            clearOwlWindowInlineRect();
+        }
+
+        owlSplitBeforeRect = null;
+        updateOwlWindowButtons();
+    }
+
+    function toggleOwlSplitView() {
+        if (window.innerWidth <= 900) {
+            toggleOwlFullscreen();
+            return;
+        }
+
+        const chat = document.getElementById('owlChat');
+        if (!chat) return;
+
+        if (chat.classList.contains('owl-chat-split')) {
+            exitOwlSplitView();
+            return;
+        }
+
+        const rect = chat.getBoundingClientRect();
+        owlSplitBeforeRect = {
+            left:rect.left, top:rect.top, width:rect.width, height:rect.height
+        };
+
+        chat.classList.remove('owl-chat-free');
+        clearOwlWindowInlineRect();
+
+        const savedSplit = Number(localStorage.getItem('ranepa_owl_split_width_v1') || 0);
+        const width = owlClamp(savedSplit || Math.round(window.innerWidth * .42), 380, Math.min(760, Math.round(window.innerWidth * .68)));
+        document.body.style.setProperty('--owl-split-width', width + 'px');
+        document.body.classList.add('owl-chat-split-open');
+        chat.classList.add('owl-chat-split');
+        updateOwlWindowButtons();
         scrollToBottom();
     }
+
+    function toggleOwlFullscreen() {
+        const chat = document.getElementById('owlChat');
+        if (!chat) return;
+
+        if (chat.classList.contains('owl-chat-split')) {
+            exitOwlSplitView();
+        }
+
+        if (chat.classList.contains('owl-chat-free')) {
+            saveOwlWindowRect();
+            chat.classList.remove('owl-chat-free');
+            clearOwlWindowInlineRect();
+        } else {
+            chat.classList.add('owl-chat-free');
+            applyOwlFreeRect(readOwlWindowRect());
+        }
+
+        updateOwlWindowButtons();
+        scrollToBottom();
+    }
+
+    function beginOwlHeaderDrag(event) {
+        const chat = document.getElementById('owlChat');
+        if (!chat || window.innerWidth <= 900) return;
+        if (!chat.classList.contains('owl-chat-free') || chat.classList.contains('owl-chat-split')) return;
+        if (event.target.closest('button, input, a')) return;
+
+        const rect = chat.getBoundingClientRect();
+        owlWindowDrag = {
+            pointerId:event.pointerId,
+            startX:event.clientX,
+            startY:event.clientY,
+            left:rect.left,
+            top:rect.top,
+            width:rect.width,
+            height:rect.height
+        };
+
+        event.currentTarget.setPointerCapture(event.pointerId);
+        event.preventDefault();
+    }
+
+    function beginOwlResize(event) {
+        const chat = document.getElementById('owlChat');
+        if (!chat || window.innerWidth <= 900) return;
+        const dir = String(event.currentTarget.dataset.dir || '');
+        if (!dir) return;
+
+        const rect = chat.getBoundingClientRect();
+
+        if (chat.classList.contains('owl-chat-split')) {
+            if (dir !== 'w') return;
+            owlResizeDrag = {
+                split:true,
+                pointerId:event.pointerId
+            };
+        } else {
+            if (!chat.classList.contains('owl-chat-free')) {
+                chat.classList.add('owl-chat-free');
+                applyOwlFreeRect({left:rect.left,top:rect.top,width:rect.width,height:Math.max(rect.height,460)});
+            }
+            const current = chat.getBoundingClientRect();
+            owlResizeDrag = {
+                split:false,
+                dir,
+                pointerId:event.pointerId,
+                startX:event.clientX,
+                startY:event.clientY,
+                left:current.left,
+                top:current.top,
+                width:current.width,
+                height:current.height
+            };
+        }
+
+        event.currentTarget.setPointerCapture(event.pointerId);
+        event.preventDefault();
+        event.stopPropagation();
+        updateOwlWindowButtons();
+    }
+
+    function moveOwlWindowPointer(event) {
+        const chat = document.getElementById('owlChat');
+        if (!chat) return;
+
+        if (owlWindowDrag) {
+            const gap = 8;
+            const dx = event.clientX - owlWindowDrag.startX;
+            const dy = event.clientY - owlWindowDrag.startY;
+            const left = owlClamp(owlWindowDrag.left + dx, gap, window.innerWidth - owlWindowDrag.width - gap);
+            const top = owlClamp(owlWindowDrag.top + dy, gap, window.innerHeight - owlWindowDrag.height - gap);
+            chat.style.left = Math.round(left) + 'px';
+            chat.style.top = Math.round(top) + 'px';
+            return;
+        }
+
+        if (!owlResizeDrag) return;
+
+        if (owlResizeDrag.split) {
+            const width = owlClamp(window.innerWidth - event.clientX, 380, Math.min(760, Math.round(window.innerWidth * .68)));
+            document.body.style.setProperty('--owl-split-width', Math.round(width) + 'px');
+            return;
+        }
+
+        const d = owlResizeDrag;
+        const dx = event.clientX - d.startX;
+        const dy = event.clientY - d.startY;
+        const minW = 340;
+        const minH = 420;
+        const gap = 8;
+
+        let left = d.left;
+        let top = d.top;
+        let width = d.width;
+        let height = d.height;
+
+        if (d.dir.includes('e')) width = d.width + dx;
+        if (d.dir.includes('s')) height = d.height + dy;
+        if (d.dir.includes('w')) {
+            width = d.width - dx;
+            left = d.left + dx;
+        }
+        if (d.dir.includes('n')) {
+            height = d.height - dy;
+            top = d.top + dy;
+        }
+
+        width = owlClamp(width, minW, window.innerWidth - gap * 2);
+        height = owlClamp(height, minH, window.innerHeight - gap * 2);
+
+        if (d.dir.includes('w')) {
+            left = owlClamp(left, gap, d.left + d.width - minW);
+            if (left + width > window.innerWidth - gap) width = window.innerWidth - gap - left;
+        } else {
+            width = Math.min(width, window.innerWidth - gap - left);
+        }
+
+        if (d.dir.includes('n')) {
+            top = owlClamp(top, gap, d.top + d.height - minH);
+            if (top + height > window.innerHeight - gap) height = window.innerHeight - gap - top;
+        } else {
+            height = Math.min(height, window.innerHeight - gap - top);
+        }
+
+        chat.style.left = Math.round(left) + 'px';
+        chat.style.top = Math.round(top) + 'px';
+        chat.style.width = Math.round(width) + 'px';
+        chat.style.height = Math.round(height) + 'px';
+    }
+
+    function endOwlWindowPointer() {
+        if (owlResizeDrag && owlResizeDrag.split) {
+            const value = parseInt(getComputedStyle(document.body).getPropertyValue('--owl-split-width'), 10);
+            if (Number.isFinite(value)) {
+                try { localStorage.setItem('ranepa_owl_split_width_v1', String(value)); } catch (e) {}
+            }
+        } else if (owlResizeDrag || owlWindowDrag) {
+            saveOwlWindowRect();
+        }
+
+        owlWindowDrag = null;
+        owlResizeDrag = null;
+    }
+
+    function initOwlWindowControls() {
+        const chat = document.getElementById('owlChat');
+        if (!chat) return;
+
+        const header = chat.querySelector('.owl-chat-header');
+        if (header) header.addEventListener('pointerdown', beginOwlHeaderDrag);
+
+        chat.querySelectorAll('.owl-resize-handle').forEach(handle => {
+            handle.addEventListener('pointerdown', beginOwlResize);
+        });
+
+        window.addEventListener('pointermove', moveOwlWindowPointer);
+        window.addEventListener('pointerup', endOwlWindowPointer);
+        window.addEventListener('pointercancel', endOwlWindowPointer);
+
+        window.addEventListener('resize', () => {
+            if (chat.classList.contains('owl-chat-split')) {
+                const current = parseInt(getComputedStyle(document.body).getPropertyValue('--owl-split-width'), 10) || Math.round(window.innerWidth * .42);
+                const width = owlClamp(current, 380, Math.min(760, Math.round(window.innerWidth * .68)));
+                document.body.style.setProperty('--owl-split-width', width + 'px');
+            } else if (chat.classList.contains('owl-chat-free')) {
+                applyOwlFreeRect(chat.getBoundingClientRect());
+            }
+        });
+
+        updateOwlWindowButtons();
+    }
+
 
     function hideOwlAdvancedOffer() {
         const modal = document.getElementById('owlAdvancedOffer');
@@ -5959,6 +6376,11 @@ if (wantsNewsEditor) {
 
     loadOwlConversationState();
     updateOwlModeUI();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initOwlWindowControls, { once:true });
+    } else {
+        initOwlWindowControls();
+    }
 
     function resetMenu() {
         chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${currentLang === 'ru'
