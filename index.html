@@ -666,7 +666,34 @@
 
         .owl-chat-panel { position: fixed; bottom: 100px; right: 32px; width: 390px; max-width: calc(100vw - 30px); background: var(--bg-glass); backdrop-filter: blur(30px); border-radius: 26px; box-shadow: 0 35px 70px rgba(0,0,0,0.7); border: 1px solid var(--border-glass); display: none; flex-direction: column; z-index: 15000; opacity: 0; transform: translate3d(0, 40px, 0) scale(0.9); transition: all 0.4s var(--bezier-bounce); will-change: transform, opacity; }
         .owl-chat-panel.active { display: flex; opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-        .owl-chat-header { background: rgba(5, 8, 14, 0.85); color: #fff; padding: 18px 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-radius: 26px 26px 0 0; border-bottom: 2px solid var(--ranepa-red); }
+        .owl-chat-header { background: var(--bg-card); color: var(--text-main); padding: 14px 16px 12px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-radius: 26px 26px 0 0; border-bottom: 2px solid var(--ranepa-red); }
+        .owl-chat-title-wrap { display:flex; align-items:center; gap:9px; min-width:0; }
+        .owl-mode-badge { display:inline-flex; align-items:center; min-height:24px; padding:4px 8px; border-radius:999px; background:var(--btn-glass); border:1px solid var(--border-glass); color:var(--text-muted); font-size:.66rem; line-height:1; white-space:nowrap; }
+        .owl-mode-badge.advanced { color:#fff; background:linear-gradient(135deg,#6d28d9,#2563eb); border-color:transparent; box-shadow:0 5px 15px rgba(91,69,229,.28); }
+        .owl-chat-header-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+        .owl-header-btn { width:34px; height:34px; border-radius:10px; border:1px solid var(--border-glass); background:var(--btn-glass); color:var(--text-main); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; transition:transform .2s ease, background .2s ease, border-color .2s ease; }
+        .owl-header-btn:hover { transform:translateY(-1px); background:rgba(202,15,62,.14); border-color:rgba(202,15,62,.45); }
+        .owl-mode-switch { display:flex; gap:6px; padding:8px 12px; background:var(--bg-card); border-bottom:1px solid var(--border-glass); }
+        .owl-mode-switch[hidden] { display:none !important; }
+        .owl-mode-switch button { flex:1; border:1px solid var(--border-glass); background:var(--btn-glass); color:var(--text-muted); border-radius:10px; padding:8px 10px; font-size:.75rem; font-weight:850; cursor:pointer; }
+        .owl-mode-switch button.active { background:var(--ranepa-red); border-color:var(--ranepa-red); color:#fff; }
+        .owl-mode-switch button.advanced.active { background:linear-gradient(135deg,#6d28d9,#2563eb); border-color:transparent; }
+
+        .owl-advanced-offer { position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(2,6,23,.72); backdrop-filter:blur(10px); border-radius:26px; }
+        .owl-advanced-offer[hidden] { display:none !important; }
+        .owl-advanced-offer-card { width:min(430px,100%); padding:22px; border-radius:20px; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-glass); box-shadow:0 25px 70px rgba(0,0,0,.42); }
+        .owl-advanced-offer-icon { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; color:#fff; background:linear-gradient(135deg,#6d28d9,#2563eb); font-weight:900; }
+        .owl-advanced-offer-title { font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.05rem; margin-bottom:8px; }
+        .owl-advanced-offer-text { color:var(--text-muted); font-size:.88rem; line-height:1.55; }
+        .owl-advanced-offer-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+        .owl-advanced-offer-actions button { border-radius:11px; padding:10px 12px; font-weight:850; cursor:pointer; border:1px solid var(--border-glass); }
+        .owl-advanced-yes { background:linear-gradient(135deg,#6d28d9,#2563eb); color:#fff; border-color:transparent !important; }
+        .owl-advanced-no { background:var(--btn-glass); color:var(--text-main); }
+
+        .owl-chat-panel.owl-chat-fullscreen { inset:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)) !important; width:auto !important; height:auto !important; max-width:none !important; bottom:auto !important; right:auto !important; left:auto !important; border-radius:24px; }
+        .owl-chat-panel.owl-chat-fullscreen .owl-chat-body { height:auto !important; flex:1 1 auto; padding:clamp(18px,3vw,34px); font-size:clamp(.94rem,1.5vw,1.05rem); }
+        .owl-chat-panel.owl-chat-fullscreen .chat-options { max-height:32vh; }
+        body.owl-chat-fullscreen-open { overflow:hidden !important; }
         .owl-chat-body { padding: 20px; height: 270px; overflow-y: auto; background: transparent; font-size: 0.92rem; display: flex; flex-direction: column; gap: 14px; color: var(--text-main); }
         .msg-bot { background: var(--btn-glass); padding: 14px; border-radius: 14px; border-bottom-left-radius: 0; color: var(--text-main); align-self: flex-start; max-width: 92%; border: 1px solid var(--border-glass); line-height: 1.5; }
         .msg-bot b { color: var(--ranepa-red); font-family: 'Montserrat', sans-serif; display: block; margin-bottom: 6px; }
@@ -749,6 +776,10 @@
             font-weight: 900;
             font-size: .76rem;
         }
+        .owl-program-title-link { display:flex; align-items:center; justify-content:space-between; gap:12px; text-decoration:none; padding:12px 13px; border-radius:12px; border:1px solid var(--border-glass); background:var(--btn-glass); color:var(--text-main); font-weight:850; line-height:1.35; transition:transform .2s ease,border-color .2s ease,background .2s ease; }
+        .owl-program-title-link:hover { transform:translateY(-1px); border-color:var(--ranepa-red); background:rgba(202,15,62,.09); }
+        .owl-program-title-link span:last-child { color:var(--ranepa-red); white-space:nowrap; font-size:.78rem; }
+        .owl-guided-hint { margin-top:10px; color:var(--text-muted); font-size:.82rem; line-height:1.5; }
 
         .mobile-chat-icon { display: none; }
 
@@ -809,6 +840,9 @@
             .owl-bubble.show { transform: translateX(0) scale(1); }
             .owl-chat-panel { width: calc(100vw - 24px); left: 12px; right: 12px; bottom: max(90px, calc(env(safe-area-inset-bottom) + 90px)); height: min(70vh, 520px); max-width: 100vw; }
             .owl-chat-body { height: auto; flex: 1 1 auto; }
+            .owl-chat-panel.owl-chat-fullscreen { inset:0 !important; width:100vw !important; height:100dvh !important; border-radius:0 !important; }
+            .owl-chat-panel.owl-chat-fullscreen .owl-chat-header { border-radius:0; padding-top:max(12px,env(safe-area-inset-top)); }
+            .owl-chat-panel.owl-chat-fullscreen .chat-options { padding-bottom:max(12px,env(safe-area-inset-bottom)); }
 
             .modal-box { padding: 26px 22px; border-radius: 24px; }
 
@@ -1934,7 +1968,34 @@
     </div>
 
     <div class="owl-chat-panel" id="owlChat">
-        <div class="owl-chat-header"><span data-i18n="owlHeader">Цифровой ассистент</span> <span style="cursor:pointer; font-size:1.1rem;" onclick="toggleChat()">✖</span></div>
+        <div class="owl-chat-header">
+            <div class="owl-chat-title-wrap">
+                <span data-i18n="owlHeader">Цифровой ассистент</span>
+                <span class="owl-mode-badge" id="owlModeBadge">Обычный</span>
+            </div>
+            <div class="owl-chat-header-actions">
+                <button class="owl-header-btn" id="owlFullscreenBtn" type="button" onclick="toggleOwlFullscreen()" aria-label="Развернуть чат" title="Развернуть чат">⛶</button>
+                <button class="owl-header-btn" type="button" onclick="toggleChat()" aria-label="Закрыть чат" title="Закрыть чат">✕</button>
+            </div>
+        </div>
+
+        <div class="owl-mode-switch" id="owlModeSwitch" hidden>
+            <button type="button" id="owlModeNormalBtn" onclick="setOwlMode('normal', true)">Обычный</button>
+            <button type="button" id="owlModeAdvancedBtn" onclick="setOwlMode('advanced', true)">Расширенный</button>
+        </div>
+
+        <div class="owl-advanced-offer" id="owlAdvancedOffer" hidden>
+            <div class="owl-advanced-offer-card">
+                <div class="owl-advanced-offer-icon">✦</div>
+                <div class="owl-advanced-offer-title">Перейти в расширенный режим?</div>
+                <div class="owl-advanced-offer-text" id="owlAdvancedOfferText"></div>
+                <div class="owl-advanced-offer-actions">
+                    <button type="button" class="owl-advanced-yes" onclick="acceptOwlAdvancedMode()">Да, включить</button>
+                    <button type="button" class="owl-advanced-no" onclick="declineOwlAdvancedMode()">Остаться в обычном</button>
+                </div>
+            </div>
+        </div>
+
         <div class="owl-chat-body" id="chatBody">
             <div class="msg-bot"><b data-i18n="owlName">Сова:</b> <span data-i18n="owlWelcome">Добрый день. Я официальный цифровой аналитик Центра дополнительного образования. Запустим тест профориентации или перейдем к каталогу? Вы также можете ввести код лекции, чтобы получить материалы.</span></div>
         </div>
@@ -4203,6 +4264,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const ecosystem = document.getElementById('owlContainer');
         if (chat.classList.contains('active')) {
             chat.classList.remove('active');
+            chat.classList.remove('owl-chat-fullscreen');
+            document.body.classList.remove('owl-chat-fullscreen-open');
+            const fsBtn = document.getElementById('owlFullscreenBtn');
+            if (fsBtn) fsBtn.textContent = '⛶';
             ecosystem.classList.remove('chat-opened');
             stopOwlFilesSnapshotPolling();
             scheduleOwlStep();
@@ -4425,6 +4490,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             const safeAnswer = escapeOwlText(answerText).replace(/\n/g, '<br>');
             addBotMsg(safeAnswer);
             owlResetUnresolved();
+            owlConversationState.advancedNegativeCount = 0;
+            saveOwlConversationState();
         } catch (error) {
             removeOwlThinking();
             console.warn('AI assistant fallback:', error && error.name ? error.name : error);
@@ -4536,6 +4603,10 @@ if (wantsNewsEditor) {
 }
 // --- КОНЕЦ СЛУЖЕБНЫХ РЕЖИМОВ ---
 
+        if (await handleOwlNegativeFeedback(text)) {
+            return;
+        }
+
         const cleanCode = text.toUpperCase();
         let foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
 
@@ -4575,6 +4646,12 @@ if (wantsNewsEditor) {
                     );
                 }
             }, 500);
+            return;
+        }
+
+        const topicResolution = owlTopicProgramResult(text);
+        if (topicResolution && topicResolution.handled) {
+            await presentOwlLocal(topicResolution, text);
             return;
         }
 
@@ -4638,9 +4715,15 @@ if (wantsNewsEditor) {
                 html += '</div><button class="chat-opt-btn" onclick="offerAllPrograms()">' + translationsHTML[currentLang].goAllPrograms + '</button>';
                 setOptions(html);
             } else {
-                // Нет точного локального совпадения: передаём вопрос узкому AI-консультанту.
-                // Старый каталог остаётся fallback, если облачный ответ временно недоступен.
-                askOwlAI(text);
+                if (owlConversationState.mode === 'advanced' && owlConversationState.advancedUnlocked) {
+                    askOwlAI(text);
+                } else {
+                    addBotMsg(
+                        'Я не нашёл точного локального сценария для этой формулировки.' +
+                        '<div class="owl-guided-hint">В обычном режиме я не отправляю такой вопрос во внешний AI автоматически. Можно уточнить запрос кнопками ниже или написать его ещё проще.</div>'
+                    );
+                    setOptions(owlGuidedFallbackOptions());
+                }
             }
         }, 450);
     }
@@ -4667,7 +4750,7 @@ if (wantsNewsEditor) {
         html += owlRecommendationBlock(p);
         addBotMsg(html);
         setOptions(`
-            <a class="chat-opt-btn" href="${owlProgramPageUrl(p)}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>
+            <a class="chat-opt-btn" href="${owlProgramPageUrl(p)}" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>
             <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
             <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
         `);
@@ -4782,7 +4865,12 @@ if (wantsNewsEditor) {
     let owlConversationState = {
         unresolvedStreak: 0,
         lastProgramId: null,
-        lastIntent: null
+        lastIntent: null,
+        negativeCount: 0,
+        advancedNegativeCount: 0,
+        advancedUnlocked: false,
+        mode: 'normal',
+        lastCandidateIds: []
     };
 
     function loadOwlConversationState() {
@@ -4844,6 +4932,257 @@ if (wantsNewsEditor) {
 
         try { sessionStorage.setItem(OWL_REPLY_HISTORY_KEY, JSON.stringify(owlReplyHistory)); } catch (e) {}
         return pick;
+    }
+
+    function updateOwlModeUI() {
+        const state = owlConversationState;
+        const switcher = document.getElementById('owlModeSwitch');
+        const badge = document.getElementById('owlModeBadge');
+        const normalBtn = document.getElementById('owlModeNormalBtn');
+        const advancedBtn = document.getElementById('owlModeAdvancedBtn');
+
+        if (switcher) switcher.hidden = !state.advancedUnlocked;
+        if (badge) {
+            const advanced = state.mode === 'advanced';
+            badge.textContent = advanced ? 'Расширенный' : 'Обычный';
+            badge.classList.toggle('advanced', advanced);
+        }
+        if (normalBtn) normalBtn.classList.toggle('active', state.mode !== 'advanced');
+        if (advancedBtn) {
+            advancedBtn.classList.toggle('active', state.mode === 'advanced');
+            advancedBtn.classList.toggle('advanced', state.mode === 'advanced');
+        }
+    }
+
+    function setOwlMode(mode, announce) {
+        const target = mode === 'advanced' ? 'advanced' : 'normal';
+        if (target === 'advanced' && !owlConversationState.advancedUnlocked) return;
+
+        owlConversationState.mode = target;
+        if (target === 'advanced') {
+            owlConversationState.advancedNegativeCount = 0;
+        }
+        saveOwlConversationState();
+        updateOwlModeUI();
+        hideOwlAdvancedOffer();
+
+        if (announce) {
+            if (target === 'advanced') {
+                addBotMsg('Расширенный режим включён. Теперь, если локальные сценарии не дают точного ответа, я подключу более глубокий анализ вопроса.');
+            } else {
+                addBotMsg('Вернулись в обычный режим. Буду отвечать только по локальным данным сайта и сценариям.');
+            }
+        }
+    }
+
+    function toggleOwlFullscreen() {
+        const chat = document.getElementById('owlChat');
+        const btn = document.getElementById('owlFullscreenBtn');
+        if (!chat) return;
+        const enabled = !chat.classList.contains('owl-chat-fullscreen');
+        chat.classList.toggle('owl-chat-fullscreen', enabled);
+        document.body.classList.toggle('owl-chat-fullscreen-open', enabled);
+        if (btn) {
+            btn.textContent = enabled ? '🗗' : '⛶';
+            btn.setAttribute('aria-label', enabled ? 'Свернуть чат' : 'Развернуть чат');
+            btn.title = enabled ? 'Свернуть чат' : 'Развернуть чат';
+        }
+        scrollToBottom();
+    }
+
+    function hideOwlAdvancedOffer() {
+        const modal = document.getElementById('owlAdvancedOffer');
+        if (modal) modal.hidden = true;
+    }
+
+    function showOwlAdvancedOffer() {
+        owlConversationState.advancedUnlocked = true;
+        saveOwlConversationState();
+        updateOwlModeUI();
+
+        const modal = document.getElementById('owlAdvancedOffer');
+        const text = document.getElementById('owlAdvancedOfferText');
+        const pool = owlBrainConfig().advancedOfferReplies || [];
+        if (text) {
+            text.textContent = owlPickReply(pool, 'advancedOffer') ||
+                'Обычный режим уже несколько раз не попал в ваш запрос. Можно включить расширенный анализ.';
+        }
+        if (modal) modal.hidden = false;
+    }
+
+    function acceptOwlAdvancedMode() {
+        owlConversationState.advancedUnlocked = true;
+        owlConversationState.negativeCount = 0;
+        saveOwlConversationState();
+        setOwlMode('advanced', false);
+        addBotMsg('✦ Расширенный режим включён. Можете повторить вопрос своими словами — теперь я подключу более глубокий анализ, если локальных данных окажется недостаточно.');
+    }
+
+    function declineOwlAdvancedMode() {
+        hideOwlAdvancedOffer();
+        setOwlMode('normal', false);
+        addBotMsg('Остаёмся в обычном режиме. Попробуем решить вопрос через каталог, уточнения и локальные сценарии.');
+        setOptions(owlGuidedFallbackOptions());
+    }
+
+    function owlIsNegativeFeedback(query) {
+        const normalized = owlSmartNormalize(query);
+        if (!normalized) return false;
+
+        const phrases = owlBrainConfig().negativeFeedback || [];
+        return phrases.some(raw => {
+            const phrase = owlSmartNormalize(raw);
+            if (!phrase || phrase === 'не') return false;
+            if (phrase.length <= 7) return normalized === phrase;
+            return normalized.includes(phrase);
+        });
+    }
+
+    function owlGuidedFallbackOptions() {
+        const hasContext = !!owlLastProgramContext();
+        let html = '';
+        if (hasContext) {
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'сколько стоит эта программа\')">💰 Стоимость</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'сколько часов эта программа\')">⏱ Часы</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие сроки у этой программы\')">📅 Сроки</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'покажи похожие программы\')">🧭 Похожие программы</button>';
+        } else {
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие программы у вас есть\')">📚 Подобрать программу</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'что есть по повышению квалификации\')">🎓 Повышение квалификации</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'что есть по профессиональной переподготовке\')">🔄 Переподготовка</button>';
+        }
+        html += '<button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Связаться с сотрудником</button>';
+        html += '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>';
+        return html;
+    }
+
+    function owlAskPreset(text) {
+        const input = document.getElementById('chatUserInput');
+        if (!input || owlAiRequestInFlight) return;
+        input.value = String(text || '');
+        handleUserMessage();
+    }
+
+    async function handleOwlNegativeFeedback(query) {
+        if (!owlIsNegativeFeedback(query)) return false;
+
+        const escalation = owlBrainConfig().escalation || {};
+        const replyPool = owlBrainConfig().negativeReplies || [];
+
+        if (owlConversationState.mode === 'advanced') {
+            owlConversationState.advancedNegativeCount =
+                Number(owlConversationState.advancedNegativeCount || 0) + 1;
+            saveOwlConversationState();
+
+            const threshold = Number(escalation.extendedHandoffAfter || 3);
+            if (owlConversationState.advancedNegativeCount >= threshold) {
+                showOwlHumanHandoff('repeated');
+                return true;
+            }
+
+            addBotMsg(owlPickReply(replyPool, 'negativeAdvanced') || 'Понял. Попробуем иначе.');
+            setOptions(
+                '<button class="chat-opt-btn" onclick="setOwlMode(\'normal\', true)">↩ Обычный режим</button>' +
+                owlGuidedFallbackOptions()
+            );
+            return true;
+        }
+
+        owlConversationState.negativeCount = Number(owlConversationState.negativeCount || 0) + 1;
+        saveOwlConversationState();
+
+        const threshold = Number(escalation.unlockAdvancedAfter || 5);
+        if (owlConversationState.negativeCount >= threshold) {
+            showOwlAdvancedOffer();
+            return true;
+        }
+
+        const left = Math.max(0, threshold - owlConversationState.negativeCount);
+        const reply = owlPickReply(replyPool, 'negativeNormal') || 'Понял. Попробуем иначе.';
+        addBotMsg(reply + (left > 0
+            ? '<br><span class="owl-guided-hint">Можно выбрать направление ниже или сформулировать запрос совсем коротко.</span>'
+            : ''));
+        setOptions(owlGuidedFallbackOptions());
+        return true;
+    }
+
+    function owlTopicTokens(query) {
+        const generic = new Set([
+            'что','есть','какие','какой','какая','какое','у','вас','по','про','для','мне','нам',
+            'хочу','нужно','нужна','нужен','нибудь','что-нибудь','чтонибудь','покажи','найди',
+            'курс','курсы','программа','программы','обучение','можно','интересует','интересно',
+            'посоветуй','подбери','вариант','варианты'
+        ]);
+        return owlSmartNormalize(query)
+            .split(' ')
+            .filter(word => word.length >= 4 && !generic.has(word));
+    }
+
+    function owlLooseWordMatch(a, b) {
+        if (!a || !b) return false;
+        if (a === b || a.includes(b) || b.includes(a)) return true;
+        if (a.length >= 5 && b.length >= 5 && a.slice(0,5) === b.slice(0,5)) return true;
+        return false;
+    }
+
+    function owlFindProgramsByTopic(query, limit) {
+        const tokens = owlTopicTokens(query);
+        if (!tokens.length) return [];
+
+        return globalPrograms
+            .filter(program => program && program.active !== false)
+            .map(program => {
+                const titleWords = owlWords(program.title_ru || '');
+                const descWords = owlWords(
+                    (program.desc_ru || '') + ' ' +
+                    (program.long_desc_ru || '') + ' ' +
+                    (Array.isArray(program.bullets_ru) ? program.bullets_ru.join(' ') : '') + ' ' +
+                    (program.sector || '')
+                );
+                let score = 0;
+
+                tokens.forEach(token => {
+                    if (titleWords.some(word => owlLooseWordMatch(token, word))) score += 7;
+                    else if (descWords.some(word => owlLooseWordMatch(token, word))) score += 2;
+                });
+
+                return { program, score };
+            })
+            .filter(item => item.score > 0)
+            .sort((a,b) => b.score - a.score)
+            .slice(0, limit || 6)
+            .map(item => item.program);
+    }
+
+    function owlProgramTitleLink(program) {
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+        return '<a class="owl-program-title-link" href="' + owlProgramPageUrl(program) +
+            '" onclick="owlRememberProgramById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">' +
+            '<span>' + escapeOwlText(program[titleKey] || '') + '</span><span>Открыть →</span></a>';
+    }
+
+    function owlTopicProgramResult(query) {
+        const items = owlFindProgramsByTopic(query, 6);
+        if (!items.length) return null;
+
+        owlConversationState.lastCandidateIds = items.map(item => String(item.id));
+        saveOwlConversationState();
+
+        const topic = owlTopicTokens(query)[0] || 'этой теме';
+        let options = '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            items.map(owlProgramTitleLink).join('') +
+            '</div>' +
+            '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>';
+
+        return {
+            handled: true,
+            html:
+                'По запросу <b>«' + escapeOwlText(topic) + '»</b> нашёл ' +
+                '<b>' + items.length + '</b> подходящих программ. Выберите название — откроется полное описание.' +
+                '<div class="owl-guided-hint">После выбора можно спросить коротко: «сколько стоит?», «для кого?», «кто ведёт?», «что изучают?»</div>',
+            options,
+            intent: 'topic-programs'
+        };
     }
 
     function owlRememberProgram(program) {
@@ -5014,7 +5353,7 @@ if (wantsNewsEditor) {
 
     function owlProgramActionOptions(program) {
         return (
-            '<a class="chat-opt-btn" href="' + owlProgramPageUrl(program) + '" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>' +
+            '<a class="chat-opt-btn" href="' + owlProgramPageUrl(program) + '" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>' +
             '<button class="chat-opt-btn" onclick="openModal()">✍️ Записаться</button>' +
             '<button class="chat-opt-btn" onclick="resetMenu()">⬅️ В меню</button>'
         );
@@ -5043,7 +5382,7 @@ if (wantsNewsEditor) {
         const price = localizedProgramMeta(program, 'price', currentLang) || '—';
         const hours = localizedProgramMeta(program, 'hours', currentLang) || '—';
         const type = localizedProgramMeta(program, 'type', currentLang) || '';
-        return '<a class="owl-program-link" href="' + owlProgramPageUrl(program) + '" target="_blank" rel="noopener" onclick="owlRememberProgramById(\'' +
+        return '<a class="owl-program-link" href="' + owlProgramPageUrl(program) + '" onclick="owlRememberProgramById(\'' +
             String(program.id).replace(/'/g, "\\'") + '\')">' +
             '<span class="owl-program-link-title">' + escapeOwlText(program[titleKey] || '') + '</span>' +
             '<span class="owl-program-link-meta"><span>💰 ' + escapeOwlText(price) + '</span><span>⏱ ' +
@@ -5259,9 +5598,13 @@ if (wantsNewsEditor) {
     }
 
     loadOwlConversationState();
+    updateOwlModeUI();
 
     function resetMenu() {
-        chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${translationsHTML[currentLang].owlWelcome}</span></div>`;
+        chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${currentLang === 'ru'
+            ? 'Здравствуйте. Можно писать коротко и своими словами. Я сначала ищу ответ в данных сайта и локальных сценариях.'
+            : 'Hello. You can write briefly and in your own words. I first use the site data and local scenarios.'
+        }</span></div>`;
         setOptions(`
             <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
             <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
