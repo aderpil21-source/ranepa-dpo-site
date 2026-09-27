@@ -4263,8 +4263,68 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         return hits / qWords.length;
     }
 
+    const OWL_AI_ENDPOINT = 'https://functions.yandexcloud.net/d4eatbt80ae5r5402i3g';
+    let owlAiRequestInFlight = false;
+
+    function setOwlAiBusy(busy) {
+        owlAiRequestInFlight = !!busy;
+        const input = document.getElementById('chatUserInput');
+        const button = document.querySelector('.chat-send-btn');
+        if (input) input.disabled = !!busy;
+        if (button) {
+            button.disabled = !!busy;
+            button.style.opacity = busy ? '.55' : '';
+            button.style.cursor = busy ? 'wait' : '';
+        }
+    }
+
+    async function askOwlAI(message) {
+        if (owlAiRequestInFlight) return;
+
+        setOwlAiBusy(true);
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 9500);
+
+        try {
+            const response = await fetch(OWL_AI_ENDPOINT, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-store',
+                signal: controller.signal,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: String(message || '').slice(0, 800) })
+            });
+
+            let data = null;
+            try { data = await response.json(); } catch (e) {}
+
+            if (!response.ok || !data || !data.answer) {
+                throw new Error('assistant_unavailable');
+            }
+
+            const safeAnswer = escapeOwlText(data.answer).replace(/\n/g, '<br>');
+            addBotMsg(safeAnswer);
+        } catch (error) {
+            console.warn('AI assistant fallback:', error && error.name ? error.name : error);
+            addBotMsg(
+                currentLang === 'ru'
+                    ? 'Сейчас не удалось получить расширенный ответ. Можно воспользоваться каталогом программ или попробовать ещё раз чуть позже.'
+                    : 'I could not get an extended answer right now. Please use the program catalog or try again a little later.'
+            );
+            offerAllPrograms(true);
+        } finally {
+            clearTimeout(timer);
+            setOwlAiBusy(false);
+            const input = document.getElementById('chatUserInput');
+            if (input) input.focus();
+        }
+    }
+
     async function handleUserMessage() {
         const input = document.getElementById('chatUserInput');
+        if (owlAiRequestInFlight) return;
         const text = input.value.trim();
         if (!text) return;
 
@@ -4403,8 +4463,9 @@ if (wantsNewsEditor) {
                 html += `<button class="chat-opt-btn" onclick="offerAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`;
                 setOptions(html);
             } else {
-                addBotMsg(translationsHTML[currentLang].notSure);
-                offerAllPrograms(true);
+                // Нет точного локального совпадения: передаём вопрос узкому AI-консультанту.
+                // Старый каталог остаётся fallback, если облачный ответ временно недоступен.
+                askOwlAI(text);
             }
         }, 450);
     }
@@ -4510,7 +4571,7 @@ if (wantsNewsEditor) {
     const chatBody = document.getElementById('chatBody');
     const chatOptions = document.getElementById('chatOptions');
 
-    function addUserMsg(text) { chatBody.innerHTML += `<div class="msg-user">${text}</div>`; scrollToBottom(); }
+    function addUserMsg(text) { chatBody.innerHTML += `<div class="msg-user">${escapeOwlText(text)}</div>`; scrollToBottom(); }
     function addBotMsg(text) {
         const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
         chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`;
