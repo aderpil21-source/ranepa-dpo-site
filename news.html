@@ -496,7 +496,18 @@ function toEmbedUrl(url){
 
     if ((m = url.match(/rutube\.ru\/video\/([\w-]+)/))) return `https://rutube.ru/play/embed/${m[1]}`;
     if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/))) return `https://www.youtube.com/embed/${m[1]}`;
-    if (url.includes('/embed') || url.includes('video_ext.php')) return safeMediaUrl(url) || null;
+
+    // Готовые embed-ссылки принимаем только от поддерживаемых видеохостингов.
+    // Раньше любой URL, содержащий "/embed" или "video_ext.php", мог попасть в iframe.
+    try {
+        const u = new URL(String(url || '').trim());
+        const host = u.hostname.toLowerCase().replace(/^www\./, '');
+        if (host === 'vk.com' && u.pathname === '/video_ext.php') return u.href;
+        if (host === 'rutube.ru' && u.pathname.startsWith('/play/embed/')) return u.href;
+        if ((host === 'youtube.com' || host === 'youtube-nocookie.com') && u.pathname.startsWith('/embed/')) return u.href;
+        if (host === 'drive.google.com' && /^\/file\/d\/[^/]+\/preview\/?$/.test(u.pathname)) return u.href;
+    } catch(e){}
+
     const gid = driveId(url);
     if (gid) return `https://drive.google.com/file/d/${gid}/preview`;
     return null;
