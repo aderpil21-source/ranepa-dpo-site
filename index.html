@@ -3941,7 +3941,7 @@
     async function fetchPrograms() {
         try {
             const data = await loadPortalData();
-            
+
             if (data.owlFiles) {
                 globalOwlFiles = data.owlFiles;
             }
@@ -3953,7 +3953,45 @@
             globalAlert = data.currentAlert && data.currentAlert.text ? data.currentAlert : null;
             renderGlobalAlertTicker();
 
-            buildPrograms(data.programs || data);
+            let programs = Array.isArray(data.programs)
+                ? data.programs.map(p => Object.assign({}, p))
+                : (Array.isArray(data) ? data.map(p => Object.assign({}, p)) : []);
+
+            // Учебные планы загружаются напрямую в Google Sheets через Apps Script.
+            // Статические portal-data/program-data могут обновиться позже, поэтому
+            // подтягиваем свежие pdf_link из живого backend и накладываем их по ID.
+            try {
+                const liveUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_plans=' + Date.now();
+                const response = await fetch(liveUrl, {
+                    method: 'GET',
+                    cache: 'no-store',
+                    redirect: 'follow'
+                });
+                if (!response.ok) throw new Error('Live plans API HTTP ' + response.status);
+
+                const liveData = await response.json();
+                const livePrograms = liveData && Array.isArray(liveData.programs)
+                    ? liveData.programs
+                    : [];
+
+                if (livePrograms.length) {
+                    const byId = new Map(
+                        livePrograms.map(p => [String(p.id || '').trim(), p])
+                    );
+
+                    programs = programs.map(p => {
+                        const live = byId.get(String(p.id || '').trim());
+                        if (!live) return p;
+                        return Object.assign({}, p, {
+                            pdf_link: String(live.pdf_link || '').trim()
+                        });
+                    });
+                }
+            } catch (livePlansError) {
+                console.warn('Не удалось обновить учебные планы из live API, используем локальный снимок:', livePlansError);
+            }
+
+            buildPrograms(programs);
         } catch (error) {
             console.error("Ошибка API:", error);
             document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">${translationsHTML[currentLang].programLoadError}</div>`;
