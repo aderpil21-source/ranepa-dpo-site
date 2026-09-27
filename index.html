@@ -396,173 +396,103 @@
         .compliance-text { font-size: 0.78rem; color: var(--text-muted); margin-top: 22px; line-height: 1.5; text-align: left; opacity: 0.85; }
 
         .owl-ecosystem {
-            position: fixed; bottom: -280px; right: -320px; width: 460px; height: 380px; z-index: 9999;
+            position: fixed;
+            bottom: -280px;
+            right: -320px;
+            width: 500px;
+            height: 390px;
+            z-index: 9999;
             transition: bottom 1.2s var(--bezier-bounce), right 1.2s var(--bezier-bounce), transform 0.4s var(--bezier-smooth);
-            pointer-events: none; transform-origin: bottom right; perspective: 900px;
+            pointer-events: none;
+            transform-origin: bottom right;
         }
-        .owl-ecosystem.visible { bottom: 0; right: -10px; pointer-events: auto; }
+        .owl-ecosystem.visible { bottom: 0; right: -12px; pointer-events: auto; }
         .owl-ecosystem.scroll-mini { transform: scale(0.65); }
-        .owl-ecosystem.flying { transition: transform 0.05s linear; }
-        .owl-ecosystem.flying.visible { bottom: 0; right: -10px; }
 
-        .oak-branch { position: absolute; bottom: 10px; right: -20px; width: 480px; height: auto; filter: drop-shadow(0 30px 40px rgba(0,0,0,0.9)); opacity: 0; transition: opacity 1s ease 0.5s; pointer-events: none; }
+        .oak-branch {
+            position: absolute;
+            bottom: 7px;
+            right: -26px;
+            width: 535px;
+            height: auto;
+            filter: drop-shadow(0 28px 34px rgba(0,0,0,0.78));
+            opacity: 0;
+            transition: opacity 0.9s ease 0.35s;
+            pointer-events: none;
+        }
         .owl-ecosystem.visible .oak-branch { opacity: 1; }
 
-        .owl-container { position: absolute; bottom: 46px; left: 0; width: 100%; height: 210px; cursor: pointer; pointer-events: auto; z-index: 10000; touch-action: manipulation; overflow: visible; transform-style: preserve-3d; }
-
-        .owl-walker {
+        .owl-container {
             position: absolute;
-            bottom: -2px;
-            left: 8%;
-            margin-left: 0;
-            width: 164px;
-            height: 224px;
-            will-change: transform;
-            transform-style: preserve-3d;
-            animation: owlProfessionalPatrol 15.5s ease-in-out infinite;
-        }
-        @keyframes owlProfessionalPatrol {
-            0%, 18%   { transform: translate3d(0, 0, 0) scaleX(1); }
-            24%       { transform: translate3d(34px, -2px, 0) scaleX(1); }
-            31%       { transform: translate3d(78px, 0, 0) scaleX(1); }
-            38%       { transform: translate3d(126px, -2px, 0) scaleX(1); }
-            45%, 52%  { transform: translate3d(188px, 0, 0) scaleX(1); }
-            53%, 70%  { transform: translate3d(188px, 0, 0) scaleX(-1); }
-            76%       { transform: translate3d(142px, -2px, 0) scaleX(-1); }
-            83%       { transform: translate3d(94px, 0, 0) scaleX(-1); }
-            90%       { transform: translate3d(44px, -2px, 0) scaleX(-1); }
-            96%       { transform: translate3d(0, 0, 0) scaleX(-1); }
-            100%      { transform: translate3d(0, 0, 0) scaleX(1); }
-        }
-        .owl-ecosystem.flying .owl-walker,
-        .owl-ecosystem.sitting .owl-walker {
-            animation: none;
-            left: 50%;
-            margin-left: -82px;
-            transform: none;
-        }
-
-        .owl-photo-stage {
-            position: absolute;
-            inset: 0;
-            transform-origin: 50% 90%;
-            animation: owlBreath 6.8s ease-in-out infinite;
-            will-change: transform;
-        }
-        .owl-photo {
-            position: relative;
-            z-index: 1;
+            bottom: 50px;
+            left: 0;
             width: 100%;
-            height: 100%;
-            display: block;
+            height: 235px;
+            cursor: pointer;
+            pointer-events: auto;
+            z-index: 10000;
+            touch-action: manipulation;
+            overflow: visible;
+        }
+
+        .owl-media-stage {
+            position: absolute;
+            left: 58px;
+            bottom: -6px;
+            width: 390px;
+            height: 260px;
+            overflow: visible;
+            pointer-events: none;
+        }
+        .owl-media-stage {
+            transform-origin: 50% 100%;
+            animation: owlBreathV2 5.2s ease-in-out infinite;
+            will-change: transform, left;
+            transition: left 190ms cubic-bezier(.22,.61,.36,1);
+        }
+        @keyframes owlBreathV2 {
+            0%, 100% { transform: scale3d(1, 1, 1); }
+            45%      { transform: scale3d(1.006, 1.016, 1); }
+            58%      { transform: scale3d(1.004, 1.010, 1); }
+        }
+
+        .owl-frame {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            width: 168px;
+            height: 224px;
             object-fit: contain;
+            transform: translateX(-50%);
             pointer-events: none;
             user-select: none;
             -webkit-user-drag: none;
             filter:
-                drop-shadow(0 18px 20px rgba(0,0,0,0.64))
-                drop-shadow(0 3px 3px rgba(0,0,0,0.38));
-            transform-origin: 50% 31%;
-            animation: owlFocus 12s cubic-bezier(.45,0,.2,1) infinite;
-            will-change: transform;
+                drop-shadow(0 18px 20px rgba(0,0,0,.62))
+                drop-shadow(0 3px 3px rgba(0,0,0,.36));
+            transition: opacity 45ms linear;
         }
+        .owl-frame-open { opacity: 1; }
+        .owl-frame-closed { opacity: 0; }
+        .owl-container.owl-blink .owl-frame-open { opacity: 0; }
+        .owl-container.owl-blink .owl-frame-closed { opacity: 1; }
 
-        @keyframes owlBreath {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-1.4px) scale(1.008); }
-        }
-        @keyframes owlFocus {
-            0%, 20%, 100% { transform: rotate(0deg) translateX(0); }
-            35%, 46% { transform: rotate(-1.35deg) translateX(-0.8px); }
-            58%, 70% { transform: rotate(1.15deg) translateX(0.7px); }
-            82% { transform: rotate(-0.45deg) translateX(-0.2px); }
-        }
-
-        .owl-talon {
-            position: absolute;
-            bottom: 8px;
-            width: 22px;
-            height: 10px;
-            z-index: 4;
-            border-bottom: 3px solid #d1aa69;
-            border-radius: 50%;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,.55));
-            pointer-events: none;
-        }
-        .owl-talon::before,
-        .owl-talon::after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            width: 10px;
-            height: 8px;
-            border-bottom: 2px solid #b88a4d;
-            border-radius: 50%;
-        }
-        .owl-talon::before { left: 0; transform: rotate(18deg); }
-        .owl-talon::after { right: 0; transform: rotate(-18deg); }
-        .owl-talon-left { left: 55px; }
-        .owl-talon-right { right: 55px; }
-
-        .owl-blink {
-            position: absolute;
-            top: 43px;
-            width: 24px;
-            height: 15px;
-            z-index: 3;
-            border-radius: 52% 52% 48% 48%;
-            background: linear-gradient(180deg, #654527 0%, #8e6640 46%, #55371e 100%);
-            box-shadow: inset 0 -2px 2px rgba(20,12,6,.3);
+        .owl-frame-step {
             opacity: 0;
-            transform: scaleY(.06);
-            transform-origin: 50% 0%;
-            pointer-events: none;
-            animation: owlPhotoBlink 7.6s ease-in-out infinite;
+            transition: opacity 75ms linear;
         }
-        .owl-blink-left { left: 46px; transform: rotate(-2deg) scaleY(.06); }
-        .owl-blink-right { right: 46px; transform: rotate(2deg) scaleY(.06); animation-delay: .045s; }
-
-        @keyframes owlPhotoBlink {
-            0%, 91%, 100% { opacity: 0; }
-            92% { opacity: .15; transform: scaleY(.15); }
-            93.2%, 94.4% { opacity: .96; transform: scaleY(1); }
-            96% { opacity: .2; transform: scaleY(.18); }
-            97% { opacity: 0; transform: scaleY(.06); }
+        .owl-frame-step.owl-step-visible { opacity: 1; }
+        .owl-container.owl-stepping .owl-frame-open,
+        .owl-container.owl-stepping .owl-frame-closed { opacity: 0 !important; }
+        .owl-media-stage {
+            translate: var(--owl-step-x, 0px) 0;
+            transition: translate 120ms cubic-bezier(.22,.61,.36,1);
         }
-
-        .owl-ecosystem.flying .owl-photo-stage {
-            animation: owlGlide 1.1s ease-in-out infinite;
-        }
-        .owl-ecosystem.flying .owl-photo {
-            animation: owlFlightFocus .8s ease-in-out infinite alternate;
-        }
-        .owl-ecosystem.sitting .owl-photo {
-            animation: owlLandingFocus 4s ease-in-out 1;
-        }
-        @keyframes owlGlide {
-            0%, 100% { transform: translateY(0) rotate(-1deg); }
-            50% { transform: translateY(-4px) rotate(1deg); }
-        }
-        @keyframes owlFlightFocus {
-            from { transform: rotate(-2deg) scale(.985); }
-            to { transform: rotate(2deg) scale(1.01); }
-        }
-        @keyframes owlLandingFocus {
-            0%, 15%, 100% { transform: rotate(0deg); }
-            35%, 55% { transform: rotate(-2deg); }
-            70%, 82% { transform: rotate(1.5deg); }
-        }
+        .owl-container.owl-returning .owl-frame-step { transform: translateX(-50%) scaleX(-1); }
 
         @media (prefers-reduced-motion: reduce) {
-            .owl-walker,
-            .owl-photo-stage,
-            .owl-photo,
-            .owl-blink,
-            .owl-ecosystem.flying .owl-photo-stage,
-            .owl-ecosystem.flying .owl-photo,
-            .owl-ecosystem.sitting .owl-photo {
-                animation: none !important;
-            }
+            .owl-media-stage { animation: none !important; }
+            .owl-frame-closed { display: none !important; }
         }
 
         .owl-bubble { position: absolute; bottom: 92%; left: 50%; transform: translateX(-50%) scale(0.5); background: var(--bg-glass); backdrop-filter: blur(15px); color: var(--text-main); padding: 12px 18px; border-radius: 20px 20px 20px 0; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.9rem; box-shadow: 0 15px 30px rgba(0,0,0,0.6); opacity: 0; transition: all 0.4s var(--bezier-bounce); pointer-events: none; border: 1px solid var(--ranepa-red); z-index: 9998; white-space: nowrap; }
@@ -640,6 +570,7 @@
                 pointer-events: auto; z-index: 10000;
             }
             .owl-walker { display: none; }
+            .owl-media-stage { display: none !important; }
             .mobile-chat-icon { display: block; width: 30px; height: 30px; fill: #fff; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
             .owl-bubble { right: 0; left: auto; bottom: 72px; transform: translateX(0) scale(0.5); }
             .owl-bubble.show { transform: translateX(0) scale(1); }
@@ -1717,8 +1648,8 @@
                 </linearGradient>
             </defs>
             <ellipse cx="260" cy="98" rx="230" ry="10" fill="#000" opacity="0.45"/>
-            <path d="M0 62 Q 100 34 200 48 T 400 40 T 520 52 L520 78 Q 400 66 200 74 T 0 88 Z" fill="url(#barkGrad)"/>
-            <path d="M0 62 Q 100 34 200 48 T 400 40 T 520 52" stroke="#2a1c0e" stroke-width="2" fill="none" opacity="0.7"/>
+            <path d="M0 56 Q 100 28 205 43 T 405 35 T 520 47 L520 88 Q 405 76 205 85 T 0 96 Z" fill="url(#barkGrad)"/>
+            <path d="M0 56 Q 100 28 205 43 T 405 35 T 520 47" stroke="#2a1c0e" stroke-width="2.4" fill="none" opacity="0.78"/>
             <path d="M10 74 Q 110 50 210 62 T 410 56" stroke="#6b4a2c" stroke-width="1.5" fill="none" opacity="0.5"/>
             <path d="M15 80 Q 120 58 230 68 T 430 64" stroke="#2a1c0e" stroke-width="1.5" fill="none" opacity="0.5"/>
             <ellipse cx="140" cy="66" rx="6" ry="4" fill="#241708" opacity="0.6"/>
@@ -1729,14 +1660,27 @@
         <div class="owl-container" id="owlSprite" onclick="toggleChat()">
             <div class="owl-bubble" id="owlBubble" data-i18n="owlHelp">Нужна помощь с выбором программы?</div>
 
-            <div class="owl-walker" id="owlWalker">
-                <div class="owl-photo-stage" aria-hidden="true">
-                    <img class="owl-photo" src="./img/owl-professional.webp" alt="" draggable="false" decoding="async">
-                    <span class="owl-talon owl-talon-left"></span>
-                    <span class="owl-talon owl-talon-right"></span>
-                    <span class="owl-blink owl-blink-left"></span>
-                    <span class="owl-blink owl-blink-right"></span>
-                </div>
+            <div class="owl-media-stage" id="owlMediaStage" aria-hidden="true">
+                <img
+                    class="owl-frame owl-frame-open"
+                    id="owlFrameOpen"
+                    src="./img/owl-v2-open.webp"
+                    alt=""
+                    draggable="false"
+                    decoding="async"
+                    fetchpriority="low"
+                >
+                <img
+                    class="owl-frame owl-frame-closed"
+                    id="owlFrameClosed"
+                    src="./img/owl-v2-closed.webp"
+                    alt=""
+                    draggable="false"
+                    decoding="async"
+                    fetchpriority="low"
+                >
+                <img class="owl-frame owl-frame-step" id="owlStepA" alt="" draggable="false" decoding="async">
+                <img class="owl-frame owl-frame-step" id="owlStepB" alt="" draggable="false" decoding="async">
             </div>
 
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1787,7 +1731,16 @@
         </button>
     </div>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            clearTimeout(owlWalkTimer);
+            if (owlWalking) cancelOwlWalk();
+        } else {
+            scheduleOwlWalk();
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
             const fakeFieldName = 'hp_' + Math.random().toString(36).substring(2, 8);
             sessionStorage.setItem('trap_field', fakeFieldName);
 
@@ -3747,61 +3700,184 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         }
     }, 5000);
 
-    let sharedAudioCtx = null;
-    function getAudioCtx() {
-        if (!sharedAudioCtx) {
-            try { sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+    // Сова по ТЗ работает полностью без звука.
+    function playHoot() {}
+
+    let owlBlinkTimer = null;
+    let owlBlinkResetTimer = null;
+    let owlStepTimer = null;
+    let owlStepping = false;
+
+    const OWL_STEP_FRAMES = [
+        './img/owl-step-1.webp',
+        './img/owl-step-2.webp',
+        './img/owl-step-3.webp',
+        './img/owl-step-4.webp'
+    ];
+
+    function owlMotionReduced() {
+        return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    }
+
+    function owlLowPowerMode() {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection && connection.saveData) return true;
+        const memory = Number(navigator.deviceMemory || 0);
+        const cores = Number(navigator.hardwareConcurrency || 0);
+        return (memory && memory <= 2) || (cores && cores <= 2);
+    }
+
+    function scheduleOwlBlink() {
+        clearTimeout(owlBlinkTimer);
+        if (owlMotionReduced() || isMobile()) return;
+
+        const delay = 4800 + Math.random() * 6200;
+        owlBlinkTimer = setTimeout(() => {
+            const sprite = document.getElementById('owlSprite');
+            const container = document.getElementById('owlContainer');
+            if (!sprite || !container || !container.classList.contains('visible') || owlStepping) {
+                scheduleOwlBlink();
+                return;
+            }
+
+            sprite.classList.add('owl-blink');
+            clearTimeout(owlBlinkResetTimer);
+            owlBlinkResetTimer = setTimeout(() => {
+                sprite.classList.remove('owl-blink');
+
+                if (Math.random() < 0.16) {
+                    setTimeout(() => {
+                        if (owlStepping) return;
+                        sprite.classList.add('owl-blink');
+                        setTimeout(() => sprite.classList.remove('owl-blink'), 115);
+                    }, 165);
+                }
+                scheduleOwlBlink();
+            }, 135);
+        }, delay);
+    }
+
+    function preloadOwlStepFrames() {
+        return Promise.all(OWL_STEP_FRAMES.map(src => new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(false);
+            img.src = src;
+        })));
+    }
+
+    function setOwlStepFrame(src, slotIndex) {
+        const current = document.getElementById(slotIndex ? 'owlStepB' : 'owlStepA');
+        const other = document.getElementById(slotIndex ? 'owlStepA' : 'owlStepB');
+        if (!current || !other) return;
+        current.src = src;
+        requestAnimationFrame(() => {
+            other.classList.remove('owl-step-visible');
+            current.classList.add('owl-step-visible');
+        });
+    }
+
+    function runOwlWalkCycle() {
+        if (owlStepping || owlMotionReduced() || owlLowPowerMode() || isMobile()) {
+            scheduleOwlStep();
+            return;
         }
-        return sharedAudioCtx;
-    }
-    function unlockAudio() {
-        const ctx = getAudioCtx();
-        if (ctx && ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
-    }
-    ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
-        window.addEventListener(evt, unlockAudio, { once: true, passive: true });
-    });
 
-    function playHoot() {
-        const ctx = getAudioCtx();
-        if (!ctx) return;
-        if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
-        try {
-            const repeats = [{ t: 0, g: 0.045 }, { t: 0.45, g: 0.022 }, { t: 0.9, g: 0.010 }];
-            repeats.forEach(r => {
-                const start = ctx.currentTime + r.t;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(155, start);
-                osc.frequency.exponentialRampToValueAtTime(92, start + 0.5);
-                gain.gain.setValueAtTime(0.0001, start);
-                gain.gain.exponentialRampToValueAtTime(r.g, start + 0.08);
-                gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.7);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(start); osc.stop(start + 0.75);
+        const sprite = document.getElementById('owlSprite');
+        const stage = document.getElementById('owlMediaStage');
+        const container = document.getElementById('owlContainer');
+        if (!sprite || !stage || !container || !container.classList.contains('visible')) {
+            scheduleOwlStep();
+            return;
+        }
+
+        owlStepping = true;
+        sprite.classList.remove('owl-blink');
+        sprite.classList.add('owl-stepping');
+
+        // 4 фазы вправо, короткая пауза, затем зеркальный возврат.
+        const frames = [
+            {src:OWL_STEP_FRAMES[0], x:4,  back:false},
+            {src:OWL_STEP_FRAMES[1], x:10, back:false},
+            {src:OWL_STEP_FRAMES[2], x:17, back:false},
+            {src:OWL_STEP_FRAMES[3], x:24, back:false},
+            {src:OWL_STEP_FRAMES[2], x:20, back:true},
+            {src:OWL_STEP_FRAMES[1], x:13, back:true},
+            {src:OWL_STEP_FRAMES[0], x:6,  back:true},
+            {src:OWL_STEP_FRAMES[3], x:0,  back:true}
+        ];
+
+        let i = 0;
+        let slot = 0;
+
+        const advance = () => {
+            if (i >= frames.length) {
+                const a = document.getElementById('owlStepA');
+                const b = document.getElementById('owlStepB');
+                if (a) a.classList.remove('owl-step-visible');
+                if (b) b.classList.remove('owl-step-visible');
+                sprite.classList.remove('owl-returning');
+                stage.style.setProperty('--owl-step-x', '0px');
+                setTimeout(() => {
+                    sprite.classList.remove('owl-stepping');
+                    owlStepping = false;
+                    scheduleOwlStep();
+                }, 120);
+                return;
+            }
+
+            const step = frames[i++];
+            sprite.classList.toggle('owl-returning', step.back);
+            stage.style.setProperty('--owl-step-x', step.x + 'px');
+            setOwlStepFrame(step.src, slot);
+            slot = 1 - slot;
+
+            const pause = i === 4 ? 330 : 155;
+            setTimeout(advance, pause);
+        };
+
+        advance();
+    }
+
+    function scheduleOwlStep() {
+        clearTimeout(owlStepTimer);
+        if (owlMotionReduced() || owlLowPowerMode() || isMobile()) return;
+        owlStepTimer = setTimeout(runOwlWalkCycle, 9500 + Math.random() * 8500);
+    }
+
+    function initOwlMedia() {
+        const openFrame = document.getElementById('owlFrameOpen');
+        const closedFrame = document.getElementById('owlFrameClosed');
+        if (!openFrame || !closedFrame) return;
+
+        const ready = [];
+        if (typeof openFrame.decode === 'function') ready.push(openFrame.decode().catch(() => {}));
+        if (typeof closedFrame.decode === 'function') ready.push(closedFrame.decode().catch(() => {}));
+
+        Promise.all(ready).finally(() => {
+            scheduleOwlBlink();
+            preloadOwlStepFrames().then(results => {
+                if (results.some(Boolean)) scheduleOwlStep();
             });
-        } catch (e) {}
+        });
     }
-
-    setTimeout(function scheduleFirstHoot() {
-        playHoot();
-        setInterval(playHoot, 5 * 60 * 1000);
-    }, 20 * 1000);
 
     let scrollMiniTimeout;
     window.addEventListener('scroll', () => {
         const container = document.getElementById('owlContainer');
         const bubble = document.getElementById('owlBubble');
-        if (container.classList.contains('flying') || container.classList.contains('sitting')) { updateScrollNav(); return; }
+
+        if (owlWalking) cancelOwlWalk();
 
         if (!container.classList.contains('scroll-mini')) {
             container.classList.add('scroll-mini');
             bubble.classList.remove('show');
         }
+
         clearTimeout(scrollMiniTimeout);
         scrollMiniTimeout = setTimeout(() => {
             container.classList.remove('scroll-mini');
+            scheduleOwlWalk();
         }, 450);
 
         updateScrollNav();
@@ -3815,7 +3891,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             chat.classList.remove('active');
             ecosystem.classList.remove('chat-opened');
             stopOwlFilesSnapshotPolling();
+            scheduleOwlWalk();
         } else {
+            if (owlWalking) cancelOwlWalk();
+            clearTimeout(owlWalkTimer);
             chat.classList.add('active');
             ecosystem.classList.add('chat-opened');
             refreshOwlFilesSnapshot({ silent: true });
@@ -3913,76 +3992,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         })[ch]);
     }
 
-    let owlBusy = false;
+    // Старое перелетание удалено: сова остается на ветке.
     function owlFlyToPrograms() {
-        if (isMobile() || owlBusy) return;
-        owlBusy = true;
-        const eco = document.getElementById('owlContainer');
-        const homeRect = eco.getBoundingClientRect();
-        const target = document.getElementById('programsSection');
-        const targetRect = target.getBoundingClientRect();
-
-        const startX = homeRect.left, startY = homeRect.top;
-        const endX = Math.max(20, targetRect.left + targetRect.width * (0.55 + Math.random() * 0.2));
-        const endY = Math.max(80, targetRect.top + 40);
-
-        const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 400;
-        const midY = Math.min(startY, endY) - (120 + Math.random() * 200);
-
-        eco.classList.add('flying');
-        eco.style.position = 'fixed';
-
-        const duration = 1300 + Math.random() * 400;
-        const t0 = performance.now();
-        function step(now) {
-            const t = Math.min(1, (now - t0) / duration);
-            const bx = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
-            const by = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
-            const scale = 1 - t * 0.45;
-            eco.style.left = bx + 'px';
-            eco.style.top = by + 'px';
-            eco.style.right = 'auto'; eco.style.bottom = 'auto';
-            eco.style.transform = `scale(${scale})`;
-            if (t < 1) requestAnimationFrame(step);
-            else owlSitAndReturn(eco, homeRect);
-        }
-        requestAnimationFrame(step);
-    }
-
-    function owlSitAndReturn(eco, homeRect) {
-        eco.classList.remove('flying');
-        eco.classList.add('sitting');
-        playHoot();
-
-        setTimeout(() => {
-            eco.classList.remove('sitting');
-            const startRect = eco.getBoundingClientRect();
-            const startX = startRect.left, startY = startRect.top;
-            const endX = homeRect.left, endY = homeRect.top;
-            const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 350;
-            const midY = Math.min(startY, endY) - (100 + Math.random() * 180);
-
-            eco.classList.add('flying');
-            const duration = 1100 + Math.random() * 400;
-            const t0 = performance.now();
-            let startScale = 0.55;
-            function step(now) {
-                const t = Math.min(1, (now - t0) / duration);
-                const bx = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * midX + t * t * endX;
-                const by = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * midY + t * t * endY;
-                const scale = startScale + t * (1 - startScale);
-                eco.style.left = bx + 'px';
-                eco.style.top = by + 'px';
-                eco.style.transform = `scale(${scale})`;
-                if (t < 1) requestAnimationFrame(step);
-                else {
-                    eco.classList.remove('flying');
-                    eco.style.position = ''; eco.style.left = ''; eco.style.top = ''; eco.style.transform = '';
-                    owlBusy = false;
-                }
-            }
-            requestAnimationFrame(step);
-        }, 4000);
+        const bubble = document.getElementById('owlBubble');
+        if (bubble) bubble.classList.remove('show');
     }
 
     function normalizeText(s) {
@@ -4998,6 +5011,7 @@ document.getElementById('mediaLightbox').addEventListener('click', function(e) {
         window.scrollTo(0, 0);
 
         fetchPrograms();
+        initOwlMedia();
         armRevealTargets();
         updateScrollNav();
         checkCookieConsent();
