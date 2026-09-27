@@ -1582,7 +1582,7 @@
     <div id="progress-bar"></div>
 
     <div class="cookie-consent-banner" id="cookieConsentBanner">
-        <div class="cookie-consent-text" data-i18n="cookieConsentText">Данный сайт использует файлы Cookie в порядке и целях, указанных по <a href="https://www.ranepa.ru/politika-obrabotki-faylov-cookies/" target="_blank" rel="noopener">ссылке</a>.</div>
+        <div class="cookie-consent-text" data-i18n="cookieConsentText">Данный сайт использует файлы Cookie в порядке и целях, указанных по <a href="https://www.ranepa.ru/politika-obrabotki-faylov-cookies/" target="_blank" rel="noopener noreferrer">ссылке</a>.</div>
         <button class="cookie-consent-btn" onclick="acceptCookieConsent()" data-i18n="cookieConsentBtn">Согласен</button>
     </div>
 
@@ -1791,7 +1791,7 @@
 
             <div class="main-contact-box">
                 <h3 data-i18n="addressLabel">Адрес:</h3>
-                <p><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" class="contact-link" style="text-decoration: underline;" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
+                <p><a href="https://yandex.ru/maps/org/rankhigs_zapadny_filial/1467706905/?ll=20.554514%2C54.733208&z=17.11" target="_blank" rel="noopener noreferrer" class="contact-link" style="text-decoration: underline;" data-i18n="addressText">236038, Россия, Калининградская область, г. Калининград, ул. Артиллерийская, д. 62</a></p>
             </div>
 
             <h3 class="department-title" data-i18n="dept1">Центр дополнительного образования</h3>
@@ -1897,7 +1897,7 @@
                 </div>
 
                 <div style="margin-top: 20px; display: flex; justify-content: center;">
-                    <a href="https://vk.ru/ranepa_dpo39" target="_blank" rel="noopener" class="vk-btn">
+                    <a href="https://vk.ru/ranepa_dpo39" target="_blank" rel="noopener noreferrer" class="vk-btn">
     <img src="./img/logo-vk.png" alt="ВКонтакте" data-i18n-alt="vkAlt" style="width: 22px; height: 22px; object-fit: contain; display: block;">
     <span data-i18n="vkText">ВКонтакте</span>
 </a>
@@ -1927,8 +1927,8 @@
     <input type="text" name="website" id="honeypotField" tabindex="-1" autocomplete="off">
 </div>
             <p data-i18n="modDesc">Выберите удобный способ регистрации на программу обучения:</p>
-            <a href="https://trudvsem.ru/?region=3900000000000" target="_blank" id="modTrudBtn" class="modal-btn modal-btn-trudvsem" onclick="return checkConsentBeforeEnroll()" data-i18n="modTrud">Записаться через «Работа России» (Калининград)</a>
-            <a href="https://forms.yandex.ru" target="_blank" id="modYanBtn" class="modal-btn modal-btn-yandex" onclick="return checkConsentBeforeEnroll()" data-i18n="modYan">Записаться через Яндекс.Форму</a>
+            <a href="https://trudvsem.ru/?region=3900000000000" target="_blank" rel="noopener noreferrer" id="modTrudBtn" class="modal-btn modal-btn-trudvsem" onclick="return checkConsentBeforeEnroll()" data-i18n="modTrud">Записаться через «Работа России» (Калининград)</a>
+            <a href="https://forms.yandex.ru" target="_blank" rel="noopener noreferrer" id="modYanBtn" class="modal-btn modal-btn-yandex" onclick="return checkConsentBeforeEnroll()" data-i18n="modYan">Записаться через Яндекс.Форму</a>
 
             <div class="consent-block">
                 <label class="consent-checkbox-label">
@@ -2237,7 +2237,7 @@
             <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
             
             <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
-            <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+            <a href="ai-lecture.html" target="_blank" rel="noopener noreferrer" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
                 🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
             </a>
         </div>
@@ -2269,7 +2269,12 @@
             if (targetForm) {
                 const wrap = document.createElement('div');
                 wrap.style.display = 'none';
-                wrap.innerHTML = `<input type="text" name="${fakeFieldName}" id="dynamicTrap" value="">`;
+                const trap = document.createElement('input');
+                trap.type = 'text';
+                trap.name = fakeFieldName;
+                trap.id = 'dynamicTrap';
+                trap.value = '';
+                wrap.appendChild(trap);
                 targetForm.appendChild(wrap);
             }
         });
@@ -4007,13 +4012,21 @@
         }
     }
 
+    function safeExternalHttpUrl(value) {
+        try {
+            const url = new URL(String(value || '').trim(), location.origin);
+            return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : '';
+        } catch (error) {
+            return '';
+        }
+    }
+
     function renderDocsList(programs) {
         const docsListEl = document.getElementById('docsList');
         if (!docsListEl) return;
         const items = (Array.isArray(programs) ? programs : []).filter(prog => {
             if (!prog || !prog.pdf_link) return false;
-            const url = String(prog.pdf_link).trim();
-            return url.startsWith('https://') || url.startsWith('http://');
+            return !!safeExternalHttpUrl(prog.pdf_link);
         });
         if (!items.length) {
             docsListEl.innerHTML = '<div style="color: var(--text-muted);">' +
@@ -4028,9 +4041,10 @@
             const hours = localizedProgramMeta(prog, 'hours', currentLang);
             let docTitle = type ? type + ' “' + title + '”' : '“' + title + '”';
             if (hours) docTitle += ' (' + hours + ')';
-            return '<div>📄 <a href="' + String(prog.pdf_link) +
-                '" target="_blank" rel="noopener" class="contact-link" style="text-decoration: underline;">' +
-                docTitle + '</a></div>';
+            const safeUrl = safeExternalHttpUrl(prog.pdf_link);
+            return '<div>📄 <a href="' + siteAdminEscape(safeUrl) +
+                '" target="_blank" rel="noopener noreferrer" class="contact-link" style="text-decoration: underline;">' +
+                siteAdminEscape(docTitle) + '</a></div>';
         }).join('');
     }
 
@@ -4088,7 +4102,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                 <h3 data-i18n="${prog.id}_title">${prog.title_ru}</h3>
                 <p class="desc-text" data-i18n="${prog.id}_desc">${prog.desc_ru}</p>
                 <div class="card-actions">
-                    <a class="program-details-link" href="program.html?id=${encodeURIComponent(prog.id)}&lang=${currentLang}" target="_blank" rel="noopener" data-program-id="${prog.id}" data-i18n="detailsBtn">Подробно о программе</a>
+                    <a class="program-details-link" href="program.html?id=${encodeURIComponent(prog.id)}&lang=${currentLang}" target="_blank" rel="noopener noreferrer" data-program-id="${prog.id}" data-i18n="detailsBtn">Подробно о программе</a>
                     <button class="buy-btn" onclick="openModal()" data-i18n="enrollBtn">Записаться</button>
                 </div>
             </div>`;
@@ -5344,7 +5358,20 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
     function openDocLightbox(imgUrl, title) {
     const box = document.getElementById('lightboxContent');
-    box.innerHTML = `<img src="${imgUrl}" alt="${title}" style="max-width:90vw; max-height:75vh; object-fit:contain; border-radius:12px; display:block; margin:0 auto;"><div style="color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; text-align:center;">${title}</div>`;
+    const safeUrl = safeExternalHttpUrl(imgUrl);
+    if (!box || !safeUrl) return;
+
+    box.replaceChildren();
+    const img = document.createElement('img');
+    img.src = safeUrl;
+    img.alt = String(title || '');
+    img.style.cssText = 'max-width:90vw; max-height:75vh; object-fit:contain; border-radius:12px; display:block; margin:0 auto;';
+
+    const caption = document.createElement('div');
+    caption.textContent = String(title || '');
+    caption.style.cssText = "color:#fff; margin-top:15px; font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.1rem; text-align:center;";
+
+    box.append(img, caption);
     const lbNav = document.getElementById('lightboxNav');
     if (lbNav) lbNav.style.display = 'none';
     document.getElementById('mediaLightbox').classList.add('active');
