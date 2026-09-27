@@ -4755,14 +4755,65 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         }
     }
 
+    async function owlApplyLearnedRule(rule) {
+        if (!rule || !rule.action) return false;
+
+        if (rule.action === 'staff') {
+            const person = owlStaffByKey(rule.value);
+            if (!person) return false;
+            owlRememberStaff(person);
+            await presentOwlLocal({
+                handled:true,
+                html:owlStaffAnswer(person, person.name),
+                options:owlStaffOptions(person),
+                intent:'staff-contact'
+            }, person.name);
+            return true;
+        }
+
+        if (rule.action === 'program') {
+            const program = globalPrograms.find(p => String(p.id || '') === String(rule.value || ''));
+            if (!program) return false;
+            owlRememberProgram(program);
+            addBotMsg(
+                '<b>' + escapeOwlText(program[currentLang === 'ru' ? 'title_ru' : 'title_en'] || '') + '</b>' +
+                '<br><span class="owl-guided-hint">Я вспомнил, что раньше похожая формулировка привела вас к этой программе.</span>'
+            );
+            setOptions(owlProgramActionOptions(program));
+            return true;
+        }
+
+        if (rule.action === 'filter') {
+            owlFilterCandidatePrograms(rule.value);
+            return true;
+        }
+
+        return false;
+    }
+
     async function handleUserMessage() {
         const input = document.getElementById('chatUserInput');
         if (owlAiRequestInFlight) return;
-        const text = input.value.trim();
-        if (!text) return;
+        const originalText = input.value.trim();
+        if (!originalText) return;
 
-        addUserMsg(text);
+        addUserMsg(originalText);
         input.value = '';
+
+        let text = originalText;
+
+        if (window.OwlLearning) {
+            try {
+                const learnedRule = window.OwlLearning.lookup(originalText);
+                if (learnedRule) {
+                    if (learnedRule.action === 'preset' && learnedRule.value) {
+                        text = learnedRule.value;
+                    } else if (await owlApplyLearnedRule(learnedRule)) {
+                        return;
+                    }
+                }
+            } catch (e) {}
+        }
 
         // --- СЛУЖЕБНЫЕ РЕЖИМЫ ---
 const staffCommand = normalizeText(text);
@@ -4959,6 +5010,15 @@ if (wantsNewsEditor) {
                 if (owlConversationState.mode === 'advanced' && owlConversationState.advancedUnlocked) {
                     askOwlAI(text);
                 } else {
+                    if (window.OwlLearning) {
+                        try {
+                            window.OwlLearning.rememberUnknown(originalText, {
+                                mode: owlConversationState.mode,
+                                intent: owlConversationState.lastIntent || '',
+                                page: location.pathname || '/'
+                            });
+                        } catch (e) {}
+                    }
                     addBotMsg(
                         'Похоже, я пока не понял, что именно вам нужно.' +
                         '<div class="owl-guided-hint">Можно выбрать подходящий вариант ниже или написать вопрос ещё проще.</div>'
@@ -5650,6 +5710,9 @@ if (wantsNewsEditor) {
     }
 
     function owlFilterCandidatePrograms(mode) {
+        if (window.OwlLearning) {
+            try { window.OwlLearning.resolvePending('filter', String(mode || ''), 'filter-button'); } catch (e) {}
+        }
         const source = owlCandidatePrograms();
         const pool = source.length ? source : globalPrograms.filter(program => program && program.active !== false);
 
@@ -5790,6 +5853,9 @@ if (wantsNewsEditor) {
     function owlAskPreset(text) {
         const input = document.getElementById('chatUserInput');
         if (!input || owlAiRequestInFlight) return;
+        if (window.OwlLearning) {
+            try { window.OwlLearning.resolvePendingAsPreset(String(text || ''), 'preset-button'); } catch (e) {}
+        }
         input.value = String(text || '');
         handleUserMessage();
     }
@@ -6233,6 +6299,9 @@ if (wantsNewsEditor) {
     function owlSelectStaff(key) {
         const person = owlStaffByKey(key);
         if (!person) return;
+        if (window.OwlLearning) {
+            try { window.OwlLearning.resolvePending('staff', String(key || ''), 'staff-select'); } catch (e) {}
+        }
         owlRememberStaff(person);
         addBotMsg(owlStaffAnswer(person, person.name));
         setOptions(owlStaffOptions(person));
@@ -6428,7 +6497,12 @@ if (wantsNewsEditor) {
 
     function owlRememberProgramById(id) {
         const program = globalPrograms.find(p => String(p.id || '') === String(id));
-        if (program) owlRememberProgram(program);
+        if (program) {
+            if (window.OwlLearning) {
+                try { window.OwlLearning.resolvePending('program', String(id || ''), 'program-select'); } catch (e) {}
+            }
+            owlRememberProgram(program);
+        }
     }
 
     function owlNumeric(value) {
