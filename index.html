@@ -4862,11 +4862,20 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         return false;
     }
 
+    let owlLastSubmit = { text:'', at:0 };
+
     async function handleUserMessage() {
         const input = document.getElementById('chatUserInput');
         if (owlAiRequestInFlight) return;
         const originalText = input.value.trim();
         if (!originalText) return;
+
+        const now = Date.now();
+        if (owlLastSubmit.text === originalText && now - owlLastSubmit.at < 1200) {
+            input.value = '';
+            return;
+        }
+        owlLastSubmit = { text:originalText, at:now };
 
         addUserMsg(originalText);
         input.value = '';
@@ -5944,56 +5953,72 @@ if (wantsNewsEditor) {
     async function handleOwlNegativeFeedback(query) {
         if (!owlIsNegativeFeedback(query)) return false;
 
-        const escalation = owlBrainConfig().escalation || {};
+        const raw = normalizeText(String(query || '').replace(/ё/g, 'е')).trim();
         const replyPool = owlBrainConfig().negativeReplies || [];
+        const currentProgram = owlLastProgramContext();
+        const candidates = owlCandidatePrograms();
 
-        if (owlConversationState.mode === 'advanced') {
-            owlConversationState.advancedNegativeCount =
-                Number(owlConversationState.advancedNegativeCount || 0) + 1;
+        // Короткое "нет" после конкретного ответа — это не повод включать
+        // "расширенный режим". Сохраняем предмет разговора и уточняем намерение.
+        if (/^(нет|неа|не подходит|не подходят|не то|другое|другой вариант|другие варианты)[!?.(\s]*$/i.test(raw)) {
+            owlConversationState.negativeCount = 0;
+            owlConversationState.advancedNegativeCount = 0;
             saveOwlConversationState();
 
-            const threshold = Number(escalation.extendedHandoffAfter || 3);
-            if (owlConversationState.advancedNegativeCount >= threshold) {
-                showOwlHumanHandoff('repeated');
+            if (currentProgram) {
+                const title = currentProgram[currentLang === 'ru' ? 'title_ru' : 'title_en'] || '';
+                addBotMsg(
+                    'Понял. Не буду уводить вас в случайные программы.' +
+                    '<br><span class="owl-guided-hint">Сейчас в контексте: <b>' + escapeOwlText(title) +
+                    '</b>. Можно уточнить цену, срок, формат или написать, что именно вы хотите найти вместо неё.</span>'
+                );
+                setOptions(
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'сколько стоит эта программа\')">💰 Цена</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'сколько учиться на этой программе\')">📅 Срок</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой формат у этой программы\')">🎓 Формат</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'помоги подобрать программу по моей задаче\')">🧭 Подобрать другое по задаче</button>' +
+                    '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>'
+                );
                 return true;
             }
+        }
 
+        // Если пользователь отвергает список вариантов, не повторяем тот же список.
+        if (candidates.length && /не\s+подход|ничего\s+из|друг(ое|ие|ой)|не\s+то/i.test(raw)) {
+            owlConversationState.lastCandidateIds = [];
+            owlConversationState.negativeCount = 0;
+            saveOwlConversationState();
             addBotMsg(
-                (owlPickReply(replyPool, 'negativeAdvanced') || 'Понял. Попробуем иначе.') +
-                '<br><span class="owl-guided-hint">Можно вернуться в обычный режим или сразу передать вопрос сотруднику.</span>'
+                'Понял, эти варианты исключаем.' +
+                '<br><span class="owl-guided-hint">Опишите цель одной фразой: кем хотите работать, какую задачу решать или какую тему изучить.</span>'
             );
             setOptions(
-                '<button class="chat-opt-btn" onclick="setOwlMode(\'normal\', true)">↩ Обычный режим</button>' +
-                '<button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Связаться с сотрудником</button>' +
-                '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>'
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'хочу сменить профессию\')">🔄 Сменить профессию</button>' +
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'хочу повысить квалификацию по своей работе\')">📈 Повысить квалификацию</button>' +
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'нужна короткая программа до 72 часов\')">⚡ Короткая программа</button>' +
+                '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>'
             );
             return true;
         }
 
-        owlConversationState.negativeCount = Number(owlConversationState.negativeCount || 0) + 1;
+        // Для явного недовольства оставляем мягкий fallback, но не прыгаем
+        // автоматически в расширенный режим.
+        owlConversationState.negativeCount = Math.min(3, Number(owlConversationState.negativeCount || 0) + 1);
         saveOwlConversationState();
 
-        const threshold = Number(escalation.unlockAdvancedAfter || 5);
-        if (owlConversationState.negativeCount >= threshold) {
-            showOwlAdvancedOffer();
-            return true;
-        }
-
-        const step = Math.max(1, Math.min(4, owlConversationState.negativeCount));
-        const hints = {
-            1: 'Давайте сначала уточним тип обучения — так будет проще убрать лишние варианты.',
-            2: 'Можно сузить выбор по цене, длительности или формату.',
-            3: 'Попробуем уточнить тему или посмотреть другое направление.',
-            4: 'Можно описать задачу своими словами, открыть основные направления или сразу обратиться к сотруднику.'
-        };
+        const step = Math.max(1, Math.min(3, owlConversationState.negativeCount));
         const reply = owlPickReply(replyPool, 'negativeNormal') || 'Понял. Попробуем иначе.';
         addBotMsg(
             reply +
             '<br><span class="owl-guided-hint">' +
-            escapeOwlText(hints[step] || 'Попробуем другой путь.') +
+            escapeOwlText(step === 1
+                ? 'Напишите тему или профессию одним-двумя словами.'
+                : step === 2
+                    ? 'Можно указать цель: новая профессия, повышение квалификации, срок или бюджет.'
+                    : 'Если удобнее, опишите рабочую задачу обычной фразой — я попробую найти программы по смыслу.') +
             '</span>'
         );
-        setOptions(owlProgressiveFallbackOptions(step));
+        setOptions(owlGuidedFallbackOptions());
         return true;
     }
 
@@ -6689,49 +6714,64 @@ if (wantsNewsEditor) {
         return owlSmartNormalize(value).split(' ').filter(word => word.length > 3);
     }
 
+    function owlProgramSemanticWords(program) {
+        const raw = [
+            program && program.title_ru || '',
+            program && program.desc_ru || '',
+            program && program.long_desc_ru || '',
+            program && program.topics_ru || '',
+            Array.isArray(program && program.bullets_ru) ? program.bullets_ru.join(' ') : ''
+        ].join(' ');
+
+        const stop = new Set([
+            'программа','обучение','слушатели','специалисты','управление','основы','вопросы',
+            'профессиональный','профессиональная','повышение','квалификации','развитие',
+            'полученные','успешно','материал','деятельность','организация','организации'
+        ]);
+
+        const base = owlSmartNormalize(raw).split(' ')
+            .filter(w => w.length >= 4 && !stop.has(w));
+
+        return owlProgramSearchAliases(base);
+    }
+
     function owlRelatedPrograms(program, limit) {
         if (!program) return [];
-        const sourceWords = new Set(owlWords(
-            (program.title_ru || '') + ' ' +
-            (program.desc_ru || '') + ' ' +
-            (Array.isArray(program.bullets_ru) ? program.bullets_ru.join(' ') : '')
-        ));
-        const sourceHours = owlNumeric(program.hours);
-        const sourcePrice = owlNumeric(program.price);
+
+        const sourceWords = owlProgramSemanticWords(program);
+        const sourceTitle = owlSmartNormalize(program.title_ru || '').split(' ').filter(w => w.length >= 4);
 
         return globalPrograms
             .filter(candidate => candidate && candidate.active !== false && String(candidate.id) !== String(program.id))
             .filter(candidate => owlSmartNormalize(candidate.title_ru || '') !== owlSmartNormalize(program.title_ru || ''))
             .map(candidate => {
-                let score = 0;
-                if (candidate.type && program.type && owlSmartNormalize(candidate.type) === owlSmartNormalize(program.type)) score += 8;
-                if (candidate.sector && program.sector && candidate.sector === program.sector) score += 7;
-                if (candidate.tab && program.tab && candidate.tab === program.tab) score += 4;
+                const candidateWords = owlProgramSemanticWords(candidate);
+                const candidateTitle = owlSmartNormalize(candidate.title_ru || '').split(' ').filter(w => w.length >= 4);
 
-                const candidateWords = owlWords(
-                    (candidate.title_ru || '') + ' ' +
-                    (candidate.desc_ru || '') + ' ' +
-                    (Array.isArray(candidate.bullets_ru) ? candidate.bullets_ru.join(' ') : '')
-                );
-                candidateWords.forEach(word => { if (sourceWords.has(word)) score += 1.4; });
+                let semantic = 0;
+                let titleSemantic = 0;
 
-                const hours = owlNumeric(candidate.hours);
-                if (sourceHours && hours) {
-                    const ratio = Math.abs(hours - sourceHours) / Math.max(sourceHours, hours);
-                    if (ratio < .15) score += 3;
-                    else if (ratio < .35) score += 1.5;
+                sourceWords.forEach(a => {
+                    if (candidateWords.some(b => owlTokenSimilar(a, b))) semantic += 1;
+                });
+                sourceTitle.forEach(a => {
+                    if (candidateTitle.some(b => owlTokenSimilar(a, b))) titleSemantic += 1;
+                });
+
+                // Не рекомендуем программу только потому, что она из того же сектора.
+                // Нужна реальная тематическая связь по словам/корням.
+                if (semantic === 0 && titleSemantic === 0) {
+                    return { candidate, score: 0 };
                 }
 
-                const price = owlNumeric(candidate.price);
-                if (sourcePrice && price) {
-                    const ratio = Math.abs(price - sourcePrice) / Math.max(sourcePrice, price);
-                    if (ratio < .18) score += 2;
-                    else if (ratio < .4) score += 1;
-                }
+                let score = semantic * 3 + titleSemantic * 7;
+                if (candidate.type && program.type &&
+                    owlSmartNormalize(candidate.type) === owlSmartNormalize(program.type)) score += 1.5;
+                if (candidate.sector && program.sector && candidate.sector === program.sector) score += 1;
 
                 return { candidate, score };
             })
-            .filter(item => item.score > 0)
+            .filter(item => item.score >= 4)
             .sort((a,b) => b.score - a.score)
             .slice(0, limit || 3)
             .map(item => item.candidate);
@@ -6741,10 +6781,12 @@ if (wantsNewsEditor) {
         const items = owlRelatedPrograms(program, 3);
         if (!items.length) return '';
 
-        const variants = (owlBrainConfig().replies || {}).recommendations || [];
-        const intro = owlPickReply(variants, 'recommendations') || 'Вас также могут заинтересовать похожие программы.';
+        owlConversationState.lastCandidateIds = items.map(item => String(item.id));
+        saveOwlConversationState();
+
         return '<div style="margin-top:12px;font-size:.82rem;font-weight:850;color:var(--text-muted);">' +
-            escapeOwlText(intro) + '</div>' +
+            'Если нужен другой вариант по той же теме, вот действительно близкие программы:' +
+            '</div>' +
             '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">' +
             items.map(item => owlProgramLink(item)).join('') +
             '</div>';
@@ -6830,6 +6872,65 @@ if (wantsNewsEditor) {
             });
             options += '</div><button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Показать весь каталог</button>';
             return { handled:true, html, options, intent:'programs' };
+        }
+
+        const normalizedQuery = owlSmartNormalize(query);
+
+        // "Помоги подобрать программу по моей задаче" — это начало подбора,
+        // а не неизвестный запрос.
+        if (/подобр|подбер|помоги.*программ|по моей задаче|по задаче/i.test(normalizedQuery) && !facets.length) {
+            return {
+                handled:true,
+                html:'Конечно. Напишите задачу своими словами — например: «работаю в закупках, хочу разобраться в 44-ФЗ», «хочу работать логистом», «нужна новая профессия в гостинице».',
+                options:
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'хочу работать в логистике\')">🚚 Хочу работать в логистике</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'работаю в закупках, хочу повысить квалификацию\')">📑 Работаю в закупках</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'хочу новую профессию в гостинице\')">🏨 Новая профессия в гостинице</button>' +
+                    '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
+                intent:'task-discovery'
+            };
+        }
+
+        // Короткая тема или профессия без вопросительного слова:
+        // "логистика", "на логистику", "горничная", "закупки".
+        if (!facets.length) {
+            const topicCandidates = owlProgramCandidates(query);
+            const wordCount = normalizedQuery.split(' ').filter(Boolean).length;
+            const looksLikeTopic = wordCount <= 5 &&
+                !owlIntent('greeting', query) &&
+                !owlIntent('thanks', query) &&
+                !owlIntent('contacts', query);
+
+            if (looksLikeTopic && topicCandidates.length) {
+                const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+                owlConversationState.lastCandidateIds = topicCandidates.map(p => String(p.id));
+                saveOwlConversationState();
+
+                if (topicCandidates.length === 1) {
+                    const program = topicCandidates[0];
+                    owlRememberProgram(program);
+                    return {
+                        handled:true,
+                        html:
+                            'Нашёл программу по вашему запросу:<br><br><b>' +
+                            escapeOwlText(program[titleKey] || '') + '</b>' +
+                            '<br>💰 ' + escapeOwlText(localizedProgramMeta(program, 'price', currentLang) || '—') +
+                            '<br>⏱ ' + escapeOwlText(localizedProgramMeta(program, 'hours', currentLang) || '—') +
+                            '<br>📅 ' + escapeOwlText(localizedProgramMeta(program, 'dates', currentLang) || '—'),
+                        options:owlProgramActionOptions(program),
+                        intent:'topic-program'
+                    };
+                }
+
+                return {
+                    handled:true,
+                    html:'По этой теме нашёл несколько подходящих программ. Они отличаются направленностью, объёмом и сроками:',
+                    options:'<div style="display:flex;flex-direction:column;gap:8px;">' +
+                        topicCandidates.map(program => owlProgramLink(program)).join('') +
+                        '</div><button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
+                    intent:'topic-programs'
+                };
+            }
         }
 
         if (facets.length) {
