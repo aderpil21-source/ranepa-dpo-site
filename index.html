@@ -1632,7 +1632,7 @@
         </div>
     </header>
 
-    <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()">
+    <div class="global-alert-ticker" id="globalAlertTicker" onclick="showUrgentAlert()" style="display:none;">
         <div class="ticker-inner" id="tickerText" data-i18n="tickerDefault">⚠️ ВАЖНОЕ УВЕДОМЛЕНИЕ ОТ ПРЕПОДАВАТЕЛЯ (Нажмите, чтобы прочитать полностью)</div>
     </div>
 
@@ -3396,9 +3396,10 @@
             scheduleDataLoaded = true;
         }
 
-        globalAlert = data.currentAlert && data.currentAlert.text
-            ? data.currentAlert
-            : null;
+        // Важное уведомление не берём из snapshot/cache:
+        // этот слой может быть устаревшим после снятия галочки в таблице.
+        // Источник истины для "МОЛНИИ" — только live API в portal-live-alert.js.
+        globalAlert = null;
     }
 
     function refreshPortalDataInBackground() {
