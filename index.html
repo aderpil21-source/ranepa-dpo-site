@@ -476,12 +476,26 @@
         .owl-frame-closed { opacity: 0; }
         .owl-container.owl-blink .owl-frame-open { opacity: 1; }
         .owl-container.owl-blink .owl-frame-closed { opacity: 0; }
-        /* Blink is a local eyelid-like squash, not a whole-frame flash. */
-        .owl-container.owl-blink .owl-frame-open {
-            clip-path: inset(0 0 48% 0);
-            transform: translateX(-50%) scaleY(.985);
-            transition: clip-path 82ms ease-in-out, transform 82ms ease-in-out;
+        /* Do not crop or swap the whole owl during a blink: that caused the
+           visible flash/jump in the screen recording. Eyelids are drawn as
+           two tiny overlays over the eyes, so body/feet remain pixel-stable. */
+        .owl-frame-open::before { content: none; }
+        .owl-eye-lid {
+            position: absolute;
+            top: 27.5%;
+            width: 17%;
+            height: 0;
+            border-radius: 50% 50% 58% 58%;
+            background: rgba(111,75,42,.96);
+            opacity: 0;
+            transform-origin: 50% 0;
+            transition: height 68ms ease-in, opacity 35ms linear;
+            pointer-events: none;
+            z-index: 6;
         }
+        .owl-eye-lid.left { left: 29.5%; }
+        .owl-eye-lid.right { right: 29.5%; }
+        .owl-container.owl-blink .owl-eye-lid { height: 12%; opacity: 1; }
 
         .owl-frame-step {
             opacity: 0;
@@ -1686,6 +1700,8 @@
                 >
                 <img class="owl-frame owl-frame-step" id="owlStepA" alt="" draggable="false" decoding="async">
                 <img class="owl-frame owl-frame-step" id="owlStepB" alt="" draggable="false" decoding="async">
+                <span class="owl-eye-lid left" aria-hidden="true"></span>
+                <span class="owl-eye-lid right" aria-hidden="true"></span>
             </div>
 
             <svg class="mobile-chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -3851,9 +3867,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             {src:OWL_STEP_FRAMES[1], x:11,  ms:250},
             {src:OWL_STEP_FRAMES[2], x:17,  ms:240},
             {src:OWL_STEP_FRAMES[3], x:23,  ms:300},
-            {src:OWL_STEP_FRAMES[2], x:18,  ms:240, mirror:true},
-            {src:OWL_STEP_FRAMES[1], x:12,  ms:250, mirror:true},
-            {src:OWL_STEP_FRAMES[0], x:6,   ms:240, mirror:true},
+            {src:OWL_STEP_FRAMES[2], x:18,  ms:240},
+            {src:OWL_STEP_FRAMES[1], x:12,  ms:250},
+            {src:OWL_STEP_FRAMES[0], x:6,   ms:240},
             {src:OWL_STEP_FRAMES[3], x:0,   ms:320}
         ];
 
@@ -3892,10 +3908,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
             const step = frames[i++];
             stage.style.setProperty('--owl-step-x', step.x + 'px');
-            // Mirroring the return half makes the opposite leg lead instead
-            // of replaying the same foot motion twice.
+            // Never mirror the whole owl: it makes the face/feather pattern jump.
+            // The supplied transparent frames already contain the leg phases.
             const current = document.getElementById(slot ? 'owlStepB' : 'owlStepA');
-            if (current) current.style.scale = step.mirror ? '-1 1' : '1 1';
+            if (current) current.style.scale = '1 1';
             setOwlStepFrame(step.src, slot);
             slot = 1 - slot;
             setTimeout(advance, step.ms);
