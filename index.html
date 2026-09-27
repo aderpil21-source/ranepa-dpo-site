@@ -446,19 +446,13 @@
         }
         .owl-media-stage {
             transform-origin: 50% 100%;
-            animation:
-                owlBreathV2 6.8s ease-in-out infinite,
-                owlBranchGlide 11s cubic-bezier(.42, 0, .58, 1) infinite;
-            will-change: transform, translate;
-        }
-        @keyframes owlBreathV2 {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-1.4px) scale(1.008); }
+            animation: owlBranchGlide 11s cubic-bezier(.42, 0, .58, 1) infinite;
+            will-change: transform;
         }
         @keyframes owlBranchGlide {
-            0%, 6%    { translate: 0 0; }
-            46%, 54%  { translate: var(--owl-travel-x, 0px) 0; }
-            94%, 100% { translate: 0 0; }
+            0%, 6%    { transform: translate3d(0, 0, 0); }
+            46%, 54%  { transform: translate3d(var(--owl-travel-x, 0px), 0, 0); }
+            94%, 100% { transform: translate3d(0, 0, 0); }
         }
 
         .owl-media-stage::after {
@@ -497,7 +491,16 @@
                 drop-shadow(0 3px 3px rgba(0,0,0,.36));
             transition: opacity 45ms linear;
         }
-        .owl-frame-open { opacity: 1; }
+        .owl-frame-open {
+            opacity: 1;
+            animation: owlBreathV2 6.8s ease-in-out infinite;
+            transform-origin: 50% 100%;
+            will-change: transform;
+        }
+        @keyframes owlBreathV2 {
+            0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+            50% { transform: translateX(-50%) translateY(-1.4px) scale(1.008); }
+        }
         .owl-frame-closed { opacity: 0; }
         .owl-container.owl-blink .owl-frame-open { opacity: 1; }
         .owl-container.owl-blink .owl-frame-closed { opacity: 0; }
@@ -514,10 +517,8 @@
         .owl-container.owl-stepping .owl-frame-closed { opacity: 0 !important; }
         .owl-media-stage {
             left: var(--owl-start-left, 6px);
-            translate: 0 0;
             backface-visibility: hidden;
             transform-style: preserve-3d;
-            contain: layout paint style;
         }
 
         @media (prefers-reduced-motion: reduce) {
