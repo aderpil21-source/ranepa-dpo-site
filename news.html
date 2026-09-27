@@ -106,6 +106,7 @@ header{ background:var(--header-bg); backdrop-filter:blur(25px);
 .accordion-btn:hover{ background:var(--ranepa-red); border-color:var(--ranepa-red); }
 
 .news-admin-gear{ background:var(--btn-glass); border:1px solid var(--border-glass); color:var(--text-muted); width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:1.1rem; flex-shrink:0; }
+.news-admin-bar[hidden]{ display:none !important; }
 .news-admin-bar{ display:none; flex-direction:column; gap:14px; background:rgba(202,15,62,.08); border:1px solid rgba(202,15,62,.3); padding:16px 18px; border-radius:14px; margin-bottom:28px; }
 .chat-opt-btn{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:#fff; padding:10px 12px; border-radius:10px; cursor:pointer; font-size:.85rem; font-weight:700; transition:.2s; }
 .chat-opt-btn:hover{ background:var(--ranepa-red); border-color:var(--ranepa-red); }
@@ -198,7 +199,7 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 
     <div class="offline-banner" id="offlineBanner">Связь с сетью потеряна. Новости показаны из сохранённой копии, загрузка файлов встанет в очередь и продолжится сама.</div>
 
-    <div class="news-admin-bar" id="newsAdminBar">
+    <div class="news-admin-bar" id="newsAdminBar" hidden>
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
             <b style="color:var(--ranepa-red); font-family:var(--font-display);">Режим редактора</b>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -1046,6 +1047,7 @@ async function fetchNews(){
             cacheNews(newsItems);
             renderGrid();
 
+            $('newsAdminBar').hidden = false;
             $('newsAdminBar').style.display = 'flex';
             await fetchVkState();
             renderAdminList();
@@ -1390,6 +1392,7 @@ async function submitLogin(){
             sessionStorage.setItem('newsAdminToken', adminToken);
             $('newsAdminLoginModal').classList.remove('active');
             $('newsAdminPassInput').value = '';
+            $('newsAdminBar').hidden = false;
             $('newsAdminBar').style.display = 'flex';
             fetchNews();
             flushPendingUploads();
@@ -1678,6 +1681,7 @@ if (editorRequested && !adminToken) {
         adminToken = null;
         sessionStorage.removeItem('newsAdminToken');
         $('newsAdminBar').style.display = 'none';
+        $('newsAdminBar').hidden = true;
         fetchNews();
     };
 
