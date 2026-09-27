@@ -13,6 +13,27 @@ function safeOwlHttpUrl(value) {
     }
 }
 
+function safeOwlContactHref(value, fallback) {
+    const raw = String(value || fallback || '').trim();
+    try {
+        const url = new URL(raw, location.origin);
+        if (url.protocol === 'https:' || url.protocol === 'http:' || url.protocol === 'mailto:' || url.protocol === 'tel:') {
+            return url.href;
+        }
+    } catch (error) {}
+    return '';
+}
+
+function escapeOwlJsString(value) {
+    return String(value == null ? '' : value)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\r/g, '\\r')
+        .replace(/\n/g, '\\n')
+        .replace(/\u2028/g, '\\u2028')
+        .replace(/\u2029/g, '\\u2029');
+}
+
 function escapeOwlText(value) {
     return String(value || '').replace(/[&<>"']/g, ch => ({
         '&': '&amp;',
@@ -1543,7 +1564,7 @@ function owlFindProgramsByTopic(query, limit) {
 function owlProgramTitleLink(program) {
     const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
     return '<a class="owl-program-title-link" href="' + owlProgramPageUrl(program) +
-        '" onclick="owlRememberProgramById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">' +
+        '" onclick="owlRememberProgramById(\'' + escapeOwlJsString(program.id) + '\')">' +
         '<span>' + escapeOwlText(program[titleKey] || '') + '</span><span>Открыть →</span></a>';
 }
 
@@ -1584,7 +1605,7 @@ function owlGroupedTopicLinks(items) {
         const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
         const ids = group.map(program => String(program.id)).join(',');
         html += '<button class="owl-program-title-link" type="button" onclick="showOwlProgramVariants(\'' +
-            ids.replace(/'/g, "\\'") + '\')">' +
+            escapeOwlJsString(ids) + '\')">' +
             '<span>' + escapeOwlText(group[0][titleKey] || '') + '</span>' +
             '<span>' + group.length + ' варианта →</span></button>';
     });
@@ -1845,7 +1866,7 @@ function owlResolveStaff(query) {
     let options = '';
     matches.forEach(person => {
         options += '<button class="chat-opt-btn" onclick="owlSelectStaff(\'' +
-            String(person.key).replace(/'/g, "\\'") + '\')">' +
+            escapeOwlJsString(person.key) + '\')">' +
             escapeOwlText(person.name) +
             (person.position ? '<br><span style="font-size:.76rem;opacity:.72;">' + escapeOwlText(person.position) + '</span>' : '') +
             '</button>';
@@ -1874,11 +1895,11 @@ function owlSelectStaff(key) {
 function owlContactOptions() {
     const contacts = owlBrainConfig().contacts || {};
     return (
-        '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.phoneHref || 'tel:+74012972379') + '" style="display:block;text-align:center;text-decoration:none;">📞 ' +
+        '<a class="chat-opt-btn" href="' + escapeOwlText(safeOwlContactHref(contacts.phoneHref, 'tel:+74012972379')) + '" style="display:block;text-align:center;text-decoration:none;">📞 ' +
             escapeOwlText(contacts.phoneDisplay || '+7 (4012) 97-23-79') + '</a>' +
-        '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.emailHref || 'mailto:cdo-zf@ranepa.ru') + '" style="display:block;text-align:center;text-decoration:none;">✉️ ' +
+        '<a class="chat-opt-btn" href="' + escapeOwlText(safeOwlContactHref(contacts.emailHref, 'mailto:cdo-zf@ranepa.ru')) + '" style="display:block;text-align:center;text-decoration:none;">✉️ ' +
             escapeOwlText(contacts.email || 'cdo-zf@ranepa.ru') + '</a>' +
-        '<a class="chat-opt-btn" href="' + escapeOwlText(contacts.vkUrl || 'https://vk.ru/ranepa_dpo39') + '" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;background:rgba(0,119,255,.12);border-color:#2787f5;color:#5aa7ff;">💬 Написать в VK</a>' +
+        '<a class="chat-opt-btn" href="' + escapeOwlText(safeOwlContactHref(contacts.vkUrl, 'https://vk.ru/ranepa_dpo39')) + '" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;text-decoration:none;background:rgba(0,119,255,.12);border-color:#2787f5;color:#5aa7ff;">💬 Написать в VK</a>' +
         '<button class="chat-opt-btn" onclick="resetMenu()">⬅️ В меню</button>'
     );
 }
@@ -2166,7 +2187,7 @@ function owlProgramLink(program, label) {
     const hours = localizedProgramMeta(program, 'hours', currentLang) || '—';
     const type = localizedProgramMeta(program, 'type', currentLang) || '';
     return '<a class="owl-program-link" href="' + owlProgramPageUrl(program) + '" onclick="owlRememberProgramById(\'' +
-        String(program.id).replace(/'/g, "\\'") + '\')">' +
+        escapeOwlJsString(program.id) + '\')">' +
         '<span class="owl-program-link-title">' + escapeOwlText(program[titleKey] || '') + '</span>' +
         '<span class="owl-program-link-meta"><span>💰 ' + escapeOwlText(price) + '</span><span>⏱ ' +
         escapeOwlText(hours) + '</span>' + (type ? '<span>🎓 ' + escapeOwlText(type) + '</span>' : '') + '</span>' +
@@ -2451,7 +2472,7 @@ function resolveOwlLocally(query) {
                     meta.push('⏱ ' + escapeOwlText(localizedProgramMeta(program, 'hours', currentLang)));
                 }
 
-                options += '<button class="chat-opt-btn" onclick="showProgramDetailsById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">' +
+                options += '<button class="chat-opt-btn" onclick="showProgramDetailsById(\'' + escapeOwlJsString(program.id) + '\')">' +
                     escapeOwlText(program[titleKey] || '') + '<br><span style="font-size:.76rem;opacity:.75;">' +
                     meta.join(' · ') + '</span></button>';
             });
