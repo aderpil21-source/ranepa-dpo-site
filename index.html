@@ -4604,16 +4604,16 @@ if (wantsNewsEditor) {
                         : 'There are several variants of this program with different tuition and dates. Choose the relevant one:'
                 );
 
-                let html = '';
+                let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
                 explicitlyNamed.forEach(program => {
-                    const price = localizedProgramMeta(program, 'price', currentLang);
-                    const hours = localizedProgramMeta(program, 'hours', currentLang);
-                    const dates = localizedProgramMeta(program, 'dates', currentLang);
-                    const badge = program.tab === 'tab-kadry'
-                        ? (currentLang === 'ru' ? ' · Кадры' : ' · Kadry')
-                        : '';
-                    html += `<button class="chat-opt-btn" onclick="showProgramDetailsById('${program.id}')">${escapeOwlText(price)} · ${escapeOwlText(hours)}${badge}<br><span style="font-size:.76rem;opacity:.75;">${escapeOwlText(dates)}</span></button>`;
+                    html += owlProgramLink(
+                        program,
+                        program.tab === 'tab-kadry'
+                            ? (currentLang === 'ru' ? 'Открыть вариант «Кадры» →' : 'Open Kadry variant →')
+                            : (currentLang === 'ru' ? 'Открыть программу →' : 'Open program →')
+                    );
                 });
+                html += '</div>';
                 setOptions(html);
                 return;
             }
@@ -4629,12 +4629,13 @@ if (wantsNewsEditor) {
             if (scored.length === 1 && scored[0].score >= 0.95) {
                 showProgramDetails(scored[0].p);
             } else if (scored.length > 0) {
-                addBotMsg(translationsHTML[currentLang].maybeYouMean);
-                let html = '';
+                const pool = (owlBrainConfig().replies || {}).clarify || [];
+                addBotMsg(owlPickReply(pool, 'clarify') || translationsHTML[currentLang].maybeYouMean);
+                let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
                 scored.forEach(({ p }) => {
-                    html += `<button class="chat-opt-btn" onclick="showProgramDetailsById('${p.id}')">${p[titleKey]}</button>`;
+                    html += owlProgramLink(p);
                 });
-                html += `<button class="chat-opt-btn" onclick="offerAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`;
+                html += '</div><button class="chat-opt-btn" onclick="offerAllPrograms()">' + translationsHTML[currentLang].goAllPrograms + '</button>';
                 setOptions(html);
             } else {
                 // Нет точного локального совпадения: передаём вопрос узкому AI-консультанту.
@@ -4820,12 +4821,29 @@ if (wantsNewsEditor) {
         return list.some(phrase => normalized.includes(owlSmartNormalize(phrase)));
     }
 
-    function owlPickReply(value) {
-        if (Array.isArray(value)) {
-            if (!value.length) return '';
-            return value[Math.floor(Math.random() * value.length)];
+    const OWL_REPLY_HISTORY_KEY = 'ranepa_owl_reply_history_v1';
+    let owlReplyHistory = {};
+    try { owlReplyHistory = JSON.parse(sessionStorage.getItem(OWL_REPLY_HISTORY_KEY) || '{}') || {}; } catch (e) {}
+
+    function owlPickReply(value, poolName) {
+        if (!Array.isArray(value)) return String(value || '');
+        if (!value.length) return '';
+
+        const key = String(poolName || 'default');
+        const used = Array.isArray(owlReplyHistory[key]) ? owlReplyHistory[key] : [];
+        let available = value.filter(item => !used.includes(item));
+
+        if (!available.length) {
+            owlReplyHistory[key] = [];
+            available = value.slice();
         }
-        return String(value || '');
+
+        const pick = available[Math.floor(Math.random() * available.length)];
+        const nextUsed = (owlReplyHistory[key] || []).concat([pick]).slice(-Math.min(value.length, 24));
+        owlReplyHistory[key] = nextUsed;
+
+        try { sessionStorage.setItem(OWL_REPLY_HISTORY_KEY, JSON.stringify(owlReplyHistory)); } catch (e) {}
+        return pick;
     }
 
     function owlRememberProgram(program) {
@@ -4861,8 +4879,9 @@ if (wantsNewsEditor) {
     function showOwlHumanHandoff(reason) {
         removeOwlThinking();
         const contacts = owlBrainConfig().contacts || {};
+        const handoffPool = (owlBrainConfig().replies || {}).handoff || [];
         const prefix = reason === 'repeated'
-            ? 'Похоже, я несколько раз не смог точно понять ваш вопрос. Не хочу заставлять вас переформулировать его снова.'
+            ? (owlPickReply(handoffPool, 'handoff') || 'Похоже, я несколько раз не смог точно понять ваш вопрос. Не хочу заставлять вас переформулировать его снова.')
             : 'Если удобнее, можно сразу связаться с сотрудником Центра.';
         addBotMsg(
             prefix +
@@ -4901,7 +4920,7 @@ if (wantsNewsEditor) {
 
     function owlRequestedFacets(query) {
         const facets = [];
-        ['price','hours','dates','format','documents'].forEach(name => {
+        ['price','hours','dates','format','documents','audience','content','outcomes','teachers'].forEach(name => {
             if (owlIntent(name, query)) facets.push(name);
         });
         return facets;
@@ -4967,6 +4986,26 @@ if (wantsNewsEditor) {
             if (facet === 'documents') {
                 const doc = currentLang === 'ru' ? program.document_ru : program.document_en;
                 rows.push('📄 Документ: <b>' + escapeOwlText(doc || 'в данных программы не указан') + '</b>');
+            }
+            if (facet === 'audience') {
+                const value = currentLang === 'ru' ? program.audience_ru : program.audience_en;
+                rows.push('👥 Для кого: <b>' + escapeOwlText(value || 'в данных программы не указано') + '</b>');
+            }
+            if (facet === 'content') {
+                const value = currentLang === 'ru'
+                    ? (program.topics_ru || (Array.isArray(program.bullets_ru) ? program.bullets_ru.join('; ') : ''))
+                    : (program.topics_en || (Array.isArray(program.bullets_en) ? program.bullets_en.join('; ') : ''));
+                rows.push('📚 Содержание: <b>' + escapeOwlText(value || 'в данных программы не раскрыто') + '</b>');
+            }
+            if (facet === 'outcomes') {
+                const value = currentLang === 'ru' ? program.outcomes_ru : program.outcomes_en;
+                rows.push('🎯 Результаты: <b>' + escapeOwlText(value || 'в данных программы не указаны') + '</b>');
+            }
+            if (facet === 'teachers') {
+                const value = currentLang === 'ru'
+                    ? (program.teachers_ru || program.experts_ru)
+                    : (program.teachers_en || program.experts_en);
+                rows.push('👨‍🏫 Преподаватели: <b>' + escapeOwlText(value || 'в данных программы не указаны') + '</b>');
             }
         });
 
@@ -5080,7 +5119,7 @@ if (wantsNewsEditor) {
         if (!items.length) return '';
 
         const variants = (owlBrainConfig().replies || {}).recommendations || [];
-        const intro = owlPickReply(variants) || 'Вас также могут заинтересовать похожие программы.';
+        const intro = owlPickReply(variants, 'recommendations') || 'Вас также могут заинтересовать похожие программы.';
         return '<div style="margin-top:12px;font-size:.82rem;font-weight:850;color:var(--text-muted);">' +
             escapeOwlText(intro) + '</div>' +
             '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">' +
@@ -5121,15 +5160,33 @@ if (wantsNewsEditor) {
         }
 
         if (owlIntent('greeting', query)) {
-            return { handled:true, html:owlPickReply(replies.greeting), options:'', intent:'greeting' };
+            return { handled:true, html:owlPickReply(replies.greeting, 'greeting'), options:'', intent:'greeting' };
         }
 
         if (owlIntent('thanks', query)) {
-            return { handled:true, html:owlPickReply(replies.thanks), options:'', intent:'thanks' };
+            return { handled:true, html:owlPickReply(replies.thanks, 'thanks'), options:'', intent:'thanks' };
         }
 
         if (owlIntent('capabilities', query)) {
-            return { handled:true, html:owlPickReply(replies.capabilities), options:'', intent:'capabilities' };
+            return { handled:true, html:owlPickReply(replies.capabilities, 'capabilities'), options:'', intent:'capabilities' };
+        }
+
+        if (owlIntent('similar', query) || owlIntent('recommendations', query)) {
+            const contextual = owlLastProgramContext();
+            if (contextual) {
+                const related = owlRelatedPrograms(contextual, 3);
+                if (related.length) {
+                    const variants = (owlBrainConfig().replies || {}).recommendations || [];
+                    return {
+                        handled: true,
+                        html: owlPickReply(variants, 'recommendations'),
+                        options: '<div style="display:flex;flex-direction:column;gap:8px;">' +
+                            related.map(program => owlProgramLink(program)).join('') +
+                            '</div>',
+                        intent: 'recommendations'
+                    };
+                }
+            }
         }
 
         const categoryPrograms = owlCategoryPrograms(query);
@@ -5137,7 +5194,7 @@ if (wantsNewsEditor) {
 
         if (asksPrograms && categoryPrograms.length) {
             const introPool = (owlBrainConfig().replies || {}).programIntro || [];
-            let html = owlPickReply(introPool) || ('В этой категории сейчас <b>' + categoryPrograms.length + '</b> программ.');
+            let html = owlPickReply(introPool, 'programIntro') || ('В этой категории сейчас <b>' + categoryPrograms.length + '</b> программ.');
             html += '<br><br><span style="font-size:.8rem;color:var(--text-muted);">Найдено: <b>' + categoryPrograms.length + '</b></span>';
             let options = '<div style="display:flex;flex-direction:column;gap:8px;">';
             categoryPrograms.slice(0, 6).forEach(program => {
