@@ -1,7 +1,641 @@
 // Движок цифрового ассистента «Сова».
-// В этом файле: состояние диалога, маршрутизация, контекст, поиск программ,
-// обычный/расширенный режим, fallback и связь с OwlLearning/OWL_BRAIN.
-// UI-разметка и данные сайта остаются в index.html; словари и интенты — в owl-brain.js.
+// Здесь находятся: UI-помощники чата, маршрутизация, контекст, поиск программ,
+// обычный/расширенный режим, FAQ-маршруты и профориентационный сценарий.
+// Словари, интенты, синонимы и статические правила — в owl-brain.js.
+// Обучаемая память — в owl-learning.js.
+
+function escapeOwlText(value) {
+    return String(value || '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[ch]);
+}
+
+// Старое перелетание удалено: сова остается на ветке.
+function owlFlyToPrograms() {
+    const bubble = document.getElementById('owlBubble');
+    if (bubble) bubble.classList.remove('show');
+}
+
+function normalizeText(s) {
+    return (s || '').toLowerCase().replace(/[«»"'.,!?;:()]/g, '').replace(/\s+/g, ' ').trim();
+}
+function matchScore(query, title) {
+    const normalizedQuery = normalizeText(query);
+    const normalizedTitle = normalizeText(title);
+    if (normalizedTitle && normalizedTitle.length >= 8 && normalizedQuery.includes(normalizedTitle)) {
+        return 1;
+    }
+
+    const qWords = normalizedQuery.split(' ').filter(w => w.length > 2);
+    const tWords = normalizedTitle.split(' ').filter(w => w.length > 2);
+    if (!qWords.length || !tWords.length) return 0;
+    let hits = 0;
+    qWords.forEach(qw => { if (tWords.some(tw => tw.includes(qw) || qw.includes(tw))) hits++; });
+    return hits / qWords.length;
+}
+
+function findProgramsExplicitlyNamed(query) {
+    const normalizedQuery = normalizeText(query);
+    const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+
+    return globalPrograms.filter(program => {
+        const title = normalizeText(program[titleKey] || '');
+        return title.length >= 8 && normalizedQuery.includes(title);
+    });
+}
+
+const OWL_AI_ENDPOINT = 'https://functions.yandexcloud.net/d4eatbt80ae5r5402i3g';
+let owlAiRequestInFlight = false;
+
+function setOwlAiBusy(busy) {
+    owlAiRequestInFlight = !!busy;
+    const input = document.getElementById('chatUserInput');
+    const button = document.querySelector('.chat-send-btn');
+    if (input) input.disabled = !!busy;
+    if (button) {
+        button.disabled = !!busy;
+        button.style.opacity = busy ? '.55' : '';
+        button.style.cursor = busy ? 'wait' : '';
+    }
+}
+
+async function askOwlAI(message) {
+    if (owlAiRequestInFlight) return;
+
+    setOwlAiBusy(true);
+    showOwlThinking();
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+
+    try {
+        const response = await fetch(OWL_AI_ENDPOINT, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-store',
+            signal: controller.signal,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: String(message || '').slice(0, 800),
+                pageContext: {
+                    site: 'ranepa-dpo39.ru',
+                    page: location.pathname || '/',
+                    alreadyOnSite: true
+                }
+            })
+        });
+
+        let data = null;
+        try { data = await response.json(); } catch (e) {}
+
+        if (!response.ok || !data || !data.answer) {
+            console.warn('AI backend response:', {
+                status: response.status,
+                ok: response.ok,
+                error: data && data.error ? data.error : null
+            });
+            throw new Error('assistant_unavailable');
+        }
+
+        removeOwlThinking();
+
+        let answerText = String(data.answer || '').trim();
+
+        // Посетитель уже находится на ranepa-dpo39.ru.
+        // Убираем бессмысленные рекомендации "посетить сайт" из ответа модели.
+        answerText = answerText
+            .replace(/Для получения подробной информации[^.?!]*ranepa-dpo39\.ru\.?/gi, '')
+            .replace(/Рекомендую посетить[^.?!]*ranepa-dpo39\.ru\.?/gi, '')
+            .replace(/Посетите[^.?!]*ranepa-dpo39\.ru\.?/gi, '')
+            .replace(/На сайте ranepa-dpo39\.ru[^.?!]*[.?!]?/gi, '')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
+
+        if (!answerText) {
+            answerText = currentLang === 'ru'
+                ? 'Могу помочь подобрать программу, уточнить стоимость, сроки, форму обучения или документы.'
+                : 'I can help you choose a program or clarify tuition, duration, format, or required documents.';
+        }
+
+        const safeAnswer = escapeOwlText(answerText).replace(/\n/g, '<br>');
+        addBotMsg(safeAnswer);
+        owlResetUnresolved();
+        owlConversationState.advancedNegativeCount = 0;
+        saveOwlConversationState();
+    } catch (error) {
+        removeOwlThinking();
+        console.warn('AI assistant fallback:', error && error.name ? error.name : error);
+        const failures = owlRegisterUnresolved();
+        const escalation = owlBrainConfig().escalation || {};
+        if (failures >= Number(escalation.humanHandoffAfter || 4)) {
+            showOwlHumanHandoff('repeated');
+        } else {
+            addBotMsg(
+                currentLang === 'ru'
+                    ? 'Сейчас не удалось получить расширенный ответ. Я могу попробовать помочь через каталог или передать вас сотруднику Центра.'
+                    : 'I could not get an extended answer right now. I can use the catalog or connect you with the Center staff.'
+            );
+            if (failures >= Number(escalation.softOfferAfter || 2)) {
+                setOptions(
+                    '<button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Каталог программ</button>' +
+                    owlContactOptions()
+                );
+            } else {
+                offerAllPrograms(true);
+            }
+        }
+    } finally {
+        clearTimeout(timer);
+        removeOwlThinking();
+        setOwlAiBusy(false);
+        const input = document.getElementById('chatUserInput');
+        if (input) input.focus();
+    }
+}
+
+function owlResolveSiteFaq(query) {
+    const raw = normalizeText(String(query || '').replace(/ё/g, 'е')).trim();
+    if (!raw) return null;
+
+    const asksAdmissionDocs =
+        /\b(документ\w*)\b/i.test(raw) &&
+        (
+            /\b(нужн\w*|требу\w*|принести|предоставить|подавать|подать)\b/i.test(raw) ||
+            /\b(для поступления|для записи|для зачисления|при поступлении|при зачислении)\b/i.test(raw)
+        );
+
+    const bareDocuments = /^документ(ы|а|ов)?[!?.\s]*$/i.test(raw);
+
+    if (asksAdmissionDocs) {
+        return {
+            handled:true,
+            html:
+                '<b>Для оформления договора нужны:</b><br>' +
+                '• копия паспорта;<br>' +
+                '• СНИЛС;<br>' +
+                '• документ о текущем образовании — диплом СПО или ВО.<br><br>' +
+                '<span class="owl-guided-hint">Это указано в разделе «Часто задаваемые вопросы» на сайте.</span>',
+            options:
+                '<button class="chat-opt-btn" onclick="openModal()">✍️ Перейти к записи</button>' +
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 Что выдадут после обучения</button>' +
+                '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
+            intent:'faq-admission-documents'
+        };
+    }
+
+    if (bareDocuments) {
+        return {
+            handled:true,
+            html:'Уточните: нужны <b>документы для поступления</b> или вы хотите узнать, <b>какой документ выдадут после обучения</b>?',
+            options:
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие документы нужны для поступления\')">📎 Для поступления</button>' +
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 После обучения</button>',
+            intent:'faq-documents-clarify'
+        };
+    }
+
+    return null;
+}
+
+async function owlApplyLearnedRule(rule) {
+    if (!rule || !rule.action) return false;
+
+    if (rule.action === 'staff') {
+        const person = owlStaffByKey(rule.value);
+        if (!person) return false;
+        owlRememberStaff(person);
+        await presentOwlLocal({
+            handled:true,
+            html:owlStaffAnswer(person, person.name),
+            options:owlStaffOptions(person),
+            intent:'staff-contact'
+        }, person.name);
+        return true;
+    }
+
+    if (rule.action === 'program') {
+        const program = globalPrograms.find(p => String(p.id || '') === String(rule.value || ''));
+        if (!program) return false;
+        owlRememberProgram(program);
+        addBotMsg(
+            '<b>' + escapeOwlText(program[currentLang === 'ru' ? 'title_ru' : 'title_en'] || '') + '</b>' +
+            '<br><span class="owl-guided-hint">Я вспомнил, что раньше похожая формулировка привела вас к этой программе.</span>'
+        );
+        setOptions(owlProgramActionOptions(program));
+        return true;
+    }
+
+    if (rule.action === 'filter') {
+        owlFilterCandidatePrograms(rule.value);
+        return true;
+    }
+
+    return false;
+}
+
+let owlLastSubmit = { text:'', at:0 };
+
+async function handleUserMessage() {
+    const input = document.getElementById('chatUserInput');
+    if (owlAiRequestInFlight) return;
+    const originalText = input.value.trim();
+    if (!originalText) return;
+
+    const now = Date.now();
+    if (owlLastSubmit.text === originalText && now - owlLastSubmit.at < 1200) {
+        input.value = '';
+        return;
+    }
+    owlLastSubmit = { text:originalText, at:now };
+
+    addUserMsg(originalText);
+    input.value = '';
+
+    let text = originalText;
+
+    // Критичные FAQ сайта обрабатываем раньше обучаемых правил.
+    // Иначе старое ошибочно выученное соответствие вроде
+    // "какие документы нужны?" -> программа про документооборот
+    // перехватывает вопрос и ломает даже расширенный режим.
+    const faqResolution = owlResolveSiteFaq(originalText);
+    if (faqResolution && faqResolution.handled) {
+        owlConversationState.lastProgramId = null;
+        owlConversationState.lastCandidateIds = [];
+        owlConversationState.negativeCount = 0;
+        owlConversationState.advancedNegativeCount = 0;
+        saveOwlConversationState();
+        await presentOwlLocal(faqResolution, originalText);
+        return;
+    }
+
+    if (window.OwlLearning) {
+        try {
+            const protectedGeneralQuery =
+                /\b(документ\w*|паспорт|снилс|поступлен\w*|зачислен\w*|диплом|удостоверен\w*|сертификат|фрдо)\b/i
+                    .test(normalizeText(String(originalText || '').replace(/ё/g, 'е')));
+
+            const learnedRule = protectedGeneralQuery ? null : window.OwlLearning.lookup(originalText);
+            if (learnedRule) {
+                if (learnedRule.action === 'preset' && learnedRule.value) {
+                    text = learnedRule.value;
+                } else if (await owlApplyLearnedRule(learnedRule)) {
+                    return;
+                }
+            }
+        } catch (e) {}
+    }
+
+    // --- СЛУЖЕБНЫЕ РЕЖИМЫ ---
+const staffCommand = normalizeText(text);
+
+const wantsAdminChooser = [
+'служебный вход',
+'режим администратора',
+'режим админа',
+'админ режим'
+].some(cmd => staffCommand === cmd || staffCommand.includes(cmd));
+
+const wantsNewsEditor = [
+'режим редактора',
+'редактор',
+'добавить новость',
+'создать новость',
+'опубликовать новость',
+'новая новость',
+'редакция'
+].some(cmd => staffCommand.includes(cmd));
+
+const wantsStaffPortal = [
+'служебный портал',
+'загрузить учебный план',
+'загрузка учебного плана'
+].some(cmd => staffCommand.includes(cmd));
+
+if (wantsAdminChooser) {
+setTimeout(() => {
+    addBotMsg(
+        currentLang === 'ru'
+            ? '🔐 <b>Служебный режим</b><br><br>Выберите уровень доступа. <b>Pro режим</b> предназначен для полного управления сайтом и требует отдельного пароля. <b>Загрузка учебных планов</b> откроется в новой вкладке и запросит свой PIN-код.'
+            : '🔐 <b>Staff mode</b><br><br>Choose an access level. <b>Pro mode</b> is for full site management and requires its own password. <b>Curriculum upload</b> opens in a new tab and uses its own PIN.'
+    );
+    setOptions(
+        '<button class="chat-opt-btn" onclick="openSiteAdminLogin()" style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">' +
+        (currentLang === 'ru' ? '⚙ Pro режим' : '⚙ Pro mode') +
+        '</button>' +
+        '<button class="chat-opt-btn" onclick="openStudyPlanUpload()" style="background:rgba(56,189,248,.12);border-color:#38bdf8;color:#38bdf8;text-align:center;">' +
+        (currentLang === 'ru' ? '📄 Загрузка учебных планов' : '📄 Curriculum upload') +
+        '</button>' +
+        '<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>'
+    );
+}, 300);
+return;
+}
+
+if (wantsStaffPortal) {
+addBotMsg(
+    currentLang === 'ru'
+        ? '📄 <b>Загрузка учебных планов</b><br><br>Открываю служебную страницу в новой вкладке. Для входа используйте выданный PIN-код.'
+        : '📄 <b>Curriculum upload</b><br><br>Opening the staff page in a new tab. Use the assigned PIN to sign in.'
+);
+openStudyPlanUpload();
+setOptions('<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>');
+return;
+}
+
+if (wantsNewsEditor) {
+setTimeout(() => {
+    addBotMsg(translationsHTML[currentLang].staffNewsMsg);
+    setOptions(
+        '<button class="chat-opt-btn" onclick="window.location.href=&quot;news.html?editor=1&quot;" style="background:linear-gradient(135deg,#29345B,#CA0F3E);color:#fff;border:none;text-align:center;">' +
+        translationsHTML[currentLang].staffContinue +
+        '</button>' +
+        '<button class="chat-opt-btn" onclick="resetMenu()">' + translationsHTML[currentLang].staffBack + '</button>'
+    );
+}, 300);
+return;
+}
+// --- КОНЕЦ СЛУЖЕБНЫХ РЕЖИМОВ ---
+
+    if (await handleOwlNegativeFeedback(originalText)) {
+        return;
+    }
+
+    const cleanCode = String(text || '').trim().toUpperCase();
+    let foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
+
+    // Если кода ещё нет в локальном списке, один раз тихо перепроверяем
+    // свежий статический снимок, прежде чем считать код неизвестным.
+    if (!foundFile) {
+        await refreshOwlFilesSnapshot({ silent: true });
+        foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
+    }
+
+    if (foundFile && !siteKeyIsVisible(owlVisibilityKey(foundFile))) {
+        foundFile = Object.assign({}, foundFile, { isPublished:false });
+    }
+
+    if (foundFile) {
+        if (currentLang === 'en') {
+            await loadOwlI18n();
+        }
+
+        const localizedTitle = escapeOwlText(localizedOwlField(foundFile, 'title'));
+        const localizedComment = localizedOwlField(foundFile, 'comment');
+
+        setTimeout(() => {
+            if (foundFile.isPublished) {
+                let responseMsg =
+                    formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: localizedTitle }) +
+                    `<br><br><a href="${foundFile.url}" target="_blank" rel="noopener" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">${translationsHTML[currentLang].owlMaterialsOpen}</a>`;
+                if (localizedComment) {
+                    responseMsg += `<br><br>${translationsHTML[currentLang].owlTeacherComment}<br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${escapeOwlText(localizedComment).replace(/\n/g, '<br>')}</i>`;
+                }
+                responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlMaterialsUpdated} ${foundFile.date}</span>`;
+                addBotMsg(responseMsg);
+            } else {
+                addBotMsg(
+                    formatI18n(translationsHTML[currentLang].owlMaterialHidden, { title: localizedTitle }) +
+                    `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlStatusChanged} ${foundFile.date}</span>`
+                );
+            }
+        }, 500);
+        return;
+    }
+
+    const hasFactQuestion = owlRequestedFacets(text).length > 0;
+    const hasStaffMatch = owlFindStaffMatches(text).length > 0;
+    const isProgramDiscovery =
+        owlIntent('programs', text) ||
+        /(^|\s)(что есть|что у вас есть|покажи|найди|подбери|варианты)(\s|$)/i.test(owlSmartNormalize(text));
+
+    const topicResolution = (!hasFactQuestion && !hasStaffMatch && isProgramDiscovery)
+        ? owlTopicProgramResult(text)
+        : null;
+
+    if (topicResolution && topicResolution.handled) {
+        await presentOwlLocal(topicResolution, text);
+        return;
+    }
+
+    const localResolution = resolveOwlLocally(text);
+    if (localResolution && localResolution.handled) {
+        await presentOwlLocal(localResolution, text);
+        return;
+    }
+
+    const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+    const explicitlyNamed = findProgramsExplicitlyNamed(text);
+
+    if (explicitlyNamed.length === 1) {
+        showProgramDetails(explicitlyNamed[0]);
+        return;
+    }
+
+    if (explicitlyNamed.length > 1) {
+        const sameTitle = explicitlyNamed.every(
+            item => normalizeText(item[titleKey]) === normalizeText(explicitlyNamed[0][titleKey])
+        );
+
+        if (sameTitle) {
+            addBotMsg(
+                currentLang === 'ru'
+                    ? 'В каталоге есть несколько вариантов этой программы. У них отличаются стоимость и сроки. Выберите нужный вариант:'
+                    : 'There are several variants of this program with different tuition and dates. Choose the relevant one:'
+            );
+
+            let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+            explicitlyNamed.forEach(program => {
+                html += owlProgramLink(
+                    program,
+                    program.tab === 'tab-kadry'
+                        ? (currentLang === 'ru' ? 'Открыть вариант «Кадры» →' : 'Open Kadry variant →')
+                        : (currentLang === 'ru' ? 'Открыть программу →' : 'Open program →')
+                );
+            });
+            html += '</div>';
+            setOptions(html);
+            return;
+        }
+    }
+
+    const scored = globalPrograms
+        .map(p => ({ p, score: matchScore(text, p[titleKey]) }))
+        .filter(x => x.score > 0.4)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4);
+
+    setTimeout(() => {
+        if (scored.length === 1 && scored[0].score >= 0.95) {
+            showProgramDetails(scored[0].p);
+        } else if (scored.length > 0) {
+            const pool = (owlBrainConfig().replies || {}).clarify || [];
+            addBotMsg(owlPickReply(pool, 'clarify') || translationsHTML[currentLang].maybeYouMean);
+            let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+            scored.forEach(({ p }) => {
+                html += owlProgramLink(p);
+            });
+            html += '</div><button class="chat-opt-btn" onclick="offerAllPrograms()">' + translationsHTML[currentLang].goAllPrograms + '</button>';
+            setOptions(html);
+        } else {
+            if (owlConversationState.mode === 'advanced' && owlConversationState.advancedUnlocked) {
+                askOwlAI(text);
+            } else {
+                if (window.OwlLearning) {
+                    try {
+                        window.OwlLearning.rememberUnknown(originalText, {
+                            mode: owlConversationState.mode,
+                            intent: owlConversationState.lastIntent || '',
+                            page: location.pathname || '/'
+                        });
+                    } catch (e) {}
+                }
+                addBotMsg(
+                    'Похоже, я пока не понял, что именно вам нужно.' +
+                    '<div class="owl-guided-hint">Можно выбрать подходящий вариант ниже или написать вопрос ещё проще.</div>'
+                );
+                setOptions(owlGuidedFallbackOptions());
+            }
+        }
+    }, 450);
+}
+
+function showProgramDetailsById(id) {
+    const p = globalPrograms.find(x => x.id === id);
+    if (p) showProgramDetails(p);
+}
+
+function showProgramDetails(p) {
+    owlRememberProgram(p);
+    const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+    const descKey = currentLang === 'ru' ? 'desc_ru' : 'desc_en';
+    const bulletsKey = currentLang === 'ru' ? 'bullets_ru' : 'bullets_en';
+    addUserMsg(p[titleKey]);
+    const localizedPrice = localizedProgramMeta(p, 'price', currentLang);
+    const localizedHours = localizedProgramMeta(p, 'hours', currentLang);
+    let html = `<b>${p[titleKey]}</b><br>${p[descKey] || ''}<br><br>💰 ${localizedPrice} · ⏱ ${localizedHours}`;
+    if (p[bulletsKey] && p[bulletsKey].length) {
+        html += '<ul style="margin:10px 0 0 18px; padding:0;">';
+        p[bulletsKey].forEach(b => { if (b && b.trim()) html += `<li>${b.trim()}</li>`; });
+        html += '</ul>';
+    }
+    html += owlRecommendationBlock(p);
+    addBotMsg(html);
+    setOptions(`
+        <a class="chat-opt-btn" href="${owlProgramPageUrl(p)}" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>
+        <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
+        <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
+    `);
+}
+
+function offerAllPrograms(autoFly) {
+    setOptions(`<button class="chat-opt-btn" onclick="goToAllPrograms()">${translationsHTML[currentLang].goAllPrograms}</button>`);
+    if (autoFly && !isMobile()) {
+        setTimeout(owlFlyToPrograms, 400);
+    }
+}
+
+function goToAllPrograms() {
+    if (isMobile()) {
+        document.getElementById('owlChat').classList.remove('active');
+        document.getElementById('owlContainer').classList.remove('chat-opened');
+    }
+    focusTab('tab-all');
+}
+
+const botTexts = {
+    ru: {
+        catPrompt: "Мы реализуем обучение по 5 направлениям каталога. Какое вас интересует?",
+        optKadry: "🎓 Нацпроект «Кадры»", optPk: "📈 Повышение квалификации", optPp: "🔄 Переподготовка", optPo: "🛠️ Проф. обучение", optSem: "🗣️ Семинары",
+        optBack: "⬅️ Назад в меню",
+        optEnroll: "✍️ Инициировать заявку", optOther: "🔄 Анализировать другие направления",
+        testStart: "Анализ запущен. Ответьте на 12 вопросов, чтобы алгоритм вычислил оптимальный вектор вашего профессионального развития.",
+        resGos: "Вердикт системы: <b>«Госслужба и закупки»</b>. Ваш профиль демонстрирует системное мышление и предрасположенность к высокому уровню ответственности.",
+        resBiz: "Вердикт системы: <b>«Цифровой бизнес и ИИ»</b>. Вы ориентированы на стратегическое масштабирование и интеграцию инноваций.",
+        resHoreca: "Вердикт системы: <b>«HoReCa и Туризм»</b>. Ваши сильные стороны — коммуникация и обеспечение премиального сервиса.",
+        resProf: "Вердикт системы: <b>«Быстрые профессии»</b>. Вы цените применимый на практике результат и стремитесь к быстрой монетизации навыков.",
+        resEnroll: "✍️ Зафиксировать заявку на это направление", resCat: "🔄 Отклонить. Показать весь каталог"
+    },
+    en: {
+        catPrompt: "We provide training across all 5 catalog sections. Which one interests you?",
+        optKadry: "🎓 National Project «Kadry»", optPk: "📈 Upgrading Qualifications", optPp: "🔄 Retraining", optPo: "🛠️ Vocational Training", optSem: "🗣️ Seminars",
+        optBack: "⬅️ Back to main menu",
+        optEnroll: "✍️ Initiate application", optOther: "🔄 Analyze other tracks",
+        testStart: "Analysis launched. Please answer 12 questions so the algorithm can determine your optimal professional development vector.",
+        resGos: "System Verdict: <b>«Public Administration & Procurement»</b>. Your profile demonstrates systematic thinking and a strong predisposition for high-level responsibility.",
+        resBiz: "System Verdict: <b>«Digital Business & AI»</b>. You are highly focused on strategic scaling and the integration of cutting-edge innovations.",
+        resHoreca: "System Verdict: <b>«HoReCa & Tourism»</b>. Your core strengths lie in effective communication and delivering premium customer service.",
+        resProf: "System Verdict: <b>«Fast-Track Professions»</b>. You deeply value practical results and strive for the rapid monetization of your skills.",
+        resEnroll: "✍️ Lock in an application for this track", resCat: "🔄 Reject. View the full catalog"
+    }
+};
+
+const testQuestionsData = {
+    ru: [
+        { q: "1/12. Какова главная цель инвестиций в ваше образование?", answers: [{t:"Карьера на государственной службе",v:"gos"},{t:"Масштабирование бизнес-показателей",v:"biz"},{t:"Управление сервисом (HoReCa)",v:"horeca"},{t:"Освоение новой прикладной профессии",v:"prof"}] },
+        { q: "2/12. С каким типом задач вы предпочитаете работать?", answers: [{t:"Нормативно-правовая документация",v:"gos"},{t:"Стратегии и ИТ-инструментарий",v:"biz"},{t:"Команда и качество услуг",v:"horeca"},{t:"Работа руками или точный учет в 1С",v:"prof"}] },
+        { q: "3/12. Ваше отношение к нейросетям?", answers: [{t:"Использую для оптимизации отчетов",v:"gos"},{t:"Критически важно для автоматизации",v:"biz"},{t:"Полезно для маркетинга и туризма",v:"horeca"},{t:"Предпочитаю традиционные подходы",v:"prof"}] },
+        { q: "4/12. Каков приемлемый для вас объем образовательной программы?", answers: [{t:"Глубокая переподготовка (>500 часов)",v:"gos"},{t:"Управленческий интенсив (<250 часов)",v:"biz"},{t:"Сбалансированный курс (100-150 часов)",v:"horeca"},{t:"Быстрый старт (<100 часов)",v:"prof"}] },
+        { q: "5/12. Какая зона ответственности для вас наиболее комфортна?", answers: [{t:"Ответственность за государственные контракты",v:"gos"},{t:"Ответственность за финансовые потоки",v:"biz"},{t:"Ответственность за репутацию заведения",v:"horeca"},{t:"Точное выполнение прикладной задачи",v:"prof"}] },
+        { q: "6/12. Какую сферу вы считаете наиболее стабильной?", answers: [{t:"Органы исполнительной власти",v:"gos"},{t:"Собственное дело / Корпоративный сектор",v:"biz"},{t:"Внутренний туризм",v:"horeca"},{t:"Профессии, требующие работы руками",v:"prof"}] },
+        { q: "7/12. Ваш подход к решению нестандартных ситуаций?", answers: [{t:"Опираюсь на действующие законы и регламенты",v:"gos"},{t:"Ищу инновационные технологичные решения",v:"biz"},{t:"Выстраиваю диалог и устраняю конфликт",v:"horeca"},{t:"Действую по проверенным инструкциям",v:"prof"}] },
+        { q: "8/12. Ваш карьерный горизонт через 3 года?", answers: [{t:"Руководитель государственного ведомства",v:"gos"},{t:"Топ-менеджер / Успешный предприниматель",v:"biz"},{t:"Управляющий премиальным отелем",v:"horeca"},{t:"Востребованный профильный специалист",v:"prof"}] },
+        { q: "9/12. Отношение к государственным стандартам (ФГОС, ГОСТ)?", answers: [{t:"Неукоснительное соблюдение",v:"gos"},{t:"Адаптация под бизнес-реалии",v:"biz"},{t:"Соблюдение ради безопасности клиента",v:"horeca"},{t:"Работа строго по заданному стандарту",v:"prof"}] },
+        { q: "10/12. Главный KPI вашей успешной работы?", answers: [{t:"Отсутствие санкций от надзорных органов",v:"gos"},{t:"Увеличение доли рынка и маржинальности",v:"biz"},{t:"Высокий показатель возврата гостей",v:"horeca"},{t:"Сдача задачи точно в срок",v:"prof"}] },
+        { q: "11/12. Какая дисциплина кажется вам наиболее приоритетной?", answers: [{t:"Правоприменительная практика по ФЗ",v:"gos"},{t:"Промптинг нейросетей",v:"biz"},{t:"Маркетинг впечатлений",v:"horeca"},{t:"Бухгалтерский учет",v:"prof"}] },
+        { q: "12/12. Ваш текущий профессиональный статус?", answers: [{t:"Служащий / Специалист по закупкам",v:"gos"},{t:"Предприниматель / Аналитик",v:"biz"},{t:"Работаю в сфере услуг",v:"horeca"},{t:"Нахожусь в поиске новой профессии",v:"prof"}] }
+    ],
+    en: [
+        { q: "1/12. What is the primary goal of investing in your education?", answers: [{t:"A career in public service",v:"gos"},{t:"Scaling business metrics",v:"biz"},{t:"Service management (HoReCa)",v:"horeca"},{t:"Mastering a new applied profession",v:"prof"}] },
+        { q: "2/12. What kind of tasks do you prefer working with?", answers: [{t:"Regulatory and legal documentation",v:"gos"},{t:"Strategies and IT tools",v:"biz"},{t:"People and service quality",v:"horeca"},{t:"Manual work or precise 1C accounting",v:"prof"}] },
+        { q: "3/12. What is your attitude towards AI?", answers: [{t:"I use it to optimize reports",v:"gos"},{t:"Critically important for automation",v:"biz"},{t:"Useful for marketing and tourism",v:"horeca"},{t:"I prefer traditional approaches",v:"prof"}] },
+        { q: "4/12. What is an acceptable program duration for you?", answers: [{t:"Deep retraining (>500 hours)",v:"gos"},{t:"Management intensive (<250 hours)",v:"biz"},{t:"Balanced course (100-150 hours)",v:"horeca"},{t:"Fast start (<100 hours)",v:"prof"}] },
+        { q: "5/12. Which area of responsibility are you most comfortable with?", answers: [{t:"Responsibility for state contracts",v:"gos"},{t:"Responsibility for financial flows",v:"biz"},{t:"Responsibility for reputation",v:"horeca"},{t:"Precise execution of an applied task",v:"prof"}] },
+        { q: "6/12. Which sector do you consider the most stable?", answers: [{t:"Executive authorities",v:"gos"},{t:"Own business / Corporate sector",v:"biz"},{t:"Domestic tourism",v:"horeca"},{t:"Professions requiring manual work",v:"prof"}] },
+        { q: "7/12. How do you approach solving non-standard situations?", answers: [{t:"I rely on applicable laws and regulations",v:"gos"},{t:"I seek innovative tech solutions",v:"biz"},{t:"I build dialogue and resolve conflicts",v:"horeca"},{t:"I act according to proven instructions",v:"prof"}] },
+        { q: "8/12. What is your career horizon in 3 years?", answers: [{t:"Head of a state department",v:"gos"},{t:"Top executive / Entrepreneur",v:"biz"},{t:"Manager of a premium hotel",v:"horeca"},{t:"In-demand specialized professional",v:"prof"}] },
+        { q: "9/12. What is your attitude towards state standards?", answers: [{t:"Strict compliance",v:"gos"},{t:"Adaptation to business realities",v:"biz"},{t:"Compliance for client safety",v:"horeca"},{t:"Working strictly by the standard",v:"prof"}] },
+        { q: "10/12. What is the main KPI of your successful work?", answers: [{t:"No sanctions from supervisory bodies",v:"gos"},{t:"Increased market share and margins",v:"biz"},{t:"High rate of guest returns",v:"horeca"},{t:"Task completion exactly on time",v:"prof"}] },
+        { q: "11/12. What is the highest priority discipline to you?", answers: [{t:"Law enforcement practice",v:"gos"},{t:"Neural network prompting",v:"biz"},{t:"Experience marketing",v:"horeca"},{t:"Accounting",v:"prof"}] },
+        { q: "12/12. What is your current professional status?", answers: [{t:"Civil servant / Procurement specialist",v:"gos"},{t:"Entrepreneur / Analyst",v:"biz"},{t:"Working in services",v:"horeca"},{t:"Looking for a new profession",v:"prof"}] }
+    ]
+};
+
+const chatBody = document.getElementById('chatBody');
+const chatOptions = document.getElementById('chatOptions');
+
+function addUserMsg(text) { chatBody.innerHTML += `<div class="msg-user">${escapeOwlText(text)}</div>`; scrollToBottom(); }
+function addBotMsg(text) {
+    const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
+    chatBody.innerHTML += `<div class="msg-bot"><b>${botName}</b> ${text}</div>`;
+    scrollToBottom();
+}
+
+function showOwlThinking() {
+    removeOwlThinking();
+    const botName = currentLang === 'ru' ? 'Сова:' : 'Owl:';
+    const label = currentLang === 'ru' ? 'думает' : 'is thinking';
+    chatBody.insertAdjacentHTML('beforeend',
+        `<div class="msg-bot" id="owlThinkingMsg"><b>${botName}</b>
+            <span class="msg-bot-thinking">
+                <span>${label}</span>
+                <span class="owl-thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            </span>
+        </div>`
+    );
+    scrollToBottom();
+}
+
+function removeOwlThinking() {
+    const thinking = document.getElementById('owlThinkingMsg');
+    if (thinking) thinking.remove();
+}
+function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
+function setOptions(html) { chatOptions.innerHTML = html; }
 
 const OWL_STATE_KEY = 'ranepa_owl_conversation_v1';
 let owlConversationState = {
@@ -1843,5 +2477,98 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initOwlWindowControls, { once:true });
 } else {
     initOwlWindowControls();
+}
+
+
+function resetMenu() {
+    chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${currentLang === 'ru'
+        ? 'Здравствуйте. Можно писать коротко и своими словами. Я постараюсь понять вопрос и предложить подходящий следующий шаг.'
+        : 'Hello. You can write briefly and in your own words. I first use the site data and local scenarios.'
+    }</span></div>`;
+    setOptions(`
+        <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
+        <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
+
+        <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
+            📰 ${currentLang === 'ru' ? 'Новости центра' : 'Center news'}
+        </button>
+        
+        <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
+            📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
+        </button>
+
+        <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+        
+        <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
+        <a href="ai-lecture.html" target="_blank" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+            🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
+        </a>
+    `);
+}
+
+function showUrgentAlert() {
+    if (globalAlert && globalAlert.text) {
+        const alertModal = document.getElementById('urgentAlertModal');
+        if (!alertModal) return;
+
+        renderUrgentAlertText();
+        alertModal.classList.add('active');
+    }
+}
+
+function closeUrgentAlertModal() {
+    document.getElementById('urgentAlertModal').classList.remove('active');
+}
+
+function showCatalog() {
+    addUserMsg(currentLang === 'ru' ? "Расскажите о программах." : "Tell me about the programs.");
+    addBotMsg(botTexts[currentLang].catPrompt);
+    setOptions(`
+        <button class="chat-opt-btn" onclick="focusTab('tab-kadry')">${botTexts[currentLang].optKadry}</button>
+        <button class="chat-opt-btn" onclick="focusTab('tab-pk')">${botTexts[currentLang].optPk}</button>
+        <button class="chat-opt-btn" onclick="focusTab('tab-pp')">${botTexts[currentLang].optPp}</button>
+        <button class="chat-opt-btn" onclick="focusTab('tab-po')">${botTexts[currentLang].optPo}</button>
+        <button class="chat-opt-btn" onclick="focusTab('tab-sem')">${botTexts[currentLang].optSem}</button>
+        <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
+    `);
+}
+
+let currentQ = 0;
+let scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
+
+function startTest() {
+    addUserMsg(currentLang === 'ru' ? "Инициировать профильное тестирование." : "Initiate career profiling test.");
+    addBotMsg(botTexts[currentLang].testStart);
+    currentQ = 0;
+    scores = { gos: 0, biz: 0, horeca: 0, prof: 0 };
+    setTimeout(askQuestion, 700);
+}
+
+function askQuestion() {
+    if (currentQ >= testQuestionsData[currentLang].length) { showTestResult(); return; }
+    const q = testQuestionsData[currentLang][currentQ];
+    addBotMsg(q.q);
+    let html = '';
+    q.answers.forEach(a => { html += `<button class="chat-opt-btn" onclick="answerTest('${a.t.replace(/'/g, "\\'")}', '${a.v}')">${a.t}</button>`; });
+    setOptions(html);
+}
+
+function answerTest(text, value) {
+    addUserMsg(text);
+    scores[value]++;
+    currentQ++;
+    setTimeout(askQuestion, 350);
+}
+
+function showTestResult() {
+    let maxScore = -1, bestCategory = 'gos';
+    for (const key in scores) { if (scores[key] > maxScore) { maxScore = scores[key]; bestCategory = key; } }
+    const resultKey = { gos: 'resGos', biz: 'resBiz', horeca: 'resHoreca', prof: 'resProf' }[bestCategory];
+    addBotMsg((currentLang === 'ru' ? "Анализ завершен. " : "Analysis completed. ") + botTexts[currentLang][resultKey]);
+    setOptions(`
+        <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
+        <button class="chat-opt-btn" onclick="focusTab('tab-all');">${botTexts[currentLang].resCat}</button>
+        <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
+    `);
 }
 
