@@ -4001,9 +4001,11 @@
     function renderDocsList(programs) {
         const docsListEl = document.getElementById('docsList');
         if (!docsListEl) return;
-        const items = (Array.isArray(programs) ? programs : []).filter(
-            prog => prog && prog.pdf_link && String(prog.pdf_link).trim() !== ''
-        );
+        const items = (Array.isArray(programs) ? programs : []).filter(prog => {
+            if (!prog || !prog.pdf_link) return false;
+            const url = String(prog.pdf_link).trim();
+            return url.startsWith('https://') || url.startsWith('http://');
+        });
         if (!items.length) {
             docsListEl.innerHTML = '<div style="color: var(--text-muted);">' +
                 translationsHTML[currentLang].docsEmpty + '</div>';
