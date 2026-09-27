@@ -440,13 +440,26 @@
             pointer-events: auto;
             white-space: nowrap;
         }
-        .owl-visibility-toggle::before {
-            content: "◉";
-            display: inline-block;
-            margin-right: 6px;
+        .owl-visibility-toggle {
+            width: 36px;
+            min-width: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .owl-toggle-arrow {
+            display: block;
+            font-size: 1.45rem;
+            line-height: 1;
+            font-weight: 900;
+            color: var(--text-main);
+            transform: translateX(1px);
+            transition: transform .22s var(--bezier-smooth), color .22s ease;
+        }
+        .owl-visibility-toggle:hover .owl-toggle-arrow {
             color: var(--ranepa-red);
-            font-size: .72rem;
-            transform: translateY(-.2px);
+            transform: translateX(-1px) scale(1.06);
         }
         .owl-visibility-toggle:hover {
             transform: translateY(-2px);
@@ -481,10 +494,18 @@
             right: 14px;
             bottom: 14px;
             top: auto;
-            min-height: 36px;
+            width: 38px;
+            min-width: 38px;
+            min-height: 38px;
+            border-radius: 50%;
             pointer-events: auto;
         }
-        .owl-ecosystem.owl-user-hidden .owl-visibility-toggle::before { content: "◉"; }
+        .owl-ecosystem.owl-user-hidden .owl-toggle-arrow {
+            transform: rotate(180deg) translateX(1px);
+        }
+        .owl-ecosystem.owl-user-hidden .owl-visibility-toggle:hover .owl-toggle-arrow {
+            transform: rotate(180deg) translateX(-1px) scale(1.06);
+        }
 
         @media (max-width: 768px) {
             .owl-visibility-toggle { display: none !important; }
@@ -1790,7 +1811,7 @@
             aria-pressed="false"
             aria-label="Скрыть сову"
             onclick="event.stopPropagation(); toggleOwlVisibility();"
-        >Скрыть сову</button>
+        ><span class="owl-toggle-arrow" aria-hidden="true">›</span></button>
         <svg class="oak-branch" viewBox="0 0 520 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
             <defs>
                 <linearGradient id="barkGrad" x1="0" y1="0" x2="0" y2="1">
@@ -4065,9 +4086,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         try { hidden = localStorage.getItem(OWL_VISIBILITY_KEY) === '1'; } catch (e) {}
 
         ecosystem.classList.toggle('owl-user-hidden', hidden);
-        toggle.textContent = hidden ? 'Показать сову' : 'Скрыть сову';
         toggle.setAttribute('aria-pressed', hidden ? 'true' : 'false');
         toggle.setAttribute('aria-label', hidden ? 'Показать сову' : 'Скрыть сову');
+        toggle.setAttribute('title', hidden ? 'Показать сову' : 'Скрыть сову');
     }
 
     function toggleOwlVisibility() {
