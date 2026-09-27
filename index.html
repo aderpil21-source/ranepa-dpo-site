@@ -3266,8 +3266,39 @@
         if (owlFilesSnapshotRefreshInFlight) return owlFilesSnapshotRefreshInFlight;
 
         owlFilesSnapshotRefreshInFlight = (async () => {
+            let liveError = null;
+
+            // Сначала всегда спрашиваем живой Apps Script, чтобы новые ЛК-коды
+            // появлялись в Сове сразу после обработки письма.
             try {
-                const response = await fetch(owlFilesSnapshotUrl());
+                const liveUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_owl=' + Date.now();
+                const response = await fetch(liveUrl, {
+                    method: 'GET',
+                    cache: 'no-store',
+                    redirect: 'follow'
+                });
+                if (!response.ok) throw new Error('Live Owl API HTTP ' + response.status);
+
+                const data = await response.json();
+                if (!data || !Array.isArray(data.owlFiles)) {
+                    throw new Error('Live Owl API has invalid format');
+                }
+
+                const changed = owlFilesFingerprint(data.owlFiles) !== owlFilesFingerprint(globalOwlFiles);
+                if (changed) {
+                    globalOwlFiles = data.owlFiles;
+                    if (siteAdminMode) renderSiteAdminPanel();
+                }
+
+                return changed;
+            } catch (error) {
+                liveError = error;
+            }
+
+            // Если живой backend временно недоступен, сохраняем старый
+            // статический снимок как резервный источник.
+            try {
+                const response = await fetch(owlFilesSnapshotUrl(), { cache: 'no-store' });
                 if (!response.ok) throw new Error('Owl files snapshot HTTP ' + response.status);
 
                 const data = await response.json();
@@ -3282,9 +3313,9 @@
                 }
 
                 return changed;
-            } catch (error) {
+            } catch (snapshotError) {
                 if (!opts.silent) {
-                    console.warn('Не удалось обновить статический снимок материалов Совы:', error);
+                    console.warn('Не удалось обновить материалы Совы из live API и snapshot:', liveError, snapshotError);
                 }
                 return false;
             } finally {
@@ -4890,7 +4921,7 @@ if (wantsNewsEditor) {
             return;
         }
 
-        const cleanCode = text.toUpperCase();
+        const cleanCode = String(text || '').trim().toUpperCase();
         let foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
 
         // Если кода ещё нет в локальном списке, один раз тихо перепроверяем
