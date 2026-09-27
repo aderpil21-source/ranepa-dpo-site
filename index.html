@@ -4720,7 +4720,7 @@ if (wantsNewsEditor) {
                 } else {
                     addBotMsg(
                         'Я не нашёл точного локального сценария для этой формулировки.' +
-                        '<div class="owl-guided-hint">В обычном режиме я не отправляю такой вопрос во внешний AI автоматически. Можно уточнить запрос кнопками ниже или написать его ещё проще.</div>'
+                        '<div class="owl-guided-hint">В обычном режиме я отвечаю по данным Центра и локальным сценариям. Можно уточнить запрос кнопками ниже или написать его ещё проще.</div>'
                     );
                     setOptions(owlGuidedFallbackOptions());
                 }
@@ -5129,7 +5129,7 @@ if (wantsNewsEditor) {
         const tokens = owlTopicTokens(query);
         if (!tokens.length) return [];
 
-        return globalPrograms
+        const ranked = globalPrograms
             .filter(program => program && program.active !== false)
             .map(program => {
                 const titleWords = owlWords(program.title_ru || '');
@@ -5140,17 +5140,29 @@ if (wantsNewsEditor) {
                     (program.sector || '')
                 );
                 let score = 0;
+                let titleHits = 0;
 
                 tokens.forEach(token => {
-                    if (titleWords.some(word => owlLooseWordMatch(token, word))) score += 7;
-                    else if (descWords.some(word => owlLooseWordMatch(token, word))) score += 2;
+                    if (titleWords.some(word => owlLooseWordMatch(token, word))) {
+                        score += 7;
+                        titleHits += 1;
+                    } else if (descWords.some(word => owlLooseWordMatch(token, word))) {
+                        score += 2;
+                    }
                 });
 
-                return { program, score };
+                return { program, score, titleHits };
             })
             .filter(item => item.score > 0)
-            .sort((a,b) => b.score - a.score)
-            .slice(0, limit || 6)
+            .sort((a,b) => (b.titleHits - a.titleHits) || (b.score - a.score));
+
+        const hasTitleHits = ranked.some(item => item.titleHits > 0);
+        const filtered = hasTitleHits
+            ? ranked.filter(item => item.titleHits > 0)
+            : ranked;
+
+        return filtered
+            .slice(0, limit || 8)
             .map(item => item.program);
     }
 
@@ -5161,6 +5173,51 @@ if (wantsNewsEditor) {
             '<span>' + escapeOwlText(program[titleKey] || '') + '</span><span>Открыть →</span></a>';
     }
 
+    function showOwlProgramVariants(encodedIds) {
+        const ids = String(encodedIds || '').split(',').filter(Boolean);
+        const programs = ids
+            .map(id => globalPrograms.find(program => String(program.id || '') === id))
+            .filter(Boolean);
+
+        if (!programs.length) return;
+
+        addBotMsg('У этой программы есть несколько версий. Выберите подходящую по объёму и срокам:');
+        let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+        programs.forEach(program => {
+            html += owlProgramLink(program);
+        });
+        html += '</div><button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>';
+        setOptions(html);
+    }
+
+    function owlGroupedTopicLinks(items) {
+        const groups = new Map();
+
+        items.forEach(program => {
+            const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+            const title = owlSmartNormalize(program[titleKey] || '');
+            if (!groups.has(title)) groups.set(title, []);
+            groups.get(title).push(program);
+        });
+
+        let html = '';
+        groups.forEach(group => {
+            if (group.length === 1) {
+                html += owlProgramTitleLink(group[0]);
+                return;
+            }
+
+            const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+            const ids = group.map(program => String(program.id)).join(',');
+            html += '<button class="owl-program-title-link" type="button" onclick="showOwlProgramVariants(\'' +
+                ids.replace(/'/g, "\\'") + '\')">' +
+                '<span>' + escapeOwlText(group[0][titleKey] || '') + '</span>' +
+                '<span>' + group.length + ' варианта →</span></button>';
+        });
+
+        return html;
+    }
+
     function owlTopicProgramResult(query) {
         const items = owlFindProgramsByTopic(query, 6);
         if (!items.length) return null;
@@ -5168,9 +5225,11 @@ if (wantsNewsEditor) {
         owlConversationState.lastCandidateIds = items.map(item => String(item.id));
         saveOwlConversationState();
 
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+        const uniqueTitles = new Set(items.map(item => owlSmartNormalize(item[titleKey] || '')));
         const topic = owlTopicTokens(query)[0] || 'этой теме';
         let options = '<div style="display:flex;flex-direction:column;gap:8px;">' +
-            items.map(owlProgramTitleLink).join('') +
+            owlGroupedTopicLinks(items) +
             '</div>' +
             '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>';
 
@@ -5178,7 +5237,7 @@ if (wantsNewsEditor) {
             handled: true,
             html:
                 'По запросу <b>«' + escapeOwlText(topic) + '»</b> нашёл ' +
-                '<b>' + items.length + '</b> подходящих программ. Выберите название — откроется полное описание.' +
+                '<b>' + uniqueTitles.size + '</b> подходящих программ. Выберите название — откроется полное описание.' +
                 '<div class="owl-guided-hint">После выбора можно спросить коротко: «сколько стоит?», «для кого?», «кто ведёт?», «что изучают?»</div>',
             options,
             intent: 'topic-programs'
