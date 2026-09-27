@@ -690,9 +690,49 @@
         .owl-advanced-yes { background:linear-gradient(135deg,#6d28d9,#2563eb); color:#fff; border-color:transparent !important; }
         .owl-advanced-no { background:var(--btn-glass); color:var(--text-main); }
 
-        .owl-chat-panel.owl-chat-fullscreen { inset:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)) !important; width:auto !important; height:auto !important; max-width:none !important; bottom:auto !important; right:auto !important; left:auto !important; border-radius:24px; }
-        .owl-chat-panel.owl-chat-fullscreen .owl-chat-body { height:auto !important; flex:1 1 auto; padding:clamp(18px,3vw,34px); font-size:clamp(.94rem,1.5vw,1.05rem); }
-        .owl-chat-panel.owl-chat-fullscreen .chat-options { max-height:32vh; }
+        .owl-chat-panel.owl-chat-fullscreen {
+            inset:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)) !important;
+            width:auto !important;
+            height:auto !important;
+            max-width:none !important;
+            bottom:auto !important;
+            right:auto !important;
+            left:auto !important;
+            border-radius:24px;
+            overflow:hidden;
+            display:flex !important;
+            flex-direction:column;
+        }
+        .owl-chat-panel.owl-chat-fullscreen .owl-chat-header,
+        .owl-chat-panel.owl-chat-fullscreen .owl-mode-switch {
+            flex:0 0 auto;
+        }
+        .owl-chat-panel.owl-chat-fullscreen .owl-chat-body {
+            height:0 !important;
+            min-height:0 !important;
+            flex:1 1 0 !important;
+            overflow-y:auto !important;
+            overscroll-behavior:contain;
+            padding:clamp(18px,3vw,34px);
+            font-size:clamp(.94rem,1.5vw,1.05rem);
+        }
+        .owl-chat-panel.owl-chat-fullscreen .chat-input-box {
+            flex:0 0 auto;
+            position:relative;
+            z-index:4;
+            width:100%;
+        }
+        .owl-chat-panel.owl-chat-fullscreen .chat-options {
+            flex:0 1 auto;
+            min-height:0;
+            max-height:min(30vh,280px);
+            overflow-y:auto;
+            overscroll-behavior:contain;
+            border-radius:0 0 24px 24px;
+        }
+        .owl-chat-panel.owl-chat-fullscreen .chat-text-input {
+            min-width:0;
+        }
         body.owl-chat-fullscreen-open { overflow:hidden !important; }
         .owl-chat-body { padding: 20px; height: 270px; overflow-y: auto; background: transparent; font-size: 0.92rem; display: flex; flex-direction: column; gap: 14px; color: var(--text-main); }
         .msg-bot { background: var(--btn-glass); padding: 14px; border-radius: 14px; border-bottom-left-radius: 0; color: var(--text-main); align-self: flex-start; max-width: 92%; border: 1px solid var(--border-glass); line-height: 1.5; }
@@ -840,9 +880,30 @@
             .owl-bubble.show { transform: translateX(0) scale(1); }
             .owl-chat-panel { width: calc(100vw - 24px); left: 12px; right: 12px; bottom: max(90px, calc(env(safe-area-inset-bottom) + 90px)); height: min(70vh, 520px); max-width: 100vw; }
             .owl-chat-body { height: auto; flex: 1 1 auto; }
-            .owl-chat-panel.owl-chat-fullscreen { inset:0 !important; width:100vw !important; height:100dvh !important; border-radius:0 !important; }
-            .owl-chat-panel.owl-chat-fullscreen .owl-chat-header { border-radius:0; padding-top:max(12px,env(safe-area-inset-top)); }
-            .owl-chat-panel.owl-chat-fullscreen .chat-options { padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+            .owl-chat-panel.owl-chat-fullscreen {
+                inset:0 !important;
+                width:100vw !important;
+                height:100dvh !important;
+                max-height:100dvh !important;
+                border-radius:0 !important;
+                overflow:hidden !important;
+            }
+            .owl-chat-panel.owl-chat-fullscreen .owl-chat-header {
+                border-radius:0;
+                padding-top:max(12px,env(safe-area-inset-top));
+            }
+            .owl-chat-panel.owl-chat-fullscreen .owl-chat-body {
+                min-height:0 !important;
+                height:0 !important;
+            }
+            .owl-chat-panel.owl-chat-fullscreen .chat-input-box {
+                padding-left:max(12px,env(safe-area-inset-left));
+                padding-right:max(12px,env(safe-area-inset-right));
+            }
+            .owl-chat-panel.owl-chat-fullscreen .chat-options {
+                max-height:32dvh;
+                padding-bottom:max(12px,env(safe-area-inset-bottom));
+            }
 
             .modal-box { padding: 26px 22px; border-radius: 24px; }
 
@@ -5083,12 +5144,21 @@ if (wantsNewsEditor) {
         const normalized = owlSmartNormalize(query);
         if (!normalized) return false;
 
+        const words = normalized.split(' ').filter(Boolean);
         const phrases = owlBrainConfig().negativeFeedback || [];
+
         return phrases.some(raw => {
             const phrase = owlSmartNormalize(raw);
             if (!phrase || phrase === 'не') return false;
-            if (phrase.length <= 7) return normalized === phrase;
-            return normalized.includes(phrase);
+
+            // Короткие отрицательные реакции часто приходят внутри фразы:
+            // "ты тупишь", "это бред", "совсем мимо".
+            // Ищем их как отдельное слово, а не требуем полного совпадения сообщения.
+            if (!phrase.includes(' ') && phrase.length <= 8) {
+                return normalized === phrase || words.includes(phrase);
+            }
+
+            return normalized === phrase || normalized.includes(phrase);
         });
     }
 
