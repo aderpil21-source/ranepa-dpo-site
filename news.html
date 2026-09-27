@@ -1137,7 +1137,7 @@ function renderGrid(){
 
         return `<div class="card" data-openid="${escapeHtml(n.id)}">
             ${cardCover ? `<img class="news-card-cover" src="${escapeHtml(cardCover)}" alt="" width="900" height="532" decoding="async" ${coverAttrs}>` : ''}
-            <div class="card-meta"><span style="font-size:.8rem; color:var(--text-muted);">${formatDate(n.createdAt)}</span>${badge}</div>
+            <div class="card-meta"><span style="font-size:.8rem; color:var(--text-muted);">${escapeHtml(formatDate(n.createdAt))}</span>${badge}</div>
             <h3>${escapeHtml(n.title)}</h3>
             <p>${escapeHtml(n.lead || '')}</p>
             <div class="news-card-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
@@ -1270,7 +1270,7 @@ function openDetail(id){
         <button class="accordion-btn" id="backToListBtn">Назад к новостям</button>
         <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
         <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
-        <div class="news-detail-date">${formatDate(n.createdAt)}</div>
+        <div class="news-detail-date">${escapeHtml(formatDate(n.createdAt))}</div>
         ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
         <div>${body}</div>`;
     $('backToListBtn').addEventListener('click', showListView);
@@ -1289,18 +1289,45 @@ function openDetail(id){
    БЛОК 11. ЛАЙТБОКС
    ============================================================================ */
 function openLightboxAt(i){ lightboxIndex = i; renderLightbox(); $('mediaLightbox').classList.add('active'); }
-function closeLightbox(){ $('mediaLightbox').classList.remove('active'); $('lightboxContent').innerHTML = ''; }
+function closeLightbox(){ $('mediaLightbox').classList.remove('active'); $('lightboxContent').replaceChildren(); }
 function navLightbox(d){ lightboxIndex = (lightboxIndex + d + articleMedia.length) % articleMedia.length; renderLightbox(); }
 function renderLightbox(){
     const m = articleMedia[lightboxIndex];
     if (!m) return;
     const box = $('lightboxContent');
+    box.replaceChildren();
+
     if (m.type === 'video'){
         const embed = toEmbedUrl(m.url);
-        box.innerHTML = embed
-            ? `<div class="news-video-embed-wrap" style="width:80vw; max-width:960px;"><iframe src="${escapeHtml(embed)}" allow="autoplay; fullscreen" allowfullscreen></iframe></div>`
-            : `<video src="${escapeHtml(m.url)}" controls autoplay playsinline></video>`;
-    } else box.innerHTML = `<img src="${escapeHtml(imageUrl(m.url))}" alt="">`;
+        if (embed){
+            const wrap = document.createElement('div');
+            wrap.className = 'news-video-embed-wrap';
+            wrap.style.cssText = 'width:80vw; max-width:960px;';
+            const iframe = document.createElement('iframe');
+            iframe.src = embed;
+            iframe.allow = 'autoplay; fullscreen';
+            iframe.allowFullscreen = true;
+            wrap.appendChild(iframe);
+            box.appendChild(wrap);
+        } else {
+            const safeVideo = safeMediaUrl(m.url);
+            if (!safeVideo) return;
+            const video = document.createElement('video');
+            video.src = safeVideo;
+            video.controls = true;
+            video.autoplay = true;
+            video.playsInline = true;
+            box.appendChild(video);
+        }
+    } else {
+        const safeImage = imageUrl(m.url);
+        if (!safeImage) return;
+        const img = document.createElement('img');
+        img.src = safeImage;
+        img.alt = '';
+        box.appendChild(img);
+    }
+
     $('lightboxNav').style.display = articleMedia.length > 1 ? 'flex' : 'none';
 }
 
@@ -1495,7 +1522,7 @@ function renderEditorBlocks(){
         }
         return `<div class="news-block-editor ${b.hidden ? 'is-hidden-block' : ''}" draggable="true" data-blockidx="${idx}">
             <div class="news-block-editor-head">
-                <b><span class="news-block-grip">⠿</span>${BLOCK_LABELS[b.type] || b.type}</b>
+                <b><span class="news-block-grip">⠿</span>${escapeHtml(BLOCK_LABELS[b.type] || b.type)}</b>
                 <div class="news-block-editor-controls">
                     <button type="button" data-move="${idx}" data-dir="-1" title="Выше">↑</button>
                     <button type="button" data-move="${idx}" data-dir="1" title="Ниже">↓</button>
