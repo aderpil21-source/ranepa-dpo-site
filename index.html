@@ -2915,10 +2915,26 @@
                 }
             }
 
-            const url = useAdmin && siteAdminToken
-                ? API_URL + '?type=news&admin=1&token=' + encodeURIComponent(siteAdminToken) + '&_sitecfg=' + Date.now()
-                : API_URL + '?type=news&_sitecfg=' + Date.now();
-            const data = await siteAdminRequest(url, { method:'GET', cache:'no-store' });
+            let data;
+            if (useAdmin && siteAdminToken) {
+                try {
+                    data = await siteAdminRequest(API_URL, {
+                        method:'POST',
+                        headers:{ 'Content-Type':'application/json' },
+                        body:JSON.stringify({ action:'newsReadAdmin', token:siteAdminToken }),
+                        cache:'no-store'
+                    });
+                    if (!data || data.error === 'unknown_action') throw new Error('NEWS_READ_ADMIN_UNAVAILABLE');
+                } catch (postError) {
+                    // Временная совместимость со старым Apps Script deployment.
+                    // После выкладки newsReadAdmin этот GET-fallback можно удалить.
+                    const legacyUrl = API_URL + '?type=news&admin=1&token=' + encodeURIComponent(siteAdminToken) + '&_sitecfg=' + Date.now();
+                    data = await siteAdminRequest(legacyUrl, { method:'GET', cache:'no-store' });
+                }
+            } else {
+                const publicUrl = API_URL + '?type=news&_sitecfg=' + Date.now();
+                data = await siteAdminRequest(publicUrl, { method:'GET', cache:'no-store' });
+            }
             const items = Array.isArray(data.items) ? data.items : [];
             const item = items.find(function (n) { return n && n.id === SITE_SETTINGS_ID; });
             if (!item) throw new Error('Служебные настройки не найдены');
