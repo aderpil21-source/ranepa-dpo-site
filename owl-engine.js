@@ -162,24 +162,32 @@ function owlResolveSiteFaq(query) {
     const raw = normalizeText(String(query || '').replace(/ё/g, 'е')).trim();
     if (!raw) return null;
 
+    // Не используем \b/\w для русских окончаний: в JS без Unicode-классов
+    // они работают в основном по ASCII и ломают "документы", "поступления" и т.п.
+    const hasDocumentWord = /документ[а-я-]*/i.test(raw);
     const asksAdmissionDocs =
-        /\b(документ\w*)\b/i.test(raw) &&
+        hasDocumentWord &&
         (
-            /\b(нужн\w*|требу\w*|принести|предоставить|подавать|подать)\b/i.test(raw) ||
-            /\b(для поступления|для записи|для зачисления|при поступлении|при зачислении)\b/i.test(raw)
+            /(нужн[а-я]*|требу[а-я]*|принести|предоставить|подавать|подать)/i.test(raw) ||
+            /(для поступлен[а-я]*|для запис[а-я]*|для зачислен[а-я]*|при поступлен[а-я]*|при зачислен[а-я]*)/i.test(raw)
         );
 
-    const bareDocuments = /^документ(ы|а|ов)?[!?.\s]*$/i.test(raw);
+    const bareDocuments = /^документ[а-я-]*$/i.test(raw);
 
     if (asksAdmissionDocs) {
+        const facts = (owlBrainConfig().siteFacts || {}).admissionDocuments || {};
+        const items = Array.isArray(facts.items) ? facts.items : [];
+        const list = items.length
+            ? items.map(item => '• ' + escapeOwlText(item) + ';').join('<br>').replace(/;<br>$/, '.')
+            : '• копия паспорта;<br>• СНИЛС;<br>• документ о текущем образовании — диплом СПО или ВО.';
+
         return {
             handled:true,
             html:
                 '<b>Для оформления договора нужны:</b><br>' +
-                '• копия паспорта;<br>' +
-                '• СНИЛС;<br>' +
-                '• документ о текущем образовании — диплом СПО или ВО.<br><br>' +
-                '<span class="owl-guided-hint">Это указано в разделе «Часто задаваемые вопросы» на сайте.</span>',
+                list +
+                '<br><br><span class="owl-guided-hint">Источник: ' +
+                escapeOwlText(facts.source || 'FAQ на сайте') + '.</span>',
             options:
                 '<button class="chat-opt-btn" onclick="openModal()">✍️ Перейти к записи</button>' +
                 '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 Что выдадут после обучения</button>' +
@@ -276,7 +284,7 @@ async function handleUserMessage() {
     if (window.OwlLearning) {
         try {
             const protectedGeneralQuery =
-                /\b(документ\w*|паспорт|снилс|поступлен\w*|зачислен\w*|диплом|удостоверен\w*|сертификат|фрдо)\b/i
+                /(документ[а-я-]*|паспорт[а-я-]*|снилс|поступлен[а-я-]*|зачислен[а-я-]*|диплом[а-я-]*|удостоверен[а-я-]*|сертификат[а-я-]*|фрдо)/i
                     .test(normalizeText(String(originalText || '').replace(/ё/g, 'е')));
 
             const learnedRule = protectedGeneralQuery ? null : window.OwlLearning.lookup(originalText);
