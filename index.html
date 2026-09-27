@@ -5092,7 +5092,162 @@ if (wantsNewsEditor) {
         });
     }
 
+    function owlCandidatePrograms() {
+        const ids = Array.isArray(owlConversationState.lastCandidateIds)
+            ? owlConversationState.lastCandidateIds
+            : [];
+        return ids
+            .map(id => globalPrograms.find(program => String(program.id || '') === String(id)))
+            .filter(Boolean);
+    }
+
+    function owlRenderProgramChoices(programs, intro) {
+        const items = Array.isArray(programs) ? programs.filter(Boolean) : [];
+        if (!items.length) {
+            addBotMsg('По этому уточнению подходящих программ не нашёл. Попробуем другим способом.');
+            setOptions(owlProgressiveFallbackOptions(Math.max(1, Number(owlConversationState.negativeCount || 1))));
+            return;
+        }
+
+        owlConversationState.lastCandidateIds = items.map(program => String(program.id));
+        saveOwlConversationState();
+
+        addBotMsg(
+            (intro || 'Вот варианты после уточнения:') +
+            '<div class="owl-guided-hint">Нажмите на название — откроется полное описание программы.</div>'
+        );
+
+        setOptions(
+            '<div style="display:flex;flex-direction:column;gap:8px;">' +
+            owlGroupedTopicLinks(items) +
+            '</div>' +
+            '<button class="chat-opt-btn" onclick="setOptions(owlProgressiveFallbackOptions(' +
+                Math.max(1, Number(owlConversationState.negativeCount || 1)) +
+            '))">← К уточнениям</button>'
+        );
+    }
+
+    function owlFilterCandidatePrograms(mode) {
+        const source = owlCandidatePrograms();
+        const pool = source.length ? source : globalPrograms.filter(program => program && program.active !== false);
+
+        let filtered = pool.slice();
+
+        if (mode === 'pk') {
+            filtered = pool.filter(program => owlSmartNormalize(program.type || '').includes('повышение квалификации'));
+        } else if (mode === 'retraining') {
+            filtered = pool.filter(program => owlSmartNormalize(program.type || '').includes('переподготов'));
+        } else if (mode === 'professional') {
+            filtered = pool.filter(program => owlSmartNormalize(program.type || '').includes('профессиональн'));
+        } else if (mode === 'short') {
+            filtered = pool
+                .map(program => ({ program, hours: owlNumeric(program.hours) }))
+                .filter(item => item.hours > 0 && item.hours <= 72)
+                .sort((a,b) => a.hours - b.hours)
+                .map(item => item.program);
+        } else if (mode === 'cheap') {
+            const numeric = pool
+                .map(program => ({ program, price: owlNumeric(program.price) }))
+                .filter(item => item.price > 0)
+                .sort((a,b) => a.price - b.price);
+            filtered = numeric.length
+                ? numeric.slice(0, 6).map(item => item.program)
+                : pool.filter(program => /по запросу/i.test(String(program.price || '')));
+        } else if (mode === 'online') {
+            filtered = pool.filter(program => {
+                const format = owlSmartNormalize(program.format || '');
+                return format.includes('дот') ||
+                    format.includes('эо') ||
+                    format.includes('дистанц') ||
+                    format.includes('онлайн');
+            });
+        } else if (mode === 'all') {
+            filtered = pool;
+        }
+
+        owlRenderProgramChoices(
+            filtered.slice(0, 8),
+            {
+                pk: 'Оставил только программы повышения квалификации.',
+                retraining: 'Оставил только программы профессиональной переподготовки.',
+                professional: 'Оставил только программы профессионального обучения.',
+                short: 'Показываю более короткие программы.',
+                cheap: 'Показываю варианты с минимальной указанной стоимостью.',
+                online: 'Показываю программы, где в данных указан дистанционный или электронный формат.',
+                all: 'Показываю все варианты из последней найденной группы.'
+            }[mode] || 'Вот уточнённые варианты:'
+        );
+    }
+
+    function owlCandidateKeywordOptions() {
+        const programs = owlCandidatePrograms();
+        if (!programs.length) return '';
+
+        const counts = new Map();
+        programs.forEach(program => {
+            owlWords((program.title_ru || '') + ' ' + (program.sector || '')).forEach(word => {
+                if (word.length < 5) return;
+                if (['повышение','квалификации','профессиональная','программа','управление','вопросы'].includes(word)) return;
+                counts.set(word, (counts.get(word) || 0) + 1);
+            });
+        });
+
+        return [...counts.entries()]
+            .sort((a,b) => b[1] - a[1] || b[0].length - a[0].length)
+            .slice(0, 4)
+            .map(([word]) =>
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'что есть по ' +
+                String(word).replace(/'/g, "\\'") +
+                '\')">🔎 ' + escapeOwlText(word.charAt(0).toUpperCase() + word.slice(1)) + '</button>'
+            )
+            .join('');
+    }
+
+    function owlProgressiveFallbackOptions(step) {
+        const n = Math.max(1, Math.min(4, Number(step || 1)));
+        const hasCandidates = owlCandidatePrograms().length > 0;
+        let html = '';
+
+        if (n === 1) {
+            html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'pk\')">🎓 Только повышение квалификации</button>';
+            html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'retraining\')">🔄 Только переподготовка</button>';
+            html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'professional\')">🛠 Профессиональное обучение</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'помоги подобрать программу по моей задаче\')">🧭 Подобрать по задаче</button>';
+        } else if (n === 2) {
+            html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'cheap\')">💰 Подешевле</button>';
+            html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'short\')">⚡ Покороче</button>';
+            html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'online\')">💻 Дистанционно / онлайн</button>';
+            if (hasCandidates) {
+                html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'all\')">📚 Все найденные варианты</button>';
+            }
+        } else if (n === 3) {
+            const keywordButtons = owlCandidateKeywordOptions();
+            if (keywordButtons) html += keywordButtons;
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'покажи другие направления обучения\')">🧩 Другое направление</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие программы у вас есть\')">📚 Весь каталог по направлениям</button>';
+        } else {
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'я опишу задачу своими словами\')">✍️ Описать задачу своими словами</button>';
+            html += '<button class="chat-opt-btn" onclick="owlAskPreset(\'покажи все основные направления обучения\')">🗂 Основные направления</button>';
+            if (hasCandidates) {
+                html += '<button class="chat-opt-btn" onclick="owlFilterCandidatePrograms(\'all\')">🔁 Вернуться к найденным программам</button>';
+            }
+            html += '<button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Спросить сотрудника</button>';
+        }
+
+        if (n < 4) {
+            html += '<button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Связаться с сотрудником</button>';
+        }
+        html += '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>';
+
+        return html;
+    }
+
     function owlGuidedFallbackOptions() {
+        const negativeStep = Number(owlConversationState.negativeCount || 0);
+        if (negativeStep > 0 && owlConversationState.mode !== 'advanced') {
+            return owlProgressiveFallbackOptions(negativeStep);
+        }
+
         const hasContext = !!owlLastProgramContext();
         let html = '';
         if (hasContext) {
@@ -5134,10 +5289,14 @@ if (wantsNewsEditor) {
                 return true;
             }
 
-            addBotMsg(owlPickReply(replyPool, 'negativeAdvanced') || 'Понял. Попробуем иначе.');
+            addBotMsg(
+                (owlPickReply(replyPool, 'negativeAdvanced') || 'Понял. Попробуем иначе.') +
+                '<br><span class="owl-guided-hint">Можно вернуться в обычный режим или сразу передать вопрос сотруднику.</span>'
+            );
             setOptions(
                 '<button class="chat-opt-btn" onclick="setOwlMode(\'normal\', true)">↩ Обычный режим</button>' +
-                owlGuidedFallbackOptions()
+                '<button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Связаться с сотрудником</button>' +
+                '<button class="chat-opt-btn" onclick="resetMenu()">← Назад</button>'
             );
             return true;
         }
@@ -5152,11 +5311,22 @@ if (wantsNewsEditor) {
         }
 
         const left = Math.max(0, threshold - owlConversationState.negativeCount);
+        const step = Math.max(1, Math.min(4, owlConversationState.negativeCount));
+        const hints = {
+            1: 'Давайте сначала уточним тип обучения — так я отброшу лишнее.',
+            2: 'Теперь можно сузить выбор по цене, длительности или формату.',
+            3: 'Попробуем сузить тему по словам из уже найденных программ или сменить направление.',
+            4: 'Последняя локальная попытка: можно описать задачу своими словами, открыть направления или сразу перейти к сотруднику.'
+        };
         const reply = owlPickReply(replyPool, 'negativeNormal') || 'Понял. Попробуем иначе.';
-        addBotMsg(reply + (left > 0
-            ? '<br><span class="owl-guided-hint">Можно выбрать направление ниже или сформулировать запрос совсем коротко.</span>'
-            : ''));
-        setOptions(owlGuidedFallbackOptions());
+        addBotMsg(
+            reply +
+            '<br><span class="owl-guided-hint">' +
+            escapeOwlText(hints[step] || 'Попробуем другой путь.') +
+            (left > 0 ? ' До предложения расширенного режима осталось: ' + left + '.' : '') +
+            '</span>'
+        );
+        setOptions(owlProgressiveFallbackOptions(step));
         return true;
     }
 
@@ -5307,6 +5477,14 @@ if (wantsNewsEditor) {
 
     function owlResetUnresolved() {
         owlConversationState.unresolvedStreak = 0;
+        saveOwlConversationState();
+    }
+
+    function owlResetNegativeChain() {
+        owlConversationState.negativeCount = 0;
+        if (owlConversationState.mode !== 'advanced') {
+            owlConversationState.advancedNegativeCount = 0;
+        }
         saveOwlConversationState();
     }
 
@@ -5704,6 +5882,7 @@ if (wantsNewsEditor) {
         if (result.options) setOptions(result.options);
         owlConversationState.lastIntent = result.intent || null;
         owlResetUnresolved();
+        owlResetNegativeChain();
         setOwlAiBusy(false);
         const input = document.getElementById('chatUserInput');
         if (input) input.focus();
