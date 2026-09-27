@@ -4826,6 +4826,50 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         }
     }
 
+    function owlResolveSiteFaq(query) {
+        const raw = normalizeText(String(query || '').replace(/ё/g, 'е')).trim();
+        if (!raw) return null;
+
+        const asksAdmissionDocs =
+            /\b(документ\w*)\b/i.test(raw) &&
+            (
+                /\b(нужн\w*|требу\w*|принести|предоставить|подавать|подать)\b/i.test(raw) ||
+                /\b(для поступления|для записи|для зачисления|при поступлении|при зачислении)\b/i.test(raw)
+            );
+
+        const bareDocuments = /^документ(ы|а|ов)?[!?.\s]*$/i.test(raw);
+
+        if (asksAdmissionDocs) {
+            return {
+                handled:true,
+                html:
+                    '<b>Для оформления договора нужны:</b><br>' +
+                    '• копия паспорта;<br>' +
+                    '• СНИЛС;<br>' +
+                    '• документ о текущем образовании — диплом СПО или ВО.<br><br>' +
+                    '<span class="owl-guided-hint">Это указано в разделе «Часто задаваемые вопросы» на сайте.</span>',
+                options:
+                    '<button class="chat-opt-btn" onclick="openModal()">✍️ Перейти к записи</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 Что выдадут после обучения</button>' +
+                    '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
+                intent:'faq-admission-documents'
+            };
+        }
+
+        if (bareDocuments) {
+            return {
+                handled:true,
+                html:'Уточните: нужны <b>документы для поступления</b> или вы хотите узнать, <b>какой документ выдадут после обучения</b>?',
+                options:
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие документы нужны для поступления\')">📎 Для поступления</button>' +
+                    '<button class="chat-opt-btn" onclick="owlAskPreset(\'какой документ выдают после обучения\')">🎓 После обучения</button>',
+                intent:'faq-documents-clarify'
+            };
+        }
+
+        return null;
+    }
+
     async function owlApplyLearnedRule(rule) {
         if (!rule || !rule.action) return false;
 
@@ -4882,9 +4926,28 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
         let text = originalText;
 
+        // Критичные FAQ сайта обрабатываем раньше обучаемых правил.
+        // Иначе старое ошибочно выученное соответствие вроде
+        // "какие документы нужны?" -> программа про документооборот
+        // перехватывает вопрос и ломает даже расширенный режим.
+        const faqResolution = owlResolveSiteFaq(originalText);
+        if (faqResolution && faqResolution.handled) {
+            owlConversationState.lastProgramId = null;
+            owlConversationState.lastCandidateIds = [];
+            owlConversationState.negativeCount = 0;
+            owlConversationState.advancedNegativeCount = 0;
+            saveOwlConversationState();
+            await presentOwlLocal(faqResolution, originalText);
+            return;
+        }
+
         if (window.OwlLearning) {
             try {
-                const learnedRule = window.OwlLearning.lookup(originalText);
+                const protectedGeneralQuery =
+                    /\b(документ\w*|паспорт|снилс|поступлен\w*|зачислен\w*|диплом|удостоверен\w*|сертификат|фрдо)\b/i
+                        .test(normalizeText(String(originalText || '').replace(/ё/g, 'е')));
+
+                const learnedRule = protectedGeneralQuery ? null : window.OwlLearning.lookup(originalText);
                 if (learnedRule) {
                     if (learnedRule.action === 'preset' && learnedRule.value) {
                         text = learnedRule.value;
