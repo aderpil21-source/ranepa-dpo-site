@@ -1,0 +1,55 @@
+name: Import Owl Step Frames
+
+on:
+  push:
+    branches:
+      - feature/owl-v2-realistic
+    paths:
+      - .github/workflows/import-owl-step-frames.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/owl-v2-realistic
+          fetch-depth: 0
+
+      - name: Install image tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick
+
+      - name: Download approved step frames
+        env:
+          STEP1_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/9d762853-0bad-49bf-acad-35196a96943d/23506048-b941-4c55-8d02-1697f5ee5fb2/Edit_the_supplied_transparent_owl_only__Preserve_exact_ident.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMGFjYTAwNTBhNTg2OGFkYiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDU1NjExMn0.qSdZYY5spUyTJOUeMNgCc4f1eS9Qi8HrtyQ_Awi-zNM"
+          STEP2_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/2b3e5aa4-63da-441b-b972-129d954c01bc/85f2423b-b602-446b-a6b5-312736564ba9/Edit_the_supplied_transparent_owl_only__Preserve_exact_ident.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNjRlZTE2ZmQ0NWM3ZTRlYyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDYxMTQ1M30.Ef_0z4U46Qf945FAb9LJOSg7wGhN18DpXnBPyv0TSf0"
+          STEP3_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/34e1d77d-9fe7-400d-8942-fe1811100c46/01f19b2e-20fa-4691-8b61-563d04ccd258/Edit_the_supplied_transparent_owl_only__Preserve_exact_ident.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZjQ5MTNlZjRjNjk3NmZjMiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmZWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDU3NzE0MH0.WyfqUEkL2yE741vYoFmQxn18Q-sQfl6Yp4MsPFU7U1k"
+          STEP4_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/a2adddf1-1523-4073-9aa7-7f395fd3b9a8/acf4d7a2-f1be-4e04-a85a-2b874e60cbe5/Edit_the_supplied_transparent_owl_only__Preserve_exact_ident.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiM2Q3NTUyMDVjNzE2Mzk5MyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDU1NDg4NX0.75GkG4qNdujVTbjR6_DHd9NL-HCaTyeP7b9LX5uHBWk"
+        run: |
+          set -euo pipefail
+          for n in 1 2 3 4; do
+            var="STEP${n}_URL"
+            curl --fail --location --retry 3 "${!var}" -o "/tmp/owl-step-${n}.png"
+            identify "/tmp/owl-step-${n}.png"
+            convert "/tmp/owl-step-${n}.png" -resize 336x448! -quality 76 "img/owl-step-${n}.webp"
+            test "$(identify -format '%w' "img/owl-step-${n}.webp")" = "336"
+            test "$(identify -format '%h' "img/owl-step-${n}.webp")" = "448"
+          done
+
+      - name: Commit owl step frames
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img/owl-step-1.webp img/owl-step-2.webp img/owl-step-3.webp img/owl-step-4.webp
+          if git diff --cached --quiet; then
+            echo "Frames already match."
+            exit 0
+          fi
+          git commit -m "feat: import owl walking frames"
+          git push
