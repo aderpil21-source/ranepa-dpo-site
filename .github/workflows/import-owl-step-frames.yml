@@ -1,4 +1,4 @@
-name: Import Owl Step Frames
+name: Clean Owl Step Backgrounds
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  import:
+  clean:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,37 +19,52 @@ jobs:
           ref: feature/owl-v2-realistic
           fetch-depth: 0
 
-      - name: Install image tools
+      - name: Install background-removal tools
         run: |
+          python -m pip install --upgrade pip
+          python -m pip install "rembg[cpu]" pillow
           sudo apt-get update -qq
           sudo apt-get install -y -qq imagemagick
 
-      - name: Download approved step frames
-        env:
-          STEP1_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/9d762853-0bad-49bf-acad-35196a96943d/23506048-b941-4c55-8d02-1697f5ee5fb2/Edit_the_supplied_transparent_owl_only__Preserve_exact_ident.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMGFjYTAwNTBhNTg2OGFkYiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDU1NjExMn0.qSdZYY5spUyTJOUeMNgCc4f1eS9Qi8HrtyQ_Awi-zNM"
-          STEP2_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/2b3e5aa4-63da-441b-b972-129d954c01bc/85f2423b-b602-446b-a6b5-312736564ba9/Edit_the_supplied_transparent_owl_only__Preserve_exact_ident.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNjRlZTE2ZmQ0NWM3ZTRlYyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDYxMTQ1M30.Ef_0z4U46Qf945FAb9LJOSg7wGhN18DpXnBPyv0TSf0"
-          STEP3_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/1337e693-7846-4d6d-b1ce-de43feed9e84/c81e667d-6733-4248-a4a9-0f89d1785272/_owl_Preserve_exact_identity__face__amber_eyes__beak__ear_tu.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiY2E2YmZmODNhYzdjMWUxZCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDU5MDU5NX0.iBxkf4Z6aNuj7kDnhn0mpl1xWPIGzcnpr81JhPrjwPw"
-          STEP4_URL: "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/08366cbc-eca7-47d0-8089-127a7ad9f435/2c07d6f5-fccf-4365-8dff-1c0773be178d/_owl_Preserve_exact_identity__face__amber_eyes__beak__ear_tu.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNjhiMjNiNWNmNGI1MjIxOSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MDYzOTA2OH0.7c_HYjLOTRpNuldn0bquCjbshj1Ij7Kkfez9kGzI1y8"
+      - name: Remove baked backgrounds from owl step frames
         run: |
           set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from rembg import remove
+          from PIL import Image
+          import io
+
+          for n in range(1, 5):
+              src = Path(f"img/owl-step-{n}.webp")
+              raw = src.read_bytes()
+              cut = remove(raw)
+              im = Image.open(io.BytesIO(cut)).convert("RGBA")
+              # All step assets share the same website canvas.
+              im = im.resize((336, 448), Image.Resampling.LANCZOS)
+              png = Path(f"/tmp/owl-step-{n}.png")
+              im.save(png, "PNG", optimize=True)
+              alpha = im.getchannel("A")
+              lo, hi = alpha.getextrema()
+              if lo >= 255:
+                  raise RuntimeError(f"step {n}: no transparency produced")
+              print(f"step {n}: alpha range {lo}..{hi}")
+          PY
+
           for n in 1 2 3 4; do
-            var="STEP${n}_URL"
-            curl --fail --location --retry 3 "${!var}" -o "/tmp/owl-step-${n}.png"
-            identify "/tmp/owl-step-${n}.png"
-            convert "/tmp/owl-step-${n}.png" -resize 336x448! -quality 76 "img/owl-step-${n}.webp"
+            convert "/tmp/owl-step-${n}.png" -quality 78 "img/owl-step-${n}.webp"
             test "$(identify -format '%w' "img/owl-step-${n}.webp")" = "336"
             test "$(identify -format '%h' "img/owl-step-${n}.webp")" = "448"
+            channels="$(identify -format '%[channels]' "img/owl-step-${n}.webp")"
+            echo "step ${n}: ${channels}"
+            echo "${channels}" | grep -qi 'a'
           done
 
-      - name: Commit owl step frames
+      - name: Commit transparent owl step frames
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add img/owl-step-1.webp img/owl-step-2.webp img/owl-step-3.webp img/owl-step-4.webp
-          if git diff --cached --quiet; then
-            echo "Frames already match."
-            exit 0
-          fi
-          git commit -m "feat: import owl walking frames"
+          git commit -m "fix: make owl step frames transparent"
           git push
