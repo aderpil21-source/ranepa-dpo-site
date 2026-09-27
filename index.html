@@ -448,17 +448,17 @@
             transform-origin: 50% 100%;
             animation:
                 owlBreathV2 6.8s ease-in-out infinite,
-                owlBranchGlide 11s cubic-bezier(.22, .61, .36, 1) infinite;
-            will-change: transform, left;
+                owlBranchGlide 11s cubic-bezier(.42, 0, .58, 1) infinite;
+            will-change: transform, translate;
         }
         @keyframes owlBreathV2 {
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-1.4px) scale(1.008); }
         }
         @keyframes owlBranchGlide {
-            0%, 6%    { left: var(--owl-start-left, 58px); }
-            46%, 54%  { left: var(--owl-end-left, 58px); }
-            94%, 100% { left: var(--owl-start-left, 58px); }
+            0%, 6%    { translate: 0 0; }
+            46%, 54%  { translate: var(--owl-travel-x, 0px) 0; }
+            94%, 100% { translate: 0 0; }
         }
 
         .owl-media-stage::after {
@@ -513,7 +513,11 @@
         .owl-container.owl-stepping .owl-frame-open,
         .owl-container.owl-stepping .owl-frame-closed { opacity: 0 !important; }
         .owl-media-stage {
+            left: var(--owl-start-left, 6px);
             translate: 0 0;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+            contain: layout paint style;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -3923,10 +3927,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         );
 
         const travelDistance = Math.round(availableTrack);
-        const endLeft = startLeft + travelDistance;
 
         stage.style.setProperty('--owl-start-left', startLeft + 'px');
-        stage.style.setProperty('--owl-end-left', endLeft + 'px');
+        stage.style.setProperty('--owl-travel-x', travelDistance + 'px');
     }
 
     function initOwlMedia() {
