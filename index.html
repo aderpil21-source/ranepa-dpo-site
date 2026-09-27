@@ -709,6 +709,47 @@
         .chat-opt-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700; text-align: left; transition: background 0.25s ease, padding-left 0.25s ease; touch-action: manipulation; }
         .chat-opt-btn:hover { background: var(--ranepa-red); border-color: var(--ranepa-red); padding-left: 16px; }
 
+        .owl-program-link {
+            display: block;
+            text-decoration: none;
+            padding: 13px 14px;
+            border-radius: 14px;
+            border: 1px solid color-mix(in srgb, var(--ranepa-red) 35%, var(--border-glass));
+            background:
+                linear-gradient(135deg, rgba(202,15,62,.12), rgba(56,189,248,.06)),
+                var(--bg-card);
+            color: var(--text-main);
+            box-shadow: 0 8px 20px rgba(0,0,0,.12);
+            transition: transform .22s var(--bezier-smooth), border-color .22s ease, box-shadow .22s ease;
+        }
+        .owl-program-link:hover {
+            transform: translateY(-2px);
+            border-color: var(--ranepa-red);
+            box-shadow: 0 12px 28px rgba(202,15,62,.18);
+        }
+        .owl-program-link-title {
+            display: block;
+            font-weight: 900;
+            font-size: .86rem;
+            line-height: 1.35;
+            margin-bottom: 7px;
+        }
+        .owl-program-link-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            color: var(--text-muted);
+            font-size: .73rem;
+            line-height: 1.25;
+        }
+        .owl-program-link-cta {
+            display: inline-block;
+            margin-top: 8px;
+            color: var(--ranepa-red);
+            font-weight: 900;
+            font-size: .76rem;
+        }
+
         .mobile-chat-icon { display: none; }
 
         .scroll-nav { position: fixed; left: 22px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9500; }
@@ -4622,8 +4663,10 @@ if (wantsNewsEditor) {
             p[bulletsKey].forEach(b => { if (b && b.trim()) html += `<li>${b.trim()}</li>`; });
             html += '</ul>';
         }
+        html += owlRecommendationBlock(p);
         addBotMsg(html);
         setOptions(`
+            <a class="chat-opt-btn" href="${owlProgramPageUrl(p)}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>
             <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
             <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
         `);
@@ -4932,7 +4975,7 @@ if (wantsNewsEditor) {
 
     function owlProgramActionOptions(program) {
         return (
-            '<button class="chat-opt-btn" onclick="showProgramDetailsById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">📘 Подробнее о программе</button>' +
+            '<a class="chat-opt-btn" href="' + owlProgramPageUrl(program) + '" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>' +
             '<button class="chat-opt-btn" onclick="openModal()">✍️ Записаться</button>' +
             '<button class="chat-opt-btn" onclick="resetMenu()">⬅️ В меню</button>'
         );
@@ -4950,6 +4993,99 @@ if (wantsNewsEditor) {
             filtered = globalPrograms.filter(p => String(p.tab || '') === 'tab-sem');
         }
         return filtered.filter(p => p.active !== false);
+    }
+
+    function owlProgramPageUrl(program) {
+        return 'program.html?id=' + encodeURIComponent(program.id) + '&lang=' + encodeURIComponent(currentLang);
+    }
+
+    function owlProgramLink(program, label) {
+        const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
+        const price = localizedProgramMeta(program, 'price', currentLang) || '—';
+        const hours = localizedProgramMeta(program, 'hours', currentLang) || '—';
+        const type = localizedProgramMeta(program, 'type', currentLang) || '';
+        return '<a class="owl-program-link" href="' + owlProgramPageUrl(program) + '" target="_blank" rel="noopener" onclick="owlRememberProgramById(\'' +
+            String(program.id).replace(/'/g, "\\'") + '\')">' +
+            '<span class="owl-program-link-title">' + escapeOwlText(program[titleKey] || '') + '</span>' +
+            '<span class="owl-program-link-meta"><span>💰 ' + escapeOwlText(price) + '</span><span>⏱ ' +
+            escapeOwlText(hours) + '</span>' + (type ? '<span>🎓 ' + escapeOwlText(type) + '</span>' : '') + '</span>' +
+            '<span class="owl-program-link-cta">' + escapeOwlText(label || (currentLang === 'ru' ? 'Открыть программу →' : 'Open program →')) + '</span>' +
+            '</a>';
+    }
+
+    function owlRememberProgramById(id) {
+        const program = globalPrograms.find(p => String(p.id || '') === String(id));
+        if (program) owlRememberProgram(program);
+    }
+
+    function owlNumeric(value) {
+        const n = parseInt(String(value || '').replace(/[^\d]/g, ''), 10);
+        return Number.isFinite(n) ? n : 0;
+    }
+
+    function owlWords(value) {
+        return owlSmartNormalize(value).split(' ').filter(word => word.length > 3);
+    }
+
+    function owlRelatedPrograms(program, limit) {
+        if (!program) return [];
+        const sourceWords = new Set(owlWords(
+            (program.title_ru || '') + ' ' +
+            (program.desc_ru || '') + ' ' +
+            (Array.isArray(program.bullets_ru) ? program.bullets_ru.join(' ') : '')
+        ));
+        const sourceHours = owlNumeric(program.hours);
+        const sourcePrice = owlNumeric(program.price);
+
+        return globalPrograms
+            .filter(candidate => candidate && candidate.active !== false && String(candidate.id) !== String(program.id))
+            .filter(candidate => owlSmartNormalize(candidate.title_ru || '') !== owlSmartNormalize(program.title_ru || ''))
+            .map(candidate => {
+                let score = 0;
+                if (candidate.type && program.type && owlSmartNormalize(candidate.type) === owlSmartNormalize(program.type)) score += 8;
+                if (candidate.sector && program.sector && candidate.sector === program.sector) score += 7;
+                if (candidate.tab && program.tab && candidate.tab === program.tab) score += 4;
+
+                const candidateWords = owlWords(
+                    (candidate.title_ru || '') + ' ' +
+                    (candidate.desc_ru || '') + ' ' +
+                    (Array.isArray(candidate.bullets_ru) ? candidate.bullets_ru.join(' ') : '')
+                );
+                candidateWords.forEach(word => { if (sourceWords.has(word)) score += 1.4; });
+
+                const hours = owlNumeric(candidate.hours);
+                if (sourceHours && hours) {
+                    const ratio = Math.abs(hours - sourceHours) / Math.max(sourceHours, hours);
+                    if (ratio < .15) score += 3;
+                    else if (ratio < .35) score += 1.5;
+                }
+
+                const price = owlNumeric(candidate.price);
+                if (sourcePrice && price) {
+                    const ratio = Math.abs(price - sourcePrice) / Math.max(sourcePrice, price);
+                    if (ratio < .18) score += 2;
+                    else if (ratio < .4) score += 1;
+                }
+
+                return { candidate, score };
+            })
+            .filter(item => item.score > 0)
+            .sort((a,b) => b.score - a.score)
+            .slice(0, limit || 3)
+            .map(item => item.candidate);
+    }
+
+    function owlRecommendationBlock(program) {
+        const items = owlRelatedPrograms(program, 3);
+        if (!items.length) return '';
+
+        const variants = (owlBrainConfig().replies || {}).recommendations || [];
+        const intro = owlPickReply(variants) || 'Вас также могут заинтересовать похожие программы.';
+        return '<div style="margin-top:12px;font-size:.82rem;font-weight:850;color:var(--text-muted);">' +
+            escapeOwlText(intro) + '</div>' +
+            '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">' +
+            items.map(item => owlProgramLink(item)).join('') +
+            '</div>';
     }
 
     function resolveOwlLocally(query) {
@@ -5000,16 +5136,14 @@ if (wantsNewsEditor) {
         const asksPrograms = owlIntent('programs', query) || categoryPrograms.length > 0;
 
         if (asksPrograms && categoryPrograms.length) {
-            const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
-            let html = 'В этой категории сейчас <b>' + categoryPrograms.length + '</b> программ. Вот несколько вариантов:';
-            let options = '';
+            const introPool = (owlBrainConfig().replies || {}).programIntro || [];
+            let html = owlPickReply(introPool) || ('В этой категории сейчас <b>' + categoryPrograms.length + '</b> программ.');
+            html += '<br><br><span style="font-size:.8rem;color:var(--text-muted);">Найдено: <b>' + categoryPrograms.length + '</b></span>';
+            let options = '<div style="display:flex;flex-direction:column;gap:8px;">';
             categoryPrograms.slice(0, 6).forEach(program => {
-                options += '<button class="chat-opt-btn" onclick="showProgramDetailsById(\'' + String(program.id).replace(/'/g, "\\'") + '\')">' +
-                    escapeOwlText(program[titleKey] || '') + '<br><span style="font-size:.76rem;opacity:.75;">' +
-                    escapeOwlText(localizedProgramMeta(program, 'price', currentLang)) + ' · ' +
-                    escapeOwlText(localizedProgramMeta(program, 'hours', currentLang)) + '</span></button>';
+                options += owlProgramLink(program);
             });
-            options += '<button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Показать весь каталог</button>';
+            options += '</div><button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Показать весь каталог</button>';
             return { handled:true, html, options, intent:'programs' };
         }
 
@@ -5020,7 +5154,7 @@ if (wantsNewsEditor) {
                 owlRememberProgram(program);
                 return {
                     handled:true,
-                    html:owlProgramAnswer(program, facets),
+                    html:owlProgramAnswer(program, facets) + owlRecommendationBlock(program),
                     options:owlProgramActionOptions(program),
                     intent:'program-facts'
                 };
