@@ -64,10 +64,13 @@ jobs:
           if not isinstance(data, dict):
               raise SystemExit("Portal API response is not a JSON object")
 
+          api_programs = data.get("programs")
           schedules = data.get("schedules")
           owl_files = data.get("owlFiles")
           current_alert = data.get("currentAlert")
 
+          if not isinstance(api_programs, list):
+              raise SystemExit("Portal API response has no programs array")
           if not isinstance(schedules, list):
               raise SystemExit("Portal API response has no schedules array")
           if not isinstance(owl_files, list):
@@ -96,6 +99,24 @@ jobs:
           ids = [str(item.get("id")) for item in programs]
           if len(ids) != len(set(ids)):
               raise SystemExit("program-data.json contains duplicate program IDs")
+
+          # Static program-data.json remains the canonical catalogue,
+          # but study-plan links live in Google Sheets and can change at any time.
+          # Overlay only pdf_link from the live Apps Script response by program ID.
+          live_by_id = {
+              str(item.get("id")).strip(): item
+              for item in api_programs
+              if isinstance(item, dict) and item.get("id")
+          }
+          programs = [
+              {
+                  **item,
+                  "pdf_link": str(
+                      live_by_id.get(str(item.get("id")).strip(), {}).get("pdf_link") or ""
+                  ).strip(),
+              }
+              for item in programs
+          ]
 
           def write_json(path, payload):
               path.write_text(
