@@ -219,22 +219,10 @@ body.requisites-opened{overflow:hidden}
   transition:.2s ease
 }
 .audience-footer-links a:hover{color:#fff}
-.audience-footer-vk{
-  display:inline-flex;align-items:center;gap:10px;justify-content:flex-start;
-  margin-top:5px;padding:8px 13px 8px 8px;border-radius:14px;
-  background:#0077ff;border:1px solid rgba(255,255,255,.12);
-  color:#fff!important;font-weight:850!important;
-  box-shadow:0 10px 26px rgba(0,119,255,.18)
-}
-.audience-footer-vk:hover{background:#1685ff;transform:translateY(-1px)}
-.vk-mark{
-  width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
-  background:#fff;color:#0077ff;font:900 .86rem/1 Montserrat,Arial,sans-serif;
-  letter-spacing:-.06em
-}
-.vk-sticker-copy{display:flex;flex-direction:column;align-items:flex-start;gap:1px}
-.vk-sticker-copy strong{font:850 .86rem/1.15 Montserrat,Arial,sans-serif}
-.vk-sticker-copy small{font:700 .72rem/1.2 Manrope,Arial,sans-serif;color:rgba(255,255,255,.82)}
+.audience-footer-vk-sticker{display:inline-flex;margin-top:5px;text-decoration:none;transition:transform .2s ease,opacity .2s ease}
+.audience-footer-vk-sticker:hover{transform:translateY(-1px);opacity:.96}
+.audience-footer-vk-sticker img{display:block;width:300px;max-width:min(100%,300px);height:auto}
+@media(max-width:720px){.audience-footer-vk-sticker img{width:260px}}
 @media(max-width:720px){
   .audience-footer-inner{flex-direction:column;gap:20px;padding:26px 18px 30px}
   .audience-footer-links{justify-items:start;text-align:left}
