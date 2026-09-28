@@ -65,20 +65,9 @@ def render(path):
         title, description = PAGES[path]
         head = re.sub(r'(<title\b[^>]*>).*?(</title>)', lambda m: m[1] + html.escape(title) + m[2], head, flags=re.S)
         block = metadata(path, title, description)
-    # Theme CSS/JS are intentionally inserted at the very start of <head>.
-    # Preserve that prefix and place generated SEO exactly where legacy CI expects:
-    # before the first page-local script/style after the shared theme bootstrap.
-    prefix_end = 0
-    for pattern in (
-        r'^\s*<link\s+rel=["\']stylesheet["\']\s+href=["\'][^"\']*theme\.css[^"\']*["\'][^>]*>\s*',
-        r'^\s*<script\s+src=["\'][^"\']*theme\.js[^"\']*["\'][^>]*></script>\s*',
-    ):
-        m = re.match(pattern, head[prefix_end:], flags=re.I)
-        if m:
-            prefix_end += m.end()
-    tail = head[prefix_end:]
-    match = re.search(r'<(?:script|style)\b', tail)
-    offset = prefix_end + (match.start() if match else len(tail))
+    # Put tags before the first script/style, inside head and early in the response.
+    match = re.search(r'<(?:script|style)\b', head)
+    offset = match.start() if match else len(head)
     return head[:offset] + block + '\n' + head[offset:] + '</head>' + rest
 
 
