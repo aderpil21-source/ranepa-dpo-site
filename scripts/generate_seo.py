@@ -65,13 +65,15 @@ def render(path):
         title, description = PAGES[path]
         head = re.sub(r'(<title\b[^>]*>).*?(</title>)', lambda m: m[1] + html.escape(title) + m[2], head, flags=re.S)
         block = metadata(path, title, description)
-    # Shared theme assets are allowed before metadata. Ignore them when locating
-    # the first page-local script/style so --check reproduces the committed head.
-    masked = re.sub(r'<link\\s+rel=["\\']stylesheet["\\']\\s+href=["\\'][^"\\']*theme\\.css[^"\\']*["\\'][^>]*>', lambda m: ' ' * len(m.group(0)), head, flags=re.I)
-    masked = re.sub(r'<script\\s+src=["\\'][^"\\']*theme\\.js[^"\\']*["\\'][^>]*></script>', lambda m: ' ' * len(m.group(0)), masked, flags=re.I)
-    match = re.search(r'<(?:script|style)\\b', masked)
-    offset = match.start() if match else len(head)
-    return head[:offset] + block + '\n' + head[offset:] + '</head>' + rest
+    # Theme assets are shared UI chrome. Keep generated metadata after them so
+    # regeneration is deterministic while the theme bootstrap remains early.
+    theme_matches = list(re.finditer(r'<(?:link\\b[^>]*theme\\.css[^>]*>|script\\b[^>]*theme\\.js[^>]*></script>)', head, flags=re.I))
+    if theme_matches:
+        offset = theme_matches[-1].end()
+    else:
+        match = re.search(r'<(?:script|style)\\b', head)
+        offset = match.start() if match else len(head)
+    return head[:offset] + block + '\\n' + head[offset:] + '</head>' + rest
 
 
 def sitemap():
