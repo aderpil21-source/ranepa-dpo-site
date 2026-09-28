@@ -2880,6 +2880,18 @@
     function renderSiteAdminPanel() {
         const box = document.getElementById('siteAdminControls');
         if (!box) return;
+
+        // Перерисовка панели после переключения тумблера не должна сбрасывать
+        // раскрытые разделы и позицию прокрутки пользователя.
+        const previousScrollTop = box.scrollTop;
+        const existingGroups = Array.from(box.querySelectorAll('details.site-admin-group'));
+        const hadRenderedGroups = existingGroups.length > 0;
+        const openGroups = new Set(
+            existingGroups
+                .filter(function (details) { return details.open; })
+                .map(function (details) { return details.dataset.siteAdminGroup || ''; })
+        );
+
         const grouped = {};
         siteVisibilityTargets().forEach(function (entry) {
             if (!grouped[entry.group]) grouped[entry.group] = [];
@@ -2896,8 +2908,14 @@
                     '<span class="site-admin-slider"></span>' +
                     '</label></div>';
             }).join('');
-            const open = group === 'Главная страница' || group === 'Навигация' ? ' open' : '';
-            return '<details class="site-admin-group"' + open + '><summary>' +
+
+            const shouldOpen = hadRenderedGroups
+                ? openGroups.has(group)
+                : (group === 'Главная страница' || group === 'Навигация');
+            const open = shouldOpen ? ' open' : '';
+
+            return '<details class="site-admin-group" data-site-admin-group="' +
+                siteAdminEscape(group) + '"' + open + '><summary>' +
                 siteAdminEscape(group) + '</summary>' + rows + '</details>';
         }).join('');
 
@@ -2906,6 +2924,12 @@
                 setSiteVisibility(input.dataset.siteAdminKey, input.checked);
             });
         });
+
+        if (hadRenderedGroups) {
+            requestAnimationFrame(function () {
+                box.scrollTop = previousScrollTop;
+            });
+        }
     }
 
     async function siteAdminRequest(url, options) {
