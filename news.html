@@ -1043,7 +1043,6 @@ async function fetchNews(){
         try {
             const data = await requestJson(CONFIG.api, {
                 method:'POST',
-                headers:{ 'Content-Type':'application/json' },
                 body: JSON.stringify({ action:'newsReadAdmin', token:adminToken })
             });
 
