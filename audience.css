@@ -195,6 +195,45 @@ body.deep-view-open{overflow:hidden}
 .requisites-body{padding:28px 22px 32px;color:var(--muted);line-height:1.7}
 body.requisites-opened{overflow:hidden}
 
+
+.audience-footer{
+  border-top:1px solid var(--border);
+  background:
+    radial-gradient(circle at 15% 0%,rgba(202,15,62,.09),transparent 26rem),
+    linear-gradient(180deg,rgba(8,12,20,.96),rgba(5,8,14,.99));
+}
+.audience-footer-inner{
+  max-width:1220px;margin:0 auto;padding:30px 24px 34px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:34px
+}
+.audience-footer-brand{display:flex;flex-direction:column;gap:7px;max-width:460px}
+.audience-footer-brand strong{
+  font:850 1rem/1.4 Montserrat,Arial,sans-serif;color:#fff
+}
+.audience-footer-brand span{color:var(--muted);font-size:.86rem;line-height:1.55}
+.audience-footer-links{
+  display:grid;gap:9px;justify-items:end;text-align:right
+}
+.audience-footer-links a{
+  color:#dbe4ef;text-decoration:none;font-size:.88rem;font-weight:750;
+  transition:.2s ease
+}
+.audience-footer-links a:hover{color:#fff}
+.audience-footer-vk{
+  display:inline-flex;align-items:center;justify-content:center;
+  margin-top:3px;padding:9px 13px;border-radius:10px;
+  background:rgba(202,15,62,.11);border:1px solid rgba(202,15,62,.28);
+  color:#fff!important;font-weight:850!important
+}
+.audience-footer-vk:hover{
+  background:rgba(202,15,62,.18);border-color:rgba(202,15,62,.5)
+}
+@media(max-width:720px){
+  .audience-footer-inner{flex-direction:column;gap:20px;padding:26px 18px 30px}
+  .audience-footer-links{justify-items:start;text-align:left}
+}
+
+
 /* ===== Payment instructions ===== */
 .requisites-dialog{width:min(980px,100%);max-height:min(92vh,980px);display:flex;flex-direction:column}
 .requisites-head{flex:0 0 auto;background:rgba(5,8,14,.92)}
