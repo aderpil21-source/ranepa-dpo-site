@@ -1,4 +1,6 @@
 let programsCache = [];
+const PROGRAM_REFRESH_MS = 5 * 60 * 1000;
+let programRefreshTimer = null;
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({
@@ -13,8 +15,8 @@ async function refreshProgramsInBackground(){
     if (!res.ok) return;
     const data = await res.json();
     const fresh = (data.programs || []).filter(p => p && p.id && p.title_ru);
-    if (JSON.stringify(fresh) !== JSON.stringify(allPrograms)) {
-      allPrograms = fresh;
+    if (JSON.stringify(fresh) !== JSON.stringify(programsCache)) {
+      programsCache = fresh;
       renderPrograms();
     }
   } catch (_) {}
