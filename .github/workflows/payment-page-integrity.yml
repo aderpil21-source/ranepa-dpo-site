@@ -55,18 +55,16 @@ jobs:
           if bad:
               raise SystemExit("Unexpected external payment destination(s): " + ", ".join(bad))
 
-          # One audited same-origin script is allowed for the site-wide theme switch.
-          sanitized = re.sub(r'<script\\s+src="\\.\\./theme\\.js\\?v=1"></script>', '', html, flags=re.I)
           forbidden = ["<script", "<iframe", "<form", "javascript:", "http://"]
           for token in forbidden:
-              if token.lower() in sanitized.lower():
+              if token.lower() in html.lower():
                   raise SystemExit(f"Forbidden construct found: {token}")
 
           required_security = [
               "Content-Security-Policy",
               "default-src 'none'",
               "form-action 'none'",
-              "script-src 'self'",
+              "script-src 'none'",
               'rel="noopener noreferrer nofollow"',
           ]
           for token in required_security:
