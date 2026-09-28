@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Расписание занятий — Президентская академия</title>
+  <link rel="stylesheet" href="./section-page.css?v=1">
+</head>
+<body>
+  <header class="page-header">
+    <a class="page-logo" href="index.html"><img src="./img/logo.png" alt="Президентская академия"></a>
+    <nav class="page-nav">
+      <a href="index.html">Главная</a>
+      <a href="programs.html">Программы</a>
+      <a href="students.html">Слушателям</a>
+      <a class="active" href="schedule.html">Расписание</a>
+      <a href="news.html">Новости</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contacts.html">Контакты</a>
+      <a class="nav-enroll" href="https://forms.yandex.ru" target="_blank" rel="noopener noreferrer">Записаться</a>
+    </nav>
+  </header>
+  <main class="page-main">
+    <a class="back-link" href="students.html">← Назад в раздел «Слушателям»</a>
+    <span class="page-kicker">Учебный процесс</span>
+    <h1 class="page-title">Расписание занятий</h1>
+    <p class="page-lead">Актуальные занятия из того же расписания, которое используется на главной странице сайта.</p>
+    <div class="toolbar">
+      <input id="scheduleSearch" type="search" placeholder="Поиск по дисциплине или преподавателю…" aria-label="Поиск в расписании">
+      <select id="scheduleProgram" aria-label="Программа">
+        <option value="">Все программы</option>
+      </select>
+    </div>
+    <div id="scheduleList" class="schedule-list"></div>
+  </main>
+  <script src="./schedule-page.js?v=1"></script>
+  <script src="./section-page.js?v=2"></script>
+</body>
+</html>

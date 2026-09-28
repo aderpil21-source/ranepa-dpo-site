@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Слушателям — Президентская академия</title>
+  <link rel="stylesheet" href="./audience.css?v=2">
+</head>
+<body>
+  <header class="audience-header">
+    <a class="audience-logo" href="index.html"><img src="./img/logo.png" alt="Президентская академия"></a>
+    <nav class="audience-nav">
+      <a href="index.html">Главная</a>
+      <a href="programs.html">Программы</a>
+      <a class="active" href="students.html">Слушателям</a>
+      <a href="schedule.html">Расписание</a>
+      <a href="news.html">Новости</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contacts.html">Контакты</a>
+    </nav>
+  </header>
+  <main class="audience-main">
+    <section class="audience-hero">
+      <span class="audience-kicker">Учебный раздел</span>
+      <h1>Слушателям</h1>
+      <p>Материалы, расписание, программы, новости и помощь — основные сервисы Центра дополнительного образования собраны на одной странице.</p>
+    </section>
+    <section class="audience-grid">
+      <article class="audience-card material-card">
+        <div class="icon">🔐</div>
+        <h2>Материалы по коду</h2>
+        <p>Введите код, полученный от преподавателя. Материал откроется прямо здесь.</p>
+        <form id="materialLookupForm" class="material-lookup">
+          <input id="materialCode" type="text" autocomplete="off" spellcheck="false" placeholder="Например: AB12CD" aria-label="Код доступа к материалам">
+          <button class="action" type="submit">Найти материал</button>
+        </form>
+        <div id="materialResult" class="material-result" aria-live="polite"></div>
+      </article>
+      <article class="audience-card">
+        <div class="icon">🗓️</div>
+        <h2>Расписание занятий</h2>
+        <p>Быстрый доступ к актуальному расписанию занятий.</p>
+        <a class="action" href="schedule.html">Открыть расписание</a>
+      </article>
+      <article class="audience-card">
+        <div class="icon">🎓</div>
+        <h2>Программы обучения</h2>
+        <p>Каталог программ повышения квалификации, переподготовки и профессионального обучения.</p>
+        <a class="action secondary" href="programs.html">Смотреть программы</a>
+      </article>
+      <article class="audience-card">
+        <div class="icon">📰</div>
+        <h2>Новости Академии</h2>
+        <p>Актуальные новости, объявления и информация Центра дополнительного образования.</p>
+        <a class="action secondary" href="news.html">Читать новости</a>
+      </article>
+      <article class="audience-card">
+        <div class="icon">❓</div>
+        <h2>Частые вопросы</h2>
+        <p>Документы для поступления, формат обучения, диплом и совмещение занятий с работой.</p>
+        <a class="action secondary" href="faq.html">Открыть FAQ</a>
+      </article>
+      <article class="audience-card">
+        <div class="icon">☎️</div>
+        <h2>Контакты и помощь</h2>
+        <p>Связь с Центром дополнительного образования и быстрые контакты.</p>
+        <a class="action secondary" href="contacts.html">Открыть контакты</a>
+      </article>
+    </section>
+    <div class="audience-note">Раздел пока работает в тестовой design-lab. Основной сайт и production-репозиторий не изменены.</div>
+  </main>
+
+  <script src="./students.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Программы обучения — Президентская академия</title>
+  <link rel="stylesheet" href="./section-page.css?v=1">
+</head>
+<body>
+  <header class="page-header">
+    <a class="page-logo" href="index.html"><img src="./img/logo.png" alt="Президентская академия"></a>
+    <nav class="page-nav">
+      <a href="index.html">Главная</a>
+      <a class="active" href="programs.html">Программы</a>
+      <a href="students.html">Слушателям</a>
+      <a href="schedule.html">Расписание</a>
+      <a href="news.html">Новости</a>
+      <a href="faq.html">FAQ</a>
+      <a href="contacts.html">Контакты</a>
+      <a class="nav-enroll" href="https://forms.yandex.ru" target="_blank" rel="noopener noreferrer">Записаться</a>
+    </nav>
+  </header>
+  <main class="page-main">
+    <a class="back-link" href="students.html">← Назад в раздел «Слушателям»</a>
+    <span class="page-kicker">Каталог ДПО</span>
+    <h1 class="page-title">Программы обучения</h1>
+    <p class="page-lead">Самостоятельный каталог программ Западного филиала. Данные загружаются из того же файла, который использует действующий сайт.</p>
+    <div class="toolbar">
+      <input id="programSearch" type="search" placeholder="Найти программу…" aria-label="Поиск программ">
+      <select id="programType" aria-label="Тип программы">
+        <option value="">Все типы</option>
+      </select>
+    </div>
+    <div id="programGrid" class="grid"></div>
+  </main>
+  <script src="./programs-page.js?v=1"></script>
+  <script src="./section-page.js?v=2"></script>
+</body>
+</html>
