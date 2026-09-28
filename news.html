@@ -121,6 +121,13 @@ header{ background:var(--header-bg); backdrop-filter:blur(25px);
 .buy-btn{ width:100%; background:linear-gradient(135deg,var(--ranepa-red),#e11d48); color:#fff; padding:18px; border-radius:14px; font-weight:900; cursor:pointer; border:none; font-family:var(--font-display); }
 .buy-btn[disabled]{ opacity:.5; cursor:not-allowed; }
 .close-modal{ margin-top:15px; cursor:pointer; color:var(--text-muted); text-decoration:underline; padding:10px; text-align:center; }
+.news-login-box{ max-width:460px; padding:38px 40px 34px; border-radius:30px; }
+.news-login-box h3{ margin:0 0 14px; text-align:center; font-family:var(--font-display); font-size:2rem; line-height:1.1; }
+.news-login-note{ margin:0 0 24px; color:var(--text-muted); font-size:1rem; line-height:1.6; }
+.news-login-box .chat-text-input{ height:48px; margin:0 0 12px; border-radius:11px; font-size:1rem; }
+.news-login-box .buy-btn{ padding:15px 18px; border-radius:12px; background:linear-gradient(135deg,#29345B,#CA0F3E); font-size:1rem; }
+.news-login-box .close-modal{ margin-top:20px; }
+@media (max-width:560px){ .news-login-box{ padding:30px 24px 26px; } .news-login-box h3{ font-size:1.7rem; } }
 .field-label{ color:var(--text-muted); font-size:.8rem; display:block; margin-bottom:4px; }
 
 .storage-status{ display:flex; align-items:center; gap:10px; font-size:.82rem; background:rgba(255,255,255,.04); border:1px solid var(--border-glass); border-radius:10px; padding:9px 13px; margin-bottom:12px; }
@@ -224,12 +231,12 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 </div>
 
 <div class="modal-overlay" id="newsAdminLoginModal">
-    <div class="modal-box" style="max-width:400px;">
-        <h3 style="font-family:var(--font-display); margin-top:0;">Вход для администратора</h3>
-        <p style="color:var(--text-muted); margin-bottom:10px;">Введите пароль редактора новостей</p>
-        <input type="password" id="newsAdminPassInput" class="chat-text-input" autocomplete="current-password">
+    <div class="modal-box chrome-glass news-login-box">
+        <h3>Pro режим</h3>
+        <p class="news-login-note">Введите пароль Pro-режима. Он проверяется сервером и не хранится в коде сайта.</p>
+        <input type="password" id="newsAdminPassInput" class="chat-text-input" autocomplete="current-password" placeholder="Пароль">
         <div id="newsAdminLoginError" style="display:none; color:var(--ranepa-red); font-weight:700; margin-bottom:14px;"></div>
-        <button class="buy-btn" id="loginSubmitBtn">Войти</button>
+        <button class="buy-btn" id="loginSubmitBtn">Войти в Pro режим</button>
         <div class="close-modal" id="loginCancelBtn">Отмена</div>
     </div>
 </div>
