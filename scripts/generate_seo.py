@@ -65,9 +65,14 @@ def render(path):
         title, description = PAGES[path]
         head = re.sub(r'(<title\b[^>]*>).*?(</title>)', lambda m: m[1] + html.escape(title) + m[2], head, flags=re.S)
         block = metadata(path, title, description)
-    # Put tags before the first script/style, inside head and early in the response.
-    match = re.search(r'<(?:script|style)\b', head)
-    offset = match.start() if match else len(head)
+    # Shared theme bootstrap is intentionally first to avoid a light/dark flash.
+    # Keep generated SEO immediately after it; otherwise preserve legacy placement.
+    theme = re.search(r'<script\s+src=["\'][^"\']*theme\.js[^"\']*["\'][^>]*></script>', head, flags=re.I)
+    if theme:
+        offset = theme.end()
+    else:
+        match = re.search(r'<(?:script|style)\b', head)
+        offset = match.start() if match else len(head)
     return head[:offset] + block + '\n' + head[offset:] + '</head>' + rest
 
 
