@@ -1,0 +1,74 @@
+name: Payment page integrity
+
+on:
+  push:
+    paths:
+      - "pay/index.html"
+      - ".github/workflows/payment-page-integrity.yml"
+  pull_request:
+    paths:
+      - "pay/index.html"
+      - ".github/workflows/payment-page-integrity.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-payment-page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify approved bank destinations and hardening
+        shell: python
+        run: |
+          from pathlib import Path
+          import re, sys
+
+          p = Path("pay/index.html")
+          if not p.exists():
+              raise SystemExit("pay/index.html is missing")
+          html = p.read_text(encoding="utf-8")
+
+          required = [
+              "https://web.alfabank.ru/multistepui/",
+              "https://sberbank.com/sms/shpa/",
+              "https://www.tbank.ru/payments/provider-zapadnyyfilialranx/",
+              "https://online.vtb.ru/payments/universal",
+          ]
+          for url in required:
+              if url not in html:
+                  raise SystemExit(f"Required bank destination missing: {url}")
+
+          hrefs = re.findall(r'href="(https?://[^"]+)"', html)
+          allowed_hosts = {
+              "web.alfabank.ru",
+              "sberbank.com",
+              "www.tbank.ru",
+              "online.vtb.ru",
+          }
+          from urllib.parse import urlparse
+          bad = sorted({urlparse(u.replace("&amp;","&")).hostname for u in hrefs
+                        if urlparse(u.replace("&amp;","&")).hostname not in allowed_hosts
+                        and not u.startswith("https://ranepa-dpo39.ru/")})
+          if bad:
+              raise SystemExit("Unexpected external payment destination(s): " + ", ".join(bad))
+
+          forbidden = ["<script", "<iframe", "<form", "javascript:", "http://"]
+          for token in forbidden:
+              if token.lower() in html.lower():
+                  raise SystemExit(f"Forbidden construct found: {token}")
+
+          required_security = [
+              "Content-Security-Policy",
+              "default-src 'none'",
+              "form-action 'none'",
+              "script-src 'none'",
+              'rel="noopener noreferrer nofollow"',
+          ]
+          for token in required_security:
+              if token not in html:
+                  raise SystemExit(f"Security control missing: {token}")
+
+          print("Payment page integrity checks passed.")
