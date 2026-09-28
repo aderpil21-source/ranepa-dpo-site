@@ -166,12 +166,15 @@ jobs:
 
           rm -f "$tmp_file"
 
+      - name: Refresh SEO sitemap
+        run: python3 scripts/generate_seo.py
+
       - name: Commit only changed snapshots
         shell: bash
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- portal-data.json schedule-data.json owl-files.json portal-snapshot.js; then
+          if git diff --quiet -- portal-data.json schedule-data.json owl-files.json portal-snapshot.js sitemap.xml; then
             echo "Public portal snapshots are already up to date"
             exit 0
           fi
@@ -179,6 +182,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add portal-data.json schedule-data.json owl-files.json portal-snapshot.js
+          git add portal-data.json schedule-data.json owl-files.json portal-snapshot.js sitemap.xml
           git commit -m "data: refresh public portal snapshots"
           git push

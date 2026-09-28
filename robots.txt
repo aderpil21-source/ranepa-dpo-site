@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /*?*
 Disallow: /admin/
 Disallow: /private/
 Sitemap: https://ranepa-dpo39.ru/sitemap.xml
