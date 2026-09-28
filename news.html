@@ -121,12 +121,35 @@ header{ background:var(--header-bg); backdrop-filter:blur(25px);
 .buy-btn{ width:100%; background:linear-gradient(135deg,var(--ranepa-red),#e11d48); color:#fff; padding:18px; border-radius:14px; font-weight:900; cursor:pointer; border:none; font-family:var(--font-display); }
 .buy-btn[disabled]{ opacity:.5; cursor:not-allowed; }
 .close-modal{ margin-top:15px; cursor:pointer; color:var(--text-muted); text-decoration:underline; padding:10px; text-align:center; }
-.news-login-box{ max-width:460px; padding:38px 40px 34px; border-radius:30px; }
+.news-login-box{ max-width:460px; padding:38px 40px 34px; border-radius:30px; text-align:left; }
 .news-login-box h3{ margin:0 0 14px; text-align:center; font-family:var(--font-display); font-size:2rem; line-height:1.1; }
-.news-login-note{ margin:0 0 24px; color:var(--text-muted); font-size:1rem; line-height:1.6; }
-.news-login-box .chat-text-input{ height:48px; margin:0 0 12px; border-radius:11px; font-size:1rem; }
-.news-login-box .buy-btn{ padding:15px 18px; border-radius:12px; background:linear-gradient(135deg,#29345B,#CA0F3E); font-size:1rem; }
-.news-login-box .close-modal{ margin-top:20px; }
+.news-login-note{ margin:0 0 22px; color:var(--text-muted); font-size:.95rem; line-height:1.55; text-align:left; }
+#newsAdminPassInput{
+    display:block;
+    width:100%;
+    max-width:none;
+    min-width:0;
+    height:48px;
+    margin:0 0 12px;
+    padding:10px 14px;
+    box-sizing:border-box;
+    flex:none;
+    border-radius:11px;
+    font-size:1rem;
+}
+#loginSubmitBtn{
+    display:block;
+    width:100%;
+    max-width:none;
+    min-width:0;
+    margin:0;
+    padding:15px 18px;
+    box-sizing:border-box;
+    border-radius:12px;
+    background:linear-gradient(135deg,#29345B,#CA0F3E);
+    font-size:1rem;
+}
+.news-login-box .close-modal{ margin-top:20px; text-align:center; }
 @media (max-width:560px){ .news-login-box{ padding:30px 24px 26px; } .news-login-box h3{ font-size:1.7rem; } }
 .field-label{ color:var(--text-muted); font-size:.8rem; display:block; margin-bottom:4px; }
 
