@@ -143,12 +143,15 @@ jobs:
 
           rm -f "$tmp_file"
 
+      - name: Refresh SEO sitemap
+        run: python3 scripts/generate_seo.py
+
       - name: Commit only when public data changed
         shell: bash
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- news-data.json site-settings.json; then
+          if git diff --quiet -- news-data.json site-settings.json sitemap.xml; then
             echo "Public news and site settings are already up to date"
             exit 0
           fi
@@ -156,6 +159,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add news-data.json site-settings.json
+          git add news-data.json site-settings.json sitemap.xml
           git commit -m "data: refresh public site snapshots"
           git push

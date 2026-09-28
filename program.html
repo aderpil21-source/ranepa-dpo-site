@@ -6,8 +6,24 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Программа ДПО | Западный филиал РАНХиГС</title>
-  <meta name="description" content="Подробная информация о программе дополнительного профессионального образования Западного филиала РАНХиГС.">
-  <style>
+  <!-- SEO: generated -->
+<meta name="description" content="Подробная информация о программе дополнительного профессионального образования Западного филиала РАНХиГС: содержание, формат, сроки и условия обучения.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Программа ДПО | Западный филиал РАНХиГС">
+<meta name="twitter:description" content="Подробная информация о программе дополнительного профессионального образования Западного филиала РАНХиГС: содержание, формат, сроки и условия обучения.">
+<meta name="twitter:image" content="https://ranepa-dpo39.ru/img/logo.png">
+<meta name="twitter:image:alt" content="Западный филиал РАНХиГС">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Западный филиал РАНХиГС">
+<meta property="og:title" content="Программа ДПО | Западный филиал РАНХиГС">
+<meta property="og:description" content="Подробная информация о программе дополнительного профессионального образования Западного филиала РАНХиГС: содержание, формат, сроки и условия обучения.">
+<meta property="og:image" content="https://ranepa-dpo39.ru/img/logo.png">
+<meta property="og:image:alt" content="Западный филиал РАНХиГС">
+<script src="./program-seo.js"></script>
+<!-- /SEO -->
+<style>
     :root {
       --bg:#07101f;
       --surface:#0d1729;
@@ -518,7 +534,7 @@ function render(){
   if(!program) return;
   const title=field('title')||(currentLang==='en'?'Program':(program.title_ru||program.title_en||program.id));
   const lead=field('desc');
-  document.title=title+' | RANEPA';
+  updateProgramSeo(program,currentLang,title,lead);
   document.getElementById('title').textContent=title;
   document.getElementById('lead').textContent=lead||(currentLang==='ru'?'Описание уточняется.':'Description is being prepared.');
   document.getElementById('typeBadge').textContent=localizedMeta('type');
@@ -556,6 +572,7 @@ async function init(){
   state.textContent=ui[currentLang].loading;
   render();
   if(!programId){
+    updateProgramSeo(null,currentLang);
     state.className='error';
     state.replaceChildren();
     const h=document.createElement('h1');
@@ -573,6 +590,7 @@ async function init(){
   siteContentOverrides=settings.content||{};
   if(program&&(siteVisibility.programs===false||siteVisibility['program:'+program.id]===false)) program=null;
   if(!program){
+    updateProgramSeo(null,currentLang);
     state.className='error';
     state.replaceChildren();
     const h=document.createElement('h1');
