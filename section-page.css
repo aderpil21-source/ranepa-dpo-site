@@ -17,7 +17,7 @@ a{color:inherit}
   min-height:104px;padding:15px 32px;background:rgba(5,8,14,.95);
   border-bottom:1px solid var(--border);backdrop-filter:blur(18px)
 }
-.page-logo img{height:72px;width:auto;max-width:265px;object-fit:contain}
+.page-logo img{height:94px;width:auto;max-width:345px;object-fit:contain}
 .page-nav{margin-left:auto;display:flex;align-items:center;gap:15px;flex-wrap:wrap;justify-content:flex-end}
 .page-nav a{
   text-decoration:none;color:#94A3B8;font:800 .76rem Montserrat,Arial,sans-serif;
@@ -83,7 +83,7 @@ a{color:inherit}
 @media(max-width:760px){
   .page-header{position:relative;align-items:flex-start;flex-direction:column;padding:15px 18px}
   .page-nav{margin-left:0;justify-content:flex-start}.page-main{padding:40px 16px 60px}
-  .lesson{grid-template-columns:1fr;gap:8px}.page-logo img{height:62px}
+  .lesson{grid-template-columns:1fr;gap:8px}.page-logo img{height:81px}
 }
 
 /* ===== Premium motion + liquid glass pass ===== */
