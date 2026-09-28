@@ -44,9 +44,8 @@ function renderPrograms() {
 
 async function initPrograms() {
   const grid = document.getElementById('programGrid');
-  grid.innerHTML = '<div class="empty">Загрузка программ…</div>';
   try {
-    const res = await fetch('./program-data.json?v='+Date.now(), {cache:'no-store'});
+    const res = await fetch('./program-data.json', { cache:'force-cache' });
     if (!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     programsCache = Array.isArray(data.programs) ? data.programs : [];
@@ -58,8 +57,8 @@ async function initPrograms() {
       o.value = t; o.textContent = t; select.appendChild(o);
     });
 
-    document.getElementById('programSearch').addEventListener('input', renderPrograms);
-    select.addEventListener('change', renderPrograms);
+    document.getElementById('programSearch').oninput = renderPrograms;
+    select.onchange = renderPrograms;
     renderPrograms();
   } catch (e) {
     console.error(e);
