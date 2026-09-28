@@ -26,7 +26,11 @@
   <title>Слушателям: обучение и документы | РАНХиГС Калининград</title>
     <link rel="icon" type="image/png" href="./assets/ranepa-crest-favicon.png?v=1">
 <link rel="stylesheet" href="./audience.css?v=6"><style>:root{--payment-qr:url("./assets/payment-qr.png")}</style>
-</head>
+<style>
+.audience-theme-toggle{flex:0 0 auto;width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:var(--text);font-size:20px;cursor:pointer}
+html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
+@media(max-width:900px){.audience-theme-toggle{position:absolute;right:18px;top:18px}}
+</style></head>
 <body>
   <header class="audience-header">
     <a class="audience-logo" href="index.html"><img src="./img/logo.png" alt="Президентская академия"></a>
@@ -39,6 +43,7 @@
       <a href="faq.html">FAQ</a>
       <a href="contacts.html">Контакты</a>
     </nav>
+    <button class="audience-theme-toggle" type="button" aria-label="Переключить тему" title="Переключить тему">☀</button>
   </header>
   <main class="audience-main">
     <section class="audience-hero">
@@ -252,5 +257,13 @@
   </div>
 
   <script src="./students.js?v=5"></script>
+<script>
+(function(){
+ const b=document.querySelector('.audience-theme-toggle'); if(!b)return;
+ const sync=()=>{const d=document.documentElement.getAttribute('data-theme')!=='light';b.textContent=d?'☀':'☾';b.title=d?'Светлая тема':'Тёмная тема'};
+ b.addEventListener('click',()=>{const next=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',next);try{localStorage.setItem('ranepa-theme',next)}catch(e){}sync()});
+ sync();
+})();
+</script>
 </body>
 </html>
