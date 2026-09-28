@@ -112,10 +112,11 @@ function initDepthMotion() {
     root.querySelectorAll?.(selector).forEach((el, index) => {
       if (el.dataset.depthArmed === '1') return;
       el.dataset.depthArmed = '1';
-      el.classList.add('depth-item');
+      const dynamicProgramCard = !!el.closest('#programGrid');
+      if (!dynamicProgramCard) el.classList.add('depth-item');
       el.style.transitionDelay = reduceMotion ? '0ms' : Math.min((index % 6) * 45, 180) + 'ms';
 
-      if (reduceMotion || !observer) {
+      if (dynamicProgramCard || reduceMotion || !observer) {
         el.classList.add('in-view');
       } else {
         observer.observe(el);
