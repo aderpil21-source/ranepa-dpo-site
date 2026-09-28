@@ -61,6 +61,12 @@
         <a class="action secondary" href="faq.html">Открыть FAQ</a>
       </article>
       <article class="audience-card">
+        <div class="icon">🧾</div>
+        <h2>Реквизиты</h2>
+        <p>Платёжные и организационные реквизиты Центра дополнительного образования.</p>
+        <button class="action secondary requisites-open" type="button">Открыть реквизиты</button>
+      </article>
+      <article class="audience-card">
         <div class="icon">☎️</div>
         <h2>Контакты и помощь</h2>
         <p>Связь с Центром дополнительного образования и быстрые контакты.</p>
@@ -69,6 +75,18 @@
     </section>
   </main>
 
-  <script src="./students.js?v=3"></script>
+  <div class="requisites-modal" id="requisitesModal" aria-hidden="true">
+    <div class="requisites-dialog" role="dialog" aria-modal="true" aria-labelledby="requisitesTitle">
+      <div class="requisites-head">
+        <h2 id="requisitesTitle">Реквизиты</h2>
+        <button class="requisites-close" type="button" aria-label="Закрыть">×</button>
+      </div>
+      <div class="requisites-body">
+        <p>Содержимое раздела будет добавлено позже.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="./students.js?v=4"></script>
 </body>
 </html>

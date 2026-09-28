@@ -84,4 +84,33 @@ async function lookupStudentMaterial(event) {
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('materialLookupForm');
   if (form) form.addEventListener('submit', lookupStudentMaterial);
+
+  const modal = document.getElementById('requisitesModal');
+  const openBtn = document.querySelector('.requisites-open');
+  const closeBtn = modal?.querySelector('.requisites-close');
+
+  const openRequisites = () => {
+    if (!modal) return;
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('requisites-opened');
+    closeBtn?.focus();
+  };
+
+  const closeRequisites = () => {
+    if (!modal) return;
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('requisites-opened');
+    openBtn?.focus();
+  };
+
+  openBtn?.addEventListener('click', openRequisites);
+  closeBtn?.addEventListener('click', closeRequisites);
+  modal?.addEventListener('click', event => {
+    if (event.target === modal) closeRequisites();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && modal?.classList.contains('active')) closeRequisites();
+  });
 });
