@@ -1042,14 +1042,29 @@ async function fetchNews(){
         stopPublicNewsPolling();
         try {
             let data;
+            let useLegacyNewsRead = false;
             try {
                 data = await requestJson(CONFIG.api, {
                     method:'POST',
                     headers:{ 'Content-Type':'application/json' },
                     body: JSON.stringify({ action:'newsReadAdmin', token:adminToken })
                 });
-                if (!data || data.error === 'unknown_action') throw new Error('NEWS_READ_ADMIN_UNAVAILABLE');
+
+                if (data && (data.code === 'SESSION_EXPIRED' || data.error === 'unauthorized')) {
+                    adminToken = null;
+                    sessionStorage.removeItem('newsAdminToken');
+                    $('newsAdminBar').style.display = 'none';
+                    $('newsAdminBar').hidden = true;
+                    throw Object.assign(new Error('Сессия редактора истекла'), { code:'SESSION_EXPIRED' });
+                }
+
+                useLegacyNewsRead = !data || data.error === 'unknown_action';
             } catch(postError) {
+                if (postError && postError.code === 'SESSION_EXPIRED') throw postError;
+                useLegacyNewsRead = true;
+            }
+
+            if (useLegacyNewsRead) {
                 // Временная совместимость со старым Apps Script deployment.
                 // После выкладки newsReadAdmin этот GET-fallback можно удалить.
                 const legacyUrl = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
