@@ -72,6 +72,33 @@ a{color:inherit}
 .audience-card .action.secondary{
   background:rgba(255,255,255,.055);border:1px solid var(--border);box-shadow:none
 }
+
+.payment-card{
+  grid-column:1/-1;min-height:270px;display:grid;grid-template-columns:minmax(0,1fr) 210px;
+  gap:30px;align-items:center;background:
+  radial-gradient(circle at 88% 15%,rgba(202,15,62,.14),transparent 20rem),
+  linear-gradient(135deg,rgba(20,29,44,.94),rgba(12,19,31,.88));
+}
+.payment-card-copy{min-width:0}
+.payment-card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+.payment-card-actions .action{margin-top:0;border:0;cursor:pointer;font:800 .86rem Manrope,Arial,sans-serif}
+.payment-page-link{
+  display:inline-block;margin-top:15px;color:#dfe7f4;font-size:.82rem;font-weight:800;
+  text-decoration:none;border-bottom:1px solid rgba(255,255,255,.24);overflow-wrap:anywhere
+}
+.payment-page-link:hover{color:#fff;border-color:var(--ranepa-red)}
+.payment-card-qr{
+  display:flex;flex-direction:column;gap:10px;align-items:center;text-decoration:none;color:#fff;
+  padding:14px;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,.045);
+  transition:.2s ease
+}
+.payment-card-qr:hover{transform:translateY(-3px);border-color:rgba(202,15,62,.5);background:rgba(202,15,62,.07)}
+.payment-card-qr>span:last-child{font:800 .76rem Montserrat,Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em;text-align:center}
+.payment-qr-art{
+  display:block;width:172px;max-width:100%;aspect-ratio:1;border-radius:14px;
+  background:#fff var(--payment-qr) center/cover no-repeat;
+  box-shadow:0 12px 28px rgba(0,0,0,.28)
+}
 .audience-note{
   margin-top:28px;padding:18px 20px;border-radius:16px;
   border:1px solid var(--border);background:rgba(255,255,255,.035);
@@ -81,11 +108,15 @@ a{color:inherit}
   .audience-header{align-items:flex-start;flex-direction:column;padding:16px 20px}
   .audience-logo{min-width:0}.audience-nav{margin-left:0;justify-content:flex-start}
   .audience-main{padding-top:48px}.audience-grid{grid-template-columns:1fr}
+  .payment-card{grid-template-columns:minmax(0,1fr) 190px}
+  .payment-qr-art{width:150px}
 }
 @media(max-width:560px){
   .audience-header{position:relative}.audience-nav{gap:12px}
   .audience-nav a{font-size:.7rem}.audience-main{padding:38px 16px 60px}
   .audience-card{padding:22px}.audience-logo img{height:108px;max-width:389px}
+  .payment-card{grid-template-columns:1fr;gap:20px}.payment-card-qr{max-width:220px;width:100%;justify-self:center}
+  .payment-card-actions{flex-direction:column;align-items:stretch}.payment-card-actions .action{text-align:center}
 }
 .material-card{grid-column:1/-1;min-height:unset}
 .material-lookup{display:flex;gap:12px;flex-wrap:wrap;width:100%;margin-top:2px}
@@ -182,6 +213,26 @@ body.requisites-opened{overflow:hidden}
   padding:20px;border:1px solid var(--border);border-radius:18px;margin-bottom:18px;
   background:linear-gradient(135deg,rgba(202,15,62,.12),rgba(41,52,91,.11))
 }
+
+.payment-online-card{
+  display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:24px;align-items:center;
+  padding:20px;border:1px solid rgba(202,15,62,.3);border-radius:18px;margin-bottom:18px;
+  background:linear-gradient(135deg,rgba(202,15,62,.11),rgba(41,52,91,.16))
+}
+.payment-online-copy h3{font:850 1.12rem/1.35 Montserrat,Arial,sans-serif;margin:8px 0 8px;color:var(--text)}
+.payment-online-copy p{margin:0;color:var(--muted);line-height:1.62}
+.payment-online-link{
+  display:inline-block;margin-top:12px;color:#fff;font-weight:850;text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,.32);overflow-wrap:anywhere
+}
+.payment-online-link:hover{color:#ffd7e1;border-color:var(--ranepa-red)}
+.payment-online-qr{
+  display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;
+  border-radius:16px;background:rgba(5,8,14,.42);border:1px solid var(--border);
+  text-decoration:none;color:#fff;text-align:center
+}
+.payment-online-qr .payment-qr-art{width:164px}
+.payment-online-qr strong{font:800 .72rem Montserrat,Arial,sans-serif;text-transform:uppercase;letter-spacing:.045em}
 .payment-callout h3{font:850 1.05rem/1.35 Montserrat,Arial,sans-serif;margin:6px 0 9px;color:var(--text)}
 .payment-callout p{margin:5px 0;color:var(--muted);line-height:1.6}
 .payment-label{display:inline-flex;font:850 .7rem Montserrat,Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:#fff;background:var(--ranepa-red);border-radius:999px;padding:5px 9px}
@@ -230,6 +281,7 @@ blockquote{margin:10px 0;padding:13px 15px;border-left:3px solid var(--ranepa-re
 @media(max-width:680px){
   .requisites-modal{padding:0}.requisites-dialog{width:100%;height:100%;max-height:none;border:0;border-radius:0}
   .requisites-body{padding:18px}.payment-tools{top:-18px;padding:10px 0}
+  .payment-online-card{grid-template-columns:1fr}.payment-online-qr{max-width:220px;width:100%;justify-self:center}
   .copy-row{grid-template-columns:1fr auto}.copy-row>span{grid-column:1/-1}.copy-row>strong{min-width:0}
   .payment-section>summary{align-items:flex-start}.summary-hint{white-space:normal;text-align:right}
   .payment-steps>li{padding:15px 14px 15px 50px}.payment-callout{flex-direction:column}
