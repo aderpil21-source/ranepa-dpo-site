@@ -6,6 +6,20 @@ function escapeHtml(value) {
   }[ch]));
 }
 
+async function refreshProgramsInBackground(){
+  try {
+    const bucket = Math.floor(Date.now() / PROGRAM_REFRESH_MS);
+    const res = await fetch('./program-list.json?v=' + bucket, { cache:'default' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const fresh = (data.programs || []).filter(p => p && p.id && p.title_ru);
+    if (JSON.stringify(fresh) !== JSON.stringify(allPrograms)) {
+      allPrograms = fresh;
+      renderPrograms();
+    }
+  } catch (_) {}
+}
+
 function renderPrograms() {
   const q = document.getElementById('programSearch').value.trim().toLowerCase();
   const type = document.getElementById('programType').value;
@@ -45,7 +59,8 @@ function renderPrograms() {
 async function initPrograms() {
   const grid = document.getElementById('programGrid');
   try {
-    const res = await fetch('./program-list.json', { cache:'force-cache' });
+    const bucket = Math.floor(Date.now() / PROGRAM_REFRESH_MS);
+    const res = await fetch('./program-list.json?v=' + bucket, { cache:'default' });
     if (!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     programsCache = Array.isArray(data.programs) ? data.programs : [];
@@ -60,6 +75,8 @@ async function initPrograms() {
     document.getElementById('programSearch').oninput = renderPrograms;
     select.onchange = renderPrograms;
     renderPrograms();
+    clearInterval(programRefreshTimer);
+    programRefreshTimer = setInterval(refreshProgramsInBackground, PROGRAM_REFRESH_MS);
   } catch (e) {
     console.error(e);
     grid.innerHTML = '<div class="empty">Не удалось загрузить каталог программ.</div>';
