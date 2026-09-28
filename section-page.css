@@ -1222,3 +1222,6 @@ body::after{
   animation:none !important;
   transition:none !important;
 }
+
+/* Programs must appear immediately after data arrives: no reveal delay. */
+#programGrid .card{animation:none !important;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease !important;}

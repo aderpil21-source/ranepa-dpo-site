@@ -45,7 +45,7 @@ function renderPrograms() {
 async function initPrograms() {
   const grid = document.getElementById('programGrid');
   try {
-    const res = await fetch('./program-data.json', { cache:'force-cache' });
+    const res = await fetch('./program-list.json', { cache:'force-cache' });
     if (!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
     programsCache = Array.isArray(data.programs) ? data.programs : [];
