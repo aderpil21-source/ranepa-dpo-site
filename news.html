@@ -1041,34 +1041,22 @@ async function fetchNews(){
     if (adminToken){
         stopPublicNewsPolling();
         try {
-            let data;
-            let useLegacyNewsRead = false;
+            const data = await requestJson(CONFIG.api, {
+                method:'POST',
+                headers:{ 'Content-Type':'application/json' },
+                body: JSON.stringify({ action:'newsReadAdmin', token:adminToken })
+            });
 
-            try {
-                data = await requestJson(CONFIG.api, {
-                    method:'POST',
-                    headers:{ 'Content-Type':'application/json' },
-                    body: JSON.stringify({ action:'newsReadAdmin', token:adminToken })
-                });
-
-                if (data && (data.code === 'SESSION_EXPIRED' || data.error === 'unauthorized')) {
-                    adminToken = null;
-                    sessionStorage.removeItem('newsAdminToken');
-                    $('newsAdminBar').style.display = 'none';
-                    $('newsAdminBar').hidden = true;
-                    throw Object.assign(new Error('Сессия редактора истекла'), { code:'SESSION_EXPIRED' });
-                }
-
-                useLegacyNewsRead = !data || data.error === 'unknown_action';
-            } catch(postError) {
-                if (postError && postError.code === 'SESSION_EXPIRED') throw postError;
-                useLegacyNewsRead = true;
+            if (data && (data.code === 'SESSION_EXPIRED' || data.error === 'unauthorized')) {
+                adminToken = null;
+                sessionStorage.removeItem('newsAdminToken');
+                $('newsAdminBar').style.display = 'none';
+                $('newsAdminBar').hidden = true;
+                throw Object.assign(new Error('Сессия редактора истекла'), { code:'SESSION_EXPIRED' });
             }
 
-            if (useLegacyNewsRead) {
-                // Временный fallback, пока новое Apps Script deployment не подтверждено.
-                const legacyUrl = CONFIG.api + '?type=news&admin=1&token=' + encodeURIComponent(adminToken);
-                data = await requestJson(legacyUrl, { method:'GET' });
+            if (!data || data.error === 'unknown_action') {
+                throw new Error('Сервер не поддерживает безопасное чтение новостей');
             }
             newsItems = (data.items || []).filter(n => !isSystemNewsItem(n));
             cacheNews(newsItems);
