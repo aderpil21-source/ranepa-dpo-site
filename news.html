@@ -1139,7 +1139,7 @@ async function fetchNews(){
         // В этом случае сразу принудительно запрашиваем свежий публичный список.
         const requestedHash = location.hash.replace('#','').replace('news=','');
         const hashMissing = requestedHash && !newsItems.find(n => n.id === requestedHash);
-        refreshPublicNewsSnapshot({ silent:true, force: !!hashMissing, openHash:true });
+        if (hashMissing) refreshPublicNewsSnapshot({ silent:true, force:true, openHash:true });
         startPublicNewsPolling();
         return;
     }
@@ -1698,9 +1698,15 @@ async function deleteNews(id){
    ============================================================================ */
 document.addEventListener('DOMContentLoaded', async () => {
     const editorRequested = new URLSearchParams(window.location.search).get('editor') === '1';
-    publicNewsPageEnabled = editorRequested || adminToken ? true : await loadPublicNewsPageEnabled();
-    if (publicNewsPageEnabled || editorRequested || adminToken) fetchNews();
-    else renderNewsPageDisabled();
+    // Render immediately from local cache/snapshot; never block first paint on Apps Script.
+    publicNewsPageEnabled = true;
+    fetchNews();
+    if (!editorRequested && !adminToken) {
+        loadPublicNewsPageEnabled().then(enabled => {
+            publicNewsPageEnabled = enabled;
+            if (!enabled) renderNewsPageDisabled();
+        }).catch(() => {});
+    }
     renderPendingNote();
 
     document.addEventListener('visibilitychange', () => {
