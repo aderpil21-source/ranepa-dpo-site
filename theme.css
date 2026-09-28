@@ -15,3 +15,14 @@ html[data-theme="light"] .page-kicker,html[data-theme="light"] .audience-kicker,
 html[data-theme="light"] .payment-page-link{color:#243044}
 html[data-theme="light"] .payment-card-qr{color:#111827;background:rgba(255,255,255,.75)}
 @media(max-width:600px){.site-theme-toggle{right:12px;bottom:12px;width:44px;height:44px}}
+
+/* Theme corrections: listener area and home schedule */
+html[data-theme="light"] .audience-header{background:rgba(255,255,255,.94)!important}
+html[data-theme="light"] .audience-footer{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(244,247,251,.99))!important}
+html[data-theme="light"] .audience-footer-brand strong,html[data-theme="light"] .audience-footer-links a{color:#111827!important}
+html[data-theme="light"] .payment-card,html[data-theme="light"] .requisites-dialog{background:linear-gradient(180deg,#fff,#f7f9fc)!important}
+html[data-theme="light"] .material-lookup input{background:#fff!important;color:#111827!important}
+html[data-theme="light"] .schedule-overlay{background:radial-gradient(circle at 8% 10%,rgba(202,15,62,.08),transparent 28%),radial-gradient(circle at 88% 18%,rgba(56,189,248,.08),transparent 28%),linear-gradient(180deg,#f8fafc 0%,#f4f7fb 55%,#eef2f7 100%)!important}
+html[data-theme="light"] .schedule-header{background:linear-gradient(to bottom,rgba(248,250,252,.97) 76%,rgba(248,250,252,0))!important}
+html[data-theme="light"] .schedule-months,html[data-theme="light"] .timeline-card{background:rgba(255,255,255,.82)!important;border-color:rgba(15,23,42,.12)!important}
+html[data-theme="light"] .close-sch-btn{background:rgba(15,23,42,.05)!important;border-color:rgba(15,23,42,.12)!important;color:#111827!important}
