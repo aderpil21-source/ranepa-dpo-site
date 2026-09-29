@@ -724,7 +724,12 @@ function removeOwlThinking() {
     if (thinking) thinking.remove();
 }
 function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
-function setOptions(html) { chatOptions.innerHTML = html; }
+function setOptions(html) {
+    chatOptions.innerHTML = html;
+    if (typeof applySiteVisibility === 'function') {
+        requestAnimationFrame(() => applySiteVisibility());
+    }
+}
 
 const OWL_STATE_KEY = 'ranepa_owl_conversation_v1';
 let owlConversationState = {
