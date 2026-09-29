@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://ranepa-dpo39.ru/">
 <link rel="canonical" href="https://ranepa-dpo39.ru/">
 <!-- /SEO -->
-<script src="./theme.js?v=1"></script>
+<script src="./theme.js?v=2"></script>
    <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: https:; frame-src https:; child-src 'self' blob: https:; worker-src 'self' blob:; form-action 'self' https:; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -1782,25 +1782,25 @@
 
         <h2 class="section-header" data-i18n="faqTitle">Часто задаваемые вопросы</h2>
         <div class="faq-container">
-            <details class="faq-item">
-                <summary data-i18n="faqQ1">Какие документы нужны для поступления?</summary>
-                <div class="faq-answer" data-i18n="faqA1">Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).</div>
+            <details class="faq-item" data-site-faq-static="1">
+                <summary data-i18n="faqQ1" data-site-edit-key="faq1_q">Какие документы нужны для поступления?</summary>
+                <div class="faq-answer" data-i18n="faqA1" data-site-edit-key="faq1_a">Для оформления договора потребуется копия паспорта, СНИЛС и документ о текущем образовании (диплом СПО или ВО).</div>
             </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ2">Как проходит обучение?</summary>
-                <div class="faq-answer" data-i18n="faqA2">Обучение проходит в очно-заочном формате с применением дистанционных технологий. Практические занятия проводятся на базе Академии.</div>
+            <details class="faq-item" data-site-faq-static="2">
+                <summary data-i18n="faqQ2" data-site-edit-key="faq2_q">Как проходит обучение?</summary>
+                <div class="faq-answer" data-i18n="faqA2" data-site-edit-key="faq2_a">Обучение проходит в очно-заочном формате с применением дистанционных технологий. Практические занятия проводятся на базе Академии.</div>
             </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ3">Выдается ли диплом государственного образца?</summary>
-                <div class="faq-answer" data-i18n="faqA3">Да, после успешной сдачи итоговой аттестации выдается диплом РАНХиГС о профессиональной переподготовке с правом ведения новой деятельности.</div>
+            <details class="faq-item" data-site-faq-static="3">
+                <summary data-i18n="faqQ3" data-site-edit-key="faq3_q">Выдается ли диплом государственного образца?</summary>
+                <div class="faq-answer" data-i18n="faqA3" data-site-edit-key="faq3_a">Да, после успешной сдачи итоговой аттестации выдается диплом РАНХиГС о профессиональной переподготовке с правом ведения новой деятельности.</div>
             </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ4">Можно ли совмещать обучение с работой?</summary>
-                <div class="faq-answer" data-i18n="faqA4">График занятий специально адаптирован для работающих специалистов. Лекции проходят в вечернее время или по выходным.</div>
+            <details class="faq-item" data-site-faq-static="4">
+                <summary data-i18n="faqQ4" data-site-edit-key="faq4_q">Можно ли совмещать обучение с работой?</summary>
+                <div class="faq-answer" data-i18n="faqA4" data-site-edit-key="faq4_a">График занятий специально адаптирован для работающих специалистов. Лекции проходят в вечернее время или по выходным.</div>
             </details>
-            <details class="faq-item">
-                <summary data-i18n="faqQ5">Как осуществляется доступ к учебным материалам?</summary>
-                <div class="faq-answer" data-i18n="faqA5">Все материалы доступны 24/7 на закрытой образовательной платформе РАНХиГС. Вы можете изучать их с любого устройства.</div>
+            <details class="faq-item" data-site-faq-static="5">
+                <summary data-i18n="faqQ5" data-site-edit-key="faq5_q">Как осуществляется доступ к учебным материалам?</summary>
+                <div class="faq-answer" data-i18n="faqA5" data-site-edit-key="faq5_a">Все материалы доступны 24/7 на закрытой образовательной платформе РАНХиГС. Вы можете изучать их с любого устройства.</div>
             </details>
         </div>
 
@@ -2379,8 +2379,11 @@
     const SITE_REDO_STACK_KEY = 'ranepa_site_redo_stack_v1';
     let siteVisibility = {};
     let siteContentOverrides = {};
+    let siteAttributeOverrides = {};
     let siteCustomPrograms = [];
     let siteCustomContacts = [];
+    let siteCustomFaqs = [];
+    let siteThemeConfig = {};
     let siteSettingsItem = null;
     let siteVersionHistory = [];
     let siteCurrentVersionId = null;
@@ -2408,6 +2411,11 @@
         { key:'programs', label:'Каталог программ целиком', group:'Главная страница', selector:'#programsSection' },
         { key:'filters', label:'Фильтры программ', group:'Главная страница', selector:'#filtersBar' },
         { key:'faq', label:'Часто задаваемые вопросы', group:'Главная страница', selector:'[data-i18n="faqTitle"], .faq-container' },
+        { key:'faq_static_1', label:'FAQ: Какие документы нужны для поступления?', group:'FAQ: отдельные вопросы', selector:'[data-site-faq-static="1"]' },
+        { key:'faq_static_2', label:'FAQ: Как проходит обучение?', group:'FAQ: отдельные вопросы', selector:'[data-site-faq-static="2"]' },
+        { key:'faq_static_3', label:'FAQ: Диплом государственного образца', group:'FAQ: отдельные вопросы', selector:'[data-site-faq-static="3"]' },
+        { key:'faq_static_4', label:'FAQ: Совмещение обучения с работой', group:'FAQ: отдельные вопросы', selector:'[data-site-faq-static="4"]' },
+        { key:'faq_static_5', label:'FAQ: Доступ к учебным материалам', group:'FAQ: отдельные вопросы', selector:'[data-site-faq-static="5"]' },
         { key:'documents', label:'Образцы документов об образовании', group:'Главная страница', selector:'.documents-section' },
         { key:'contacts', label:'Контакты и нижняя часть сайта', group:'Главная страница', selector:'#contactsSection' },
         { key:'owl', label:'Сова / цифровой ассистент', group:'Интерактив', selector:'#owlContainer' },
@@ -2442,8 +2450,11 @@
                 version: Number(parsed.version || 1),
                 visibility: parsed.visibility && typeof parsed.visibility === 'object' ? parsed.visibility : {},
                 content: parsed.content && typeof parsed.content === 'object' ? parsed.content : {},
+                attributes: parsed.attributes && typeof parsed.attributes === 'object' ? parsed.attributes : {},
                 customPrograms: Array.isArray(parsed.customPrograms) ? parsed.customPrograms : [],
                 customContacts: Array.isArray(parsed.customContacts) ? parsed.customContacts : [],
+                customFaqs: Array.isArray(parsed.customFaqs) ? parsed.customFaqs : [],
+                theme: parsed.theme && typeof parsed.theme === 'object' ? parsed.theme : {},
                 currentVersionId: parsed.currentVersionId || null,
                 updatedAt: parsed.updatedAt || ''
             };
@@ -2471,8 +2482,11 @@
         return {
             visibility: JSON.parse(JSON.stringify(siteVisibility || {})),
             content: JSON.parse(JSON.stringify(siteContentOverrides || {})),
+            attributes: JSON.parse(JSON.stringify(siteAttributeOverrides || {})),
             customPrograms: JSON.parse(JSON.stringify(siteCustomPrograms || [])),
-            customContacts: JSON.parse(JSON.stringify(siteCustomContacts || []))
+            customContacts: JSON.parse(JSON.stringify(siteCustomContacts || [])),
+            customFaqs: JSON.parse(JSON.stringify(siteCustomFaqs || [])),
+            theme: JSON.parse(JSON.stringify(siteThemeConfig || {}))
         };
     }
 
@@ -2498,8 +2512,11 @@
                 snapshot: {
                     visibility: data.snapshot.visibility && typeof data.snapshot.visibility === 'object' ? data.snapshot.visibility : {},
                     content: data.snapshot.content && typeof data.snapshot.content === 'object' ? data.snapshot.content : {},
+                    attributes: data.snapshot.attributes && typeof data.snapshot.attributes === 'object' ? data.snapshot.attributes : {},
                     customPrograms: Array.isArray(data.snapshot.customPrograms) ? data.snapshot.customPrograms : [],
-                    customContacts: Array.isArray(data.snapshot.customContacts) ? data.snapshot.customContacts : []
+                    customContacts: Array.isArray(data.snapshot.customContacts) ? data.snapshot.customContacts : [],
+                    customFaqs: Array.isArray(data.snapshot.customFaqs) ? data.snapshot.customFaqs : [],
+                    theme: data.snapshot.theme && typeof data.snapshot.theme === 'object' ? data.snapshot.theme : {}
                 }
             };
         } catch (e) {
@@ -2630,14 +2647,20 @@
         if (!snapshot || typeof snapshot !== 'object') return;
         siteVisibility = JSON.parse(JSON.stringify(snapshot.visibility || {}));
         siteContentOverrides = JSON.parse(JSON.stringify(snapshot.content || {}));
+        siteAttributeOverrides = JSON.parse(JSON.stringify(snapshot.attributes || {}));
         siteCustomPrograms = JSON.parse(JSON.stringify(snapshot.customPrograms || []));
         siteCustomContacts = JSON.parse(JSON.stringify(snapshot.customContacts || []));
+        siteCustomFaqs = JSON.parse(JSON.stringify(snapshot.customFaqs || []));
+        siteThemeConfig = JSON.parse(JSON.stringify(snapshot.theme || {}));
         cacheSiteSettings({
-            version:4,
+            version:5,
             visibility:siteVisibility,
             content:siteContentOverrides,
+            attributes:siteAttributeOverrides,
             customPrograms:siteCustomPrograms,
             customContacts:siteCustomContacts,
+            customFaqs:siteCustomFaqs,
+            theme:siteThemeConfig,
             currentVersionId:siteCurrentVersionId,
             updatedAt:new Date().toISOString()
         });
@@ -2697,8 +2720,11 @@
         if (!cached || typeof cached !== 'object') return false;
         if (cached.visibility && typeof cached.visibility === 'object') siteVisibility = cached.visibility;
         if (cached.content && typeof cached.content === 'object') siteContentOverrides = cached.content;
+        if (cached.attributes && typeof cached.attributes === 'object') siteAttributeOverrides = cached.attributes;
         if (Array.isArray(cached.customPrograms)) siteCustomPrograms = cached.customPrograms;
         if (Array.isArray(cached.customContacts)) siteCustomContacts = cached.customContacts;
+        if (Array.isArray(cached.customFaqs)) siteCustomFaqs = cached.customFaqs;
+        if (cached.theme && typeof cached.theme === 'object') siteThemeConfig = cached.theme;
         if (cached.currentVersionId) siteCurrentVersionId = cached.currentVersionId;
         return true;
     }
@@ -2885,6 +2911,7 @@
     function isSiteEditableElement(el) {
         if (!el || el.nodeType !== 1) return false;
         if (el.closest('#siteAdminPanel, #siteAdminLoginModal, #siteAdminReopen')) return false;
+        if (el.closest('#enrollModal, #leavingSiteModal, .consent-block, [data-payment-protected]')) return false;
         if (el.closest('script,style,noscript')) return false;
         if (el.matches('input,textarea,select,option,img,svg,path,iframe,video,audio')) return false;
         if (!siteEditKeyForElement(el)) return false;
@@ -2960,7 +2987,18 @@
         }
         if (!confirm('Удалить все текстовые правки Pro-режима и вернуть тексты из основной базы/кода?')) return;
         siteContentOverrides = {};
-        cacheSiteSettings({ version:2, visibility:siteVisibility, content:siteContentOverrides, updatedAt:new Date().toISOString() });
+        cacheSiteSettings({
+            version:5,
+            visibility:siteVisibility,
+            content:siteContentOverrides,
+            attributes:siteAttributeOverrides,
+            customPrograms:siteCustomPrograms,
+            customContacts:siteCustomContacts,
+            customFaqs:siteCustomFaqs,
+            theme:siteThemeConfig,
+            currentVersionId:siteCurrentVersionId||null,
+            updatedAt:new Date().toISOString()
+        });
         scheduleSiteSettingsSave('Сброс текстовых правок');
         siteAdminSetStatus('Правки сброшены. Перезагружаем исходные тексты…', 'ok');
         setTimeout(function () { location.reload(); }, 450);
@@ -3045,8 +3083,12 @@
                                 ? cachedSettings.visibility : siteVisibility;
                             siteContentOverrides = cachedSettings.content && typeof cachedSettings.content === 'object'
                                 ? cachedSettings.content : siteContentOverrides;
+                            siteAttributeOverrides = cachedSettings.attributes && typeof cachedSettings.attributes === 'object'
+                                ? cachedSettings.attributes : siteAttributeOverrides;
                             siteCustomPrograms = Array.isArray(cachedSettings.customPrograms) ? cachedSettings.customPrograms : siteCustomPrograms;
                             siteCustomContacts = Array.isArray(cachedSettings.customContacts) ? cachedSettings.customContacts : siteCustomContacts;
+                            siteCustomFaqs = Array.isArray(cachedSettings.customFaqs) ? cachedSettings.customFaqs : siteCustomFaqs;
+                            siteThemeConfig = cachedSettings.theme && typeof cachedSettings.theme === 'object' ? cachedSettings.theme : siteThemeConfig;
                             siteCurrentVersionId = cachedSettings.currentVersionId || siteCurrentVersionId || null;
                             cacheSiteSettings(cachedSettings);
                             applySiteVisibility();
@@ -3087,8 +3129,11 @@
             siteSettingsItem = item;
             siteVisibility = parsed.visibility || {};
             siteContentOverrides = parsed.content || {};
+            siteAttributeOverrides = parsed.attributes || {};
             siteCustomPrograms = parsed.customPrograms || [];
             siteCustomContacts = parsed.customContacts || [];
+            siteCustomFaqs = parsed.customFaqs || [];
+            siteThemeConfig = parsed.theme || {};
             siteCurrentVersionId = parsed.currentVersionId || siteCurrentVersionId || null;
             if (useAdmin) loadSiteVersionHistory(items);
             cacheSiteSettings(parsed);
@@ -3144,11 +3189,14 @@
             }
 
             const payload = {
-                version: 4,
+                version: 5,
                 visibility: siteVisibility,
                 content: siteContentOverrides,
+                attributes: siteAttributeOverrides,
                 customPrograms: siteCustomPrograms,
                 customContacts: siteCustomContacts,
+                customFaqs: siteCustomFaqs,
+                theme: siteThemeConfig,
                 currentVersionId: siteCurrentVersionId || null,
                 updatedAt: now
             };
@@ -5643,7 +5691,7 @@ if (legacyNewsHash.startsWith('#news=')) {
     }
 }
 </script>
-<script src="./site-admin-entities.js?v=2"></script>
+<script src="./site-admin-entities.js?v=3"></script>
 <script src="./owl-engine.js?v=20260927-4"></script>
 <script src="./portal-live-alert.js?v=20260927-1"></script>
 </html>

@@ -30,6 +30,13 @@
 .site-admin-owl-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 9px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(255,255,255,.025)}
 .site-admin-owl-row span{font-size:.7rem;line-height:1.25}
 .site-admin-owl-row input{width:16px;height:16px;accent-color:#ca0f3e;cursor:pointer}
+.site-admin-theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.site-admin-theme-field{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border:1px solid rgba(255,255,255,.07);border-radius:9px;background:rgba(255,255,255,.025)}
+.site-admin-theme-field span{font-size:.66rem;line-height:1.2;color:#cbd5e1}
+.site-admin-theme-field input[type=color]{width:38px;height:28px;padding:0;border:0;border-radius:7px;background:transparent;cursor:pointer}
+.site-admin-theme-reset{grid-column:1/-1;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#fff;border-radius:9px;padding:9px;font-size:.7rem;font-weight:850;cursor:pointer}
+body.site-admin-pick-mode{cursor:crosshair!important}
+body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!important;outline-offset:3px!important}
 .site-entity-modal{position:fixed;inset:0;z-index:30120;display:none;place-items:center;padding:18px;background:rgba(2,6,15,.78);backdrop-filter:blur(12px)}
 .site-entity-modal.active{display:grid}
 .site-entity-dialog{width:min(760px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(202,15,62,.45);border-radius:20px;background:#0b1220;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.6);padding:22px}
@@ -84,6 +91,151 @@
       null;
   }
   function findContact(id){ return (siteCustomContacts||[]).find(x=>x&&x.id===id)||null; }
+
+  const SITE_THEME_DEFAULTS={
+    accent:'#CA0F3E',burgundy:'#881337',blue:'#1E3A8A',
+    darkBg:'#05080E',darkCard:'#111827',darkText:'#F8FAFC',darkMuted:'#94A3B8',
+    lightBg:'#F1F5F9',lightCard:'#FFFFFF',lightText:'#0F172A',lightMuted:'#475569'
+  };
+
+  function colorValue(value,fallback){
+    const v=String(value||'').trim();
+    return /^#[0-9a-f]{6}$/i.test(v)?v.toUpperCase():fallback;
+  }
+  function hexRgba(hex,alpha){
+    const h=colorValue(hex,'#111827').slice(1);
+    const n=parseInt(h,16);
+    return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+alpha+')';
+  }
+  window.applySiteThemeConfig=function(){
+    const cfg=Object.assign({},SITE_THEME_DEFAULTS,siteThemeConfig||{});
+    const root=document.documentElement;
+    const light=root.getAttribute('data-theme')==='light';
+    root.style.setProperty('--ranepa-red',colorValue(cfg.accent,SITE_THEME_DEFAULTS.accent));
+    root.style.setProperty('--ranepa-burgundy',colorValue(cfg.burgundy,SITE_THEME_DEFAULTS.burgundy));
+    root.style.setProperty('--ranepa-rich-blue',colorValue(cfg.blue,SITE_THEME_DEFAULTS.blue));
+    root.style.setProperty('--bg-deep',colorValue(light?cfg.lightBg:cfg.darkBg,light?SITE_THEME_DEFAULTS.lightBg:SITE_THEME_DEFAULTS.darkBg));
+    root.style.setProperty('--text-main',colorValue(light?cfg.lightText:cfg.darkText,light?SITE_THEME_DEFAULTS.lightText:SITE_THEME_DEFAULTS.darkText));
+    root.style.setProperty('--text-muted',colorValue(light?cfg.lightMuted:cfg.darkMuted,light?SITE_THEME_DEFAULTS.lightMuted:SITE_THEME_DEFAULTS.darkMuted));
+    root.style.setProperty('--bg-card',hexRgba(light?cfg.lightCard:cfg.darkCard,light?.94:.62));
+    root.style.setProperty('--bg-glass',hexRgba(light?cfg.lightCard:cfg.darkCard,light?.92:.78));
+  };
+
+  function findFaq(id){ return (siteCustomFaqs||[]).find(x=>x&&x.id===id)||null; }
+  function renderSiteCustomFaqs(){
+    const target=document.querySelector('.faq-container');
+    if(!target) return;
+    target.querySelectorAll('.site-custom-faq').forEach(n=>n.remove());
+    (siteCustomFaqs||[]).forEach(f=>{
+      if(!f||!f.id||f.active===false) return;
+      const details=document.createElement('details');
+      details.className='faq-item site-custom-faq';
+      details.dataset.siteFaqId=f.id;
+      if(!siteKeyIsVisible('faq:'+f.id)) details.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');
+      details.innerHTML='<summary>'+esc(f.question||'Новый вопрос')+'</summary><div class="faq-answer">'+esc(f.answer||'')+'</div>';
+      target.appendChild(details);
+    });
+  }
+
+  window.openSiteFaqEditor=function(id){
+    if(!siteAdminMode) return openSiteAdminLogin();
+    entityType='faq'; entityId=id||'';
+    const f=id?findFaq(id):null;
+    const modal=ensureModal();
+    modal.querySelector('#siteEntityTitle').textContent=f?'Редактировать вопрос FAQ':'Добавить вопрос FAQ';
+    modal.querySelector('#siteEntityFields').innerHTML=
+      field('question','Вопрос',f&&f.question,'text',true)+
+      field('answer','Ответ',f&&f.answer,'textarea',true);
+    modal.classList.add('active');
+    modal.querySelector('input,textarea')?.focus();
+  };
+
+  window.deleteSiteCustomFaq=async function(id){
+    const item=findFaq(id); if(!item) return;
+    if(!confirm('Удалить вопрос «'+(item.question||id)+'»?')) return;
+    siteCustomFaqs=siteCustomFaqs.filter(x=>!x||x.id!==id);
+    delete siteVisibility['faq:'+id];
+    renderSiteCustomFaqs();
+    renderSiteAdminPanel();
+    await saveSiteSettings({recordVersion:true,reason:'Удалён FAQ: '+(item.question||id)});
+  };
+
+  window.resetSiteThemeConfig=async function(){
+    if(!siteAdminMode) return;
+    if(!confirm('Вернуть фирменные цвета темы по умолчанию?')) return;
+    siteThemeConfig={};
+    applySiteThemeConfig();
+    renderSiteAdminPanel();
+    await saveSiteSettings({recordVersion:true,reason:'Сброшены цвета темы'});
+  };
+
+  const themeObserver=new MutationObserver(()=>applySiteThemeConfig());
+  themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+
+  let siteElementPickMode=false;
+  let siteElementPickHover=null;
+
+  function protectedElement(el){
+    return !el || el.closest('#siteAdminPanel,#siteAdminLoginModal,#siteAdminReopen,#siteAdminEntityModal,#enrollModal,#leavingSiteModal,.consent-block,[data-payment-protected]');
+  }
+  function clearPickHover(){
+    if(siteElementPickHover) siteElementPickHover.classList.remove('site-admin-pick-target');
+    siteElementPickHover=null;
+  }
+  window.toggleSiteElementPicker=function(force){
+    if(!siteAdminMode) return openSiteAdminLogin();
+    siteElementPickMode=typeof force==='boolean'?force:!siteElementPickMode;
+    document.body.classList.toggle('site-admin-pick-mode',siteElementPickMode);
+    clearPickHover();
+    const b=document.getElementById('siteAdminPickerBtn');
+    if(b) b.classList.toggle('active',siteElementPickMode);
+    siteAdminSetStatus(siteElementPickMode?'Выберите элемент на странице':'Выбор элемента выключен','ok');
+  };
+  function elementRecordKey(el){
+    return siteCssPath(el);
+  }
+  function applySiteAttributeOverrides(){
+    Object.values(siteAttributeOverrides||{}).forEach(rec=>{
+      if(!rec||!rec.selector) return;
+      let el=null; try{el=document.querySelector(rec.selector);}catch(_){}
+      if(!el) return;
+      if(rec.href!=null && el.matches('a')) el.setAttribute('href',rec.href);
+      if(rec.src!=null && el.matches('img')) el.setAttribute('src',rec.src);
+      if(rec.alt!=null && el.matches('img')) el.setAttribute('alt',rec.alt);
+      if(rec.title!=null) el.setAttribute('title',rec.title);
+      el.classList.remove('site-admin-force-hidden','site-admin-preview-hidden');
+      if(rec.hidden===true) el.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');
+    });
+  }
+  window.openSiteElementEditor=function(el){
+    if(!siteAdminMode||!el||protectedElement(el)) return;
+    const selector=elementRecordKey(el); if(!selector) return;
+    entityType='element'; entityId=selector;
+    const prev=siteAttributeOverrides[selector]||{};
+    const modal=ensureModal();
+    modal.querySelector('#siteEntityTitle').textContent='Настроить элемент';
+    let html=field('title','Подсказка / title',prev.title??el.getAttribute('title')??'','text',true);
+    if(el.matches('a')) html+=field('href','Ссылка',prev.href??el.getAttribute('href')??'','text',true);
+    if(el.matches('img')){
+      html+=field('src','Путь к изображению',prev.src??el.getAttribute('src')??'','text',true);
+      html+=field('alt','Описание изображения',prev.alt??el.getAttribute('alt')??'','text',true);
+    }
+    html+=field('hidden','Видимость',prev.hidden===true?'yes':'no','select',false,[['no','Показывать'],['yes','Скрыть']]);
+    modal.querySelector('#siteEntityFields').innerHTML=html;
+    modal.classList.add('active');
+  };
+  document.addEventListener('mouseover',e=>{
+    if(!siteElementPickMode||protectedElement(e.target)) return;
+    clearPickHover(); siteElementPickHover=e.target; siteElementPickHover.classList.add('site-admin-pick-target');
+  },true);
+  document.addEventListener('click',e=>{
+    if(!siteElementPickMode||protectedElement(e.target)) return;
+    e.preventDefault(); e.stopPropagation();
+    const el=e.target.closest('a,img,button,[id],section,article,div')||e.target;
+    toggleSiteElementPicker(false);
+    openSiteElementEditor(el);
+  },true);
 
   window.openSiteProgramEditor=function(id){
     if(!siteAdminMode) return openSiteAdminLogin();
@@ -165,6 +317,28 @@
       renderSiteAdminPanel();
       await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменён':'Добавлен')+' контакт: '+record.name});
       siteAdminSetStatus('Контакт сохранён','ok');
+    } else if(entityType==='faq'){
+      if(!data.question){ siteAdminSetStatus('Укажите вопрос','err'); return; }
+      const id=entityId||makeId('custom-faq-');
+      const prev=findFaq(id)||{};
+      const record=Object.assign({},prev,data,{id,active:true,custom:true});
+      const idx=siteCustomFaqs.findIndex(x=>x&&x.id===id);
+      if(idx>=0) siteCustomFaqs[idx]=record; else siteCustomFaqs.push(record);
+      renderSiteCustomFaqs();
+      renderSiteAdminPanel();
+      await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменён':'Добавлен')+' FAQ: '+record.question});
+      siteAdminSetStatus('FAQ сохранён','ok');
+    } else if(entityType==='element'){
+      const selector=entityId;
+      const prev=siteAttributeOverrides[selector]||{};
+      const rec=Object.assign({},prev,{selector,title:data.title||'',hidden:data.hidden==='yes'});
+      if(Object.prototype.hasOwnProperty.call(data,'href')) rec.href=data.href;
+      if(Object.prototype.hasOwnProperty.call(data,'src')) rec.src=data.src;
+      if(Object.prototype.hasOwnProperty.call(data,'alt')) rec.alt=data.alt;
+      siteAttributeOverrides[selector]=rec;
+      applySiteAttributeOverrides();
+      await saveSiteSettings({recordVersion:true,reason:'Изменён элемент: '+selector});
+      siteAdminSetStatus('Элемент сохранён','ok');
     }
     closeSiteEntityEditor();
   }
@@ -216,14 +390,63 @@
       '<div class="site-admin-entity-actions"><button type="button" onclick="openSiteContactEditor(\''+esc(c.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomContact(\''+esc(c.id)+'\')">Удалить</button></div>';
     }).join('')||'<div class="site-admin-entity-empty">Добавленных вручную контактов пока нет.</div>';
 
-    return '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Сова: кнопки меню" open><summary>Сова: кнопки меню</summary><div class="site-admin-owl-grid">'+owlItems+'</div></details>'+
+    const faqs=(siteCustomFaqs||[]).map(f=>{
+      const key='faq:'+f.id;
+      return '<div class="site-admin-row"><span>'+esc(f.question||f.id)+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
+      '<div class="site-admin-entity-actions"><button type="button" onclick="openSiteFaqEditor(\''+esc(f.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomFaq(\''+esc(f.id)+'\')">Удалить</button></div>';
+    }).join('')||'<div class="site-admin-entity-empty">Добавленных вручную вопросов пока нет.</div>';
+
+    const cfg=Object.assign({},SITE_THEME_DEFAULTS,siteThemeConfig||{});
+    const themeDefs=[
+      ['accent','Акцент / бордовый'],['burgundy','Тёмный бордовый'],['blue','Фирменный синий'],
+      ['darkBg','Тёмная: фон'],['darkCard','Тёмная: карточки'],['darkText','Тёмная: текст'],['darkMuted','Тёмная: вторичный текст'],
+      ['lightBg','Светлая: фон'],['lightCard','Светлая: карточки'],['lightText','Светлая: текст'],['lightMuted','Светлая: вторичный текст']
+    ];
+    const themeHtml=themeDefs.map(d=>'<label class="site-admin-theme-field"><span>'+esc(d[1])+'</span><input type="color" data-site-theme-color="'+esc(d[0])+'" value="'+esc(colorValue(cfg[d[0]],SITE_THEME_DEFAULTS[d[0]]))+'"></label>').join('');
+
+    return '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Дизайн сайта" open><summary>🎨 Дизайн сайта</summary><div class="site-admin-theme-grid">'+themeHtml+'<button type="button" class="site-admin-theme-reset" onclick="resetSiteThemeConfig()">Вернуть фирменные цвета</button></div></details>'+
+      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Сова: кнопки меню" open><summary>Сова: кнопки меню</summary><div class="site-admin-owl-grid">'+owlItems+'</div></details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные программы"><summary>Программы — ручное управление ('+(siteCustomPrograms||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteProgramEditor()">＋ Добавить программу</button>'+programs+'</details>'+
-      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные контакты"><summary>Контакты — ручное управление ('+(siteCustomContacts||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteContactEditor()">＋ Добавить контакт</button>'+contacts+'</details>';
+      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные контакты"><summary>Контакты — ручное управление ('+(siteCustomContacts||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteContactEditor()">＋ Добавить контакт</button>'+contacts+'</details>'+
+      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="FAQ — ручное управление"><summary>FAQ — ручное управление ('+(siteCustomFaqs||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteFaqEditor()">＋ Добавить вопрос</button>'+faqs+'</details>';
+  }
+
+  const originalVisibilityTargets=siteVisibilityTargets;
+  siteVisibilityTargets=function(){
+    const out=originalVisibilityTargets();
+    (siteCustomFaqs||[]).forEach(f=>{
+      if(!f||!f.id) return;
+      out.push({
+        key:'faq:'+f.id,
+        label:f.question||f.id,
+        group:'FAQ: добавленные вопросы',
+        selector:'[data-site-faq-id="'+String(f.id).replace(/"/g,'\\\"')+'"]'
+      });
+    });
+    return out;
+  };
+
+  const originalApplySiteCustomContent=applySiteCustomContent;
+  applySiteCustomContent=function(){
+    originalApplySiteCustomContent();
+    renderSiteCustomFaqs();
+    applySiteThemeConfig();
+    applySiteAttributeOverrides();
+  };
+
+  function ensurePickerButton(){
+    const tools=document.querySelector('#siteAdminPanel .site-admin-tools');
+    if(!tools||document.getElementById('siteAdminPickerBtn')) return;
+    const btn=document.createElement('button');
+    btn.type='button'; btn.id='siteAdminPickerBtn'; btn.textContent='🧩 Выбрать элемент';
+    btn.onclick=()=>toggleSiteElementPicker();
+    tools.appendChild(btn);
   }
 
   const originalRender=renderSiteAdminPanel;
   renderSiteAdminPanel=function(){
     originalRender();
+    ensurePickerButton();
     const box=document.getElementById('siteAdminControls');
     if(!box) return;
     box.insertAdjacentHTML('beforeend',managerHtml());
@@ -232,7 +455,21 @@
         setSiteVisibility(input.dataset.siteEntityVisibility,input.checked);
       });
     });
+    box.querySelectorAll('input[data-site-theme-color]').forEach(input=>{
+      const key=input.dataset.siteThemeColor;
+      input.addEventListener('input',()=>{
+        siteThemeConfig=Object.assign({},siteThemeConfig||{},{[key]:input.value});
+        applySiteThemeConfig();
+      });
+      input.addEventListener('change',()=>{
+        scheduleSiteSettingsSave('Изменены цвета темы');
+      });
+    });
   };
 
   ensureStyles();
+  ensurePickerButton();
+  renderSiteCustomFaqs();
+  applySiteThemeConfig();
+  applySiteAttributeOverrides();
 })();

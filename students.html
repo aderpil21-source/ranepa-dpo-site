@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://ranepa-dpo39.ru/students.html">
 <link rel="canonical" href="https://ranepa-dpo39.ru/students.html">
 <!-- /SEO -->
-<script src="./theme.js?v=1"></script>
+<script src="./theme.js?v=2"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Слушателям: обучение и документы | РАНХиГС Калининград</title>
@@ -125,7 +125,7 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
     </div>
   </footer>
 
-  <div class="requisites-modal" id="requisitesModal" aria-hidden="true">
+  <div class="requisites-modal" id="requisitesModal" data-payment-protected aria-hidden="true">
     <div class="requisites-dialog" role="dialog" aria-modal="true" aria-labelledby="requisitesTitle">
       <div class="requisites-head">
         <h2 id="requisitesTitle">Реквизиты для оплаты</h2>
@@ -257,13 +257,6 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
   </div>
 
   <script src="./students.js?v=5"></script>
-<script>
-(function(){
- const b=document.querySelector('.audience-theme-toggle'); if(!b)return;
- const sync=()=>{const d=document.documentElement.getAttribute('data-theme')!=='light';b.textContent=d?'☀':'☾';b.title=d?'Светлая тема':'Тёмная тема'};
- b.addEventListener('click',()=>{const next=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',next);try{localStorage.setItem('ranepa-theme',next)}catch(e){}sync()});
- sync();
-})();
-</script>
+
 </body>
 </html>
