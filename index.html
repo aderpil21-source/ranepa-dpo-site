@@ -2143,6 +2143,8 @@
         <div class="site-admin-tools">
             <button type="button" id="siteAdminEditBtn" onclick="toggleSiteTextEditMode()">✏ Редактировать тексты</button>
             <button type="button" onclick="window.location.href='news.html?editor=1'">📰 Редактор новостей</button>
+            <button type="button" onclick="openSiteProgramEditor()">➕ Программа</button>
+            <button type="button" onclick="openSiteContactEditor()">➕ Контакт</button>
             <button type="button" onclick="openStudyPlanUpload()">📄 Учебные планы</button>
             <button type="button" onclick="resetSiteTextOverrides()">↶ Сбросить правки текста</button>
         </div>
@@ -2297,21 +2299,21 @@
         </div>
 
         <div class="chat-options" id="chatOptions">
-            <button class="chat-opt-btn" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
-            <button class="chat-opt-btn" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
+            <button class="chat-opt-btn" data-site-owl-control="test" onclick="startTest()" data-i18n="owlOpt1">🎯 Пройти тест на профориентацию</button>
+            <button class="chat-opt-btn" data-site-owl-control="catalog" onclick="showCatalog()" data-i18n="owlOpt2">📚 Кратко обо всех программах</button>
 
-            <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
+            <button class="chat-opt-btn" data-site-owl-control="news" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
                 📰 ${currentLang === 'ru' ? 'Новости центра' : 'Center news'}
             </button>
             
-            <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
+            <button class="chat-opt-btn" data-site-owl-control="schedule" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
                 📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
             </button>
 
-            <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+            <button class="chat-opt-btn" data-site-owl-control="contacts" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
             
             <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
-            <a href="ai-lecture.html" target="_blank" rel="noopener noreferrer" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+            <a href="ai-lecture.html" target="_blank" rel="noopener noreferrer" class="chat-opt-btn" data-site-owl-control="ai" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
                 🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
             </a>
         </div>
@@ -2377,6 +2379,8 @@
     const SITE_REDO_STACK_KEY = 'ranepa_site_redo_stack_v1';
     let siteVisibility = {};
     let siteContentOverrides = {};
+    let siteCustomPrograms = [];
+    let siteCustomContacts = [];
     let siteSettingsItem = null;
     let siteVersionHistory = [];
     let siteCurrentVersionId = null;
@@ -2407,6 +2411,12 @@
         { key:'documents', label:'Образцы документов об образовании', group:'Главная страница', selector:'.documents-section' },
         { key:'contacts', label:'Контакты и нижняя часть сайта', group:'Главная страница', selector:'#contactsSection' },
         { key:'owl', label:'Сова / цифровой ассистент', group:'Интерактив', selector:'#owlContainer' },
+        { key:'owl_menu_test', label:'Сова: тест на профориентацию', group:'Сова: кнопки меню', selector:'[data-site-owl-control="test"]' },
+        { key:'owl_menu_catalog', label:'Сова: кратко обо всех программах', group:'Сова: кнопки меню', selector:'[data-site-owl-control="catalog"]' },
+        { key:'owl_menu_news', label:'Сова: новости центра', group:'Сова: кнопки меню', selector:'[data-site-owl-control="news"]' },
+        { key:'owl_menu_schedule', label:'Сова: расписание занятий', group:'Сова: кнопки меню', selector:'[data-site-owl-control="schedule"]' },
+        { key:'owl_menu_contacts', label:'Сова: контакты руководства', group:'Сова: кнопки меню', selector:'[data-site-owl-control="contacts"]' },
+        { key:'owl_menu_ai', label:'Сова: AR-Лаборатория', group:'Сова: кнопки меню', selector:'[data-site-owl-control="ai"]' },
         { key:'scroll_nav', label:'Кнопки прокрутки вверх/вниз', group:'Интерактив', selector:'#scrollNav' }
     ];
 
@@ -2432,6 +2442,8 @@
                 version: Number(parsed.version || 1),
                 visibility: parsed.visibility && typeof parsed.visibility === 'object' ? parsed.visibility : {},
                 content: parsed.content && typeof parsed.content === 'object' ? parsed.content : {},
+                customPrograms: Array.isArray(parsed.customPrograms) ? parsed.customPrograms : [],
+                customContacts: Array.isArray(parsed.customContacts) ? parsed.customContacts : [],
                 currentVersionId: parsed.currentVersionId || null,
                 updatedAt: parsed.updatedAt || ''
             };
@@ -2458,7 +2470,9 @@
     function siteSnapshot() {
         return {
             visibility: JSON.parse(JSON.stringify(siteVisibility || {})),
-            content: JSON.parse(JSON.stringify(siteContentOverrides || {}))
+            content: JSON.parse(JSON.stringify(siteContentOverrides || {})),
+            customPrograms: JSON.parse(JSON.stringify(siteCustomPrograms || [])),
+            customContacts: JSON.parse(JSON.stringify(siteCustomContacts || []))
         };
     }
 
@@ -2483,7 +2497,9 @@
                 reason: data.reason || '',
                 snapshot: {
                     visibility: data.snapshot.visibility && typeof data.snapshot.visibility === 'object' ? data.snapshot.visibility : {},
-                    content: data.snapshot.content && typeof data.snapshot.content === 'object' ? data.snapshot.content : {}
+                    content: data.snapshot.content && typeof data.snapshot.content === 'object' ? data.snapshot.content : {},
+                    customPrograms: Array.isArray(data.snapshot.customPrograms) ? data.snapshot.customPrograms : [],
+                    customContacts: Array.isArray(data.snapshot.customContacts) ? data.snapshot.customContacts : []
                 }
             };
         } catch (e) {
@@ -2614,15 +2630,20 @@
         if (!snapshot || typeof snapshot !== 'object') return;
         siteVisibility = JSON.parse(JSON.stringify(snapshot.visibility || {}));
         siteContentOverrides = JSON.parse(JSON.stringify(snapshot.content || {}));
+        siteCustomPrograms = JSON.parse(JSON.stringify(snapshot.customPrograms || []));
+        siteCustomContacts = JSON.parse(JSON.stringify(snapshot.customContacts || []));
         cacheSiteSettings({
-            version:3,
+            version:4,
             visibility:siteVisibility,
             content:siteContentOverrides,
+            customPrograms:siteCustomPrograms,
+            customContacts:siteCustomContacts,
             currentVersionId:siteCurrentVersionId,
             updatedAt:new Date().toISOString()
         });
         applySiteVisibility();
         applySiteContentOverrides();
+        if (typeof applySiteCustomContent === 'function') applySiteCustomContent();
     }
 
     async function switchToSiteVersion(versionId, options) {
@@ -2676,6 +2697,8 @@
         if (!cached || typeof cached !== 'object') return false;
         if (cached.visibility && typeof cached.visibility === 'object') siteVisibility = cached.visibility;
         if (cached.content && typeof cached.content === 'object') siteContentOverrides = cached.content;
+        if (Array.isArray(cached.customPrograms)) siteCustomPrograms = cached.customPrograms;
+        if (Array.isArray(cached.customContacts)) siteCustomContacts = cached.customContacts;
         if (cached.currentVersionId) siteCurrentVersionId = cached.currentVersionId;
         return true;
     }
@@ -2725,6 +2748,27 @@
                 label: String(file.code) + (file.title ? ' — ' + file.title : ''),
                 group: 'Материалы: коды доступа',
                 selector: ''
+            });
+        });
+        Array.from(document.querySelectorAll('#contactsSection .contact-card:not(.site-custom-contact)')).forEach(function (card, index) {
+            const heading = card.querySelector('h4');
+            const label = heading ? String(heading.textContent || '').trim() : ('Контакт ' + (index + 1));
+            const stable = encodeURIComponent(label.toLowerCase());
+            card.dataset.siteStaticContactId = stable;
+            out.push({
+                key: 'contact-static:' + stable,
+                label: label,
+                group: 'Контакты: сотрудники',
+                selector: '[data-site-static-contact-id="' + String(stable).replace(/"/g, '\\"') + '"]'
+            });
+        });
+        (siteCustomContacts || []).forEach(function (contact) {
+            if (!contact || !contact.id) return;
+            out.push({
+                key: siteCustomContactKey(contact),
+                label: contact.name || contact.position || contact.id,
+                group: 'Добавленные контакты',
+                selector: '[data-site-contact-id="' + String(contact.id).replace(/"/g, '\\"') + '"]'
             });
         });
         return out;
@@ -3001,10 +3045,13 @@
                                 ? cachedSettings.visibility : siteVisibility;
                             siteContentOverrides = cachedSettings.content && typeof cachedSettings.content === 'object'
                                 ? cachedSettings.content : siteContentOverrides;
+                            siteCustomPrograms = Array.isArray(cachedSettings.customPrograms) ? cachedSettings.customPrograms : siteCustomPrograms;
+                            siteCustomContacts = Array.isArray(cachedSettings.customContacts) ? cachedSettings.customContacts : siteCustomContacts;
                             siteCurrentVersionId = cachedSettings.currentVersionId || siteCurrentVersionId || null;
                             cacheSiteSettings(cachedSettings);
                             applySiteVisibility();
                             applySiteContentOverrides();
+                            if (typeof applySiteCustomContent === 'function') applySiteCustomContent();
                         }
                     }
                 } catch (snapshotError) {
@@ -3040,11 +3087,14 @@
             siteSettingsItem = item;
             siteVisibility = parsed.visibility || {};
             siteContentOverrides = parsed.content || {};
+            siteCustomPrograms = parsed.customPrograms || [];
+            siteCustomContacts = parsed.customContacts || [];
             siteCurrentVersionId = parsed.currentVersionId || siteCurrentVersionId || null;
             if (useAdmin) loadSiteVersionHistory(items);
             cacheSiteSettings(parsed);
             applySiteVisibility();
             applySiteContentOverrides();
+            if (typeof applySiteCustomContent === 'function') applySiteCustomContent();
             if (siteAdminMode) {
                 renderSiteAdminPanel();
                 if (siteTextEditMode) decorateSiteEditableElements();
@@ -3094,9 +3144,11 @@
             }
 
             const payload = {
-                version: 3,
+                version: 4,
                 visibility: siteVisibility,
                 content: siteContentOverrides,
+                customPrograms: siteCustomPrograms,
+                customContacts: siteCustomContacts,
                 currentVersionId: siteCurrentVersionId || null,
                 updatedAt: now
             };
@@ -3349,6 +3401,57 @@
 
     let globalOwlFiles = [];
     let globalPrograms = [];
+    let basePrograms = [];
+
+    function mergeSiteProgramCollections(base, custom) {
+        const map = new Map();
+        (Array.isArray(base) ? base : []).forEach(function (p) {
+            if (p && p.id) map.set(String(p.id), Object.assign({}, p));
+        });
+        (Array.isArray(custom) ? custom : []).forEach(function (p) {
+            if (!p || !p.id) return;
+            map.set(String(p.id), Object.assign({ active:true, tab:'tab-pk', sector:'prof' }, p));
+        });
+        return Array.from(map.values());
+    }
+
+    function siteCustomContactKey(contact) {
+        return 'contact:' + encodeURIComponent(String(contact && contact.id || '').trim());
+    }
+
+    function renderSiteCustomContacts() {
+        const target = document.querySelector('#contactsSection .contacts-grid:last-of-type');
+        if (!target) return;
+        target.querySelectorAll('.site-custom-contact').forEach(function (node) { node.remove(); });
+        (Array.isArray(siteCustomContacts) ? siteCustomContacts : []).forEach(function (contact) {
+            if (!contact || !contact.id) return;
+            const card = document.createElement('div');
+            card.className = 'contact-card site-custom-contact';
+            card.dataset.siteContactId = String(contact.id);
+            const key = siteCustomContactKey(contact);
+            if (!siteKeyIsVisible(key)) card.classList.add(siteAdminMode ? 'site-admin-preview-hidden' : 'site-admin-force-hidden');
+            const name = siteAdminEscape(contact.name || 'Новый контакт');
+            const position = siteAdminEscape(contact.position || '');
+            const office = siteAdminEscape(contact.office || '');
+            const phone = siteAdminEscape(contact.phone || '');
+            const ext = siteAdminEscape(contact.extension || '');
+            const email = siteAdminEscape(contact.email || '');
+            let details = '';
+            if (office) details += '<p><span>Каб.</span> ' + office + '</p>';
+            if (phone) details += '<p><span>Тел:</span> <a href="tel:' + phone.replace(/[^+\d]/g,'') + '">' + phone + '</a>' + (ext ? ' (доб. ' + ext + ')' : '') + '</p>';
+            if (email) details += '<p>E-mail: <a href="mailto:' + email + '">' + email + '</a></p>';
+            card.innerHTML = '<h4>' + name + '</h4><div class="position">' + position + '</div><div class="details">' + details + '</div>';
+            target.appendChild(card);
+        });
+    }
+
+    function applySiteCustomContent() {
+        if (basePrograms.length) buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms));
+        renderSiteCustomContacts();
+        applySiteVisibility();
+        if (siteAdminMode && typeof renderSiteAdminPanel === 'function') renderSiteAdminPanel();
+    }
+
     const initialLang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'ru';
     let currentLang = initialLang;
     let globalAlert = null;
@@ -4126,7 +4229,8 @@
                 console.warn('Не удалось обновить учебные планы из live API, используем локальный снимок:', livePlansError);
             }
 
-            buildPrograms(programs);
+            basePrograms = programs.map(function (p) { return Object.assign({}, p); });
+            buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms));
         } catch (error) {
             console.error("Ошибка API:", error);
             document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">${translationsHTML[currentLang].programLoadError}</div>`;
@@ -5539,6 +5643,7 @@ if (legacyNewsHash.startsWith('#news=')) {
     }
 }
 </script>
+<script src="./site-admin-entities.js?v=2"></script>
 <script src="./owl-engine.js?v=20260927-4"></script>
 <script src="./portal-live-alert.js?v=20260927-1"></script>
 </html>

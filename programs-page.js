@@ -1,6 +1,41 @@
 let programsCache = [];
 const PROGRAM_REFRESH_MS = 5 * 60 * 1000;
+const SITE_SETTINGS_API = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
 let programRefreshTimer = null;
+let programSettings = { visibility:{}, customPrograms:[] };
+
+function mergeProgramSets(base, custom) {
+  const map = new Map();
+  (Array.isArray(base) ? base : []).forEach(p => { if (p?.id) map.set(String(p.id), {...p}); });
+  (Array.isArray(custom) ? custom : []).forEach(p => {
+    if (!p?.id) return;
+    map.set(String(p.id), {active:true,tab:'tab-pk',sector:'prof',...p});
+  });
+  return [...map.values()];
+}
+
+async function loadProgramSettings(){
+  try {
+    const res = await fetch(SITE_SETTINGS_API + '?type=news&_sitecfg=' + Date.now(), {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const item = (data.items || []).find(x => x && x.id === '__site_admin_settings__');
+    const parsed = item ? JSON.parse(item.lead || '{}') : {};
+    return {
+      visibility: parsed?.visibility && typeof parsed.visibility === 'object' ? parsed.visibility : {},
+      customPrograms: Array.isArray(parsed?.customPrograms) ? parsed.customPrograms : []
+    };
+  } catch (_) {
+    try {
+      const res = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), {cache:'no-store'});
+      const data = await res.json();
+      const s = data?.settings || {};
+      return {visibility:s.visibility||{}, customPrograms:Array.isArray(s.customPrograms)?s.customPrograms:[]};
+    } catch (_) {
+      return {visibility:{},customPrograms:[]};
+    }
+  }
+}
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({
@@ -14,7 +49,11 @@ async function refreshProgramsInBackground(){
     const res = await fetch('./program-list.json?v=' + bucket, { cache:'default' });
     if (!res.ok) return;
     const data = await res.json();
-    const fresh = (data.programs || []).filter(p => p && p.id && p.title_ru);
+    programSettings = await loadProgramSettings();
+    const fresh = mergeProgramSets(
+      (data.programs || []).filter(p => p && p.id && p.title_ru),
+      programSettings.customPrograms
+    ).filter(p => programSettings.visibility['program:'+p.id] !== false);
     if (JSON.stringify(fresh) !== JSON.stringify(programsCache)) {
       programsCache = fresh;
       renderPrograms();
@@ -65,7 +104,11 @@ async function initPrograms() {
     const res = await fetch('./program-list.json?v=' + bucket, { cache:'default' });
     if (!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
-    programsCache = Array.isArray(data.programs) ? data.programs : [];
+    programSettings = await loadProgramSettings();
+    programsCache = mergeProgramSets(
+      Array.isArray(data.programs) ? data.programs : [],
+      programSettings.customPrograms
+    ).filter(p => programSettings.visibility['program:'+p.id] !== false);
 
     const types = [...new Set(programsCache.map(p => p.type).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
     const select = document.getElementById('programType');

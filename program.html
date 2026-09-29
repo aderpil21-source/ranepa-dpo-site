@@ -269,14 +269,15 @@ async function loadSiteSettings(){
     const data=await getJson(SITE_ADMIN_API+'?type=news&_sitecfg='+Date.now());
     const items=data&&Array.isArray(data.items)?data.items:[];
     const item=items.find(n=>n&&n.id===SITE_SETTINGS_ID);
-    if(!item) return {visibility:{},content:{}};
+    if(!item) return {visibility:{},content:{},customPrograms:[]};
     const parsed=JSON.parse(item.lead||'{}');
     return {
       visibility: parsed&&parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{},
-      content: parsed&&parsed.content&&typeof parsed.content==='object'?parsed.content:{}
+      content: parsed&&parsed.content&&typeof parsed.content==='object'?parsed.content:{},
+      customPrograms: Array.isArray(parsed&&parsed.customPrograms)?parsed.customPrograms:[]
     };
   }catch(e){
-    return {visibility:{},content:{}};
+    return {visibility:{},content:{},customPrograms:[]};
   }
 }
 function siteOverride(key){
@@ -587,8 +588,14 @@ async function init(){
   }
   const loaded=await Promise.all([loadProgram(),loadSiteSettings(),loadProgramCatalog()]);
   program=loaded[0];
-  const settings=loaded[1]||{visibility:{},content:{}};
-  allPrograms=loaded[2]||[];
+  const settings=loaded[1]||{visibility:{},content:{},customPrograms:[]};
+  const customPrograms=Array.isArray(settings.customPrograms)?settings.customPrograms:[];
+  const customMatch=customPrograms.find(p=>p&&String(p.id||'')===programId&&truthyActive(p.active));
+  if(customMatch) program=Object.assign({active:true,tab:'tab-pk',sector:'prof'},customMatch);
+  const merged=new Map();
+  (loaded[2]||[]).forEach(p=>{if(p&&p.id) merged.set(String(p.id),p);});
+  customPrograms.forEach(p=>{if(p&&p.id) merged.set(String(p.id),Object.assign({active:true,tab:'tab-pk',sector:'prof'},p));});
+  allPrograms=[...merged.values()].filter(p=>truthyActive(p.active));
   siteVisibility=settings.visibility||{};
   siteContentOverrides=settings.content||{};
   if(program&&(siteVisibility.programs===false||siteVisibility['program:'+program.id]===false)) program=null;
