@@ -26,3 +26,64 @@ html[data-theme="light"] .schedule-overlay{background:radial-gradient(circle at 
 html[data-theme="light"] .schedule-header{background:linear-gradient(to bottom,rgba(248,250,252,.97) 76%,rgba(248,250,252,0))!important}
 html[data-theme="light"] .schedule-months,html[data-theme="light"] .timeline-card{background:rgba(255,255,255,.82)!important;border-color:rgba(15,23,42,.12)!important}
 html[data-theme="light"] .close-sch-btn{background:rgba(15,23,42,.05)!important;border-color:rgba(15,23,42,.12)!important;color:#111827!important}
+
+/* Contact page light-theme visibility fix */
+html[data-theme="light"] .contact-highlight,
+html[data-theme="light"] .contact-card{
+  background:linear-gradient(180deg,#fff,#f7f9fc)!important;
+  border-color:rgba(15,23,42,.13)!important;
+  color:#111827!important;
+}
+html[data-theme="light"] .contact-card.depth-item,
+html[data-theme="light"] .contact-card.depth-item.in-view{
+  opacity:1!important;
+  transform:none!important;
+}
+html[data-theme="light"] .contact-card h3,
+html[data-theme="light"] .contact-highlight h2{
+  color:#111827!important;
+}
+html[data-theme="light"] .contact-card p,
+html[data-theme="light"] .contact-highlight .muted{
+  color:#536072!important;
+}
+html[data-theme="light"] .contact-card .position{
+  color:#A00F33!important;
+}
+html[data-theme="light"] .contact-card a,
+html[data-theme="light"] .contact-highlight a{
+  color:#243044!important;
+}
+html[data-theme="light"] .contact-card a:hover,
+html[data-theme="light"] .contact-highlight a:hover{
+  color:#CA0F3E!important;
+}
+
+/* Readable typography on light section pages */
+html[data-theme="light"] .page-lead,
+html[data-theme="light"] .faq-answer,
+html[data-theme="light"] .card .muted,
+html[data-theme="light"] .lesson-meta{
+  color:#536072!important;
+}
+html[data-theme="light"] .faq-item summary,
+html[data-theme="light"] .page-title,
+html[data-theme="light"] .panel h2,
+html[data-theme="light"] .panel h3,
+html[data-theme="light"] .card h2,
+html[data-theme="light"] .lesson-subject,
+html[data-theme="light"] .schedule-day{
+  color:#111827!important;
+}
+html[data-theme="light"] .page-kicker{
+  color:#A00F33!important;
+  background:rgba(202,15,62,.07)!important;
+  border-color:rgba(202,15,62,.22)!important;
+}
+html[data-theme="light"] .back-link{
+  color:#334155!important;
+}
+html[data-theme="light"] .position,
+html[data-theme="light"] .lesson-program{
+  color:#A00F33!important;
+}
