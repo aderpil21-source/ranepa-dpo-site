@@ -1042,19 +1042,58 @@
 
         /* ===== РАСПИСАНИЕ: PREMIUM / MOBILE-FIRST ===== */
         .schedule-overlay {
-            position: fixed; inset: var(--header-h) 0 0 0; z-index: 10047;
+            position: fixed; inset: 0; z-index: 10047;
             background:
                 radial-gradient(circle at 8% 10%, rgba(202,15,62,.13), transparent 28%),
                 radial-gradient(circle at 88% 18%, rgba(56,189,248,.11), transparent 28%),
                 linear-gradient(180deg, #050811 0%, var(--bg-deep) 55%, #03060d 100%);
             display: none; overflow-y: auto;
-            padding: 24px 20px max(70px, env(safe-area-inset-bottom));
+            padding: calc(var(--header-h) + 24px) 20px max(70px, env(safe-area-inset-bottom));
             opacity: 0; transition: opacity .18s ease;
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
         }
         .schedule-overlay.active { display: block; opacity: 1; }
         .schedule-container { max-width: 1180px; margin: 0 auto; position: relative; }
+        /* Schedule theme + header clearance */
+        [data-theme="light"] .schedule-overlay {
+            background:
+                radial-gradient(circle at 8% 10%, rgba(202,15,62,.07), transparent 28%),
+                radial-gradient(circle at 88% 18%, rgba(41,52,91,.08), transparent 28%),
+                linear-gradient(180deg,#f8fafc 0%,#f1f5f9 55%,#e9eef5 100%);
+            color:#0f172a;
+        }
+        [data-theme="light"] .schedule-header {
+            background:linear-gradient(to bottom,rgba(248,250,252,.98) 76%,rgba(248,250,252,0));
+        }
+        [data-theme="light"] .schedule-title,
+        [data-theme="light"] .schedule-month-heading,
+        [data-theme="light"] .timeline-card,
+        [data-theme="light"] .timeline-card * { color:#0f172a; }
+        [data-theme="light"] .schedule-months {
+            background:rgba(255,255,255,.78);
+            border-color:rgba(15,23,42,.12);
+            box-shadow:0 14px 34px rgba(15,23,42,.08);
+        }
+        [data-theme="light"] .schedule-month-link { color:#475569; }
+        [data-theme="light"] .schedule-month-link.active {
+            color:#0f172a;
+            background:linear-gradient(135deg,rgba(202,15,62,.10),rgba(41,52,91,.08));
+            border-color:rgba(202,15,62,.38);
+        }
+        [data-theme="light"] .timeline-card {
+            background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(241,245,249,.98));
+            border-color:rgba(15,23,42,.12);
+            box-shadow:0 14px 32px rgba(15,23,42,.10);
+        }
+        [data-theme="light"] .timeline-card .timeline-program,
+        [data-theme="light"] .timeline-card .timeline-subject,
+        [data-theme="light"] .timeline-card .timeline-meta { color:#334155; }
+        [data-theme="light"] .close-sch-btn {
+            background:#fff;border-color:rgba(15,23,42,.14);color:#0f172a;
+            box-shadow:0 6px 18px rgba(15,23,42,.08);
+        }
+
 
         .schedule-header {
             position: sticky; top: 0; z-index: 6;
@@ -1257,7 +1296,7 @@
         }
 
         @media (max-width: 768px) {
-            .schedule-overlay { padding: 16px 12px max(56px, env(safe-area-inset-bottom)); }
+            .schedule-overlay { padding: calc(var(--header-h) + 16px) 12px max(56px, env(safe-area-inset-bottom)); }
             .schedule-header { margin-bottom: 12px; padding-top: 4px; }
             .close-sch-btn { width:44px; height:44px; font-size:1.25rem; }
             .schedule-month-section { margin-bottom:32px; }
