@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T20:12:09.519507+00:00",
+  "generatedAt": "2026-09-29T19:26:01.657719+00:00",
   "owlFiles": [
     {
       "code": "парабола203",
@@ -88,6 +88,14 @@
       "date": "27.09.2026 17:19",
       "comment": "21542\n\nОтправлено из мобильной Почты Mail",
       "isPublished": false
+    },
+    {
+      "code": "ЛК-4857",
+      "title": "Лекции ДПО",
+      "url": "https://drive.google.com/uc?export=download&id=1XM2WtwA6urmMIy7YhjZb7gW-vTPwZaaW",
+      "date": "29.09.2026 11:36",
+      "comment": "Отправлено из мобильной Почты Mail",
+      "isPublished": true
     }
   ]
 }
