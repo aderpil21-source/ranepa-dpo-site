@@ -2558,21 +2558,21 @@ function resetMenu() {
         : 'Hello. You can write briefly and in your own words. I first use the site data and local scenarios.'
     }</span></div>`;
     setOptions(`
-        <button class="chat-opt-btn" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
-        <button class="chat-opt-btn" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
+        <button class="chat-opt-btn" data-site-owl-control="test" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
+        <button class="chat-opt-btn" data-site-owl-control="catalog" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
 
-        <button class="chat-opt-btn" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
+        <button class="chat-opt-btn" data-site-owl-control="news" onclick="window.location.href='news.html';" style="background: rgba(202, 15, 62, 0.1); border-color: var(--ranepa-red); color: var(--ranepa-red);">
             📰 ${currentLang === 'ru' ? 'Новости центра' : 'Center news'}
         </button>
         
-        <button class="chat-opt-btn" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
+        <button class="chat-opt-btn" data-site-owl-control="schedule" onclick="showSchedule()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
             📅 <span data-i18n="schBtnText">${currentLang === 'ru' ? 'Расписание занятий' : 'Class Schedule'}</span>
         </button>
 
-        <button class="chat-opt-btn" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+        <button class="chat-opt-btn" data-site-owl-control="contacts" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
         
         <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
-        <a href="ai-lecture.html" target="_blank" rel="noopener noreferrer" class="chat-opt-btn" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
+        <a href="ai-lecture.html" target="_blank" rel="noopener noreferrer" class="chat-opt-btn" data-site-owl-control="ai" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
             🔮 <span data-i18n="aiLabText">${currentLang === 'ru' ? 'AR-Лаборатория: Практика ИИ' : 'AR-Lab: AI Practice'}</span>
         </a>
     `);
