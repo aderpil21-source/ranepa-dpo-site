@@ -197,9 +197,59 @@ function initDepthMotion() {
   applyScroll();
 }
 
+
+async function applyPublicFaqCms(){
+  const list=document.querySelector('.faq-list');
+  if(!list||!document.querySelector('[data-site-faq-static]')) return;
+  try{
+    const bucket=Math.floor(Date.now()/60000);
+    const response=await fetch('./site-settings.json?v='+bucket,{cache:'no-store'});
+    if(!response.ok) throw new Error('HTTP '+response.status);
+    const data=await response.json();
+    const settings=data&&data.settings&&typeof data.settings==='object'?data.settings:{};
+    const visibility=settings.visibility&&typeof settings.visibility==='object'?settings.visibility:{};
+    const faqs=Array.isArray(settings.customFaqs)?settings.customFaqs:[];
+
+    if(visibility.faq===false){
+      list.hidden=true;
+      return;
+    }
+
+    list.querySelectorAll('.faq-item[data-site-faq-static]').forEach(node=>{
+      const staticId=String(node.dataset.siteFaqStatic||'').trim();
+      const sourceKey='base-faq:'+staticId;
+      if(visibility['faq_static_'+staticId]===false){node.hidden=true;return;}
+      const override=faqs.find(x=>x&&String(x.sourceKey||'')===sourceKey);
+      if(!override)return;
+      if(override.active===false||override.archived===true){node.hidden=true;return;}
+      const q=node.querySelector('summary'),a=node.querySelector('.faq-answer');
+      if(q&&Object.prototype.hasOwnProperty.call(override,'question'))q.textContent=String(override.question||'');
+      if(a&&Object.prototype.hasOwnProperty.call(override,'answer'))a.textContent=String(override.answer||'');
+    });
+
+    faqs.filter(x=>x&&x.id&&!x.sourceKey&&x.active!==false&&x.archived!==true).forEach(item=>{
+      if(visibility['faq:'+item.id]===false)return;
+      if(list.querySelector('[data-site-faq-id="'+CSS.escape(String(item.id))+'"]'))return;
+      const details=document.createElement('details');
+      details.className='faq-item';
+      details.dataset.siteFaqId=String(item.id);
+      const summary=document.createElement('summary');
+      summary.textContent=String(item.question||'Вопрос');
+      const answer=document.createElement('div');
+      answer.className='faq-answer';
+      answer.textContent=String(item.answer||'');
+      details.append(summary,answer);
+      list.appendChild(details);
+    });
+  }catch(error){
+    console.warn('Не удалось применить публичные FAQ-настройки:',error);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   ensureSectionModals();
   updateEnrollChoices();
+  applyPublicFaqCms();
   initDepthMotion();
 
   document.addEventListener('click', event => {
