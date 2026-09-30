@@ -1,19 +1,9 @@
 {
-  "generatedAt": "2026-09-29T14:00:02.006150+00:00",
+  "generatedAt": "2026-09-30T16:31:13.107Z",
   "settings": {
     "version": 5,
     "visibility": {
-      "material:%D0%BF%D0%B0%D1%80%D0%B0%D0%B1%D0%BE%D0%BB%D0%B0203": false,
-      "material:%D0%BA%D0%B0%D1%80%D0%B0%D0%B1%D0%B0%D1%81": false,
-      "material:%D0%BB%D0%BA-1596": false,
       "program:c50": false,
-      "material:%D0%BB%D0%BA-2466": false,
-      "material:%D0%BB%D0%BA-4106": false,
-      "material:%D0%BB%D0%BA-6600": false,
-      "material:%D0%BB%D0%BA-8463": false,
-      "material:%D0%BB%D0%BA-5152": false,
-      "material:%D0%BB%D0%BA-6752": false,
-      "material:%D0%BB%D0%BA-4857": false,
       "owl_menu_ai": false
     },
     "content": {
@@ -24,19 +14,21 @@
     "attributes": {
       "#chatOptions > a": {
         "selector": "#chatOptions > a",
-        "title": "",
-        "hidden": true,
-        "href": "ai-lecture.html"
+        "hidden": true
       }
     },
     "customPrograms": [],
     "customContacts": [],
     "customFaqs": [],
+    "customSchedules": [],
+    "customNavItems": [],
+    "customDocs": [],
+    "customBlocks": [],
     "theme": {
       "accent": "#c7002e",
       "burgundy": "#b30036"
     },
-    "currentVersionId": "ce43ef63-db1f-4739-a0e9-d8a81a0f4ffb",
+    "seo": {},
     "updatedAt": "2026-09-29T10:55:00.456Z"
   }
 }
