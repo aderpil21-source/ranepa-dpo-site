@@ -11,7 +11,23 @@ const defs={
   blocks:{label:'Информационные блоки',get:()=>siteCustomBlocks,set:v=>siteCustomBlocks=v,title:x=>x.title||x.id,prefix:'custom-block-',edit:id=>openSiteBlockEditor(id)}
 };
 const uid=p=>p+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
-function refresh(){if(typeof applySiteCustomContent==='function')applySiteCustomContent();else renderSiteAdminPanel();}
+let previewDrafts=false;
+window.siteWorkflowBulk=async function(type,action){
+  const d=defs[type];if(!d)return;
+  const selected=[...document.querySelectorAll('.cms-flow-select[data-type="'+type+'"]:checked')].map(x=>x.value);
+  if(!selected.length)return;
+  const ids=new Set(selected),arr=d.get().slice();
+  const next=arr.map(x=>ids.has(String(x.id))?Object.assign({},x,{active:action==='publish'}):x);
+  d.set(next);
+  await save((action==='publish'?'Массовая публикация: ':'Массово в черновик: ')+d.label);
+};
+window.siteWorkflowToggleDraftPreview=function(){
+  previewDrafts=!previewDrafts;
+  document.body.classList.toggle('cms-preview-drafts',previewDrafts);
+  renderDraftPreview();
+  panel();
+};
+function refresh(){if(typeof applySiteCustomContent==='function')applySiteCustomContent();else renderSiteAdminPanel();renderDraftPreview();}
 
 function normalizeOrder(type,arr){
   if(type==='programs') return arr.map((x,i)=>Object.assign({},x,{cmsOrder:i}));
@@ -46,6 +62,7 @@ function row(type,x,index,total){
   const d=defs[type],draft=x.active===false;
   return '<div class="cms-flow-row" draggable="true" data-flow-type="'+esc(type)+'" data-flow-id="'+esc(x.id)+'" data-flow-search="'+esc((d.title(x)+' '+d.label).toLowerCase())+'">'+
     '<span class="cms-flow-grip" title="Изменить порядок">⋮⋮</span>'+
+    '<input class="cms-flow-select" data-type="'+esc(type)+'" type="checkbox" value="'+esc(x.id)+'" aria-label="Выбрать">'+
     '<div class="cms-flow-name"><b>'+esc(d.title(x))+'</b><small>'+(draft?'Черновик':'Опубликовано')+'</small></div>'+
     '<div class="cms-flow-actions">'+
       '<button type="button" '+(index===0?'disabled':'')+' onclick="siteWorkflowMove(\''+type+'\',\''+esc(x.id)+'\',-1)">↑</button>'+
@@ -58,11 +75,32 @@ function row(type,x,index,total){
 }
 window.defsShimEdit=function(type,id){const d=defs[type];if(d)d.edit(id);};
 
+function renderDraftPreview(){
+  document.querySelectorAll('.cms-draft-preview').forEach(n=>n.remove());
+  if(!siteAdminMode||!previewDrafts)return;
+  const add=(container,title,type)=>{
+    if(!container)return;
+    const box=document.createElement('div');
+    box.className='cms-draft-preview';
+    box.innerHTML='<div class="cms-draft-preview-label">Черновик · '+esc(type)+'</div><div class="cms-draft-preview-title">'+esc(title)+'</div>';
+    container.appendChild(box);
+  };
+  (siteCustomPrograms||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('#programsSection .cards-grid, #programsSection'),' '+(x.title_ru||x.id),'Программа'));
+  (siteCustomContacts||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('#contactsSection .contacts-grid:last-of-type, #contactsSection'),x.name||x.id,'Контакт'));
+  (siteCustomFaqs||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('.faq-container'),x.question||x.id,'FAQ'));
+  (siteCustomDocs||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('[data-site-doc-grid]'),x.title||x.id,'Документ'));
+  (siteCustomBlocks||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('.faq-container'),x.title||x.id,'Блок'));
+}
 function panel(){
   let el=document.getElementById('siteAdminWorkflow');
   if(!el){el=document.createElement('section');el.id='siteAdminWorkflow';el.className='cms-flow';const box=document.getElementById('siteAdminControls');if(!box)return;box.prepend(el);}
-  let html='<div class="cms-flow-head"><div><b>Управление контентом</b><small>Порядок · черновики · копии</small></div><input id="cmsFlowSearch" type="search" placeholder="Поиск в PRO…"></div>';
-  Object.entries(defs).forEach(([type,d])=>{const arr=d.get();if(!arr.length)return;html+='<details class="cms-flow-group" open><summary>'+esc(d.label)+' <small>'+arr.length+'</small></summary>'+arr.map((x,i)=>row(type,x,i,arr.length)).join('')+'</details>';});
+  let html='<div class="cms-flow-head"><div><b>Управление контентом</b><small>Порядок · черновики · копии</small></div><div class="cms-flow-head-actions"><button type="button" class="'+(previewDrafts?'active':'')+'" onclick="siteWorkflowToggleDraftPreview()">👁 Черновики</button><input id="cmsFlowSearch" type="search" placeholder="Поиск в PRO…"></div></div>';
+  Object.entries(defs).forEach(([type,d])=>{
+    const arr=d.get();if(!arr.length)return;
+    html+='<details class="cms-flow-group" open><summary>'+esc(d.label)+' <small>'+arr.length+'</small></summary>'+
+      '<div class="cms-flow-bulk"><button type="button" onclick="siteWorkflowBulk(\''+type+'\',\'publish\')">Опубликовать выбранные</button><button type="button" onclick="siteWorkflowBulk(\''+type+'\',\'draft\')">В черновики</button></div>'+
+      arr.map((x,i)=>row(type,x,i,arr.length)).join('')+'</details>';
+  });
   el.innerHTML=html;
   const q=el.querySelector('#cmsFlowSearch');q?.addEventListener('input',()=>{const s=q.value.trim().toLowerCase();el.querySelectorAll('.cms-flow-row').forEach(r=>r.hidden=!!s&&!r.dataset.flowSearch.includes(s));});
   bindDrag(el);
@@ -107,14 +145,20 @@ function styles(){
   if(document.getElementById('cmsFlowStyles'))return;const s=document.createElement('style');s.id='cmsFlowStyles';s.textContent=`
 .cms-flow{margin:10px 0 14px;border:1px solid rgba(202,15,62,.32);border-radius:12px;overflow:hidden;background:rgba(8,13,23,.92)}
 .cms-flow-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;background:rgba(202,15,62,.08);border-bottom:1px solid rgba(255,255,255,.08)}
-.cms-flow-head>div{display:flex;flex-direction:column;gap:2px}.cms-flow-head b{font-size:.78rem}.cms-flow-head small,.cms-flow-name small{font-size:.62rem;color:#94a3b8}
-.cms-flow-head input{min-width:0;width:48%;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#fff;border-radius:8px;padding:7px 9px;font-size:.7rem}
+.cms-flow-head>div:first-child{display:flex;flex-direction:column;gap:2px}.cms-flow-head b{font-size:.78rem}.cms-flow-head small,.cms-flow-name small{font-size:.62rem;color:#94a3b8}
+.cms-flow-head-actions{display:flex;align-items:center;gap:6px;min-width:0}.cms-flow-head-actions button,.cms-flow-bulk button{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:#e5e7eb;border-radius:7px;padding:6px 8px;font-size:.61rem;font-weight:800;cursor:pointer}.cms-flow-head-actions button.active{background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.45);color:#bae6fd}
+.cms-flow-head input{min-width:0;width:180px;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#fff;border-radius:8px;padding:7px 9px;font-size:.7rem}
 .cms-flow-group{border-bottom:1px solid rgba(255,255,255,.06)}.cms-flow-group>summary{padding:9px 10px;font-size:.72rem;font-weight:850;cursor:pointer}
-.cms-flow-row{display:grid;grid-template-columns:24px minmax(0,1fr);gap:7px;padding:8px 9px;border-top:1px solid rgba(255,255,255,.055);transition:opacity .16s ease,background .16s ease,box-shadow .16s ease}
+.cms-flow-bulk{display:flex;gap:5px;padding:6px 9px;border-top:1px solid rgba(255,255,255,.04)}
+.cms-flow-row{display:grid;grid-template-columns:24px 18px minmax(0,1fr);gap:7px;padding:8px 9px;border-top:1px solid rgba(255,255,255,.055);transition:opacity .16s ease,background .16s ease,box-shadow .16s ease}
 .cms-flow-row.dragging{opacity:.42}.cms-flow-row.drop-before{box-shadow:inset 0 2px 0 #38bdf8}.cms-flow-row.drop-after{box-shadow:inset 0 -2px 0 #38bdf8}
-.cms-flow-grip{grid-row:1/3;display:grid;place-items:center;color:#64748b;font-size:.9rem;cursor:grab}.cms-flow-row:active .cms-flow-grip{cursor:grabbing}.cms-flow-name{display:flex;flex-direction:column;gap:2px;min-width:0}.cms-flow-name b{font-size:.69rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cms-flow-actions{grid-column:2;display:flex;flex-wrap:wrap;gap:4px}.cms-flow-actions button{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:#e5e7eb;border-radius:7px;padding:5px 7px;font-size:.6rem;font-weight:800;cursor:pointer}.cms-flow-actions button:disabled{opacity:.3;cursor:default}.cms-flow-actions .danger{color:#fecdd3;border-color:rgba(202,15,62,.3)}
-`;document.head.appendChild(s);
+ .cms-flow-grip{grid-row:1/3;display:grid;place-items:center;color:#64748b;font-size:.9rem;cursor:grab}.cms-flow-row:active .cms-flow-grip{cursor:grabbing}.cms-flow-name{display:flex;flex-direction:column;gap:2px;min-width:0}.cms-flow-name b{font-size:.69rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cms-flow-select{align-self:center;accent-color:#ca0f3e}.cms-flow-name{grid-column:3}.cms-flow-actions{grid-column:3;display:flex;flex-wrap:wrap;gap:4px}.cms-flow-actions button{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:#e5e7eb;border-radius:7px;padding:5px 7px;font-size:.6rem;font-weight:800;cursor:pointer}.cms-flow-actions button:disabled{opacity:.3;cursor:default}.cms-flow-actions .danger{color:#fecdd3;border-color:rgba(202,15,62,.3)}
+`
+.cms-draft-preview{position:relative;border:1px dashed rgba(148,163,184,.45);background:rgba(100,116,139,.10);border-radius:14px;padding:14px;opacity:.72;filter:saturate(.65);pointer-events:none}
+.cms-draft-preview-label{font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:5px}
+.cms-draft-preview-title{font-size:.82rem;font-weight:800;color:var(--text-main,#e5e7eb)}
+;document.head.appendChild(s);
 }
 const old=renderSiteAdminPanel;renderSiteAdminPanel=function(){old();panel();};
 styles();if(siteAdminMode)panel();
