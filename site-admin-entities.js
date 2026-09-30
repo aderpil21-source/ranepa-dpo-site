@@ -233,6 +233,8 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       if(rec.hidden===true) el.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');
     });
   }
+  window.applySiteAttributeOverrides=applySiteAttributeOverrides;
+
   window.openSiteElementEditor=function(el){
     if(!siteAdminMode||!el||protectedElement(el)) return;
     const selector=elementRecordKey(el); if(!selector) return;
