@@ -75,6 +75,12 @@ jobs:
               raise SystemExit("Portal API response has no schedules array")
           if not isinstance(owl_files, list):
               raise SystemExit("Portal API response has no owlFiles array")
+
+          # Public static snapshots must never expose unpublished/private materials.
+          owl_files = [
+              item for item in owl_files
+              if isinstance(item, dict) and item.get("isPublished") is True
+          ]
           if current_alert is not None and not isinstance(current_alert, dict):
               raise SystemExit("Portal API currentAlert has invalid format")
 
