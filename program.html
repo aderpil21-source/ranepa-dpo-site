@@ -199,8 +199,6 @@ let program=null;
 let allPrograms=[];
 let siteVisibility={};
 let siteContentOverrides={};
-const SITE_SETTINGS_ID='__site_admin_settings__';
-const SITE_ADMIN_API='https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
 
 const ui={
   ru:{
@@ -266,15 +264,13 @@ function findProgram(data){
 }
 async function loadSiteSettings(){
   try{
-    const data=await getJson(SITE_ADMIN_API+'?type=news&_sitecfg='+Date.now());
-    const items=data&&Array.isArray(data.items)?data.items:[];
-    const item=items.find(n=>n&&n.id===SITE_SETTINGS_ID);
-    if(!item) return {visibility:{},content:{},customPrograms:[]};
-    const parsed=JSON.parse(item.lead||'{}');
+    const bucket=Math.floor(Date.now()/60000);
+    const data=await getJson('./site-settings.json?v='+bucket);
+    const parsed=data&&data.settings&&typeof data.settings==='object'?data.settings:{};
     return {
-      visibility: parsed&&parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{},
-      content: parsed&&parsed.content&&typeof parsed.content==='object'?parsed.content:{},
-      customPrograms: Array.isArray(parsed&&parsed.customPrograms)?parsed.customPrograms:[]
+      visibility: parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{},
+      content: parsed.content&&typeof parsed.content==='object'?parsed.content:{},
+      customPrograms: Array.isArray(parsed.customPrograms)?parsed.customPrograms:[]
     };
   }catch(e){
     return {visibility:{},content:{},customPrograms:[]};
@@ -590,12 +586,19 @@ async function init(){
   program=loaded[0];
   const settings=loaded[1]||{visibility:{},content:{},customPrograms:[]};
   const customPrograms=Array.isArray(settings.customPrograms)?settings.customPrograms:[];
-  const customMatch=customPrograms.find(p=>p&&String(p.id||'')===programId&&truthyActive(p.active));
-  if(customMatch) program=Object.assign({active:true,tab:'tab-pk',sector:'prof'},customMatch);
+  const customMatch=customPrograms.find(p=>p&&String(p.id||'')===programId);
+  if(customMatch){
+    if(customMatch.active===false||customMatch.archived===true) program=null;
+    else program=Object.assign({active:true,tab:'tab-pk',sector:'prof'},program||{},customMatch);
+  }
   const merged=new Map();
-  (loaded[2]||[]).forEach(p=>{if(p&&p.id) merged.set(String(p.id),p);});
-  customPrograms.forEach(p=>{if(p&&p.id) merged.set(String(p.id),Object.assign({active:true,tab:'tab-pk',sector:'prof'},p));});
-  allPrograms=[...merged.values()].filter(p=>truthyActive(p.active));
+  (loaded[2]||[]).forEach(p=>{if(p&&p.id) merged.set(String(p.id),Object.assign({},p));});
+  customPrograms.forEach(p=>{
+    if(!p||!p.id)return;
+    const pid=String(p.id),base=merged.get(pid)||{};
+    merged.set(pid,Object.assign({active:true,tab:'tab-pk',sector:'prof'},base,p));
+  });
+  allPrograms=[...merged.values()].filter(p=>truthyActive(p.active)&&p.archived!==true);
   siteVisibility=settings.visibility||{};
   siteContentOverrides=settings.content||{};
   if(program&&(siteVisibility.programs===false||siteVisibility['program:'+program.id]===false)) program=null;
