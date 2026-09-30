@@ -109,13 +109,46 @@ function navCatalogForAdmin(){
     const key=String(x.sourceKey||x.id),base=map.get(key)||{};
     map.set(key,Object.assign({},base,x,{id:key}));
   });
-  return [...map.values()];
+  return [...map.values()].sort((a,b)=>{
+    const ao=Number.isFinite(Number(a&&a.cmsOrder))?Number(a.cmsOrder):null;
+    const bo=Number.isFinite(Number(b&&b.cmsOrder))?Number(b.cmsOrder):null;
+    if(ao!==null&&bo!==null&&ao!==bo)return ao-bo;
+    if(ao!==null&&bo===null)return -1;
+    if(ao===null&&bo!==null)return 1;
+    return String(a&&a.label||a&&a.id||'').localeCompare(String(b&&b.label||b&&b.id||''),'ru');
+  });
 }
 function upsertNavOverride(id,patch){
   const nid=String(id),idx=(siteCustomNavItems||[]).findIndex(x=>x&&(String(x.id)===nid||String(x.sourceKey||'')===nid));
   if(idx>=0)siteCustomNavItems[idx]=Object.assign({},siteCustomNavItems[idx],patch,{id:nid,sourceKey:nid,custom:true});
   else siteCustomNavItems.push(Object.assign({id:nid,sourceKey:nid,custom:true},patch));
 }
+function patchNavAny(id,patch){
+  const nid=String(id),idx=(siteCustomNavItems||[]).findIndex(x=>x&&(String(x.id)===nid||String(x.sourceKey||'')===nid));
+  if(idx>=0){siteCustomNavItems[idx]=Object.assign({},siteCustomNavItems[idx],patch);return;}
+  if(nid.indexOf('base-nav:')===0)siteCustomNavItems.push(Object.assign({id:nid,sourceKey:nid,custom:true},patch));
+}
+function navNodeId(node){
+  if(!node)return '';
+  if(node.classList.contains('site-custom-nav-item'))return String(node.dataset.siteNavId||'');
+  return baseNavKey(node);
+}
+function applyNavOrder(){
+  const nav=document.querySelector('.header-nav');if(!nav)return;
+  const order=new Map(navCatalogForAdmin().map((x,i)=>[String(x.id),i]));
+  const fixed=nav.querySelector('.header-nav-btn');
+  [...nav.querySelectorAll('.header-nav-link')].sort((a,b)=>(order.get(navNodeId(a))??9999)-(order.get(navNodeId(b))??9999)).forEach(n=>nav.insertBefore(n,fixed||null));
+}
+window.siteNavMoveAny=async function(id,dir){
+  const list=navCatalogForAdmin().filter(x=>x&&x.archived!==true),i=list.findIndex(x=>String(x.id)===String(id)),j=i+Number(dir);
+  if(i<0||j<0||j>=list.length)return;
+  [list[i],list[j]]=[list[j],list[i]];
+  const before=siteCustomNavItems.map(x=>x&&Object.assign({},x));
+  list.forEach((x,index)=>patchNavAny(x.id,{cmsOrder:index}));
+  applyBaseNavOverrides();renderNav();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'Изменён порядок меню'});
+  if(!ok){siteCustomNavItems=before;applyBaseNavOverrides();renderNav();renderSiteAdminPanel();}
+};
 window.siteNavSetPublished=async function(id,published){
   const base=baseNavItems().find(x=>String(x.id)===String(id));
   if(!base){
@@ -280,7 +313,7 @@ function applyBaseNavOverrides(){
     }
   });
 }
-function renderNav(){document.querySelectorAll('.site-custom-nav-item').forEach(n=>n.remove());const n=document.querySelector('.header-nav');if(!n)return;const b=n.querySelector('.header-nav-btn');(siteCustomNavItems||[]).forEach(x=>{if(!x||x.sourceKey||x.archived===true||(x.active===false&&!window.sitePreviewDraftMode)||siteVisibility['nav-custom:'+x.id]===false)return;const href=safeCmsHref(x.url);if(!href)return;const a=document.createElement('a');a.className='header-nav-link site-custom-nav-item'+(x.active===false&&window.sitePreviewDraftMode?' cms-preview-draft':'');a.textContent=x.label||'Новый пункт';a.href=href;a.dataset.siteNavId=x.id;if(x.newTab){a.target='_blank';a.rel='noopener noreferrer'}n.insertBefore(a,b||null)})}
+function renderNav(){document.querySelectorAll('.site-custom-nav-item').forEach(n=>n.remove());const n=document.querySelector('.header-nav');if(!n)return;const b=n.querySelector('.header-nav-btn');(siteCustomNavItems||[]).forEach(x=>{if(!x||x.sourceKey||x.archived===true||(x.active===false&&!window.sitePreviewDraftMode)||siteVisibility['nav-custom:'+x.id]===false)return;const href=safeCmsHref(x.url);if(!href)return;const a=document.createElement('a');a.className='header-nav-link site-custom-nav-item'+(x.active===false&&window.sitePreviewDraftMode?' cms-preview-draft':'');a.textContent=x.label||'Новый пункт';a.href=href;a.dataset.siteNavId=x.id;if(x.newTab){a.target='_blank';a.rel='noopener noreferrer'}n.insertBefore(a,b||null)});applyNavOrder()}
 function baseDocCardByKey(key){return [...document.querySelectorAll('[data-site-doc-grid] .doc-card:not(.site-custom-doc)')].find(card=>baseDocKey(card)===key)||null}
 function applyBaseDocOverrides(){
   baseDocs().forEach(base=>{
@@ -351,6 +384,8 @@ function groups(){
     return '<div class="site-admin-row"><span>'+esc(x.label||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteNavRestoreBase(\''+esc(x.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'nav\',\''+esc(x.id)+'\')">Восстановить</button>'):
+        '<button type="button" onclick="siteNavMoveAny(\''+esc(x.id)+'\',-1)">↑</button>'+
+        '<button type="button" onclick="siteNavMoveAny(\''+esc(x.id)+'\',1)">↓</button>'+
         '<button type="button" onclick="siteNavSetPublished(\''+esc(x.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
         '<button type="button" onclick="siteNavDuplicateAny(\''+esc(x.id)+'\')">Дублировать</button>'+
         '<button type="button" onclick="openSiteNavEditor(\''+esc(x.id)+'\')">Редактировать</button>'+
