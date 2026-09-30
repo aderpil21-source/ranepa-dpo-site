@@ -206,4 +206,32 @@ for (const file of ['index.html','news.html','programs-page.js','schedule-page.j
   assert(!/new\s+Function\s*\(/.test(source), file+' must not use new Function()');
 }
 
+
+const externalScriptPolicy = {
+  'index.html': ['mc.yandex.ru'],
+  'programs.html': [],
+  'program.html': [],
+  'schedule.html': [],
+  'students.html': [],
+  'faq.html': [],
+  'contacts.html': [],
+  'news.html': ['mc.yandex.ru'],
+  'ai-lecture.html': ['mc.yandex.ru','cdn.jsdelivr.net','cdnjs.cloudflare.com'],
+  'media-player.html': [],
+  'vk-auth.html': ['unpkg.com']
+};
+for (const [page, allowedHosts] of Object.entries(externalScriptPolicy)) {
+  const html = fs.readFileSync(page,'utf8');
+  const urls = [...html.matchAll(/<script\b[^>]+src=["'](https?:\/\/[^"']+)["']/gi)].map(m => m[1]);
+  for (const raw of urls) {
+    const host = new URL(raw).hostname;
+    assert(allowedHosts.includes(host), page+' contains an unapproved external script host: '+host);
+  }
+  const dynamic = [...html.matchAll(/\.src\s*=\s*["'](https?:\/\/[^"']+)["']/gi)].map(m => m[1]);
+  for (const raw of dynamic) {
+    const host = new URL(raw).hostname;
+    assert(allowedHosts.includes(host), page+' dynamically loads an unapproved external script host: '+host);
+  }
+}
+
 console.log('Public snapshot security checks passed');
