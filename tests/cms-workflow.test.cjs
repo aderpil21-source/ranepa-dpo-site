@@ -217,7 +217,8 @@ assert(
   'Built-in documents must have full PRO overlay lifecycle'
 );
 assert(
-  structure.includes("x.sourceKey||siteVisibility['doc-custom:'"),
+  structure.includes("if(!x||x.sourceKey||x.archived===true") &&
+  structure.includes("siteVisibility['doc-custom:'+x.id]"),
   'Document overrides must not render as duplicate custom cards'
 );
 
