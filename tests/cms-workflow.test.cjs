@@ -403,4 +403,16 @@ assert(
   'Failed CMS saves must rollback version pointer and redo history'
 );
 
+
+assert(
+  entities.includes("window.siteProgramArchiveAny") &&
+  entities.includes("window.siteProgramRestoreBase"),
+  'Base programs must support trash and restore lifecycle'
+);
+assert(
+  structure.includes("siteCustomBlocks||[]).slice().sort") &&
+  structure.includes("cmsOrder"),
+  'Information block renderer must honor persisted drag order'
+);
+
 console.log('CMS workflow regression checks passed');
