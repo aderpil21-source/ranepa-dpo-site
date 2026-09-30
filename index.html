@@ -3120,6 +3120,10 @@
                             siteCustomPrograms = Array.isArray(cachedSettings.customPrograms) ? cachedSettings.customPrograms : siteCustomPrograms;
                             siteCustomContacts = Array.isArray(cachedSettings.customContacts) ? cachedSettings.customContacts : siteCustomContacts;
                             siteCustomFaqs = Array.isArray(cachedSettings.customFaqs) ? cachedSettings.customFaqs : siteCustomFaqs;
+                            siteCustomSchedules = Array.isArray(cachedSettings.customSchedules) ? cachedSettings.customSchedules : siteCustomSchedules;
+                            siteCustomNavItems = Array.isArray(cachedSettings.customNavItems) ? cachedSettings.customNavItems : siteCustomNavItems;
+                            siteCustomDocs = Array.isArray(cachedSettings.customDocs) ? cachedSettings.customDocs : siteCustomDocs;
+                            siteCustomBlocks = Array.isArray(cachedSettings.customBlocks) ? cachedSettings.customBlocks : siteCustomBlocks;
                             siteThemeConfig = cachedSettings.theme && typeof cachedSettings.theme === 'object' ? cachedSettings.theme : siteThemeConfig;
                             siteCurrentVersionId = cachedSettings.currentVersionId || siteCurrentVersionId || null;
                             cacheSiteSettings(cachedSettings);
@@ -5733,7 +5737,7 @@ if (legacyNewsHash.startsWith('#news=')) {
 </script>
 <script src="./site-admin-entities.js?v=4"></script>
 <script src="./site-admin-structure.js?v=2"></script>
-<script src="./site-admin-workflow.js?v=1"></script>
+<script src="./site-admin-workflow.js?v=2"></script>
 <script src="./owl-engine.js?v=20260927-4"></script>
 <script src="./portal-live-alert.js?v=20260927-1"></script>
 </html>

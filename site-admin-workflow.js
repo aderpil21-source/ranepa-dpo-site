@@ -13,6 +13,10 @@ const defs={
 const uid=p=>p+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
 function refresh(){if(typeof applySiteCustomContent==='function')applySiteCustomContent();else renderSiteAdminPanel();}
 
+function normalizeOrder(type,arr){
+  if(type==='programs') return arr.map((x,i)=>Object.assign({},x,{cmsOrder:i}));
+  return arr;
+}
 async function save(reason){refresh();await saveSiteSettings({recordVersion:true,reason});}
 window.siteWorkflowDuplicate=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get(),src=arr.find(x=>x&&String(x.id)===String(id));if(!src)return;
@@ -31,7 +35,7 @@ window.siteWorkflowTogglePublish=async function(type,id){
 };
 window.siteWorkflowMove=async function(type,id,dir){
   const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(x=>x&&String(x.id)===String(id)),j=i+Number(dir);
-  if(i<0||j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];d.set(arr);await save('Изменён порядок: '+d.label);
+  if(i<0||j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];d.set(normalizeOrder(type,arr));await save('Изменён порядок: '+d.label);
 };
 window.siteWorkflowDelete=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get(),x=arr.find(y=>y&&String(y.id)===String(id));if(!x||!confirm('Удалить «'+d.title(x)+'»?'))return;
@@ -40,7 +44,7 @@ window.siteWorkflowDelete=async function(type,id){
 
 function row(type,x,index,total){
   const d=defs[type],draft=x.active===false;
-  return '<div class="cms-flow-row" data-flow-search="'+esc((d.title(x)+' '+d.label).toLowerCase())+'">'+
+  return '<div class="cms-flow-row" draggable="true" data-flow-type="'+esc(type)+'" data-flow-id="'+esc(x.id)+'" data-flow-search="'+esc((d.title(x)+' '+d.label).toLowerCase())+'">'+
     '<span class="cms-flow-grip" title="Изменить порядок">⋮⋮</span>'+
     '<div class="cms-flow-name"><b>'+esc(d.title(x))+'</b><small>'+(draft?'Черновик':'Опубликовано')+'</small></div>'+
     '<div class="cms-flow-actions">'+
@@ -61,6 +65,43 @@ function panel(){
   Object.entries(defs).forEach(([type,d])=>{const arr=d.get();if(!arr.length)return;html+='<details class="cms-flow-group" open><summary>'+esc(d.label)+' <small>'+arr.length+'</small></summary>'+arr.map((x,i)=>row(type,x,i,arr.length)).join('')+'</details>';});
   el.innerHTML=html;
   const q=el.querySelector('#cmsFlowSearch');q?.addEventListener('input',()=>{const s=q.value.trim().toLowerCase();el.querySelectorAll('.cms-flow-row').forEach(r=>r.hidden=!!s&&!r.dataset.flowSearch.includes(s));});
+  bindDrag(el);
+}
+let dragState=null;
+function clearDragMarks(root){
+  root.querySelectorAll('.cms-flow-row').forEach(r=>r.classList.remove('dragging','drop-before','drop-after'));
+}
+function bindDrag(root){
+  root.querySelectorAll('.cms-flow-row').forEach(row=>{
+    row.addEventListener('dragstart',e=>{
+      dragState={type:row.dataset.flowType,id:row.dataset.flowId};
+      row.classList.add('dragging');
+      if(e.dataTransfer){e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',dragState.type+':'+dragState.id);}
+    });
+    row.addEventListener('dragend',()=>{clearDragMarks(root);dragState=null;});
+    row.addEventListener('dragover',e=>{
+      if(!dragState||dragState.type!==row.dataset.flowType||dragState.id===row.dataset.flowId)return;
+      e.preventDefault();
+      clearDragMarks(root);
+      row.classList.add((e.clientY-row.getBoundingClientRect().top)<row.offsetHeight/2?'drop-before':'drop-after');
+    });
+    row.addEventListener('drop',async e=>{
+      if(!dragState||dragState.type!==row.dataset.flowType||dragState.id===row.dataset.flowId)return;
+      e.preventDefault();
+      const type=dragState.type,d=defs[type],arr=d.get().slice();
+      const from=arr.findIndex(x=>x&&String(x.id)===String(dragState.id));
+      let to=arr.findIndex(x=>x&&String(x.id)===String(row.dataset.flowId));
+      if(from<0||to<0)return;
+      const after=row.classList.contains('drop-after');
+      const [item]=arr.splice(from,1);
+      if(from<to)to--;
+      if(after)to++;
+      arr.splice(Math.max(0,Math.min(to,arr.length)),0,item);
+      d.set(normalizeOrder(type,arr));
+      clearDragMarks(root);dragState=null;
+      await save('Изменён порядок drag-and-drop: '+d.label);
+    });
+  });
 }
 function styles(){
   if(document.getElementById('cmsFlowStyles'))return;const s=document.createElement('style');s.id='cmsFlowStyles';s.textContent=`
@@ -69,8 +110,9 @@ function styles(){
 .cms-flow-head>div{display:flex;flex-direction:column;gap:2px}.cms-flow-head b{font-size:.78rem}.cms-flow-head small,.cms-flow-name small{font-size:.62rem;color:#94a3b8}
 .cms-flow-head input{min-width:0;width:48%;border:1px solid rgba(255,255,255,.12);background:#0b1220;color:#fff;border-radius:8px;padding:7px 9px;font-size:.7rem}
 .cms-flow-group{border-bottom:1px solid rgba(255,255,255,.06)}.cms-flow-group>summary{padding:9px 10px;font-size:.72rem;font-weight:850;cursor:pointer}
-.cms-flow-row{display:grid;grid-template-columns:24px minmax(0,1fr);gap:7px;padding:8px 9px;border-top:1px solid rgba(255,255,255,.055)}
-.cms-flow-grip{grid-row:1/3;display:grid;place-items:center;color:#64748b;font-size:.9rem}.cms-flow-name{display:flex;flex-direction:column;gap:2px;min-width:0}.cms-flow-name b{font-size:.69rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cms-flow-row{display:grid;grid-template-columns:24px minmax(0,1fr);gap:7px;padding:8px 9px;border-top:1px solid rgba(255,255,255,.055);transition:opacity .16s ease,background .16s ease,box-shadow .16s ease}
+.cms-flow-row.dragging{opacity:.42}.cms-flow-row.drop-before{box-shadow:inset 0 2px 0 #38bdf8}.cms-flow-row.drop-after{box-shadow:inset 0 -2px 0 #38bdf8}
+.cms-flow-grip{grid-row:1/3;display:grid;place-items:center;color:#64748b;font-size:.9rem;cursor:grab}.cms-flow-row:active .cms-flow-grip{cursor:grabbing}.cms-flow-name{display:flex;flex-direction:column;gap:2px;min-width:0}.cms-flow-name b{font-size:.69rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cms-flow-actions{grid-column:2;display:flex;flex-wrap:wrap;gap:4px}.cms-flow-actions button{border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:#e5e7eb;border-radius:7px;padding:5px 7px;font-size:.6rem;font-weight:800;cursor:pointer}.cms-flow-actions button:disabled{opacity:.3;cursor:default}.cms-flow-actions .danger{color:#fecdd3;border-color:rgba(202,15,62,.3)}
 `;document.head.appendChild(s);
 }
