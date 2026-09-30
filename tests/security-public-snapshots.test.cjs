@@ -100,4 +100,15 @@ for (const path of ['/vk-auth.html','/media-player.html','/site-settings.json','
     'robots.txt must discourage indexing of '+path);
 }
 
+
+for (const file of ['programs-page.js','schedule-page.js','contacts-page.js']) {
+  const source = fs.readFileSync(file,'utf8');
+  assert(!source.includes('__site_admin_settings__'),
+    file+' must not read raw CMS settings from the public news API');
+  assert(!source.includes('?type=news'),
+    file+' must not use the public news API as a settings transport');
+  assert(source.includes('site-settings.json'),
+    file+' must use the sanitized public settings snapshot');
+}
+
 console.log('Public snapshot security checks passed');
