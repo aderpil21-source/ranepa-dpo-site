@@ -75,4 +75,10 @@ assert(
   'Structure editor must close only after confirmed save'
 );
 
+
+assert(
+  structure.includes("if(override.active===false||override.archived===true)return"),
+  'Inactive schedule overrides must suppress base schedule entries'
+);
+
 console.log('CMS workflow regression checks passed');
