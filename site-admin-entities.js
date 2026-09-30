@@ -110,8 +110,9 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     const office=(text.match(/Каб\.?\s*([^\n]+)/i)||[])[1]||'';
     const ext=(text.match(/доб\.?\s*(\d+)/i)||[])[1]||'';
     const grid=card.closest('.contacts-grid');
-    let dep='';if(grid){let p=grid.previousElementSibling;while(p&&!dep){if(p.classList&&p.classList.contains('department-title'))dep=String(p.textContent||'').trim();p=p.previousElementSibling;}}
-    return {id,sourceKey:id,name:String(nameEl&&nameEl.textContent||'').trim(),position:String(posEl&&posEl.textContent||'').trim(),department:dep,office:String(office).trim(),phone:String(phone&&phone.textContent||'').trim(),extension:String(ext).trim(),email:String(email&&email.textContent||'').trim(),active:true,custom:false};
+    let dep='',departmentKey=card.__cmsOriginalContact&&card.__cmsOriginalContact.departmentKey||'';
+    if(grid){let p=grid.previousElementSibling;while(p&&!dep){if(p.classList&&p.classList.contains('department-title')){dep=String(p.textContent||'').trim();if(!departmentKey)departmentKey=String(p.dataset&&p.dataset.i18n||'').trim();}p=p.previousElementSibling;}}
+    return {id,sourceKey:id,name:String(nameEl&&nameEl.textContent||'').trim(),position:String(posEl&&posEl.textContent||'').trim(),department:dep,departmentKey,office:String(office).trim(),phone:String(phone&&phone.textContent||'').trim(),extension:String(ext).trim(),email:String(email&&email.textContent||'').trim(),active:true,custom:false};
   }
   function baseContacts(){
     return [...document.querySelectorAll('#contactsSection .contacts-grid .contact-card:not(.site-custom-contact)')].map(baseContactRecord).filter(Boolean);
@@ -124,6 +125,14 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     return custom||base||null;
   }
 
+  function contactGridByKey(key){
+    const k=String(key||'').trim();if(!k)return null;
+    const title=document.querySelector('#contactsSection .department-title[data-i18n="'+k.replace(/"/g,'\\\"')+'"]');
+    if(!title)return null;
+    let node=title.nextElementSibling;
+    while(node&&!node.classList?.contains('contacts-grid'))node=node.nextElementSibling;
+    return node&&node.classList?.contains('contacts-grid')?node:null;
+  }
   function baseContactCardByKey(key){
     return [...document.querySelectorAll('#contactsSection .contacts-grid .contact-card:not(.site-custom-contact)')].find(card=>baseContactKey(card)===key)||null;
   }
@@ -134,11 +143,13 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
         card.__cmsOriginalContact={
           name:card.querySelector('h4')?.innerHTML||'',
           position:card.querySelector('.position')?.innerHTML||'',
-          details:card.querySelector('.details')?.innerHTML||''
+          details:card.querySelector('.details')?.innerHTML||'',
+          departmentKey:base.departmentKey||''
         };
       }
       const orig=card.__cmsOriginalContact;
       const nameEl=card.querySelector('h4'),posEl=card.querySelector('.position'),details=card.querySelector('.details');
+      const originalGrid=contactGridByKey(orig.departmentKey);if(originalGrid&&card.parentNode!==originalGrid)originalGrid.appendChild(card);
       if(nameEl)nameEl.innerHTML=orig.name;
       if(posEl)posEl.innerHTML=orig.position;
       if(details)details.innerHTML=orig.details;
@@ -149,6 +160,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
         card.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');
         return;
       }
+      const overrideGrid=contactGridByKey(ov.departmentKey);if(overrideGrid&&card.parentNode!==overrideGrid)overrideGrid.appendChild(card);
       if(nameEl&&ov.name!=null)nameEl.textContent=ov.name;
       if(posEl&&ov.position!=null)posEl.textContent=ov.position;
       if(details){
@@ -401,7 +413,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     modal.querySelector('#siteEntityFields').innerHTML=
       field('name','ФИО',c&&c.name,'text',true)+
       field('position','Должность',c&&c.position,'text',true)+
-      field('department','Подразделение / отдел',c&&c.department,'text',true)+
+      field('departmentKey','Раздел контактов',c&&c.departmentKey||'dept1','select',true,[['dept1','Центр дополнительного образования'],['dept2','Отдел ПК и переподготовки государственных служащих'],['dept3','Отдел дополнительного образования']])+
       field('office','Кабинет',c&&c.office,'text',false)+
       field('phone','Телефон',c&&c.phone,'text',false)+
       field('extension','Добавочный',c&&c.extension,'text',false)+
