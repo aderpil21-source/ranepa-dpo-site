@@ -250,8 +250,8 @@ assert(
   indexHtml.includes("let siteSettingsDirty = false") &&
   indexHtml.includes("function flushSiteSettingsSave()") &&
   indexHtml.includes("siteSettingsDirty = true;") &&
-  indexHtml.includes("const dirtyBeforeSave = siteSettingsDirty") &&
-  indexHtml.includes("siteSettingsDirty = dirtyBeforeSave"),
+  indexHtml.includes("siteSettingsDirty = siteSavedRevision < siteSaveRevision") &&
+  indexHtml.includes("settleSiteSaveWaiters(false, savingRevision)"),
   'CMS must expose pending-save state and preserve it correctly across failed saves'
 );
 assert(
