@@ -141,4 +141,38 @@ assert(
   'Base FAQ overrides must not render duplicate custom FAQ cards'
 );
 
+
+assert(
+  entities.includes("function baseFaqs") &&
+  entities.includes("function applyBaseFaqOverrides") &&
+  entities.includes("window.siteFaqSetPublished") &&
+  entities.includes("window.siteFaqDuplicateAny") &&
+  entities.includes("window.siteFaqArchiveAny") &&
+  entities.includes("window.siteFaqRestoreBase"),
+  'Existing FAQ entries must be manageable through PRO overlays'
+);
+assert(
+  entities.includes("if(!f||!f.id||f.active===false||f.sourceKey) return"),
+  'Base FAQ overrides must not render duplicate custom FAQ cards'
+);
+assert(
+  structure.includes("function baseDocs") &&
+  structure.includes("function applyBaseDocOverrides") &&
+  structure.includes("window.siteDocSetPublished") &&
+  structure.includes("window.siteDocDuplicateAny") &&
+  structure.includes("window.siteDocArchiveAny") &&
+  structure.includes("window.siteDocRestoreBase"),
+  'Existing document cards must be manageable through PRO overlays'
+);
+assert(
+  structure.includes("card.onclick=()=>openDocLightbox(image"),
+  'Edited base documents must open the current PRO image in lightbox'
+);
+assert(
+  workflow.includes("siteCustomContacts.filter(x=>x&&!x.sourceKey)") &&
+  workflow.includes("siteCustomFaqs.filter(x=>x&&!x.sourceKey)") &&
+  workflow.includes("siteCustomDocs.filter(x=>x&&!x.sourceKey)"),
+  'Base overlay records must stay out of custom workflow lists'
+);
+
 console.log('CMS workflow regression checks passed');
