@@ -3210,20 +3210,21 @@
                 }
             }
 
-            let data;
-            if (useAdmin && siteAdminToken) {
-                data = await siteAdminRequest(API_URL, {
-                    method:'POST',
-                    headers:{ 'Content-Type':'application/json' },
-                    body:JSON.stringify({ action:'newsReadAdmin', token:siteAdminToken }),
-                    cache:'no-store'
-                });
-                if (!data || data.error === 'unknown_action') {
-                    throw new Error('Сервер не поддерживает безопасное чтение настроек');
-                }
-            } else {
-                const publicUrl = API_URL + '?type=news&_sitecfg=' + Date.now();
-                data = await siteAdminRequest(publicUrl, { method:'GET', cache:'no-store' });
+            if (!useAdmin || !siteAdminToken) {
+                // Public visitors use only the sanitized same-origin snapshot loaded above.
+                // Raw __site_admin_settings__ is never requested from Apps Script.
+                renderSiteVersionUI();
+                return true;
+            }
+
+            const data = await siteAdminRequest(API_URL, {
+                method:'POST',
+                headers:{ 'Content-Type':'application/json' },
+                body:JSON.stringify({ action:'newsReadAdmin', token:siteAdminToken }),
+                cache:'no-store'
+            });
+            if (!data || data.error === 'unknown_action') {
+                throw new Error('Сервер не поддерживает безопасное чтение настроек');
             }
             const items = Array.isArray(data.items) ? data.items : [];
             const item = items.find(function (n) { return n && n.id === SITE_SETTINGS_ID; });
@@ -3244,7 +3245,7 @@
             siteThemeConfig = parsed.theme || {};
             siteSeoConfig = parsed.seo || {};
             siteCurrentVersionId = parsed.currentVersionId || siteCurrentVersionId || null;
-            if (useAdmin) loadSiteVersionHistory(items);
+            loadSiteVersionHistory(items);
             cacheSiteSettings(parsed);
             applySiteVisibility();
             applySiteContentOverrides();
@@ -3253,7 +3254,7 @@
             if (siteAdminMode) {
                 renderSiteAdminPanel();
                 if (siteTextEditMode) decorateSiteEditableElements();
-                if (useAdmin) await ensureInitialSiteVersion();
+                await ensureInitialSiteVersion();
             }
             renderSiteVersionUI();
             siteAdminSetStatus('Настройки синхронизированы', 'ok');
