@@ -70,6 +70,13 @@ function renderPrograms() {
     if (p.active === false) return false;
     const hay = [p.title_ru,p.desc_ru,p.type,p.format,p.hours,p.dates].join(' ').toLowerCase();
     return (!q || hay.includes(q)) && (!type || p.type === type);
+  }).sort((a,b) => {
+    const ao = Number.isFinite(Number(a?.cmsOrder)) ? Number(a.cmsOrder) : null;
+    const bo = Number.isFinite(Number(b?.cmsOrder)) ? Number(b.cmsOrder) : null;
+    if (ao !== null && bo !== null && ao !== bo) return ao - bo;
+    if (ao !== null && bo === null) return -1;
+    if (ao === null && bo !== null) return 1;
+    return String(a?.title_ru || '').localeCompare(String(b?.title_ru || ''), 'ru');
   });
 
   if (!items.length) {

@@ -4374,8 +4374,16 @@
             else htmlMap[t] = {};
         });
         
-        // Сортируем программы по алфавиту изначально
-        programs.sort((a, b) => String(a.title_ru).trim().localeCompare(String(b.title_ru).trim(), 'ru'));
+        // PRO-порядок имеет приоритет для вручную управляемых программ,
+        // остальные программы сохраняют алфавитную сортировку.
+        programs.sort((a, b) => {
+            const ao = Number.isFinite(Number(a && a.cmsOrder)) ? Number(a.cmsOrder) : null;
+            const bo = Number.isFinite(Number(b && b.cmsOrder)) ? Number(b.cmsOrder) : null;
+            if (ao !== null && bo !== null && ao !== bo) return ao - bo;
+            if (ao !== null && bo === null) return -1;
+            if (ao === null && bo !== null) return 1;
+            return String(a && a.title_ru || '').trim().localeCompare(String(b && b.title_ru || '').trim(), 'ru');
+        });
         globalPrograms = programs;
 
         programs.forEach(prog => {
