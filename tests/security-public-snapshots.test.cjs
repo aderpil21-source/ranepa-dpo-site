@@ -16,10 +16,21 @@ assert(
 
 for (const name of ['customPrograms','customContacts','customFaqs','customSchedules','customNavItems','customDocs','customBlocks']) {
   const items = Array.isArray(settings[name]) ? settings[name] : [];
-  assert(
-    items.every(x => x && x.active !== false && x.archived !== true),
-    'Public '+name+' must contain only published, non-archived records'
-  );
+  for (const item of items) {
+    assert(item && typeof item === 'object', 'Public '+name+' records must be objects');
+    if (item.active === false || item.archived === true) {
+      assert(
+        typeof item.sourceKey === 'string' && item.sourceKey.length > 0,
+        'Inactive public '+name+' records are allowed only as base-entity tombstones'
+      );
+      const allowed = new Set(['id','sourceKey','active','archived','cmsOrder']);
+      assert(
+        Object.keys(item).every(k => allowed.has(k)),
+        'Public tombstones must not leak draft content or private metadata'
+      );
+      assert(item.active === false, 'Public tombstones must remain inactive');
+    }
+  }
 }
 
 for (const rec of Object.values(settings.attributes || {})) {
@@ -51,8 +62,10 @@ const newsWorkflow = fs.readFileSync('.github/workflows/refresh-news-data.yml','
 assert(
   newsWorkflow.includes('if not str(key).startswith("material:")') &&
   newsWorkflow.includes('public_entities') &&
-  newsWorkflow.includes('public_attributes'),
-  'Public settings generator must sanitize secret and draft CMS data'
+  newsWorkflow.includes('public_attributes') &&
+  newsWorkflow.includes('is_base_override') &&
+  newsWorkflow.includes('tombstone'),
+  'Public settings generator must sanitize secret/draft CMS data while preserving safe base tombstones'
 );
 
 const portalWorkflow = fs.readFileSync('.github/workflows/refresh-portal-data.yml','utf8');
