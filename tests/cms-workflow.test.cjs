@@ -383,4 +383,15 @@ assert(
   'Undo and redo stacks must remain consistent when version switching fails'
 );
 
+
+assert(
+  indexHtml.includes("let siteSaveRevision = 0") &&
+  indexHtml.includes("let siteSavedRevision = 0") &&
+  indexHtml.includes("let siteSaveWaiters = []") &&
+  indexHtml.includes("siteSaveWaiters.push({ revision:requestedRevision, resolve:resolve })") &&
+  indexHtml.includes("settleSiteSaveWaiters(true, siteSavedRevision)") &&
+  indexHtml.includes("settleSiteSaveWaiters(false, savingRevision)"),
+  'Concurrent CMS saves must wait for the revision that contains their own changes'
+);
+
 console.log('CMS workflow regression checks passed');
