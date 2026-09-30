@@ -3144,16 +3144,16 @@
             if (opts.body && typeof opts.body === 'string') action = JSON.parse(opts.body).action || '';
         } catch (e) {}
 
+        const authCode = String(data && (data.code || data.error) || '').trim().toUpperCase();
         const authExpired = action !== 'newsLogin' && (
-            data && (
-                data.code === 'SESSION_EXPIRED' ||
-                data.code === 'UNAUTHORIZED' ||
-                data.error === 'unauthorized' ||
-                data.error === 'SESSION_EXPIRED'
-            )
+            response.status === 401 ||
+            response.status === 403 ||
+            authCode === 'SESSION_EXPIRED' ||
+            authCode === 'UNAUTHORIZED'
         );
 
         if (authExpired) {
+            if (typeof toggleSiteTextEditMode === 'function') toggleSiteTextEditMode(false);
             siteAdminToken = null;
             siteAdminMode = false;
             sessionStorage.removeItem('siteAdminToken');
@@ -3163,6 +3163,9 @@
             const reopen = document.getElementById('siteAdminReopen');
             if (panel) panel.classList.remove('active');
             if (reopen) reopen.classList.remove('active');
+            applySiteVisibility();
+            applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
             const err = new Error('Сессия PRO истекла. Войдите снова.');
             err.code = 'SESSION_EXPIRED';
             throw err;
