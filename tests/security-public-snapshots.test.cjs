@@ -177,4 +177,13 @@ assert(
   'AI lecture must not use unversioned MediaPipe CDN URLs'
 );
 
+
+const mediaAdmin = fs.readFileSync('site-admin-media.js','utf8');
+assert(
+  mediaAdmin.includes("const allowed=new Set(['png','jpg','jpeg','webp','gif','pdf','doc','docx','ppt','pptx','xls','xlsx','zip','mp4','webm','mov','m4v','avi','mkv','mp3','wav','m4a','ogg'])") &&
+  mediaAdmin.includes("image\\/svg\\+xml") &&
+  mediaAdmin.includes("text\\/html"),
+  'PRO media upload must reject active web files and use an explicit extension allowlist'
+);
+
 console.log('Public snapshot security checks passed');
