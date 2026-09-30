@@ -315,4 +315,12 @@ assert(
   'News popups must not retain window.opener access'
 );
 
+
+const cachedNewsBranch = newsHtml.match(/const cached = readCachedNews\(\);[\s\S]*?\/\/ Первый визит:/);
+assert(
+  cachedNewsBranch &&
+  cachedNewsBranch[0].includes("refreshPublicNewsSnapshot({ silent:true, force:true, openHash:true })"),
+  'Cached public news must immediately revalidate against the sanitized snapshot'
+);
+
 console.log('Public snapshot security checks passed');
