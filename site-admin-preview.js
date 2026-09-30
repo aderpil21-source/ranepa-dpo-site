@@ -1,5 +1,14 @@
 (function(){
 'use strict';
+const isEmbeddedPreview=new URLSearchParams(location.search).get('cmsPreview')==='drafts';
+if(isEmbeddedPreview){
+  const style=document.createElement('style');
+  style.id='cmsEmbeddedPreviewStyles';
+  style.textContent='#siteAdminPanel,#siteAdminReopen,#siteAdminLoginModal{display:none!important}body.site-admin-text-editing .site-admin-editable{outline:none!important;background:transparent!important}.site-admin-preview-hidden{opacity:1!important;filter:none!important;outline:none!important}.cms-preview-draft{outline:2px dashed #f59e0b!important;outline-offset:4px!important;position:relative!important}.cms-preview-draft::before{content:"ЧЕРНОВИК";position:absolute;z-index:9999;top:8px;right:8px;padding:4px 7px;border-radius:999px;background:#f59e0b;color:#111827;font:800 10px/1.2 Montserrat,sans-serif;letter-spacing:.04em}';
+  document.head.appendChild(style);
+  document.documentElement.classList.add('cms-embedded-preview');
+  return;
+}
 let modal=null,frame=null,device='desktop',theme='dark';
 function ensure(){
   if(modal)return modal;
