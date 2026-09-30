@@ -522,6 +522,65 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(item.name||id)});
   };
 
+  function faqCatalogForAdmin(){
+    const map=new Map();
+    baseFaqs().forEach(x=>{if(x&&x.id)map.set(String(x.id),Object.assign({},x));});
+    (siteCustomFaqs||[]).forEach(x=>{
+      if(!x||!x.id)return;
+      const key=String(x.sourceKey||x.id),base=map.get(key)||{};
+      map.set(key,Object.assign({},base,x,{id:key}));
+    });
+    return [...map.values()];
+  }
+  function upsertFaqOverride(id,patch){
+    const fid=String(id),idx=(siteCustomFaqs||[]).findIndex(x=>x&&(String(x.id)===fid||String(x.sourceKey||'')===fid));
+    if(idx>=0)siteCustomFaqs[idx]=Object.assign({},siteCustomFaqs[idx],patch,{id:fid,sourceKey:fid,custom:true});
+    else siteCustomFaqs.push(Object.assign({id:fid,sourceKey:fid,custom:true},patch));
+  }
+  window.siteFaqSetPublished=async function(id,published){
+    const base=baseFaqs().find(x=>String(x.id)===String(id));
+    if(!base){
+      if(typeof siteWorkflowTogglePublish==='function')return siteWorkflowTogglePublish('faq',id);
+      return;
+    }
+    const before=siteCustomFaqs.map(x=>x&&Object.assign({},x));
+    upsertFaqOverride(id,{active:!!published,archived:false});
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:(published?'Опубликован FAQ: ':'FAQ в черновик: ')+(base.question||id)});
+    if(!ok){siteCustomFaqs=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+  window.siteFaqDuplicateAny=async function(id){
+    const src=findFaq(id);if(!src)return;
+    const before=siteCustomFaqs.map(x=>x&&Object.assign({},x));
+    const copy=JSON.parse(JSON.stringify(src));copy.id=makeId('custom-faq-');delete copy.sourceKey;copy.custom=true;copy.active=false;copy.archived=false;delete copy.archivedAt;copy.question=(copy.question||'Вопрос')+' — копия';
+    siteCustomFaqs.push(copy);applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Создана копия FAQ: '+copy.question});
+    if(!ok){siteCustomFaqs=before;applySiteCustomContent();renderSiteAdminPanel();return;}
+    openSiteFaqEditor(copy.id);
+  };
+  window.siteFaqArchiveAny=async function(id){
+    const base=baseFaqs().find(x=>String(x.id)===String(id));
+    if(!base){
+      if(typeof siteWorkflowDelete==='function')return siteWorkflowDelete('faq',id);
+      return;
+    }
+    if(!confirm('Переместить вопрос «'+(base.question||id)+'» в корзину?'))return;
+    const before=siteCustomFaqs.map(x=>x&&Object.assign({},x));
+    upsertFaqOverride(id,{active:false,archived:true,archivedAt:new Date().toISOString()});
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'В корзину FAQ: '+(base.question||id)});
+    if(!ok){siteCustomFaqs=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+  window.siteFaqRestoreBase=async function(id){
+    const base=baseFaqs().find(x=>String(x.id)===String(id));if(!base)return;
+    const before=siteCustomFaqs.map(x=>x&&Object.assign({},x));
+    upsertFaqOverride(id,{active:false,archived:false});
+    const idx=siteCustomFaqs.findIndex(x=>x&&(String(x.id)===String(id)||String(x.sourceKey||'')===String(id)));if(idx>=0)delete siteCustomFaqs[idx].archivedAt;
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Восстановлен FAQ из корзины: '+(base.question||id)});
+    if(!ok){siteCustomFaqs=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+
   function contactCatalogForAdmin(){
     const map=new Map();
     baseContacts().forEach(x=>{if(x&&x.id)map.set(String(x.id),Object.assign({},x));});
@@ -683,11 +742,21 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       '</div>';
     }).join('')||'<div class="site-admin-entity-empty">Контакты не найдены.</div>';
 
-    const faqs=(siteCustomFaqs||[]).map(f=>{
-      const key='faq:'+f.id;
-      return '<div class="site-admin-row"><span>'+esc(f.question||f.id)+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
-      '<div class="site-admin-entity-actions"><button type="button" onclick="openSiteFaqEditor(\''+esc(f.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomFaq(\''+esc(f.id)+'\')">Удалить</button></div>';
-    }).join('')||'<div class="site-admin-entity-empty">Добавленных вручную вопросов пока нет.</div>';
+    const faqList=faqCatalogForAdmin();
+    const faqs=faqList.map(f=>{
+      const isBase=String(f.id||'').indexOf('base-faq:')===0;
+      const draft=f.active===false&&f.archived!==true,arch=f.archived===true;
+      const key=isBase?'':('faq:'+f.id);
+      return '<div class="site-admin-row"><span>'+esc(f.question||f.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span>'+
+      (key?'<label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label>':'')+'</div>'+
+      '<div class="site-admin-entity-actions">'+
+      (arch?(isBase?'<button type="button" onclick="siteFaqRestoreBase(\''+esc(f.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'faq\',\''+esc(f.id)+'\')">Восстановить</button>'):
+        '<button type="button" onclick="siteFaqSetPublished(\''+esc(f.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
+        '<button type="button" onclick="siteFaqDuplicateAny(\''+esc(f.id)+'\')">Дублировать</button>'+
+        '<button type="button" onclick="openSiteFaqEditor(\''+esc(f.id)+'\')">Редактировать</button>'+
+        '<button type="button" class="danger" onclick="siteFaqArchiveAny(\''+esc(f.id)+'\')">В корзину</button>')+
+      '</div>';
+    }).join('')||'<div class="site-admin-entity-empty">FAQ не найдены.</div>';
 
     const cfg=Object.assign({},SITE_THEME_DEFAULTS,siteThemeConfig||{});
     const themeDefs=[
@@ -701,7 +770,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Сова: кнопки меню" open><summary>Сова: кнопки меню</summary><div class="site-admin-owl-grid">'+owlItems+'</div></details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные программы"><summary>Программы — управление ('+(siteCustomPrograms||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteProgramEditor()">＋ Добавить программу</button>'+programs+'</details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные контакты"><summary>Контакты — управление ('+(siteCustomContacts||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteContactEditor()">＋ Добавить контакт</button>'+contacts+'</details>'+
-      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="FAQ — ручное управление"><summary>FAQ — ручное управление ('+(siteCustomFaqs||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteFaqEditor()">＋ Добавить вопрос</button>'+faqs+'</details>';
+      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="FAQ — ручное управление"><summary>FAQ — управление ('+(siteCustomFaqs||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteFaqEditor()">＋ Добавить вопрос</button>'+faqs+'</details>';
   }
 
   const originalVisibilityTargets=siteVisibilityTargets;
