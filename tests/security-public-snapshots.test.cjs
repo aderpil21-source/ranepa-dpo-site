@@ -363,4 +363,30 @@ assert(
   'Public contact cards must expose stable CMS keys'
 );
 
+
+const programHtml = fs.readFileSync('program.html','utf8');
+const publicPrograms = fs.readFileSync('programs-page.js','utf8');
+
+assert(
+  programHtml.includes("./site-settings.json?v=") &&
+  !programHtml.includes("SITE_ADMIN_API") &&
+  !/script\.google\.com\/macros\//.test(programHtml),
+  'Direct program pages must use only the sanitized public settings snapshot'
+);
+assert(
+  programHtml.includes("customMatch.active===false||customMatch.archived===true") &&
+  programHtml.includes("program=Object.assign({active:true,tab:'tab-pk',sector:'prof'},program||{},customMatch)"),
+  'Direct program pages must honor base tombstones and overlay published overrides'
+);
+assert(
+  publicPrograms.includes("const id=String(p.id), baseRecord=map.get(id)||{}") &&
+  publicPrograms.includes("...baseRecord,...p"),
+  'Public program catalog must overlay sparse CMS overrides on base data'
+);
+assert(
+  publicContacts.includes("const hasDetails=['office','phone','extension','email'].some") &&
+  entitiesAdmin.includes("const hasDetails=['office','phone','extension','email'].some"),
+  'Sparse contact ordering overrides must not erase contact details'
+);
+
 console.log('Public snapshot security checks passed');
