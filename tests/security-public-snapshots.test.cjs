@@ -186,4 +186,24 @@ assert(
   'PRO media upload must reject active web files and use an explicit extension allowlist'
 );
 
+
+for (const page of ['index.html','programs.html','program.html','schedule.html','students.html','faq.html','contacts.html','news.html','ai-lecture.html','media-player.html','vk-auth.html','pay/index.html']) {
+  const html = fs.readFileSync(page,'utf8');
+  const blankLinks = [...html.matchAll(/<a\b[^>]*target=["']_blank["'][^>]*>/gi)].map(m => m[0]);
+  assert(
+    blankLinks.every(tag => /rel=["'][^"']*\bnoopener\b/i.test(tag)),
+    page+' must protect target=_blank links with rel=noopener'
+  );
+  assert(
+    !/<a\b[^>]+href=["']\s*javascript:/i.test(html),
+    page+' must not contain javascript: anchor URLs'
+  );
+}
+
+for (const file of ['index.html','news.html','programs-page.js','schedule-page.js','contacts-page.js','section-page.js','site-admin-entities.js','site-admin-structure.js','site-admin-workflow.js','site-admin-media.js','site-admin-seo.js']) {
+  const source = fs.readFileSync(file,'utf8');
+  assert(!/\beval\s*\(/.test(source), file+' must not use eval()');
+  assert(!/new\s+Function\s*\(/.test(source), file+' must not use new Function()');
+}
+
 console.log('Public snapshot security checks passed');
