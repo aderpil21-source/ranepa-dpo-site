@@ -336,4 +336,31 @@ assert(
   'Cached public news must immediately revalidate against the sanitized snapshot'
 );
 
+
+const entitiesAdmin = fs.readFileSync('site-admin-entities.js','utf8');
+const publicSchedule = fs.readFileSync('schedule-page.js','utf8');
+const publicContacts = fs.readFileSync('contacts-page.js','utf8');
+const contactsHtml = fs.readFileSync('contacts.html','utf8');
+
+assert(
+  entitiesAdmin.includes("sourceKey:'base-program:'+pid") &&
+  entitiesAdmin.includes("record.sourceKey='base-program:'+String(id)"),
+  'Base program overrides must be identifiable for safe public tombstones'
+);
+assert(
+  publicSchedule.includes("if(x.sourceKey){o.set(x.sourceKey,x);return}") &&
+  publicSchedule.includes("if(ov.active===false||ov.archived===true)return"),
+  'Public schedule must honor inactive base-entity tombstones'
+);
+assert(
+  publicContacts.includes("String(c.sourceKey||'')===sourceKey") &&
+  publicContacts.includes("!c.sourceKey&&c.active!==false&&c.archived!==true"),
+  'Public contacts must apply base overrides without duplicating them as custom cards'
+);
+assert(
+  contactsHtml.includes('data-site-contact-key="nameKanash"') &&
+  contactsHtml.includes('data-site-contact-key="nameKhamzina"'),
+  'Public contact cards must expose stable CMS keys'
+);
+
 console.log('Public snapshot security checks passed');
