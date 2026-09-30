@@ -425,4 +425,15 @@ assert(
   'Media manager must show where recent uploads are used in the page or CMS'
 );
 
+
+assert(
+  workflow.includes("new Set(['programs','contacts','faq','schedule','nav','docs','blocks'])"),
+  'Generic CMS drag-and-drop must persist cmsOrder for every entity type'
+);
+assert(
+  structure.includes("return out.concat(a).sort") &&
+  structure.includes("x&&x.cmsOrder"),
+  'Schedule merge must honor persisted cmsOrder'
+);
+
 console.log('CMS workflow regression checks passed');
