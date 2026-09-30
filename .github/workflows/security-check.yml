@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '*.html'
+      - 'news.html'
       - 'pay/index.html'
       - 'site-settings.json'
       - 'owl-files.json'
