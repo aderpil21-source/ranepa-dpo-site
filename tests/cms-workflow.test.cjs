@@ -107,4 +107,23 @@ assert(
   'Base schedule entries must have full CMS lifecycle controls'
 );
 
+
+assert(
+  entities.includes("function baseContacts") &&
+  entities.includes("function applyBaseContactOverrides") &&
+  entities.includes("window.siteContactSetPublished") &&
+  entities.includes("window.siteContactDuplicateAny") &&
+  entities.includes("window.siteContactArchiveAny") &&
+  entities.includes("window.siteContactRestoreBase"),
+  'Existing contact cards must be manageable through PRO overlays'
+);
+
+assert(
+  structure.includes("const y={...x,...override}") &&
+  structure.includes("window.siteScheduleSetPublished") &&
+  structure.includes("window.siteScheduleDuplicateAny") &&
+  structure.includes("window.siteScheduleArchiveAny"),
+  'Base schedule entries must use overlay merges and full lifecycle controls'
+);
+
 console.log('CMS workflow regression checks passed');
