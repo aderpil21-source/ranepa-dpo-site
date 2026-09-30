@@ -169,13 +169,45 @@ function docCatalogForAdmin(){
     const key=String(x.sourceKey||x.id),base=map.get(key)||{};
     map.set(key,Object.assign({},base,x,{id:key}));
   });
-  return [...map.values()];
+  return [...map.values()].sort((a,b)=>{
+    const ao=Number.isFinite(Number(a&&a.cmsOrder))?Number(a.cmsOrder):null;
+    const bo=Number.isFinite(Number(b&&b.cmsOrder))?Number(b.cmsOrder):null;
+    if(ao!==null&&bo!==null&&ao!==bo)return ao-bo;
+    if(ao!==null&&bo===null)return -1;
+    if(ao===null&&bo!==null)return 1;
+    return String(a&&a.id||'').localeCompare(String(b&&b.id||''));
+  });
 }
 function upsertDocOverride(id,patch){
   const did=String(id),idx=(siteCustomDocs||[]).findIndex(x=>x&&(String(x.id)===did||String(x.sourceKey||'')===did));
   if(idx>=0)siteCustomDocs[idx]=Object.assign({},siteCustomDocs[idx],patch,{id:did,sourceKey:did,custom:true});
   else siteCustomDocs.push(Object.assign({id:did,sourceKey:did,custom:true},patch));
 }
+function patchDocAny(id,patch){
+  const did=String(id),idx=(siteCustomDocs||[]).findIndex(x=>x&&(String(x.id)===did||String(x.sourceKey||'')===did));
+  if(idx>=0){siteCustomDocs[idx]=Object.assign({},siteCustomDocs[idx],patch);return;}
+  if(did.indexOf('base-doc:')===0)siteCustomDocs.push(Object.assign({id:did,sourceKey:did,custom:true},patch));
+}
+function docNodeId(node){
+  if(!node)return '';
+  if(node.classList.contains('site-custom-doc'))return String(node.dataset.siteDocId||'');
+  return baseDocKey(node);
+}
+function applyDocOrder(){
+  const grid=document.querySelector('[data-site-doc-grid]');if(!grid)return;
+  const order=new Map(docCatalogForAdmin().map((x,i)=>[String(x.id),i]));
+  [...grid.querySelectorAll('.doc-card')].sort((a,b)=>(order.get(docNodeId(a))??9999)-(order.get(docNodeId(b))??9999)).forEach(n=>grid.appendChild(n));
+}
+window.siteDocMoveAny=async function(id,dir){
+  const list=docCatalogForAdmin().filter(x=>x&&x.archived!==true),i=list.findIndex(x=>String(x.id)===String(id)),j=i+Number(dir);
+  if(i<0||j<0||j>=list.length)return;
+  [list[i],list[j]]=[list[j],list[i]];
+  const before=siteCustomDocs.map(x=>x&&Object.assign({},x));
+  list.forEach((x,index)=>patchDocAny(x.id,{cmsOrder:index}));
+  applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'Изменён порядок документов'});
+  if(!ok){siteCustomDocs=before;applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();}
+};
 window.siteDocSetPublished=async function(id,published){
   const base=baseDocs().find(x=>String(x.id)===String(id));
   if(!base){
@@ -278,7 +310,7 @@ function applyBaseDocOverrides(){
     }
   });
 }
-function renderDocs(){const g=document.querySelector('[data-site-doc-grid]');if(!g)return;g.querySelectorAll('.site-custom-doc').forEach(n=>n.remove());(siteCustomDocs||[]).forEach(x=>{if(!x||x.sourceKey||x.archived===true||(x.active===false&&!window.sitePreviewDraftMode)||siteVisibility['doc-custom:'+x.id]===false)return;const href=safeCmsHref(x.url),image=safeCmsMediaUrl(x.image);const c=document.createElement(href?'a':'div');c.className='doc-card site-custom-doc'+(x.active===false&&window.sitePreviewDraftMode?' cms-preview-draft':'');c.dataset.siteDocId=x.id;if(href)c.href=href;if(x.newTab&&href){c.target='_blank';c.rel='noopener noreferrer'}c.style.cssText='background:var(--bg-card);border:1px solid var(--border-glass);border-radius:22px;padding:20px;text-decoration:none;color:inherit;display:block';c.innerHTML=(image?'<img src="'+esc(image)+'" alt="'+esc(x.title||'')+'" style="width:100%;height:220px;object-fit:contain;margin-bottom:16px">':'')+'<h4 style="color:var(--text-main)">'+esc(x.title||'Документ')+'</h4><p style="color:var(--text-muted)">'+esc(x.subtitle||'')+'</p>';g.appendChild(c)})}
+function renderDocs(){const g=document.querySelector('[data-site-doc-grid]');if(!g)return;g.querySelectorAll('.site-custom-doc').forEach(n=>n.remove());(siteCustomDocs||[]).forEach(x=>{if(!x||x.sourceKey||x.archived===true||(x.active===false&&!window.sitePreviewDraftMode)||siteVisibility['doc-custom:'+x.id]===false)return;const href=safeCmsHref(x.url),image=safeCmsMediaUrl(x.image);const c=document.createElement(href?'a':'div');c.className='doc-card site-custom-doc'+(x.active===false&&window.sitePreviewDraftMode?' cms-preview-draft':'');c.dataset.siteDocId=x.id;if(href)c.href=href;if(x.newTab&&href){c.target='_blank';c.rel='noopener noreferrer'}c.style.cssText='background:var(--bg-card);border:1px solid var(--border-glass);border-radius:22px;padding:20px;text-decoration:none;color:inherit;display:block';c.innerHTML=(image?'<img src="'+esc(image)+'" alt="'+esc(x.title||'')+'" style="width:100%;height:220px;object-fit:contain;margin-bottom:16px">':'')+'<h4 style="color:var(--text-main)">'+esc(x.title||'Документ')+'</h4><p style="color:var(--text-muted)">'+esc(x.subtitle||'')+'</p>';g.appendChild(c)});applyDocOrder()}
 function renderBlocks(){document.querySelectorAll('.site-custom-info-block').forEach(n=>n.remove());(siteCustomBlocks||[]).forEach(x=>{if(!x||x.archived===true||(x.active===false&&!window.sitePreviewDraftMode)||siteVisibility['block-custom:'+x.id]===false)return;const t=x.placement==='before-contacts'?document.querySelector('#contactsSection'):x.placement==='before-documents'?document.querySelector('.documents-section'):document.querySelector('.faq-container');if(!t||!t.parentNode)return;const href=safeCmsHref(x.url);const e=document.createElement('section');e.className='site-custom-info-block'+(x.active===false&&window.sitePreviewDraftMode?' cms-preview-draft':'');e.dataset.siteBlockId=x.id;e.style.cssText='max-width:950px;margin:28px auto;padding:24px;border-radius:18px;border:1px solid var(--border-glass);background:var(--bg-card);position:relative;z-index:5';e.innerHTML='<h3 style="color:var(--text-main)">'+esc(x.title||'Информационный блок')+'</h3><div style="color:var(--text-muted);white-space:pre-line;line-height:1.7">'+esc(x.text||'')+'</div>'+(href?'<a href="'+esc(href)+'"'+(x.newTab?' target="_blank" rel="noopener noreferrer"':'')+' style="display:inline-flex;margin-top:14px;color:var(--ranepa-red);font-weight:800">'+esc(x.linkLabel||'Подробнее')+'</a>':'');t.parentNode.insertBefore(e,t)})}
 async function save(ev){ev.preventDefault();if(!siteAdminMode)return;const d=Object.fromEntries(new FormData(ev.currentTarget).entries());let saved=false;
 if(type==='schedule'){if(!d.program||!d.date||!d.subject)return siteAdminSetStatus('Укажите программу, дату и тему','err');const base=id?findSchedule(id):null,source=id&&(window.schedules||[]).some(x=>key(x)===id)?id:(base&&base.sourceKey)||'',rid=base&&String(base.id||'').startsWith('custom-s-')?base.id:uid('custom-s-'),r={...(base||{}),...d,id:rid,active:base&&base.active===false?false:true,custom:true};if(source)r.sourceKey=source;const before=siteCustomSchedules.slice(),p=siteCustomSchedules.findIndex(x=>x===base||x&&x.id===rid||source&&x&&x.sourceKey===source);p>=0?siteCustomSchedules[p]=r:siteCustomSchedules.push(r);saved=await saveSiteSettings({recordVersion:true,reason:'Изменено расписание'});if(!saved){siteCustomSchedules=before;return;}}
@@ -330,6 +362,8 @@ function groups(){
     return '<div class="site-admin-row"><span>'+esc(x.title||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteDocRestoreBase(\''+esc(x.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'docs\',\''+esc(x.id)+'\')">Восстановить</button>'):
+        '<button type="button" onclick="siteDocMoveAny(\''+esc(x.id)+'\',-1)">↑</button>'+
+        '<button type="button" onclick="siteDocMoveAny(\''+esc(x.id)+'\',1)">↓</button>'+
         '<button type="button" onclick="siteDocSetPublished(\''+esc(x.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
         '<button type="button" onclick="siteDocDuplicateAny(\''+esc(x.id)+'\')">Дублировать</button>'+
         '<button type="button" onclick="openSiteDocEditor(\''+esc(x.id)+'\')">Редактировать</button>'+
