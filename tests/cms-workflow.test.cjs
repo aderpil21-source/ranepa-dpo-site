@@ -137,7 +137,7 @@ assert(
   'Existing FAQ entries must be manageable through PRO overlays'
 );
 assert(
-  entities.includes("if(!f||!f.id||f.active===false||f.sourceKey) return"),
+  entities.includes("if(!f||!f.id||f.sourceKey||f.archived===true||(f.active===false&&!window.sitePreviewDraftMode)) return"),
   'Base FAQ overrides must not render duplicate custom FAQ cards'
 );
 
