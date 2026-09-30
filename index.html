@@ -3567,7 +3567,7 @@
         (Array.isArray(siteCustomContacts) ? siteCustomContacts : []).forEach(function (contact) {
             if (!contact || !contact.id || contact.sourceKey || contact.archived === true || (contact.active === false && !window.sitePreviewDraftMode)) return;
             const card = document.createElement('div');
-            card.className = 'contact-card site-custom-contact';
+            card.className = 'contact-card site-custom-contact' + (contact.active === false && window.sitePreviewDraftMode ? ' cms-preview-draft' : '');
             card.dataset.siteContactId = String(contact.id);
             const key = siteCustomContactKey(contact);
             if (!siteKeyIsVisible(key)) card.classList.add(siteAdminMode ? 'site-admin-preview-hidden' : 'site-admin-force-hidden');
@@ -4475,8 +4475,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             const safePrice = siteAdminEscape(localizedProgramMeta(prog, 'price', currentLang));
             const safeHours = siteAdminEscape(localizedProgramMeta(prog, 'hours', currentLang));
 
+            const previewDraftClass = prog.active === false && window.sitePreviewDraftMode ? ' cms-preview-draft' : '';
             let cardHTML = `
-            <div class="card" data-site-program-id="${safeId}" data-sector="${safeSector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
+            <div class="card${previewDraftClass}" data-site-program-id="${safeId}" data-sector="${safeSector}" data-price="${priceNum}" data-hours="${hoursNum}" data-title="${safeTitle}">
                 <div class="card-meta"><span class="price program-meta-value" data-program-id="${safeId}" data-meta-key="price" data-meta-value="${encodeURIComponent(prog.price)}">${safePrice}</span><span class="hours program-meta-value" data-program-id="${safeId}" data-meta-key="hours" data-meta-value="${encodeURIComponent(prog.hours)}">${safeHours}</span></div>
                 ${variantBadgeHTML}
                 ${extraInfoHTML}
