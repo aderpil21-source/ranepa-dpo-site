@@ -26,6 +26,8 @@ function baseNavItems(){return [...document.querySelectorAll('.header-nav .heade
 const findNav=i=>{const nid=String(i||'');const custom=(siteCustomNavItems||[]).find(x=>x&&(String(x.id)===nid||String(x.sourceKey||'')===nid))||null;const base=baseNavItems().find(x=>String(x.id)===nid)||null;if(base&&custom)return Object.assign({},base,custom,{id:nid,sourceKey:nid});return custom||base||null};
 function baseDocKey(card){
   if(!card)return '';
+  const stable=String(card.dataset&&card.dataset.siteDocStatic||'').trim();
+  if(stable)return 'base-doc:'+stable;
   const title=card.querySelector('h4'),img=card.querySelector('img');
   const token=title&&title.dataset&&title.dataset.i18n?title.dataset.i18n:'';
   const path=img?(img.getAttribute('data-deferred-src')||img.getAttribute('src')||''):'';
