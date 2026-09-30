@@ -3548,7 +3548,9 @@
         });
         (Array.isArray(custom) ? custom : []).forEach(function (p) {
             if (!p || !p.id) return;
-            map.set(String(p.id), Object.assign({ active:true, tab:'tab-pk', sector:'prof' }, p));
+            const id = String(p.id);
+            const baseRecord = map.get(id) || {};
+            map.set(id, Object.assign({ active:true, tab:'tab-pk', sector:'prof' }, baseRecord, p));
         });
         return Array.from(map.values());
     }
