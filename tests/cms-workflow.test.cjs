@@ -353,10 +353,11 @@ assert(
   'Existing document cards must have full CMS overlay lifecycle'
 );
 assert(
-  structure.includes("siteWorkflowTogglePublish('blocks'") &&
-  structure.includes("siteWorkflowDuplicate('blocks'") &&
-  structure.includes("siteWorkflowDelete('blocks'") &&
-  structure.includes("siteWorkflowRestore('blocks'"),
+  structure.includes('data-cms-dnd-type="blocks"') &&
+  structure.includes("siteWorkflowTogglePublish") &&
+  structure.includes("siteWorkflowDuplicate") &&
+  structure.includes("siteWorkflowDelete") &&
+  structure.includes("siteWorkflowRestore"),
   'Information blocks must expose the full CMS lifecycle in the structure panel'
 );
 
