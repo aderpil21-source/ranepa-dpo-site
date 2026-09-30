@@ -54,8 +54,21 @@ window.siteWorkflowMove=async function(type,id,dir){
   if(i<0||j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];d.set(normalizeOrder(type,arr));await save('Изменён порядок: '+d.label);
 };
 window.siteWorkflowDelete=async function(type,id){
-  const d=defs[type];if(!d)return;const arr=d.get(),x=arr.find(y=>y&&String(y.id)===String(id));if(!x||!confirm('Удалить «'+d.title(x)+'»?'))return;
-  d.set(arr.filter(y=>y!==x));await save('Удалено: '+d.title(x));
+  const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(y=>y&&String(y.id)===String(id));if(i<0)return;
+  const x=arr[i];if(!confirm('Переместить «'+d.title(x)+'» в корзину?'))return;
+  arr[i]=Object.assign({},x,{active:false,archived:true,archivedAt:new Date().toISOString()});
+  d.set(arr);await save('В корзину: '+d.title(arr[i]));
+};
+window.siteWorkflowRestore=async function(type,id){
+  const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(y=>y&&String(y.id)===String(id));if(i<0)return;
+  arr[i]=Object.assign({},arr[i],{active:false,archived:false});
+  delete arr[i].archivedAt;
+  d.set(arr);await save('Восстановлено из корзины: '+d.title(arr[i]));
+};
+window.siteWorkflowDestroy=async function(type,id){
+  const d=defs[type];if(!d)return;const arr=d.get(),x=arr.find(y=>y&&String(y.id)===String(id));if(!x)return;
+  if(!confirm('Удалить «'+d.title(x)+'» навсегда? Это действие нельзя отменить кроме восстановления предыдущей версии сайта.'))return;
+  d.set(arr.filter(y=>y!==x));await save('Удалено навсегда: '+d.title(x));
 };
 
 function row(type,x,index,total){
@@ -85,22 +98,34 @@ function renderDraftPreview(){
     box.innerHTML='<div class="cms-draft-preview-label">Черновик · '+esc(type)+'</div><div class="cms-draft-preview-title">'+esc(title)+'</div>';
     container.appendChild(box);
   };
-  (siteCustomPrograms||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('#programsSection .cards-grid, #programsSection'),' '+(x.title_ru||x.id),'Программа'));
-  (siteCustomContacts||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('#contactsSection .contacts-grid:last-of-type, #contactsSection'),x.name||x.id,'Контакт'));
-  (siteCustomFaqs||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('.faq-container'),x.question||x.id,'FAQ'));
-  (siteCustomDocs||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('[data-site-doc-grid]'),x.title||x.id,'Документ'));
-  (siteCustomBlocks||[]).filter(x=>x&&x.active===false).forEach(x=>add(document.querySelector('.faq-container'),x.title||x.id,'Блок'));
+  (siteCustomPrograms||[]).filter(x=>x&&x.active===false&&x.archived!==true).forEach(x=>add(document.querySelector('#programsSection .cards-grid, #programsSection'),' '+(x.title_ru||x.id),'Программа'));
+  (siteCustomContacts||[]).filter(x=>x&&x.active===false&&x.archived!==true).forEach(x=>add(document.querySelector('#contactsSection .contacts-grid:last-of-type, #contactsSection'),x.name||x.id,'Контакт'));
+  (siteCustomFaqs||[]).filter(x=>x&&x.active===false&&x.archived!==true).forEach(x=>add(document.querySelector('.faq-container'),x.question||x.id,'FAQ'));
+  (siteCustomDocs||[]).filter(x=>x&&x.active===false&&x.archived!==true).forEach(x=>add(document.querySelector('[data-site-doc-grid]'),x.title||x.id,'Документ'));
+  (siteCustomBlocks||[]).filter(x=>x&&x.active===false&&x.archived!==true).forEach(x=>add(document.querySelector('.faq-container'),x.title||x.id,'Блок'));
 }
 function panel(){
   let el=document.getElementById('siteAdminWorkflow');
   if(!el){el=document.createElement('section');el.id='siteAdminWorkflow';el.className='cms-flow';const box=document.getElementById('siteAdminControls');if(!box)return;box.prepend(el);}
   let html='<div class="cms-flow-head"><div><b>Управление контентом</b><small>Порядок · черновики · копии</small></div><div class="cms-flow-head-actions"><button type="button" class="'+(previewDrafts?'active':'')+'" onclick="siteWorkflowToggleDraftPreview()">👁 Черновики</button><input id="cmsFlowSearch" type="search" placeholder="Поиск в PRO…"></div></div>';
   Object.entries(defs).forEach(([type,d])=>{
-    const arr=d.get();if(!arr.length)return;
+    const arr=d.get().filter(x=>x&&x.archived!==true);if(!arr.length)return;
     html+='<details class="cms-flow-group" open><summary>'+esc(d.label)+' <small>'+arr.length+'</small></summary>'+
       '<div class="cms-flow-bulk"><button type="button" onclick="siteWorkflowBulk(\''+type+'\',\'publish\')">Опубликовать выбранные</button><button type="button" onclick="siteWorkflowBulk(\''+type+'\',\'draft\')">В черновики</button></div>'+
       arr.map((x,i)=>row(type,x,i,arr.length)).join('')+'</details>';
   });
+  const trash=[];
+  Object.entries(defs).forEach(([type,d])=>{
+    d.get().filter(x=>x&&x.archived===true).forEach(x=>trash.push({type,d,x}));
+  });
+  if(trash.length){
+    html+='<details class="cms-flow-group cms-trash-group"><summary>🗑 Корзина <small>'+trash.length+'</small></summary>'+
+      trash.map(({type,d,x})=>'<div class="cms-flow-row cms-trash-row" data-flow-search="'+esc((d.title(x)+' корзина '+d.label).toLowerCase())+'">'+
+        '<span class="cms-flow-grip">×</span><span></span><div class="cms-flow-name"><b>'+esc(d.title(x))+'</b><small>'+esc(d.label)+'</small></div>'+
+        '<div class="cms-flow-actions"><button type="button" onclick="siteWorkflowRestore(\''+type+'\',\''+esc(x.id)+'\')">Восстановить</button>'+
+        '<button type="button" class="danger" onclick="siteWorkflowDestroy(\''+type+'\',\''+esc(x.id)+'\')">Удалить навсегда</button></div></div>').join('')+
+      '</details>';
+  }
   el.innerHTML=html;
   const q=el.querySelector('#cmsFlowSearch');q?.addEventListener('input',()=>{const s=q.value.trim().toLowerCase();el.querySelectorAll('.cms-flow-row').forEach(r=>r.hidden=!!s&&!r.dataset.flowSearch.includes(s));});
   bindDrag(el);
