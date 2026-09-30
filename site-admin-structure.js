@@ -405,7 +405,19 @@ function groups(){
         '<button type="button" class="danger" onclick="siteDocArchiveAny(\''+esc(x.id)+'\')">В корзину</button>')+
       '</div>';
   }).join('');
-  const blocks=(siteCustomBlocks||[]).map(x=>'<div class="site-admin-row"><span>'+esc(x.title||'')+'</span></div><div class="site-admin-entity-actions"><button type="button" onclick="openSiteBlockEditor(\''+esc(x.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomBlock(\''+esc(x.id)+'\')">Удалить</button></div>').join('');
+  const blocks=(siteCustomBlocks||[]).map((x,index,arr)=>{
+    const draft=x.active===false&&x.archived!==true,arch=x.archived===true;
+    return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="blocks" data-cms-dnd-id="'+esc(x.id)+'"><span>'+esc(x.title||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
+      '<div class="site-admin-entity-actions">'+
+      (arch?'<button type="button" onclick="siteWorkflowRestore(\'blocks\',\''+esc(x.id)+'\')">Восстановить</button>':
+        '<button type="button" '+(index===0?'disabled':'')+' onclick="siteWorkflowMove(\'blocks\',\''+esc(x.id)+'\',-1)">↑</button>'+
+        '<button type="button" '+(index===arr.length-1?'disabled':'')+' onclick="siteWorkflowMove(\'blocks\',\''+esc(x.id)+'\',1)">↓</button>'+
+        '<button type="button" onclick="siteWorkflowTogglePublish(\'blocks\',\''+esc(x.id)+'\')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
+        '<button type="button" onclick="siteWorkflowDuplicate(\'blocks\',\''+esc(x.id)+'\')">Дублировать</button>'+
+        '<button type="button" onclick="openSiteBlockEditor(\''+esc(x.id)+'\')">Редактировать</button>'+
+        '<button type="button" class="danger" onclick="siteWorkflowDelete(\'blocks\',\''+esc(x.id)+'\')">В корзину</button>')+
+      '</div>';
+  }).join('');
   return '<details class="site-admin-group"><summary>Расписание</summary><button class="site-admin-entity-add" type="button" onclick="openSiteScheduleEditor()">＋ Добавить занятие</button>'+baseRows+manualRows+'</details>'+
     '<details class="site-admin-group"><summary>Меню</summary><button class="site-admin-entity-add" type="button" onclick="openSiteNavEditor()">＋ Добавить пункт меню</button>'+nav+'</details>'+
     '<details class="site-admin-group"><summary>Документы</summary><button class="site-admin-entity-add" type="button" onclick="openSiteDocEditor()">＋ Добавить документ</button>'+docs+'</details>'+
