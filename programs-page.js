@@ -8,7 +8,8 @@ function mergeProgramSets(base, custom) {
   (Array.isArray(base) ? base : []).forEach(p => { if (p?.id) map.set(String(p.id), {...p}); });
   (Array.isArray(custom) ? custom : []).forEach(p => {
     if (!p?.id) return;
-    map.set(String(p.id), {active:true,tab:'tab-pk',sector:'prof',...p});
+    const id=String(p.id), baseRecord=map.get(id)||{};
+    map.set(id, {active:true,tab:'tab-pk',sector:'prof',...baseRecord,...p});
   });
   return [...map.values()];
 }
