@@ -221,4 +221,27 @@ assert(
   'Document overrides must not render as duplicate custom cards'
 );
 
+
+const indexHtml = fs.readFileSync('index.html','utf8');
+const preview = fs.readFileSync('site-admin-preview.js','utf8');
+
+assert(
+  indexHtml.includes("window.sitePreviewDraftMode = new URLSearchParams(location.search).get('cmsPreview') === 'drafts' && !!siteAdminToken"),
+  'Draft preview must require an authenticated PRO session'
+);
+assert(
+  indexHtml.includes('site-admin-preview.js?v=1'),
+  'PRO preview module must be loaded by the page'
+);
+assert(
+  preview.includes("get('cmsPreview')==='drafts'") &&
+  preview.includes('#siteAdminPanel,#siteAdminReopen,#siteAdminLoginModal{display:none!important}'),
+  'Embedded preview must hide administrative UI'
+);
+assert(
+  preview.includes('Mobile 390px') &&
+  preview.includes("data-theme=\"light\""),
+  'PRO preview must support mobile and light/dark review'
+);
+
 console.log('CMS workflow regression checks passed');
