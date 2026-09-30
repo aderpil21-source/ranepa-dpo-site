@@ -260,4 +260,18 @@ assert(
   'CMS must warn on pending changes and provide Save now'
 );
 
+
+assert(
+  entities.includes("window.siteFaqMoveAny") &&
+  entities.includes("function applyFaqOrder") &&
+  entities.includes("cmsOrder:index"),
+  'FAQ ordering must persist across built-in and custom entries'
+);
+assert(
+  structure.includes("window.siteDocMoveAny") &&
+  structure.includes("function applyDocOrder") &&
+  structure.includes("cmsOrder:index"),
+  'Document ordering must persist across built-in and custom entries'
+);
+
 console.log('CMS workflow regression checks passed');
