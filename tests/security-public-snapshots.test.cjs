@@ -248,4 +248,18 @@ assert(
   'Expired PRO sessions must immediately restore visitor-mode rendering'
 );
 
+
+const mediaAdmin = fs.readFileSync('site-admin-media.js','utf8');
+assert(
+  mediaAdmin.includes("function requireHttpsUrl") &&
+  mediaAdmin.includes("data.uploadUrl=requireHttpsUrl") &&
+  mediaAdmin.includes("data.publicUrl=requireHttpsUrl"),
+  'PRO media signing responses must be restricted to HTTPS URLs'
+);
+assert(
+  mediaAdmin.includes("r.status===401||r.status===403") &&
+  mediaAdmin.includes("typeof siteAdminLogout==='function'"),
+  'PRO media upload must fully terminate expired admin sessions'
+);
+
 console.log('Public snapshot security checks passed');
