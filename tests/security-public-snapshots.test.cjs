@@ -262,4 +262,26 @@ assert(
   'PRO media upload must fully terminate expired admin sessions'
 );
 
+
+assert(
+  newsHtml.includes("function clearNewsAdminSession()") &&
+  newsHtml.includes("res.status === 401 || res.status === 403") &&
+  newsHtml.includes("code === 'SESSION_EXPIRED' || code === 'UNAUTHORIZED'"),
+  'News editor must terminate expired sessions centrally'
+);
+assert(
+  newsHtml.includes("const SIGNATURES") &&
+  newsHtml.includes("async function verifySignature") &&
+  newsHtml.includes("async function fileHash") &&
+  newsHtml.includes("async function compressImage") &&
+  newsHtml.includes("const activeProviders") &&
+  newsHtml.includes("async function checkStorageHealth"),
+  'News media validation and upload helper pipeline must remain intact'
+);
+assert(
+  newsHtml.includes("u.protocol!=='https:'||p.protocol!=='https:'") &&
+  newsHtml.includes("code:'BAD_SIGNED_URL'"),
+  'News media signing responses must be restricted to HTTPS URLs'
+);
+
 console.log('Public snapshot security checks passed');
