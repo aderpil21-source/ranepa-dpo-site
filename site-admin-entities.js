@@ -163,7 +163,8 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const overrideGrid=contactGridByKey(ov.departmentKey);if(overrideGrid&&card.parentNode!==overrideGrid)overrideGrid.appendChild(card);
       if(nameEl&&ov.name!=null)nameEl.textContent=ov.name;
       if(posEl&&ov.position!=null)posEl.textContent=ov.position;
-      if(details){
+      const hasDetails=['office','phone','extension','email'].some(k=>Object.prototype.hasOwnProperty.call(ov,k));
+      if(details&&hasDetails){
         const office=String(ov.office||'').trim(),phone=String(ov.phone||'').trim(),ext=String(ov.extension||'').trim(),email=String(ov.email||'').trim();
         let html='';
         if(office)html+='<p><span>Каб.</span> '+esc(office)+'</p>';
