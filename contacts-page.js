@@ -1,25 +1,13 @@
 (function(){
-  const API='https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
   const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
   async function loadSettings(){
     try{
-      const res=await fetch(API+'?type=news&_contacts='+Date.now(),{cache:'no-store'});
+      const res=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
       if(!res.ok) throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      const item=(data.items||[]).find(x=>x&&x.id==='__site_admin_settings__');
-      const parsed=item?JSON.parse(item.lead||'{}'):{};
-      return {
-        visibility:parsed?.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{},
-        contacts:Array.isArray(parsed?.customContacts)?parsed.customContacts:[]
-      };
-    }catch(_){
-      try{
-        const res=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
-        const data=await res.json(), s=data?.settings||{};
-        return {visibility:s.visibility||{},contacts:Array.isArray(s.customContacts)?s.customContacts:[]};
-      }catch(_){ return {visibility:{},contacts:[]}; }
-    }
+      const data=await res.json(), s=data?.settings||{};
+      return {visibility:s.visibility||{},contacts:Array.isArray(s.customContacts)?s.customContacts:[]};
+    }catch(_){ return {visibility:{},contacts:[]}; }
   }
   function cardHtml(c){
     const office=esc(c.office||''), phone=esc(c.phone||''), ext=esc(c.extension||''), email=esc(c.email||'');
