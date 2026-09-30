@@ -11,7 +11,7 @@ function close(){if(modal)modal.classList.remove('active');type='';id=''}
 function open(t,i,title,html){if(!siteAdminMode)return openSiteAdminLogin();type=t;id=i||'';const m=ensure();m.querySelector('#structTitle').textContent=title;m.querySelector('#structFields').innerHTML=html;m.classList.add('active')}
 function key(x){return 'schedule:'+[x?.id,x?.date,x?.time,x?.subject].map(v=>encodeURIComponent(String(v||'').trim())).join('|')}
 function merge(base,custom){const o=new Map(),a=[];(custom||[]).forEach(x=>{if(!x)return;if(x.sourceKey){o.set(x.sourceKey,x);return}if(x.active===false||x.archived===true)return;a.push(x)});const out=[];(base||[]).forEach(x=>{const k=key(x);if(o.has(k)){const override=o.get(k);o.delete(k);if(override.active===false||override.archived===true)return;const y={...x,...override};delete y.sourceKey;out.push(y)}else out.push(x)});o.forEach(x=>{if(x.active===false||x.archived===true)return;const y={...x};delete y.sourceKey;out.push(y)});return out.concat(a)}
-const findSchedule=i=>(siteCustomSchedules||[]).find(x=>x&&(x.id===i||x.sourceKey===i))||(window.schedules||[]).find(x=>key(x)===i)||null;
+const findSchedule=i=>{const custom=(siteCustomSchedules||[]).find(x=>x&&(x.id===i||x.sourceKey===i))||null;if(custom&&custom.sourceKey){const base=(window.schedules||[]).find(x=>key(x)===custom.sourceKey)||null;return base?Object.assign({},base,custom):custom}return custom||(window.schedules||[]).find(x=>key(x)===i)||null};
 const findNav=i=>(siteCustomNavItems||[]).find(x=>x&&x.id===i)||null;
 const findDoc=i=>(siteCustomDocs||[]).find(x=>x&&x.id===i)||null;
 const findBlock=i=>(siteCustomBlocks||[]).find(x=>x&&x.id===i)||null;
