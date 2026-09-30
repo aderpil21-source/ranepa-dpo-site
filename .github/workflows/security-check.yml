@@ -1,0 +1,36 @@
+name: Security checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'site-settings.json'
+      - 'owl-files.json'
+      - 'portal-data.json'
+      - 'portal-snapshot.js'
+      - '.github/workflows/refresh-news-data.yml'
+      - '.github/workflows/refresh-portal-data.yml'
+      - 'tests/security-public-snapshots.test.cjs'
+      - '.github/workflows/security-check.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'site-settings.json'
+      - 'owl-files.json'
+      - 'portal-data.json'
+      - 'portal-snapshot.js'
+      - '.github/workflows/refresh-news-data.yml'
+      - '.github/workflows/refresh-portal-data.yml'
+      - 'tests/security-public-snapshots.test.cjs'
+      - '.github/workflows/security-check.yml'
+
+jobs:
+  public-snapshot-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/security-public-snapshots.test.cjs
