@@ -23,16 +23,56 @@
       '<div class="position">'+esc(c.position||'')+'</div>'+lines+'</article>';
   }
 
+  function appendDetail(card,label,value,href){
+    if(!value) return;
+    const p=document.createElement('p');
+    if(label) p.append(document.createTextNode(label));
+    if(href){
+      const a=document.createElement('a');
+      a.href=href;a.textContent=value;p.appendChild(a);
+    }else{
+      p.append(document.createTextNode(value));
+    }
+    card.appendChild(p);
+    return p;
+  }
+
+  function applyBaseContactOverride(card,override){
+    if(!card||!override) return;
+    if(override.active===false||override.archived===true){card.style.display='none';return;}
+    const h=card.querySelector('h3'),pos=card.querySelector('.position');
+    if(h&&override.name!=null) h.textContent=String(override.name);
+    if(pos&&override.position!=null) pos.textContent=String(override.position);
+    [...card.children].filter(x=>x.tagName==='P').forEach(x=>x.remove());
+    const office=String(override.office||'').trim();
+    const phone=String(override.phone||'').trim();
+    const ext=String(override.extension||'').trim();
+    const email=String(override.email||'').trim();
+    if(office) appendDetail(card,'Каб. ',office,'');
+    if(phone){
+      const clean=phone.replace(/[^+\d]/g,'');
+      const p=appendDetail(card,'Тел: ',phone,'tel:'+clean);
+      if(p&&ext) p.append(document.createTextNode(' (доб. '+ext+')'));
+    }
+    if(email) appendDetail(card,'E-mail: ',email,'mailto:'+email);
+  }
+
   async function init(){
     const target=document.querySelector('.contact-list');
     if(!target) return;
     const settings=await loadSettings();
     target.querySelectorAll('.contact-card:not(.site-custom-contact)').forEach(card=>{
       const name=(card.querySelector('h3')?.textContent||'').trim().toLowerCase();
-      const key='contact-static:'+encodeURIComponent(name);
-      if(settings.visibility[key]===false) card.style.display='none';
+      const visibilityKey='contact-static:'+encodeURIComponent(name);
+      if(settings.visibility[visibilityKey]===false){card.style.display='none';return;}
+      const stable=String(card.dataset.siteContactKey||'').trim();
+      const sourceKey=stable?'base-contact:'+stable:'';
+      const override=sourceKey?settings.contacts.find(c=>c&&String(c.sourceKey||'')===sourceKey):null;
+      if(override) applyBaseContactOverride(card,override);
     });
-    const html=settings.contacts.filter(c=>c&&c.id&&c.active!==false&&settings.visibility['contact:'+encodeURIComponent(c.id)]!==false).map(cardHtml).join('');
+    const html=settings.contacts
+      .filter(c=>c&&c.id&&!c.sourceKey&&c.active!==false&&c.archived!==true&&settings.visibility['contact:'+encodeURIComponent(c.id)]!==false)
+      .map(cardHtml).join('');
     if(html) target.insertAdjacentHTML('beforeend',html);
   }
 
