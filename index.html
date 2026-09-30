@@ -2397,6 +2397,7 @@
     let siteSaveQueued = false;
     let siteAdminToken = sessionStorage.getItem('siteAdminToken') || null;
     let siteAdminMode = !!siteAdminToken;
+    window.sitePreviewDraftMode = new URLSearchParams(location.search).get('cmsPreview') === 'drafts' && !!siteAdminToken;
     let siteTextEditMode = false;
     let siteAdminSaveTimer = null;
     let siteAdminObserver = null;
@@ -3564,7 +3565,7 @@
         if (!target) return;
         target.querySelectorAll('.site-custom-contact').forEach(function (node) { node.remove(); });
         (Array.isArray(siteCustomContacts) ? siteCustomContacts : []).forEach(function (contact) {
-            if (!contact || !contact.id || contact.active === false || contact.sourceKey) return;
+            if (!contact || !contact.id || contact.sourceKey || contact.archived === true || (contact.active === false && !window.sitePreviewDraftMode)) return;
             const card = document.createElement('div');
             card.className = 'contact-card site-custom-contact';
             card.dataset.siteContactId = String(contact.id);
@@ -3586,7 +3587,7 @@
     }
 
     function applySiteCustomContent() {
-        if (basePrograms.length) buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) { return p && p.active !== false; }));
+        if (basePrograms.length) buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) { return p && p.archived !== true && (p.active !== false || window.sitePreviewDraftMode); }));
         renderSiteCustomContacts();
         applySiteVisibility();
         if (siteAdminMode && typeof renderSiteAdminPanel === 'function') renderSiteAdminPanel();
@@ -4371,7 +4372,7 @@
             }
 
             basePrograms = programs.map(function (p) { return Object.assign({}, p); });
-            buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) { return p && p.active !== false && p.archived !== true; }));
+            buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) { return p && p.archived !== true && (p.active !== false || window.sitePreviewDraftMode); }));
         } catch (error) {
             console.error("Ошибка API:", error);
             document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">${translationsHTML[currentLang].programLoadError}</div>`;
