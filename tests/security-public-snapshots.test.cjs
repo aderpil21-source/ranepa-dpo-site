@@ -152,4 +152,13 @@ for (const page of ['index.html','programs.html','program.html','schedule.html',
   }
 }
 
+
+const newsSecurity = fs.readFileSync('news.html','utf8');
+assert(
+  newsSecurity.includes("const win = window.open(VK_GROUP_URL, 'ranepaVkManualPhoto')") &&
+  newsSecurity.includes("if (win) win.opener = null") &&
+  newsSecurity.includes("const vkWindow = wantsVkNow ? openVkWindowForManualPhoto() : null"),
+  'External VK windows must be detached from the news page opener'
+);
+
 console.log('Public snapshot security checks passed');
