@@ -20,7 +20,7 @@
 <meta property="og:url" content="https://ranepa-dpo39.ru/">
 <link rel="canonical" href="https://ranepa-dpo39.ru/">
 <!-- /SEO -->
-<script src="./theme.js?v=3"></script>
+<script src="./theme.js?v=4"></script>
    <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: https:; frame-src https:; child-src 'self' blob: https:; worker-src 'self' blob:; form-action 'self' https:; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -2388,6 +2388,7 @@
     let siteCustomDocs = [];
     let siteCustomBlocks = [];
     let siteThemeConfig = {};
+    let siteSeoConfig = {};
     let siteSettingsItem = null;
     let siteVersionHistory = [];
     let siteCurrentVersionId = null;
@@ -2463,6 +2464,7 @@
                 customDocs: Array.isArray(parsed.customDocs) ? parsed.customDocs : [],
                 customBlocks: Array.isArray(parsed.customBlocks) ? parsed.customBlocks : [],
                 theme: parsed.theme && typeof parsed.theme === 'object' ? parsed.theme : {},
+                seo: parsed.seo && typeof parsed.seo === 'object' ? parsed.seo : {},
                 currentVersionId: parsed.currentVersionId || null,
                 updatedAt: parsed.updatedAt || ''
             };
@@ -2498,7 +2500,8 @@
             customNavItems: JSON.parse(JSON.stringify(siteCustomNavItems || [])),
             customDocs: JSON.parse(JSON.stringify(siteCustomDocs || [])),
             customBlocks: JSON.parse(JSON.stringify(siteCustomBlocks || [])),
-            theme: JSON.parse(JSON.stringify(siteThemeConfig || {}))
+            theme: JSON.parse(JSON.stringify(siteThemeConfig || {})),
+            seo: JSON.parse(JSON.stringify(siteSeoConfig || {}))
         };
     }
 
@@ -2532,7 +2535,8 @@
                     customNavItems: Array.isArray(data.snapshot.customNavItems) ? data.snapshot.customNavItems : [],
                     customDocs: Array.isArray(data.snapshot.customDocs) ? data.snapshot.customDocs : [],
                     customBlocks: Array.isArray(data.snapshot.customBlocks) ? data.snapshot.customBlocks : [],
-                    theme: data.snapshot.theme && typeof data.snapshot.theme === 'object' ? data.snapshot.theme : {}
+                    theme: data.snapshot.theme && typeof data.snapshot.theme === 'object' ? data.snapshot.theme : {},
+                    seo: data.snapshot.seo && typeof data.snapshot.seo === 'object' ? data.snapshot.seo : {}
                 }
             };
         } catch (e) {
@@ -2672,6 +2676,7 @@
         siteCustomDocs = JSON.parse(JSON.stringify(snapshot.customDocs || []));
         siteCustomBlocks = JSON.parse(JSON.stringify(snapshot.customBlocks || []));
         siteThemeConfig = JSON.parse(JSON.stringify(snapshot.theme || {}));
+        siteSeoConfig = JSON.parse(JSON.stringify(snapshot.seo || {}));
         cacheSiteSettings({
             version:5,
             visibility:siteVisibility,
@@ -2685,6 +2690,7 @@
             customDocs:siteCustomDocs,
             customBlocks:siteCustomBlocks,
             theme:siteThemeConfig,
+            seo:siteSeoConfig,
             currentVersionId:siteCurrentVersionId,
             updatedAt:new Date().toISOString()
         });
@@ -2753,6 +2759,7 @@
         if (Array.isArray(cached.customDocs)) siteCustomDocs = cached.customDocs;
         if (Array.isArray(cached.customBlocks)) siteCustomBlocks = cached.customBlocks;
         if (cached.theme && typeof cached.theme === 'object') siteThemeConfig = cached.theme;
+        if (cached.seo && typeof cached.seo === 'object') siteSeoConfig = cached.seo;
         if (cached.currentVersionId) siteCurrentVersionId = cached.currentVersionId;
         return true;
     }
@@ -3028,6 +3035,7 @@
             customDocs:siteCustomDocs,
             customBlocks:siteCustomBlocks,
             theme:siteThemeConfig,
+            seo:siteSeoConfig,
             currentVersionId:siteCurrentVersionId||null,
             updatedAt:new Date().toISOString()
         });
@@ -3125,6 +3133,7 @@
                             siteCustomDocs = Array.isArray(cachedSettings.customDocs) ? cachedSettings.customDocs : siteCustomDocs;
                             siteCustomBlocks = Array.isArray(cachedSettings.customBlocks) ? cachedSettings.customBlocks : siteCustomBlocks;
                             siteThemeConfig = cachedSettings.theme && typeof cachedSettings.theme === 'object' ? cachedSettings.theme : siteThemeConfig;
+                            siteSeoConfig = cachedSettings.seo && typeof cachedSettings.seo === 'object' ? cachedSettings.seo : siteSeoConfig;
                             siteCurrentVersionId = cachedSettings.currentVersionId || siteCurrentVersionId || null;
                             cacheSiteSettings(cachedSettings);
                             applySiteVisibility();
@@ -3174,6 +3183,7 @@
             siteCustomDocs = parsed.customDocs || [];
             siteCustomBlocks = parsed.customBlocks || [];
             siteThemeConfig = parsed.theme || {};
+            siteSeoConfig = parsed.seo || {};
             siteCurrentVersionId = parsed.currentVersionId || siteCurrentVersionId || null;
             if (useAdmin) loadSiteVersionHistory(items);
             cacheSiteSettings(parsed);
@@ -3229,7 +3239,7 @@
             }
 
             const payload = {
-                version: 6,
+                version: 7,
                 visibility: siteVisibility,
                 content: siteContentOverrides,
                 attributes: siteAttributeOverrides,
@@ -3241,6 +3251,7 @@
                 customDocs: siteCustomDocs,
                 customBlocks: siteCustomBlocks,
                 theme: siteThemeConfig,
+                seo: siteSeoConfig,
                 currentVersionId: siteCurrentVersionId || null,
                 updatedAt: now
             };
@@ -5746,6 +5757,7 @@ if (legacyNewsHash.startsWith('#news=')) {
 <script src="./site-admin-entities.js?v=4"></script>
 <script src="./site-admin-structure.js?v=2"></script>
 <script src="./site-admin-workflow.js?v=5"></script>
+<script src="./site-admin-seo.js?v=1"></script>
 <script src="./owl-engine.js?v=20260927-4"></script>
 <script src="./portal-live-alert.js?v=20260927-1"></script>
 </html>
