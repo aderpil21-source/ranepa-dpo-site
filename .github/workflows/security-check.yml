@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'index.html'
+      - '*.html'
+      - 'pay/index.html'
       - 'site-settings.json'
       - 'owl-files.json'
       - 'portal-data.json'
@@ -15,7 +16,8 @@ on:
       - '.github/workflows/security-check.yml'
   pull_request:
     paths:
-      - 'index.html'
+      - '*.html'
+      - 'pay/index.html'
       - 'site-settings.json'
       - 'owl-files.json'
       - 'portal-data.json'
