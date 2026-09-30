@@ -442,6 +442,8 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const id=entityId||makeId('custom-p-');
       const prev=findProgram(id)||{};
       const record=Object.assign({},prev,data,{id,active:prev&&prev.active===false?false:true,custom:true,title_en:prev.title_en||data.title_ru,desc_en:prev.desc_en||data.desc_ru});
+      const isBase=(Array.isArray(basePrograms)?basePrograms:[]).some(x=>x&&String(x.id)===String(id));
+      if(isBase)record.sourceKey='base-program:'+String(id);
       const before=siteCustomPrograms.slice();
       const idx=siteCustomPrograms.findIndex(x=>x&&x.id===id);
       if(idx>=0) siteCustomPrograms[idx]=record; else siteCustomPrograms.push(record);
@@ -737,7 +739,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const pid=String(p.id),base=map.get(pid)||{};
       map.set(pid,Object.assign({},base,p));
     });
-    return [...map.values()].filter(p=>p&&p.archived!==true).sort((a,b)=>{
+    return [...map.values()].filter(Boolean).sort((a,b)=>{
       const ao=Number.isFinite(Number(a.cmsOrder))?Number(a.cmsOrder):null;
       const bo=Number.isFinite(Number(b.cmsOrder))?Number(b.cmsOrder):null;
       if(ao!==null&&bo!==null&&ao!==bo)return ao-bo;
@@ -749,8 +751,10 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
 
   function upsertProgramOverride(id,patch){
     const pid=String(id),idx=(siteCustomPrograms||[]).findIndex(x=>x&&String(x.id)===pid);
-    if(idx>=0) siteCustomPrograms[idx]=Object.assign({},siteCustomPrograms[idx],patch,{id:pid,custom:true});
-    else siteCustomPrograms.push(Object.assign({id:pid,custom:true},patch));
+    const isBase=(Array.isArray(basePrograms)?basePrograms:[]).some(x=>x&&String(x.id)===pid);
+    const identity=isBase?{id:pid,sourceKey:'base-program:'+pid,custom:true}:{id:pid,custom:true};
+    if(idx>=0) siteCustomPrograms[idx]=Object.assign({},siteCustomPrograms[idx],patch,identity);
+    else siteCustomPrograms.push(Object.assign({},identity,patch));
   }
 
   window.siteProgramSetPublished=async function(id,published){
@@ -767,7 +771,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     const before=siteCustomPrograms.map(x=>x&&Object.assign({},x));
     const copy=JSON.parse(JSON.stringify(src));
     copy.id=makeId('custom-p-');copy.custom=true;copy.active=false;copy.archived=false;
-    delete copy.archivedAt;
+    delete copy.sourceKey;delete copy.archivedAt;
     copy.title_ru=(copy.title_ru||'Программа')+' — копия';
     siteCustomPrograms.push(copy);
     applySiteCustomContent();renderSiteAdminPanel();
