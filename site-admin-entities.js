@@ -195,13 +195,38 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
   function elementRecordKey(el){
     return siteCssPath(el);
   }
+  function safeEditorHref(value){
+    const s=String(value||'').trim();
+    if(!s) return '';
+    if(/^#/.test(s) || /^(\.\.?\/|\/)/.test(s)) return s;
+    if(/^(mailto:|tel:)/i.test(s)) return s;
+    try{
+      const u=new URL(s,location.href);
+      return (u.protocol==='https:'||u.protocol==='http:')?u.href:'';
+    }catch(_){return '';}
+  }
+  function safeEditorMediaUrl(value){
+    const s=String(value||'').trim();
+    if(!s) return '';
+    if(/^(\.\.?\/|\/)/.test(s)) return s;
+    try{
+      const u=new URL(s,location.href);
+      return (u.protocol==='https:'||u.protocol==='http:')?u.href:'';
+    }catch(_){return '';}
+  }
   function applySiteAttributeOverrides(){
     Object.values(siteAttributeOverrides||{}).forEach(rec=>{
       if(!rec||!rec.selector) return;
       let el=null; try{el=document.querySelector(rec.selector);}catch(_){}
       if(!el) return;
-      if(rec.href!=null && el.matches('a')) el.setAttribute('href',rec.href);
-      if(rec.src!=null && el.matches('img')) el.setAttribute('src',rec.src);
+      if(rec.href!=null && el.matches('a')) {
+        const href=safeEditorHref(rec.href);
+        if(href||String(rec.href||'').trim()==='') el.setAttribute('href',href);
+      }
+      if(rec.src!=null && el.matches('img')) {
+        const src=safeEditorMediaUrl(rec.src);
+        if(src||String(rec.src||'').trim()==='') el.setAttribute('src',src);
+      }
       if(rec.alt!=null && el.matches('img')) el.setAttribute('alt',rec.alt);
       if(rec.title!=null) el.setAttribute('title',rec.title);
       el.classList.remove('site-admin-force-hidden','site-admin-preview-hidden');
@@ -331,6 +356,14 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     } else if(entityType==='element'){
       const selector=entityId;
       const prev=siteAttributeOverrides[selector]||{};
+      if(Object.prototype.hasOwnProperty.call(data,'href') && data.href && !safeEditorHref(data.href)){
+        siteAdminSetStatus('Недопустимая схема ссылки. Разрешены http, https, mailto, tel и внутренние ссылки.','err');
+        return;
+      }
+      if(Object.prototype.hasOwnProperty.call(data,'src') && data.src && !safeEditorMediaUrl(data.src)){
+        siteAdminSetStatus('Недопустимый адрес изображения. Разрешены http, https и внутренние пути.','err');
+        return;
+      }
       const rec=Object.assign({},prev,{selector,title:data.title||'',hidden:data.hidden==='yes'});
       if(Object.prototype.hasOwnProperty.call(data,'href')) rec.href=data.href;
       if(Object.prototype.hasOwnProperty.call(data,'src')) rec.src=data.src;
