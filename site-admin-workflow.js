@@ -17,6 +17,14 @@ window.siteWorkflowBulk=async function(type,action){
   const selected=[...document.querySelectorAll('.cms-flow-select[data-type="'+type+'"]:checked')].map(x=>x.value);
   if(!selected.length)return;
   const ids=new Set(selected),arr=d.get().slice();
+  if(action==='publish' && typeof siteCmsValidateEntity==='function'){
+    const invalid=arr.filter(x=>ids.has(String(x.id))).map(x=>({x,r:siteCmsValidateEntity(type,x)})).filter(v=>v.r&&v.r.errors&&v.r.errors.length);
+    if(invalid.length){
+      siteAdminSetStatus('Публикация остановлена: исправьте ошибки в выбранных записях','err');
+      if(typeof openSiteDiagnostics==='function') openSiteDiagnostics();
+      return;
+    }
+  }
   const next=arr.map(x=>ids.has(String(x.id))?Object.assign({},x,{active:action==='publish'}):x);
   d.set(next);
   await save((action==='publish'?'Массовая публикация: ':'Массово в черновик: ')+d.label);
@@ -47,7 +55,16 @@ window.siteWorkflowDuplicate=async function(type,id){
 };
 window.siteWorkflowTogglePublish=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(x=>x&&String(x.id)===String(id));if(i<0)return;
-  arr[i]={...arr[i],active:arr[i].active===false};d.set(arr);await save((arr[i].active===false?'Черновик: ':'Опубликовано: ')+d.title(arr[i]));
+  const willPublish=arr[i].active===false;
+  if(willPublish && typeof siteCmsValidateEntity==='function'){
+    const result=siteCmsValidateEntity(type,arr[i]);
+    if(result&&result.errors&&result.errors.length){
+      siteAdminSetStatus('Нельзя опубликовать: '+result.errors[0],'err');
+      if(typeof openSiteDiagnostics==='function') openSiteDiagnostics();
+      return;
+    }
+  }
+  arr[i]={...arr[i],active:willPublish};d.set(arr);await save((arr[i].active===false?'Черновик: ':'Опубликовано: ')+d.title(arr[i]));
 };
 window.siteWorkflowMove=async function(type,id,dir){
   const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(x=>x&&String(x.id)===String(id)),j=i+Number(dir);
