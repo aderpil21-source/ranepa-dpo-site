@@ -119,4 +119,18 @@ assert(publicSettingsFn && publicSettingsFn[0].includes('site-settings.json'),
 assert(publicSettingsFn && !publicSettingsFn[0].includes('__site_admin_settings__') && !publicSettingsFn[0].includes('?type=news'),
   'Public news visibility must not read raw system settings from Apps Script');
 
+
+const indexSource = fs.readFileSync('index.html','utf8');
+const loadSettingsFn = indexSource.match(/async function loadSiteSettings\(useAdmin\)[\s\S]*?\n    \}/);
+assert(loadSettingsFn && loadSettingsFn[0].includes("if (!useAdmin || !siteAdminToken)"),
+  'Public main-page settings load must stop after the sanitized snapshot');
+assert(loadSettingsFn && !loadSettingsFn[0].includes("const publicUrl = API_URL + '?type=news"),
+  'Public main page must not fetch raw CMS settings from Apps Script');
+
+const refreshPublicNewsFn = newsHtml.match(/async function refreshPublicNewsSnapshot\(options\)[\s\S]*?\n\}/);
+assert(refreshPublicNewsFn && refreshPublicNewsFn[0].includes('publicNewsSnapshotUrl()'),
+  'Public news refresh must use news-data.json');
+assert(refreshPublicNewsFn && !refreshPublicNewsFn[0].includes("CONFIG.api + '?type=news"),
+  'Public news refresh must not download the raw Apps Script item list');
+
 console.log('Public snapshot security checks passed');
