@@ -489,6 +489,65 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(item.name||id)});
   };
 
+  function contactCatalogForAdmin(){
+    const map=new Map();
+    baseContacts().forEach(x=>{if(x&&x.id)map.set(String(x.id),Object.assign({},x));});
+    (siteCustomContacts||[]).forEach(x=>{
+      if(!x||!x.id)return;
+      const key=String(x.sourceKey||x.id),base=map.get(key)||{};
+      map.set(key,Object.assign({},base,x,{id:key}));
+    });
+    return [...map.values()];
+  }
+  function upsertContactOverride(id,patch){
+    const cid=String(id),idx=(siteCustomContacts||[]).findIndex(x=>x&&(String(x.id)===cid||String(x.sourceKey||'')===cid));
+    if(idx>=0)siteCustomContacts[idx]=Object.assign({},siteCustomContacts[idx],patch,{id:cid,sourceKey:cid,custom:true});
+    else siteCustomContacts.push(Object.assign({id:cid,sourceKey:cid,custom:true},patch));
+  }
+  window.siteContactSetPublished=async function(id,published){
+    const base=baseContacts().find(x=>String(x.id)===String(id));
+    if(!base){
+      if(typeof siteWorkflowTogglePublish==='function')return siteWorkflowTogglePublish('contacts',id);
+      return;
+    }
+    const before=siteCustomContacts.map(x=>x&&Object.assign({},x));
+    upsertContactOverride(id,{active:!!published,archived:false});
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:(published?'Опубликован контакт: ':'Контакт в черновик: ')+(base.name||id)});
+    if(!ok){siteCustomContacts=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+  window.siteContactDuplicateAny=async function(id){
+    const src=findContact(id);if(!src)return;
+    const before=siteCustomContacts.map(x=>x&&Object.assign({},x));
+    const copy=JSON.parse(JSON.stringify(src));copy.id=makeId('custom-c-');delete copy.sourceKey;copy.custom=true;copy.active=false;copy.archived=false;delete copy.archivedAt;copy.name=(copy.name||'Контакт')+' — копия';
+    siteCustomContacts.push(copy);applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Создана копия контакта: '+copy.name});
+    if(!ok){siteCustomContacts=before;applySiteCustomContent();renderSiteAdminPanel();return;}
+    openSiteContactEditor(copy.id);
+  };
+  window.siteContactArchiveAny=async function(id){
+    const base=baseContacts().find(x=>String(x.id)===String(id));
+    if(!base){
+      if(typeof siteWorkflowDelete==='function')return siteWorkflowDelete('contacts',id);
+      return;
+    }
+    if(!confirm('Переместить контакт «'+(base.name||id)+'» в корзину?'))return;
+    const before=siteCustomContacts.map(x=>x&&Object.assign({},x));
+    upsertContactOverride(id,{active:false,archived:true,archivedAt:new Date().toISOString()});
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'В корзину контакт: '+(base.name||id)});
+    if(!ok){siteCustomContacts=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+  window.siteContactRestoreBase=async function(id){
+    const base=baseContacts().find(x=>String(x.id)===String(id));if(!base)return;
+    const before=siteCustomContacts.map(x=>x&&Object.assign({},x));
+    upsertContactOverride(id,{active:false,archived:false});
+    const idx=siteCustomContacts.findIndex(x=>x&&(String(x.id)===String(id)||String(x.sourceKey||'')===String(id)));if(idx>=0)delete siteCustomContacts[idx].archivedAt;
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Восстановлен контакт из корзины: '+(base.name||id)});
+    if(!ok){siteCustomContacts=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+
   function programCatalogForAdmin(){
     const map=new Map();
     (Array.isArray(basePrograms)?basePrograms:[]).forEach(p=>{if(p&&p.id)map.set(String(p.id),Object.assign({},p));});
@@ -575,11 +634,21 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       '</div>';
     }).join('')||'<div class="site-admin-entity-empty">Программы пока не загружены.</div>';
 
-    const contacts=(siteCustomContacts||[]).map(c=>{
-      const key='contact:'+encodeURIComponent(c.id);
-      return '<div class="site-admin-row"><span>'+esc(c.name||c.id)+(c.position?' · '+esc(c.position):'')+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
-      '<div class="site-admin-entity-actions"><button type="button" onclick="openSiteContactEditor(\''+esc(c.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomContact(\''+esc(c.id)+'\')">Удалить</button></div>';
-    }).join('')||'<div class="site-admin-entity-empty">Добавленных вручную контактов пока нет.</div>';
+    const contactList=contactCatalogForAdmin();
+    const contacts=contactList.map(c=>{
+      const isBase=String(c.id||'').indexOf('base-contact:')===0;
+      const draft=c.active===false&&c.archived!==true,arch=c.archived===true;
+      const key=isBase?'':('contact:'+encodeURIComponent(c.id));
+      return '<div class="site-admin-row"><span>'+esc(c.name||c.id)+(c.position?' · '+esc(c.position):'')+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span>'+
+      (key?'<label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label>':'')+'</div>'+
+      '<div class="site-admin-entity-actions">'+
+      (arch&&isBase?'<button type="button" onclick="siteContactRestoreBase(\''+esc(c.id)+'\')">Восстановить</button>':
+        '<button type="button" onclick="siteContactSetPublished(\''+esc(c.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
+        '<button type="button" onclick="siteContactDuplicateAny(\''+esc(c.id)+'\')">Дублировать</button>'+
+        '<button type="button" onclick="openSiteContactEditor(\''+esc(c.id)+'\')">Редактировать</button>'+
+        '<button type="button" class="danger" onclick="siteContactArchiveAny(\''+esc(c.id)+'\')">В корзину</button>')+
+      '</div>';
+    }).join('')||'<div class="site-admin-entity-empty">Контакты не найдены.</div>';
 
     const faqs=(siteCustomFaqs||[]).map(f=>{
       const key='faq:'+f.id;
@@ -598,7 +667,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     return '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Дизайн сайта" open><summary>🎨 Дизайн сайта</summary><div class="site-admin-theme-grid">'+themeHtml+'<button type="button" class="site-admin-theme-reset" onclick="resetSiteThemeConfig()">Вернуть фирменные цвета</button></div></details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Сова: кнопки меню" open><summary>Сова: кнопки меню</summary><div class="site-admin-owl-grid">'+owlItems+'</div></details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные программы"><summary>Программы — управление ('+(siteCustomPrograms||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteProgramEditor()">＋ Добавить программу</button>'+programs+'</details>'+
-      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные контакты"><summary>Контакты — ручное управление ('+(siteCustomContacts||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteContactEditor()">＋ Добавить контакт</button>'+contacts+'</details>'+
+      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные контакты"><summary>Контакты — управление ('+(siteCustomContacts||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteContactEditor()">＋ Добавить контакт</button>'+contacts+'</details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="FAQ — ручное управление"><summary>FAQ — ручное управление ('+(siteCustomFaqs||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteFaqEditor()">＋ Добавить вопрос</button>'+faqs+'</details>';
   }
 
