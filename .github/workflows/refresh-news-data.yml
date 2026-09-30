@@ -79,6 +79,55 @@ jobs:
               except (TypeError, json.JSONDecodeError):
                   settings = {}
 
+          # Public snapshot must contain only data required to render the public site.
+          # Never publish access-code visibility keys, drafts/archived CMS entities,
+          # or the internal version pointer.
+          public_visibility = {
+              key: value
+              for key, value in (settings.get("visibility") or {}).items()
+              if not str(key).startswith("material:")
+          }
+
+          def public_entities(name):
+              value = settings.get(name)
+              if not isinstance(value, list):
+                  return []
+              return [
+                  item for item in value
+                  if isinstance(item, dict)
+                  and item.get("archived") is not True
+                  and item.get("active") is not False
+              ]
+
+          public_attributes = {}
+          for selector, record in (settings.get("attributes") or {}).items():
+              if not isinstance(record, dict):
+                  continue
+              if record.get("hidden") is True:
+                  public_attributes[selector] = {
+                      "selector": record.get("selector") or selector,
+                      "hidden": True,
+                  }
+              else:
+                  public_attributes[selector] = record
+
+          settings = {
+              "version": settings.get("version", 1),
+              "visibility": public_visibility,
+              "content": settings.get("content") if isinstance(settings.get("content"), dict) else {},
+              "attributes": public_attributes,
+              "customPrograms": public_entities("customPrograms"),
+              "customContacts": public_entities("customContacts"),
+              "customFaqs": public_entities("customFaqs"),
+              "customSchedules": public_entities("customSchedules"),
+              "customNavItems": public_entities("customNavItems"),
+              "customDocs": public_entities("customDocs"),
+              "customBlocks": public_entities("customBlocks"),
+              "theme": settings.get("theme") if isinstance(settings.get("theme"), dict) else {},
+              "seo": settings.get("seo") if isinstance(settings.get("seo"), dict) else {},
+              "updatedAt": settings.get("updatedAt") or "",
+          }
+
           public_items = [
               item for item in items
               if isinstance(item, dict)
