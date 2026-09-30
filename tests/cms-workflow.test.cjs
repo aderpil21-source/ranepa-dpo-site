@@ -53,4 +53,26 @@ assert(
   'CMS save handlers must reject unsafe URLs'
 );
 
+
+const workflow = fs.readFileSync('site-admin-workflow.js','utf8');
+
+assert(
+  workflow.includes("async function save(reason,rollback)") &&
+  workflow.includes("if(!ok&&typeof rollback==='function'){rollback();refresh();}"),
+  'CMS workflow must rollback local state when server save fails'
+);
+
+assert(
+  entities.includes("if(!saved){siteCustomPrograms=before") &&
+  entities.includes("if(!saved){siteCustomContacts=before") &&
+  entities.includes("if(!saved){siteCustomFaqs=before"),
+  'Entity editors must rollback failed saves'
+);
+
+assert(
+  structure.includes("let saved=false") &&
+  structure.includes("if(saved){close();renderSiteAdminPanel();}"),
+  'Structure editor must close only after confirmed save'
+);
+
 console.log('CMS workflow regression checks passed');
