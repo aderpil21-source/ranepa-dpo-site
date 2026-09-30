@@ -47,7 +47,7 @@ assert(
   structure.includes("function safeCmsHref") && structure.includes("function safeCmsMediaUrl"),
   'Structured CMS editors must validate links and media URLs'
 );
-const unsafeUrlGuards = (structure.match(/d\\.url&&!safeCmsHref\\(d\\.url\\)/g) || []).length;
+const unsafeUrlGuards = structure.split("d.url&&!safeCmsHref(d.url)").length - 1;
 assert(
   unsafeUrlGuards >= 3,
   'CMS save handlers must reject unsafe URLs'
