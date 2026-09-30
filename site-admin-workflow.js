@@ -88,7 +88,8 @@ window.siteWorkflowToggleDraftPreview=function(){
 function refresh(){if(typeof applySiteCustomContent==='function')applySiteCustomContent();else renderSiteAdminPanel();renderDraftPreview();}
 
 function normalizeOrder(type,arr){
-  if(type==='programs') return arr.map((x,i)=>Object.assign({},x,{cmsOrder:i}));
+  const ordered=new Set(['programs','contacts','faq','schedule','nav','docs','blocks']);
+  if(ordered.has(type)) return arr.map((x,i)=>Object.assign({},x,{cmsOrder:i}));
   return arr;
 }
 async function save(reason,rollback){refresh();const ok=await saveSiteSettings({recordVersion:true,reason});if(!ok&&typeof rollback==='function'){rollback();refresh();}return !!ok;}
