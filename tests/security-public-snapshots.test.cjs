@@ -133,4 +133,23 @@ assert(refreshPublicNewsFn && refreshPublicNewsFn[0].includes('publicNewsSnapsho
 assert(refreshPublicNewsFn && !refreshPublicNewsFn[0].includes("CONFIG.api + '?type=news"),
   'Public news refresh must not download the raw Apps Script item list');
 
+
+const cspPages = ['index.html','programs.html','program.html','schedule.html','students.html','faq.html','contacts.html','news.html','ai-lecture.html','media-player.html'];
+for (const page of cspPages) {
+  const html = fs.readFileSync(page,'utf8');
+  const meta = html.match(/<meta[^>]+http-equiv=["']Content-Security-Policy["'][^>]*content="([^"]+)"/i);
+  assert(meta, page+' must expose a parseable CSP meta tag');
+  const scriptSrc = (meta[1].match(/(?:^|;)\s*script-src\s+([^;]+)/i) || [])[1] || '';
+  assert(!/(?:^|\s)https:(?:\s|$)/.test(scriptSrc),
+    page+' script-src must not trust every HTTPS origin');
+}
+
+for (const page of ['index.html','programs.html','program.html','schedule.html','students.html','faq.html','contacts.html','news.html','ai-lecture.html','media-player.html','pay/index.html']) {
+  const html = fs.readFileSync(page,'utf8');
+  for (const tag of html.match(/<a\b[^>]*target=["']_blank["'][^>]*>/gi) || []) {
+    assert(/rel=["'][^"']*(?:noopener|noreferrer)/i.test(tag),
+      page+' target=_blank link must include noopener or noreferrer: '+tag.slice(0,160));
+  }
+}
+
 console.log('Public snapshot security checks passed');
