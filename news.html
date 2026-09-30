@@ -430,6 +430,17 @@ let dragIndex = null, draftTimer = null;
 let storageHealth = { state:'unknown', message:'' };
 const uploadedHashes = new Map();
 
+function clearNewsAdminSession(){
+    visitorPreview = false;
+    const returnBtn = document.getElementById('editorReturnBtn');
+    if (returnBtn) returnBtn.remove();
+    adminToken = null;
+    sessionStorage.removeItem('newsAdminToken');
+    const bar = $('newsAdminBar');
+    if (bar){ bar.style.display = 'none'; bar.hidden = true; }
+}
+
+
 const BLOCK_LABELS = { text:'Абзац', insert:'Врезка', image:'Фото', video:'Видео' };
 const VK_META_TYPE = '__system_vk';
 
@@ -575,104 +586,33 @@ async function requestJson(url, options, attempts){
         try {
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 30000);
-            const res = await fetch(url, Object.assign({ signal: controller.signal }, options || {}));
+            const opts = Object.assign({ signal: controller.signal, referrerPolicy:'no-referrer' }, options || {});
+            const res = await fetch(url, opts);
             clearTimeout(timer);
             const raw = await res.text();
-            try { return JSON.parse(raw); }
+            let data;
+            try { data = JSON.parse(raw); }
             catch(e){
                 throw new Error(res.status >= 400
                     ? `Сервер ответил ошибкой ${res.status}`
                     : 'Сервер вернул страницу вместо данных. Проверьте развёртывание бэкенда.');
             }
+            let action = '';
+            try { if (opts.body && typeof opts.body === 'string') action = JSON.parse(opts.body).action || ''; } catch(e){}
+            const code = String(data && (data.code || data.error) || '').trim().toUpperCase();
+            if (action !== 'newsLogin' && (res.status === 401 || res.status === 403 || code === 'SESSION_EXPIRED' || code === 'UNAUTHORIZED')){
+                clearNewsAdminSession();
+                throw Object.assign(new Error('Сессия редактора истекла. Войдите снова.'), { code:'SESSION_EXPIRED' });
+            }
+            if (!res.ok) throw Object.assign(new Error(data && data.error ? data.error : ('HTTP '+res.status)), { code:code || ('HTTP_'+res.status) });
+            return data;
         } catch(e){
+            if (e && e.code === 'SESSION_EXPIRED') throw e;
             lastError = (e.name === 'AbortError') ? new Error('Сервер не ответил за 30 секунд') : e;
             if (i < attempts - 1) await sleep(CONFIG.storage.retryDelayMs * Math.pow(2, i));
         }
     }
     throw lastError;
-}
-
-/* ============================================================================
-   БЛОК 5. ПРОВЕРКА ФАЙЛА И СЖАТИЕ
-   ============================================================================ */
-const SIGNATURES = [
-    { offset:0, bytes:[0xFF,0xD8,0xFF] },            // jpeg
-    { offset:0, bytes:[0x89,0x50,0x4E,0x47] },       // png
-    { offset:0, bytes:[0x47,0x49,0x46,0x38] },       // gif
-    { offset:8, bytes:[0x57,0x45,0x42,0x50] },       // webp
-    { offset:4, bytes:[0x66,0x74,0x79,0x70] },       // mp4 / mov
-    { offset:0, bytes:[0x1A,0x45,0xDF,0xA3] }        // webm
-];
-
-/* Проверяем по первым байтам, а не по расширению:
-   переименованный исполняемый файл дальше не пройдёт. */
-async function verifySignature(file){
-    try {
-        const head = new Uint8Array(await file.slice(0,16).arrayBuffer());
-        const ok = SIGNATURES.some(sig => sig.bytes.every((b,i) => head[sig.offset + i] === b));
-        if (!ok) throw Object.assign(new Error('Это не похоже на картинку или видео'), { code:'BAD_SIGNATURE' });
-    } catch(e){
-        if (e.code === 'BAD_SIGNATURE') throw e;
-        // Не смогли прочитать заголовок — не блокируем, доверимся типу файла
-    }
-}
-
-/* Отпечаток: один и тот же снимок не уедет в хранилище дважды */
-async function fileHash(file){
-    if (!crypto.subtle) return null;
-    try {
-        const buf = await file.slice(0, 2*1024*1024).arrayBuffer();
-        const digest = await crypto.subtle.digest('SHA-256', buf);
-        return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2,'0')).join('') + '-' + file.size;
-    } catch(e){ return null; }
-}
-
-/* Снимок на 6 МБ превращается в ~250 КБ WebP без видимой потери качества */
-/* Сжатие картинок строго в JPG (ВК не переваривает WebP) */
-async function compressImage(file){
-    const skip = ['image/gif','image/svg+xml'];
-    if (!file.type.startsWith('image/') || skip.includes(file.type)) return file;
-    if (typeof createImageBitmap !== 'function') return file;
-
-    let bitmap;
-    try { bitmap = await createImageBitmap(file); } catch(e){ return file; }
-
-    const scale = Math.min(1, CONFIG.storage.imageMaxSide / Math.max(bitmap.width, bitmap.height));
-    const w = Math.round(bitmap.width*scale), h = Math.round(bitmap.height*scale);
-    const canvas = document.createElement('canvas');
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext('2d');
-    
-    // Обязательно белый фон, чтобы прозрачные PNG не чернели
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, w, h);
-    
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(bitmap, 0, 0, w, h);
-    if (bitmap.close) bitmap.close();
-
-    // Форсируем сохранение ИСКЛЮЧИТЕЛЬНО в JPEG
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', CONFIG.storage.imageQuality));
-    if (!blob || blob.size >= file.size) return file;
-
-    return new File([blob], file.name.replace(/\.[^.]+$/,'') + '.jpg', { type: 'image/jpeg' });
-}
-
-/* ============================================================================
-   БЛОК 6. ЗАГРУЗКА В ХРАНИЛИЩЕ
-   Цепочка страховок: основное хранилище → резервное → диск браузера
-   ============================================================================ */
-const activeProviders = () => CONFIG.storage.providers.filter(p => p.enabled && p.signUrl);
-
-async function checkStorageHealth(){
-    if (!activeProviders().length){
-        storageHealth = { state:'unconfigured', message:'Хранилище не подключено. Медиа можно добавлять только ссылкой.' };
-    } else if (!adminToken) {
-        storageHealth = { state:'unconfigured', message:'Войдите в режим редактора для загрузки медиа.' };
-    } else {
-        storageHealth = { state:'ok', message:'Защищённая загрузка готова' };
-    }
-    renderStorageStatus();
 }
 
 function renderStorageStatus(){
@@ -685,12 +625,19 @@ function renderStorageStatus(){
 async function uploadToProvider(provider, file, onProgress, signal){
     if (!adminToken) throw Object.assign(new Error('Сессия редактора истекла. Войдите снова — файл останется в очереди.'), { code:'SESSION_EXPIRED' });
     const signed = await requestJson(provider.signUrl, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ editorToken:adminToken, filename:file.name, contentType:file.type, size:file.size }) }, 2);
-    if (!signed.ok || !signed.uploadUrl){
-        if (signed.code === 'SESSION_EXPIRED' || signed.code === 'UNAUTHORIZED'){ adminToken=null; sessionStorage.removeItem('newsAdminToken'); throw Object.assign(new Error('Сессия редактора истекла. Войдите снова — файл останется в очереди.'), { code:'SESSION_EXPIRED' }); }
-        throw Object.assign(new Error(signed.error || 'Хранилище не выдало ссылку на загрузку'), { code:signed.code || 'NO_SIGNED_URL' });
+    if (!signed.ok || !signed.uploadUrl || !signed.publicUrl){
+        throw Object.assign(new Error(signed.error || 'Хранилище не выдало ссылки на загрузку'), { code:signed.code || 'NO_SIGNED_URL' });
     }
-    await new Promise((resolve,reject)=>{ const xhr=new XMLHttpRequest(); xhr.open('PUT',signed.uploadUrl); xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream'); xhr.upload.onprogress=e=>{if(e.lengthComputable&&onProgress)onProgress(e.loaded/e.total)}; xhr.onload=()=>xhr.status<300?resolve():reject(Object.assign(new Error('Хранилище отклонило файл, ответ '+xhr.status),{code:'PUT_'+xhr.status})); xhr.onerror=()=>reject(Object.assign(new Error('Обрыв связи при передаче файла'),{code:'NETWORK'})); xhr.ontimeout=()=>reject(Object.assign(new Error('Передача заняла слишком долго'),{code:'TIMEOUT'})); xhr.onabort=()=>reject(Object.assign(new Error('Отменено'),{code:'ABORTED'})); xhr.timeout=600000; if(signal)signal.addEventListener('abort',()=>xhr.abort(),{once:true}); xhr.send(file); });
-    return signed.publicUrl;
+    let uploadUrl='', publicUrl='';
+    try {
+        const u=new URL(String(signed.uploadUrl||'')), p=new URL(String(signed.publicUrl||''));
+        if(u.protocol!=='https:'||p.protocol!=='https:')throw new Error();
+        uploadUrl=u.href;publicUrl=p.href;
+    } catch(e) {
+        throw Object.assign(new Error('Хранилище вернуло небезопасный адрес'), { code:'BAD_SIGNED_URL' });
+    }
+    await new Promise((resolve,reject)=>{ const xhr=new XMLHttpRequest(); xhr.open('PUT',uploadUrl); xhr.setRequestHeader('Content-Type',file.type||'application/octet-stream'); xhr.upload.onprogress=e=>{if(e.lengthComputable&&onProgress)onProgress(e.loaded/e.total)}; xhr.onload=()=>xhr.status<300?resolve():reject(Object.assign(new Error('Хранилище отклонило файл, ответ '+xhr.status),{code:'PUT_'+xhr.status})); xhr.onerror=()=>reject(Object.assign(new Error('Обрыв связи при передаче файла'),{code:'NETWORK'})); xhr.ontimeout=()=>reject(Object.assign(new Error('Передача заняла слишком долго'),{code:'TIMEOUT'})); xhr.onabort=()=>reject(Object.assign(new Error('Отменено'),{code:'ABORTED'})); xhr.timeout=600000; if(signal)signal.addEventListener('abort',()=>xhr.abort(),{once:true}); xhr.send(file); });
+    return publicUrl;
 }
 
 async function uploadWithFallback(file, job){
@@ -1732,13 +1679,7 @@ if (editorRequested && !adminToken) {
     $('visitorPreviewBtn').onclick = () => setVisitorPreview(true);
     $('exportBtn').onclick  = exportBackup;
     $('logoutBtn').onclick = () => {
-        visitorPreview = false;
-        const returnBtn = document.getElementById('editorReturnBtn');
-        if (returnBtn) returnBtn.remove();
-        adminToken = null;
-        sessionStorage.removeItem('newsAdminToken');
-        $('newsAdminBar').style.display = 'none';
-        $('newsAdminBar').hidden = true;
+        clearNewsAdminSession();
         fetchNews();
     };
 
