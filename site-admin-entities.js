@@ -191,19 +191,49 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     root.style.setProperty('--bg-glass',hexRgba(light?cfg.lightCard:cfg.darkCard,light?.92:.78));
   };
 
-  function findFaq(id){ return (siteCustomFaqs||[]).find(x=>x&&x.id===id)||null; }
+  function baseFaqKey(node){return node?'base-faq:'+String(node.dataset.siteFaqStatic||'').trim():'';}
+  function baseFaqRecord(node){
+    if(!node)return null;const id=baseFaqKey(node);if(!id||id==='base-faq:')return null;
+    return {id,sourceKey:id,question:String(node.querySelector('summary')?.textContent||'').trim(),answer:String(node.querySelector('.faq-answer')?.textContent||'').trim(),active:true,custom:false};
+  }
+  function baseFaqs(){return [...document.querySelectorAll('.faq-container .faq-item[data-site-faq-static]')].map(baseFaqRecord).filter(Boolean);}
+  function findFaq(id){
+    const fid=String(id||'');
+    const custom=(siteCustomFaqs||[]).find(x=>x&&(String(x.id)===fid||String(x.sourceKey||'')===fid))||null;
+    const base=baseFaqs().find(x=>String(x.id)===fid)||null;
+    if(base&&custom)return Object.assign({},base,custom,{id:fid,sourceKey:fid});
+    return custom||base||null;
+  }
   function renderSiteCustomFaqs(){
     const target=document.querySelector('.faq-container');
     if(!target) return;
     target.querySelectorAll('.site-custom-faq').forEach(n=>n.remove());
     (siteCustomFaqs||[]).forEach(f=>{
-      if(!f||!f.id||f.active===false) return;
+      if(!f||!f.id||f.active===false||f.sourceKey) return;
       const details=document.createElement('details');
       details.className='faq-item site-custom-faq';
       details.dataset.siteFaqId=f.id;
       if(!siteKeyIsVisible('faq:'+f.id)) details.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');
       details.innerHTML='<summary>'+esc(f.question||'Новый вопрос')+'</summary><div class="faq-answer">'+esc(f.answer||'')+'</div>';
       target.appendChild(details);
+    });
+  }
+
+  function baseFaqNodeByKey(key){return [...document.querySelectorAll('.faq-container .faq-item[data-site-faq-static]')].find(n=>baseFaqKey(n)===key)||null;}
+  function applyBaseFaqOverrides(){
+    baseFaqs().forEach(base=>{
+      const node=baseFaqNodeByKey(base.id);if(!node)return;
+      if(!node.__cmsOriginalFaq){
+        node.__cmsOriginalFaq={question:node.querySelector('summary')?.innerHTML||'',answer:node.querySelector('.faq-answer')?.innerHTML||''};
+      }
+      const q=node.querySelector('summary'),a=node.querySelector('.faq-answer'),orig=node.__cmsOriginalFaq;
+      if(q)q.innerHTML=orig.question;if(a)a.innerHTML=orig.answer;
+      node.classList.remove('site-admin-force-hidden','site-admin-preview-hidden');
+      const ov=(siteCustomFaqs||[]).find(x=>x&&String(x.sourceKey||'')===String(base.id));
+      if(!ov)return;
+      if(ov.active===false||ov.archived===true){node.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');return;}
+      if(q&&ov.question!=null)q.textContent=ov.question;
+      if(a&&ov.answer!=null)a.textContent=ov.answer;
     });
   }
 
@@ -425,11 +455,14 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       siteAdminSetStatus('Контакт сохранён','ok');
     } else if(entityType==='faq'){
       if(!data.question){ siteAdminSetStatus('Укажите вопрос','err'); return; }
-      const id=entityId||makeId('custom-faq-');
+      const baseId=String(entityId||'');
+      const isBase=baseId.indexOf('base-faq:')===0;
+      const id=isBase?baseId:(entityId||makeId('custom-faq-'));
       const prev=findFaq(id)||{};
       const record=Object.assign({},prev,data,{id,active:prev&&prev.active===false?false:true,custom:true});
+      if(isBase)record.sourceKey=id;
       const before=siteCustomFaqs.slice();
-      const idx=siteCustomFaqs.findIndex(x=>x&&x.id===id);
+      const idx=siteCustomFaqs.findIndex(x=>x&&(String(x.id)===String(id)||String(x.sourceKey||'')===String(id)));
       if(idx>=0) siteCustomFaqs[idx]=record; else siteCustomFaqs.push(record);
       renderSiteCustomFaqs();
       renderSiteAdminPanel();
@@ -690,6 +723,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
   applySiteCustomContent=function(){
     originalApplySiteCustomContent();
     applyBaseContactOverrides();
+    applyBaseFaqOverrides();
     renderSiteCustomFaqs();
     applySiteThemeConfig();
     applySiteAttributeOverrides();
