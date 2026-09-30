@@ -81,4 +81,13 @@ assert(
   'Inactive schedule overrides must suppress base schedule entries'
 );
 
+
+assert(
+  entities.includes("function programCatalogForAdmin") &&
+  entities.includes("window.siteProgramSetPublished") &&
+  entities.includes("window.siteProgramDuplicateAny") &&
+  entities.includes("window.siteProgramMoveAny"),
+  'Base programs must be manageable directly from PRO CMS'
+);
+
 console.log('CMS workflow regression checks passed');
