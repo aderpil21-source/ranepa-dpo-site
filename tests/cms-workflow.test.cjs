@@ -90,4 +90,21 @@ assert(
   'Base programs must be manageable directly from PRO CMS'
 );
 
+
+assert(
+  entities.includes("if(base&&override) return Object.assign({},base,override)"),
+  'Program editor lookup must merge base data with sparse PRO overrides'
+);
+assert(
+  structure.includes("return base?Object.assign({},base,custom):custom"),
+  'Schedule editor lookup must merge base data with sparse PRO overrides'
+);
+assert(
+  structure.includes("window.siteScheduleSetPublished") &&
+  structure.includes("window.siteScheduleDuplicateAny") &&
+  structure.includes("window.siteScheduleArchiveAny") &&
+  structure.includes("window.siteScheduleRestoreBase"),
+  'Base schedule entries must have full CMS lifecycle controls'
+);
+
 console.log('CMS workflow regression checks passed');
