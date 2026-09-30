@@ -308,4 +308,11 @@ for (const [page, expected] of Object.entries(cspExpectations)) {
   assert(!/(^|\s)https:(\s|$)/.test(scriptSrc), page+' must not allow arbitrary HTTPS script origins');
 }
 
+
+assert(
+  newsHtml.includes("try { if (win) win.opener = null; } catch(e){}") &&
+  newsHtml.includes("try { popup.opener = null; } catch(e){}"),
+  'News popups must not retain window.opener access'
+);
+
 console.log('Public snapshot security checks passed');
