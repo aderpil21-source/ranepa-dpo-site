@@ -1311,6 +1311,7 @@ function openBackgroundPlayer(shell){
         return;
     }
 
+    try { popup.opener = null; } catch(e){}
     try { popup.focus(); } catch(e){}
     toast('Фоновый плеер открыт. Теперь можно переходить по сайту.', 'ok');
 }
