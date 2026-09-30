@@ -99,6 +99,66 @@ window.siteScheduleRestoreBase=async function(i){
   if(!ok){siteCustomSchedules=before;if(typeof applySiteCustomContent==='function')applySiteCustomContent();}
   renderSiteAdminPanel();
 };
+function navCatalogForAdmin(){
+  const map=new Map();
+  baseNavItems().forEach(x=>{if(x&&x.id)map.set(String(x.id),Object.assign({},x));});
+  (siteCustomNavItems||[]).forEach(x=>{
+    if(!x||!x.id)return;
+    const key=String(x.sourceKey||x.id),base=map.get(key)||{};
+    map.set(key,Object.assign({},base,x,{id:key}));
+  });
+  return [...map.values()];
+}
+function upsertNavOverride(id,patch){
+  const nid=String(id),idx=(siteCustomNavItems||[]).findIndex(x=>x&&(String(x.id)===nid||String(x.sourceKey||'')===nid));
+  if(idx>=0)siteCustomNavItems[idx]=Object.assign({},siteCustomNavItems[idx],patch,{id:nid,sourceKey:nid,custom:true});
+  else siteCustomNavItems.push(Object.assign({id:nid,sourceKey:nid,custom:true},patch));
+}
+window.siteNavSetPublished=async function(id,published){
+  const base=baseNavItems().find(x=>String(x.id)===String(id));
+  if(!base){
+    if(typeof siteWorkflowTogglePublish==='function')return siteWorkflowTogglePublish('nav',id);
+    return;
+  }
+  const before=siteCustomNavItems.map(x=>x&&Object.assign({},x));
+  upsertNavOverride(id,{active:!!published,archived:false});
+  applyBaseNavOverrides();renderNav();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:(published?'Опубликован пункт меню: ':'Пункт меню в черновик: ')+(base.label||id)});
+  if(!ok){siteCustomNavItems=before;applyBaseNavOverrides();renderNav();renderSiteAdminPanel();}
+};
+window.siteNavDuplicateAny=async function(id){
+  const src=findNav(id);if(!src)return;
+  const before=siteCustomNavItems.map(x=>x&&Object.assign({},x));
+  const copy=JSON.parse(JSON.stringify(src));copy.id=uid('custom-nav-');delete copy.sourceKey;copy.custom=true;copy.active=false;copy.archived=false;delete copy.archivedAt;copy.label=(copy.label||'Пункт')+' — копия';
+  if(!copy.url)copy.url='#';
+  siteCustomNavItems.push(copy);applyBaseNavOverrides();renderNav();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'Создана копия пункта меню: '+copy.label});
+  if(!ok){siteCustomNavItems=before;applyBaseNavOverrides();renderNav();renderSiteAdminPanel();return;}
+  openSiteNavEditor(copy.id);
+};
+window.siteNavArchiveAny=async function(id){
+  const base=baseNavItems().find(x=>String(x.id)===String(id));
+  if(!base){
+    if(typeof siteWorkflowDelete==='function')return siteWorkflowDelete('nav',id);
+    return;
+  }
+  if(!confirm('Переместить пункт меню «'+(base.label||id)+'» в корзину?'))return;
+  const before=siteCustomNavItems.map(x=>x&&Object.assign({},x));
+  upsertNavOverride(id,{active:false,archived:true,archivedAt:new Date().toISOString()});
+  applyBaseNavOverrides();renderNav();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'В корзину пункт меню: '+(base.label||id)});
+  if(!ok){siteCustomNavItems=before;applyBaseNavOverrides();renderNav();renderSiteAdminPanel();}
+};
+window.siteNavRestoreBase=async function(id){
+  const base=baseNavItems().find(x=>String(x.id)===String(id));if(!base)return;
+  const before=siteCustomNavItems.map(x=>x&&Object.assign({},x));
+  upsertNavOverride(id,{active:false,archived:false});
+  const idx=siteCustomNavItems.findIndex(x=>x&&(String(x.id)===String(id)||String(x.sourceKey||'')===String(id)));if(idx>=0)delete siteCustomNavItems[idx].archivedAt;
+  applyBaseNavOverrides();renderNav();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'Восстановлен пункт меню из корзины: '+(base.label||id)});
+  if(!ok){siteCustomNavItems=before;applyBaseNavOverrides();renderNav();renderSiteAdminPanel();}
+}
+
 function docCatalogForAdmin(){
   const map=new Map();
   baseDocs().forEach(x=>{if(x&&x.id)map.set(String(x.id),Object.assign({},x));});
@@ -252,7 +312,17 @@ function groups(){
       '<button type="button" onclick="openSiteScheduleEditor(\''+esc(x.id)+'\')">Редактировать</button>'+
       '<button type="button" class="danger" onclick="siteScheduleArchiveAny(\''+esc(x.id)+'\')">В корзину</button></div>';
   }).join('');
-  const nav=(siteCustomNavItems||[]).map(x=>'<div class="site-admin-row"><span>'+esc(x.label||'')+'</span></div><div class="site-admin-entity-actions"><button type="button" onclick="openSiteNavEditor(\''+esc(x.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomNav(\''+esc(x.id)+'\')">Удалить</button></div>').join('');
+  const nav=navCatalogForAdmin().map(x=>{
+    const isBase=String(x.id||'').indexOf('base-nav:')===0,draft=x.active===false&&x.archived!==true,arch=x.archived===true;
+    return '<div class="site-admin-row"><span>'+esc(x.label||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
+      '<div class="site-admin-entity-actions">'+
+      (arch?(isBase?'<button type="button" onclick="siteNavRestoreBase(\''+esc(x.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'nav\',\''+esc(x.id)+'\')">Восстановить</button>'):
+        '<button type="button" onclick="siteNavSetPublished(\''+esc(x.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
+        '<button type="button" onclick="siteNavDuplicateAny(\''+esc(x.id)+'\')">Дублировать</button>'+
+        '<button type="button" onclick="openSiteNavEditor(\''+esc(x.id)+'\')">Редактировать</button>'+
+        '<button type="button" class="danger" onclick="siteNavArchiveAny(\''+esc(x.id)+'\')">В корзину</button>')+
+      '</div>';
+  }).join('');
   const docs=docCatalogForAdmin().map(x=>{
     const isBase=String(x.id||'').indexOf('base-doc:')===0,draft=x.active===false&&x.archived!==true,arch=x.archived===true;
     return '<div class="site-admin-row"><span>'+esc(x.title||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
