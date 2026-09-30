@@ -68,4 +68,23 @@ assert(!indexHtml.includes("localStorage.setItem('siteAdminToken'"),
 assert(!/[?&](?:token|adminToken)=/i.test(indexHtml),
   'PRO token must not be placed into client URLs');
 
+
+for (const page of ['index.html','programs.html','program.html','schedule.html','students.html','faq.html','contacts.html','news.html','ai-lecture.html','media-player.html']) {
+  const html = fs.readFileSync(page,'utf8');
+  assert(/http-equiv=["']Content-Security-Policy["']/i.test(html),
+    page+' must define a Content Security Policy');
+  assert(/name=["']referrer["']/i.test(html),
+    page+' must define a referrer policy');
+}
+
+const vkAuth = fs.readFileSync('vk-auth.html','utf8');
+assert(/http-equiv=["']Content-Security-Policy["']/i.test(vkAuth),
+  'vk-auth.html must define a Content Security Policy');
+assert(/name=["']referrer["'][^>]+content=["']no-referrer["']/i.test(vkAuth),
+  'vk-auth.html must never send a referrer while handling a VK access token');
+
+const payHtml = fs.readFileSync('pay/index.html','utf8');
+assert(/default-src 'none'/i.test(payHtml) && /content=["']no-referrer["']/i.test(payHtml),
+  'Payment page must retain its strict isolated CSP and no-referrer policy');
+
 console.log('Public snapshot security checks passed');
