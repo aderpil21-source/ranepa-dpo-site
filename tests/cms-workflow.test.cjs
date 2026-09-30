@@ -274,4 +274,12 @@ assert(
   'Document ordering must persist across built-in and custom entries'
 );
 
+
+assert(
+  structure.includes("window.siteNavMoveAny") &&
+  structure.includes("function applyNavOrder") &&
+  structure.includes("cmsOrder:index"),
+  'Menu ordering must persist across built-in and custom entries'
+);
+
 console.log('CMS workflow regression checks passed');
