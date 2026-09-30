@@ -249,7 +249,7 @@ assert(
 );
 
 
-const mediaAdmin = fs.readFileSync('site-admin-media.js','utf8');
+
 assert(
   mediaAdmin.includes("function requireHttpsUrl") &&
   mediaAdmin.includes("data.uploadUrl=requireHttpsUrl") &&
