@@ -415,4 +415,14 @@ assert(
   'Information block renderer must honor persisted drag order'
 );
 
+
+const mediaJs = fs.readFileSync('site-admin-media.js','utf8');
+assert(
+  mediaJs.includes("function usageFor(url)") &&
+  mediaJs.includes("siteAttributeOverrides") &&
+  mediaJs.includes("siteSeoConfig") &&
+  mediaJs.includes("Не найден в текущей странице/CMS"),
+  'Media manager must show where recent uploads are used in the page or CMS'
+);
+
 console.log('CMS workflow regression checks passed');
