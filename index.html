@@ -3316,6 +3316,8 @@
 
         const dirtyBeforeSave = siteSettingsDirty;
         const savingRevision = requestedRevision;
+        const versionBeforeSave = siteCurrentVersionId;
+        const redoBeforeSave = siteRedoStack.slice();
         siteSaveInFlight = (async function () {
             const now = new Date().toISOString();
             const base = siteSettingsItem || {};
@@ -3385,8 +3387,12 @@
         try {
             return await siteSaveInFlight;
         } catch (e) {
+            siteCurrentVersionId = versionBeforeSave;
+            siteRedoStack = redoBeforeSave;
+            saveSiteRedoStack();
             siteSettingsDirty = true;
             settleSiteSaveWaiters(false, savingRevision);
+            renderSiteVersionUI();
             updateSiteSaveUi();
             siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
             return false;
