@@ -92,12 +92,43 @@ jobs:
               value = settings.get(name)
               if not isinstance(value, list):
                   return []
-              return [
-                  item for item in value
-                  if isinstance(item, dict)
-                  and item.get("archived") is not True
-                  and item.get("active") is not False
-              ]
+
+              public = []
+              for item in value:
+                  if not isinstance(item, dict):
+                      continue
+
+                  inactive = item.get("active") is False
+                  archived = item.get("archived") is True
+                  source_key = item.get("sourceKey")
+                  item_id = item.get("id")
+
+                  # Drafts/new archived entities are private and must not be published.
+                  # A sparse override of an existing base entity is different: the
+                  # public renderer needs a minimal tombstone so the base item does
+                  # not reappear after being drafted/archived in PRO.
+                  is_base_override = bool(source_key)
+                  if name == "customPrograms" and not is_base_override:
+                      is_base_override = bool(item_id) and not str(item_id).startswith("custom-p-")
+
+                  if inactive or archived:
+                      if not is_base_override:
+                          continue
+                      tombstone = {
+                          "id": item_id,
+                          "sourceKey": source_key or ("base-program:" + str(item_id)),
+                          "active": False,
+                      }
+                      if archived:
+                          tombstone["archived"] = True
+                      if isinstance(item.get("cmsOrder"), (int, float)):
+                          tombstone["cmsOrder"] = item.get("cmsOrder")
+                      public.append(tombstone)
+                      continue
+
+                  public.append(item)
+
+              return public
 
           public_attributes = {}
           for selector, record in (settings.get("attributes") or {}).items():
