@@ -3564,7 +3564,7 @@
         if (!target) return;
         target.querySelectorAll('.site-custom-contact').forEach(function (node) { node.remove(); });
         (Array.isArray(siteCustomContacts) ? siteCustomContacts : []).forEach(function (contact) {
-            if (!contact || !contact.id || contact.active === false) return;
+            if (!contact || !contact.id || contact.active === false || contact.sourceKey) return;
             const card = document.createElement('div');
             card.className = 'contact-card site-custom-contact';
             card.dataset.siteContactId = String(contact.id);
