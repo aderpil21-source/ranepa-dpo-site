@@ -25,9 +25,10 @@ window.siteWorkflowBulk=async function(type,action){
       return;
     }
   }
+  const before=arr.slice();
   const next=arr.map(x=>ids.has(String(x.id))?Object.assign({},x,{active:action==='publish'}):x);
   d.set(next);
-  await save((action==='publish'?'Массовая публикация: ':'Массово в черновик: ')+d.label);
+  await save((action==='publish'?'Массовая публикация: ':'Массово в черновик: ')+d.label,()=>d.set(before));
 };
 window.siteWorkflowToggleDraftPreview=function(){
   previewDrafts=!previewDrafts;
@@ -41,17 +42,17 @@ function normalizeOrder(type,arr){
   if(type==='programs') return arr.map((x,i)=>Object.assign({},x,{cmsOrder:i}));
   return arr;
 }
-async function save(reason){refresh();await saveSiteSettings({recordVersion:true,reason});}
+async function save(reason,rollback){refresh();const ok=await saveSiteSettings({recordVersion:true,reason});if(!ok&&typeof rollback==='function'){rollback();refresh();}return !!ok;}
 window.siteWorkflowDuplicate=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get(),src=arr.find(x=>x&&String(x.id)===String(id));if(!src)return;
-  const copy=JSON.parse(JSON.stringify(src));copy.id=uid(d.prefix);copy.custom=true;copy.active=false;
+  const before=arr.slice();const copy=JSON.parse(JSON.stringify(src));copy.id=uid(d.prefix);copy.custom=true;copy.active=false;
   if(type==='programs')copy.title_ru=(copy.title_ru||'Программа')+' — копия';
   else if(type==='contacts')copy.name=(copy.name||'Контакт')+' — копия';
   else if(type==='faq')copy.question=(copy.question||'Вопрос')+' — копия';
   else if(type==='nav')copy.label=(copy.label||'Пункт')+' — копия';
   else if(type==='docs')copy.title=(copy.title||'Документ')+' — копия';
   else if(type==='blocks')copy.title=(copy.title||'Блок')+' — копия';
-  d.set([...arr,copy]);await save('Создана копия: '+d.title(copy));d.edit(copy.id);
+  d.set([...arr,copy]);if(await save('Создана копия: '+d.title(copy),()=>d.set(before)))d.edit(copy.id);
 };
 window.siteWorkflowTogglePublish=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(x=>x&&String(x.id)===String(id));if(i<0)return;
@@ -64,28 +65,30 @@ window.siteWorkflowTogglePublish=async function(type,id){
       return;
     }
   }
-  arr[i]={...arr[i],active:willPublish};d.set(arr);await save((arr[i].active===false?'Черновик: ':'Опубликовано: ')+d.title(arr[i]));
+  const before=d.get().slice();arr[i]={...arr[i],active:willPublish};d.set(arr);await save((arr[i].active===false?'Черновик: ':'Опубликовано: ')+d.title(arr[i]),()=>d.set(before));
 };
 window.siteWorkflowMove=async function(type,id,dir){
   const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(x=>x&&String(x.id)===String(id)),j=i+Number(dir);
-  if(i<0||j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];d.set(normalizeOrder(type,arr));await save('Изменён порядок: '+d.label);
+  if(i<0||j<0||j>=arr.length)return;const before=d.get().slice();[arr[i],arr[j]]=[arr[j],arr[i]];d.set(normalizeOrder(type,arr));await save('Изменён порядок: '+d.label,()=>d.set(before));
 };
 window.siteWorkflowDelete=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(y=>y&&String(y.id)===String(id));if(i<0)return;
   const x=arr[i];if(!confirm('Переместить «'+d.title(x)+'» в корзину?'))return;
+  const before=d.get().slice();
   arr[i]=Object.assign({},x,{active:false,archived:true,archivedAt:new Date().toISOString()});
-  d.set(arr);await save('В корзину: '+d.title(arr[i]));
+  d.set(arr);await save('В корзину: '+d.title(arr[i]),()=>d.set(before));
 };
 window.siteWorkflowRestore=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get().slice(),i=arr.findIndex(y=>y&&String(y.id)===String(id));if(i<0)return;
+  const before=d.get().slice();
   arr[i]=Object.assign({},arr[i],{active:false,archived:false});
   delete arr[i].archivedAt;
-  d.set(arr);await save('Восстановлено из корзины: '+d.title(arr[i]));
+  d.set(arr);await save('Восстановлено из корзины: '+d.title(arr[i]),()=>d.set(before));
 };
 window.siteWorkflowDestroy=async function(type,id){
   const d=defs[type];if(!d)return;const arr=d.get(),x=arr.find(y=>y&&String(y.id)===String(id));if(!x)return;
   if(!confirm('Удалить «'+d.title(x)+'» навсегда? Это действие нельзя отменить кроме восстановления предыдущей версии сайта.'))return;
-  d.set(arr.filter(y=>y!==x));await save('Удалено навсегда: '+d.title(x));
+  const before=arr.slice();d.set(arr.filter(y=>y!==x));await save('Удалено навсегда: '+d.title(x),()=>d.set(before));
 };
 
 function row(type,x,index,total){
@@ -177,9 +180,10 @@ function bindDrag(root){
       if(from<to)to--;
       if(after)to++;
       arr.splice(Math.max(0,Math.min(to,arr.length)),0,item);
+      const before=d.get().slice();
       d.set(normalizeOrder(type,arr));
       clearDragMarks(root);dragState=null;
-      await save('Изменён порядок drag-and-drop: '+d.label);
+      await save('Изменён порядок drag-and-drop: '+d.label,()=>d.set(before));
     });
   });
 }
