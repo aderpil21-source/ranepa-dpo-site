@@ -43,18 +43,21 @@
     const h=card.querySelector('h3'),pos=card.querySelector('.position');
     if(h&&override.name!=null) h.textContent=String(override.name);
     if(pos&&override.position!=null) pos.textContent=String(override.position);
-    [...card.children].filter(x=>x.tagName==='P').forEach(x=>x.remove());
-    const office=String(override.office||'').trim();
-    const phone=String(override.phone||'').trim();
-    const ext=String(override.extension||'').trim();
-    const email=String(override.email||'').trim();
-    if(office) appendDetail(card,'Каб. ',office,'');
-    if(phone){
-      const clean=phone.replace(/[^+\d]/g,'');
-      const p=appendDetail(card,'Тел: ',phone,'tel:'+clean);
-      if(p&&ext) p.append(document.createTextNode(' (доб. '+ext+')'));
+    const hasDetails=['office','phone','extension','email'].some(k=>Object.prototype.hasOwnProperty.call(override,k));
+    if(hasDetails){
+      [...card.children].filter(x=>x.tagName==='P').forEach(x=>x.remove());
+      const office=String(override.office||'').trim();
+      const phone=String(override.phone||'').trim();
+      const ext=String(override.extension||'').trim();
+      const email=String(override.email||'').trim();
+      if(office) appendDetail(card,'Каб. ',office,'');
+      if(phone){
+        const clean=phone.replace(/[^+\d]/g,'');
+        const p=appendDetail(card,'Тел: ',phone,'tel:'+clean);
+        if(p&&ext) p.append(document.createTextNode(' (доб. '+ext+')'));
+      }
+      if(email) appendDetail(card,'E-mail: ',email,'mailto:'+email);
     }
-    if(email) appendDetail(card,'E-mail: ',email,'mailto:'+email);
   }
 
   async function init(){
