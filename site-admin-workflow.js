@@ -1,13 +1,15 @@
 (function(){
 'use strict';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isBaseProgramOverride=x=>!!(x&&Array.isArray(basePrograms)&&basePrograms.some(b=>b&&String(b.id)===String(x.id)));
+const splitSet=(allKey,incoming,isFixed)=>{const current=allKey(),fixed=current.filter(isFixed);return [...fixed,...incoming];};
 const defs={
-  programs:{label:'Программы',get:()=>siteCustomPrograms,set:v=>siteCustomPrograms=v,title:x=>x.title_ru||x.id,prefix:'custom-p-',edit:id=>openSiteProgramEditor(id)},
-  contacts:{label:'Контакты',get:()=>siteCustomContacts,set:v=>siteCustomContacts=v,title:x=>x.name||x.position||x.id,prefix:'custom-c-',edit:id=>openSiteContactEditor(id)},
-  faq:{label:'FAQ',get:()=>siteCustomFaqs,set:v=>siteCustomFaqs=v,title:x=>x.question||x.id,prefix:'custom-faq-',edit:id=>openSiteFaqEditor(id)},
-  schedule:{label:'Расписание — добавленные вручную',get:()=>siteCustomSchedules.filter(x=>x&&!x.sourceKey),set:v=>{const fixed=siteCustomSchedules.filter(x=>x&&x.sourceKey);siteCustomSchedules=[...fixed,...v]},title:x=>[x.date,x.time,x.program,x.subject].filter(Boolean).join(' · ')||x.id,prefix:'custom-s-',edit:id=>openSiteScheduleEditor(id)},
+  programs:{label:'Программы — созданные в PRO',get:()=>siteCustomPrograms.filter(x=>x&&!isBaseProgramOverride(x)),set:v=>{siteCustomPrograms=splitSet(()=>siteCustomPrograms,v,isBaseProgramOverride)},title:x=>x.title_ru||x.id,prefix:'custom-p-',edit:id=>openSiteProgramEditor(id)},
+  contacts:{label:'Контакты — созданные в PRO',get:()=>siteCustomContacts.filter(x=>x&&!x.sourceKey),set:v=>{siteCustomContacts=splitSet(()=>siteCustomContacts,v,x=>x&&x.sourceKey)},title:x=>x.name||x.position||x.id,prefix:'custom-c-',edit:id=>openSiteContactEditor(id)},
+  faq:{label:'FAQ — созданные в PRO',get:()=>siteCustomFaqs.filter(x=>x&&!x.sourceKey),set:v=>{siteCustomFaqs=splitSet(()=>siteCustomFaqs,v,x=>x&&x.sourceKey)},title:x=>x.question||x.id,prefix:'custom-faq-',edit:id=>openSiteFaqEditor(id)},
+  schedule:{label:'Расписание — добавленные вручную',get:()=>siteCustomSchedules.filter(x=>x&&!x.sourceKey),set:v=>{siteCustomSchedules=splitSet(()=>siteCustomSchedules,v,x=>x&&x.sourceKey)},title:x=>[x.date,x.time,x.program,x.subject].filter(Boolean).join(' · ')||x.id,prefix:'custom-s-',edit:id=>openSiteScheduleEditor(id)},
   nav:{label:'Меню',get:()=>siteCustomNavItems,set:v=>siteCustomNavItems=v,title:x=>x.label||x.url||x.id,prefix:'custom-nav-',edit:id=>openSiteNavEditor(id)},
-  docs:{label:'Документы',get:()=>siteCustomDocs,set:v=>siteCustomDocs=v,title:x=>x.title||x.id,prefix:'custom-doc-',edit:id=>openSiteDocEditor(id)},
+  docs:{label:'Документы — созданные в PRO',get:()=>siteCustomDocs.filter(x=>x&&!x.sourceKey),set:v=>{siteCustomDocs=splitSet(()=>siteCustomDocs,v,x=>x&&x.sourceKey)},title:x=>x.title||x.id,prefix:'custom-doc-',edit:id=>openSiteDocEditor(id)},
   blocks:{label:'Информационные блоки',get:()=>siteCustomBlocks,set:v=>siteCustomBlocks=v,title:x=>x.title||x.id,prefix:'custom-block-',edit:id=>openSiteBlockEditor(id)}
 };
 const uid=p=>p+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
