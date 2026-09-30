@@ -234,4 +234,18 @@ for (const [page, allowedHosts] of Object.entries(externalScriptPolicy)) {
   }
 }
 
+
+assert(
+  indexHtml.includes("response.status === 401") &&
+  indexHtml.includes("response.status === 403") &&
+  indexHtml.includes("const authCode = String(data && (data.code || data.error) || '').trim().toUpperCase()"),
+  'PRO session expiry must handle HTTP auth failures and normalized backend codes'
+);
+assert(
+  indexHtml.includes("if (typeof toggleSiteTextEditMode === 'function') toggleSiteTextEditMode(false)") &&
+  indexHtml.includes("applySiteVisibility();") &&
+  indexHtml.includes("applySiteContentOverrides();"),
+  'Expired PRO sessions must immediately restore visitor-mode rendering'
+);
+
 console.log('Public snapshot security checks passed');
