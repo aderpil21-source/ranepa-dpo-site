@@ -4369,7 +4369,7 @@
             }
 
             basePrograms = programs.map(function (p) { return Object.assign({}, p); });
-            buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms));
+            buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) { return p && p.active !== false && p.archived !== true; }));
         } catch (error) {
             console.error("Ошибка API:", error);
             document.getElementById('tab-all').innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">${translationsHTML[currentLang].programLoadError}</div>`;
