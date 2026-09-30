@@ -290,4 +290,12 @@ assert(
   'Contacts must render and move by stable department keys'
 );
 
+
+assert(
+  entities.includes("window.siteContactMoveAny") &&
+  entities.includes("function applyContactOrder") &&
+  entities.includes("cmsOrder:index"),
+  'Contact ordering must persist within departments'
+);
+
 console.log('CMS workflow regression checks passed');
