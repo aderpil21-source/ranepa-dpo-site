@@ -175,4 +175,19 @@ assert(
   'Base overlay records must stay out of custom workflow lists'
 );
 
+
+assert(
+  structure.includes("function baseNavItems") &&
+  structure.includes("function applyBaseNavOverrides") &&
+  structure.includes("window.siteNavSetPublished") &&
+  structure.includes("window.siteNavDuplicateAny") &&
+  structure.includes("window.siteNavArchiveAny") &&
+  structure.includes("window.siteNavRestoreBase"),
+  'Existing navigation items must be manageable through PRO overlays'
+);
+assert(
+  workflow.includes("siteCustomNavItems.filter(x=>x&&!x.sourceKey)"),
+  'Base navigation overlays must stay out of custom workflow lists'
+);
+
 console.log('CMS workflow regression checks passed');
