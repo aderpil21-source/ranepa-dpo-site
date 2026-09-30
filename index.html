@@ -2696,6 +2696,7 @@
         });
         applySiteVisibility();
         applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
         if (typeof applySiteCustomContent === 'function') applySiteCustomContent();
     }
 
@@ -2995,6 +2996,7 @@
         } else {
             clearSiteEditableDecorations();
             applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
             siteAdminSetStatus('Редактирование текста выключено', 'ok');
         }
     }
@@ -3169,6 +3171,7 @@
                             cacheSiteSettings(cachedSettings);
                             applySiteVisibility();
                             applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
                             if (typeof applySiteCustomContent === 'function') applySiteCustomContent();
                         }
                     }
@@ -3215,6 +3218,7 @@
             cacheSiteSettings(parsed);
             applySiteVisibility();
             applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
             if (typeof applySiteCustomContent === 'function') applySiteCustomContent();
             if (siteAdminMode) {
                 renderSiteAdminPanel();
@@ -3358,6 +3362,7 @@
             if (reopen) reopen.classList.remove('active');
             applySiteVisibility();
             applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
             renderSiteAdminPanel();
             loadSiteSettings(true);
             return;
@@ -3415,6 +3420,7 @@
             await loadSiteSettings(true);
             applySiteVisibility();
             applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
             renderSiteAdminPanel();
         } catch (e) {
             if (err) { err.textContent = e.message; err.style.display = 'block'; }
@@ -3452,6 +3458,7 @@
         if (reopen) reopen.classList.remove('active');
         applySiteVisibility();
         applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
     }
 
     function initSiteAdminVisibility() {
@@ -3459,6 +3466,7 @@
         readCachedSiteSettings();
         applySiteVisibility();
         applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
         loadSiteSettings(false);
 
         document.addEventListener('focusin', function (event) {
@@ -3505,6 +3513,7 @@
             siteAdminMutationTimer = setTimeout(function () {
                 applySiteVisibility();
                 applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
                 if (siteTextEditMode) decorateSiteEditableElements();
             }, 20);
         });
@@ -4231,6 +4240,7 @@
         }
         renderDocsList(globalPrograms);
         applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
         if (siteTextEditMode) decorateSiteEditableElements();
 
         if (isScheduleOverlayActive()) {
@@ -5780,7 +5790,7 @@ if (legacyNewsHash.startsWith('#news=')) {
     }
 }
 </script>
-<script src="./site-admin-entities.js?v=5"></script>
+<script src="./site-admin-entities.js?v=6"></script>
 <script src="./site-admin-structure.js?v=2"></script>
 <script src="./site-admin-workflow.js?v=6"></script>
 <script src="./site-admin-diagnostics.js?v=1"></script>
