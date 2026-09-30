@@ -394,4 +394,13 @@ assert(
   'Concurrent CMS saves must wait for the revision that contains their own changes'
 );
 
+
+assert(
+  indexHtml.includes("const versionBeforeSave = siteCurrentVersionId") &&
+  indexHtml.includes("const redoBeforeSave = siteRedoStack.slice()") &&
+  indexHtml.includes("siteCurrentVersionId = versionBeforeSave") &&
+  indexHtml.includes("siteRedoStack = redoBeforeSave"),
+  'Failed CMS saves must rollback version pointer and redo history'
+);
+
 console.log('CMS workflow regression checks passed');
