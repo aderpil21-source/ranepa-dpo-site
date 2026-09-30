@@ -84,6 +84,12 @@
     const list=document.querySelector('.faq-list');
     if(list) list.style.display=visible('faq')?'':'none';
   }
+  function renderCustomNav(){
+    document.querySelectorAll('.site-custom-nav-item').forEach(n=>n.remove());
+    const nav=document.querySelector('.page-nav,.audience-nav,.header-nav');if(!nav)return;
+    const before=nav.querySelector('.nav-enroll,.header-nav-btn');
+    (Array.isArray(settings.customNavItems)?settings.customNavItems:[]).forEach(x=>{if(!x||x.active===false||!visible('nav-custom:'+x.id))return;const a=document.createElement('a');a.className='site-custom-nav-item';a.textContent=x.label||'Новый пункт';a.href=x.url||'#';if(x.newTab){a.target='_blank';a.rel='noopener noreferrer'}nav.insertBefore(a,before||null)});
+  }
   function renderCustomFaqs(){
     const target=document.querySelector('.faq-list');
     if(!target) return;
@@ -110,7 +116,7 @@
         const data=await res.json(); settings=data?.settings||{};
       }catch(_){settings={};}
     }
-    applyThemeConfig(); applyContent(); applyAttributes(); applyVisibility(); renderCustomFaqs();
+    applyThemeConfig(); applyContent(); applyAttributes(); applyVisibility(); renderCustomNav(); renderCustomFaqs();
   }
   function mount(){
     const nativeThemeButton=document.getElementById('themeBtn');

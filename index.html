@@ -1813,7 +1813,7 @@
             <span data-i18n="educationDocsDesc">Официальные дипломы и удостоверения установленного образца с внесением данных в государственную систему ФИС ФРДО.</span>
         </p>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
+        <div data-site-doc-grid style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px;">
             <!-- Документ 1 -->
             <div class="doc-card" onclick="openDocLightbox('img/doc-1.jpg', translationsHTML[currentLang].docAdvanced)" style="background: var(--bg-card); backdrop-filter: blur(25px); border: 1px solid var(--border-glass); border-radius: 22px; padding: 20px; box-shadow: 0 20px 40px var(--shadow-color); cursor: pointer; transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;">
                 <div style="width: 100%; height: 220px; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); margin-bottom: 16px;">
@@ -2383,6 +2383,10 @@
     let siteCustomPrograms = [];
     let siteCustomContacts = [];
     let siteCustomFaqs = [];
+    let siteCustomSchedules = [];
+    let siteCustomNavItems = [];
+    let siteCustomDocs = [];
+    let siteCustomBlocks = [];
     let siteThemeConfig = {};
     let siteSettingsItem = null;
     let siteVersionHistory = [];
@@ -2454,6 +2458,10 @@
                 customPrograms: Array.isArray(parsed.customPrograms) ? parsed.customPrograms : [],
                 customContacts: Array.isArray(parsed.customContacts) ? parsed.customContacts : [],
                 customFaqs: Array.isArray(parsed.customFaqs) ? parsed.customFaqs : [],
+                customSchedules: Array.isArray(parsed.customSchedules) ? parsed.customSchedules : [],
+                customNavItems: Array.isArray(parsed.customNavItems) ? parsed.customNavItems : [],
+                customDocs: Array.isArray(parsed.customDocs) ? parsed.customDocs : [],
+                customBlocks: Array.isArray(parsed.customBlocks) ? parsed.customBlocks : [],
                 theme: parsed.theme && typeof parsed.theme === 'object' ? parsed.theme : {},
                 currentVersionId: parsed.currentVersionId || null,
                 updatedAt: parsed.updatedAt || ''
@@ -2486,6 +2494,10 @@
             customPrograms: JSON.parse(JSON.stringify(siteCustomPrograms || [])),
             customContacts: JSON.parse(JSON.stringify(siteCustomContacts || [])),
             customFaqs: JSON.parse(JSON.stringify(siteCustomFaqs || [])),
+            customSchedules: JSON.parse(JSON.stringify(siteCustomSchedules || [])),
+            customNavItems: JSON.parse(JSON.stringify(siteCustomNavItems || [])),
+            customDocs: JSON.parse(JSON.stringify(siteCustomDocs || [])),
+            customBlocks: JSON.parse(JSON.stringify(siteCustomBlocks || [])),
             theme: JSON.parse(JSON.stringify(siteThemeConfig || {}))
         };
     }
@@ -2516,6 +2528,10 @@
                     customPrograms: Array.isArray(data.snapshot.customPrograms) ? data.snapshot.customPrograms : [],
                     customContacts: Array.isArray(data.snapshot.customContacts) ? data.snapshot.customContacts : [],
                     customFaqs: Array.isArray(data.snapshot.customFaqs) ? data.snapshot.customFaqs : [],
+                    customSchedules: Array.isArray(data.snapshot.customSchedules) ? data.snapshot.customSchedules : [],
+                    customNavItems: Array.isArray(data.snapshot.customNavItems) ? data.snapshot.customNavItems : [],
+                    customDocs: Array.isArray(data.snapshot.customDocs) ? data.snapshot.customDocs : [],
+                    customBlocks: Array.isArray(data.snapshot.customBlocks) ? data.snapshot.customBlocks : [],
                     theme: data.snapshot.theme && typeof data.snapshot.theme === 'object' ? data.snapshot.theme : {}
                 }
             };
@@ -2651,6 +2667,10 @@
         siteCustomPrograms = JSON.parse(JSON.stringify(snapshot.customPrograms || []));
         siteCustomContacts = JSON.parse(JSON.stringify(snapshot.customContacts || []));
         siteCustomFaqs = JSON.parse(JSON.stringify(snapshot.customFaqs || []));
+        siteCustomSchedules = JSON.parse(JSON.stringify(snapshot.customSchedules || []));
+        siteCustomNavItems = JSON.parse(JSON.stringify(snapshot.customNavItems || []));
+        siteCustomDocs = JSON.parse(JSON.stringify(snapshot.customDocs || []));
+        siteCustomBlocks = JSON.parse(JSON.stringify(snapshot.customBlocks || []));
         siteThemeConfig = JSON.parse(JSON.stringify(snapshot.theme || {}));
         cacheSiteSettings({
             version:5,
@@ -2660,6 +2680,10 @@
             customPrograms:siteCustomPrograms,
             customContacts:siteCustomContacts,
             customFaqs:siteCustomFaqs,
+            customSchedules:siteCustomSchedules,
+            customNavItems:siteCustomNavItems,
+            customDocs:siteCustomDocs,
+            customBlocks:siteCustomBlocks,
             theme:siteThemeConfig,
             currentVersionId:siteCurrentVersionId,
             updatedAt:new Date().toISOString()
@@ -2724,6 +2748,10 @@
         if (Array.isArray(cached.customPrograms)) siteCustomPrograms = cached.customPrograms;
         if (Array.isArray(cached.customContacts)) siteCustomContacts = cached.customContacts;
         if (Array.isArray(cached.customFaqs)) siteCustomFaqs = cached.customFaqs;
+        if (Array.isArray(cached.customSchedules)) siteCustomSchedules = cached.customSchedules;
+        if (Array.isArray(cached.customNavItems)) siteCustomNavItems = cached.customNavItems;
+        if (Array.isArray(cached.customDocs)) siteCustomDocs = cached.customDocs;
+        if (Array.isArray(cached.customBlocks)) siteCustomBlocks = cached.customBlocks;
         if (cached.theme && typeof cached.theme === 'object') siteThemeConfig = cached.theme;
         if (cached.currentVersionId) siteCurrentVersionId = cached.currentVersionId;
         return true;
@@ -2995,6 +3023,10 @@
             customPrograms:siteCustomPrograms,
             customContacts:siteCustomContacts,
             customFaqs:siteCustomFaqs,
+            customSchedules:siteCustomSchedules,
+            customNavItems:siteCustomNavItems,
+            customDocs:siteCustomDocs,
+            customBlocks:siteCustomBlocks,
             theme:siteThemeConfig,
             currentVersionId:siteCurrentVersionId||null,
             updatedAt:new Date().toISOString()
@@ -3133,6 +3165,10 @@
             siteCustomPrograms = parsed.customPrograms || [];
             siteCustomContacts = parsed.customContacts || [];
             siteCustomFaqs = parsed.customFaqs || [];
+            siteCustomSchedules = parsed.customSchedules || [];
+            siteCustomNavItems = parsed.customNavItems || [];
+            siteCustomDocs = parsed.customDocs || [];
+            siteCustomBlocks = parsed.customBlocks || [];
             siteThemeConfig = parsed.theme || {};
             siteCurrentVersionId = parsed.currentVersionId || siteCurrentVersionId || null;
             if (useAdmin) loadSiteVersionHistory(items);
@@ -3189,13 +3225,17 @@
             }
 
             const payload = {
-                version: 5,
+                version: 6,
                 visibility: siteVisibility,
                 content: siteContentOverrides,
                 attributes: siteAttributeOverrides,
                 customPrograms: siteCustomPrograms,
                 customContacts: siteCustomContacts,
                 customFaqs: siteCustomFaqs,
+                customSchedules: siteCustomSchedules,
+                customNavItems: siteCustomNavItems,
+                customDocs: siteCustomDocs,
+                customBlocks: siteCustomBlocks,
                 theme: siteThemeConfig,
                 currentVersionId: siteCurrentVersionId || null,
                 updatedAt: now
@@ -5691,7 +5731,8 @@ if (legacyNewsHash.startsWith('#news=')) {
     }
 }
 </script>
-<script src="./site-admin-entities.js?v=3"></script>
+<script src="./site-admin-entities.js?v=4"></script>
+<script src="./site-admin-structure.js?v=1"></script>
 <script src="./owl-engine.js?v=20260927-4"></script>
 <script src="./portal-live-alert.js?v=20260927-1"></script>
 </html>
