@@ -642,7 +642,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       return '<div class="site-admin-row"><span>'+esc(c.name||c.id)+(c.position?' · '+esc(c.position):'')+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span>'+
       (key?'<label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label>':'')+'</div>'+
       '<div class="site-admin-entity-actions">'+
-      (arch&&isBase?'<button type="button" onclick="siteContactRestoreBase(\''+esc(c.id)+'\')">Восстановить</button>':
+      (arch?(isBase?'<button type="button" onclick="siteContactRestoreBase(\''+esc(c.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'contacts\',\''+esc(c.id)+'\')">Восстановить</button>'):
         '<button type="button" onclick="siteContactSetPublished(\''+esc(c.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
         '<button type="button" onclick="siteContactDuplicateAny(\''+esc(c.id)+'\')">Дублировать</button>'+
         '<button type="button" onclick="openSiteContactEditor(\''+esc(c.id)+'\')">Редактировать</button>'+
