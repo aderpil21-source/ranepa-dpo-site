@@ -92,8 +92,49 @@ function enhanceEditors(){
     fn.__mediaWrapped=true;window.openSiteElementEditor=fn;
   }
 }
+function normalizeUrl(v){
+  const s=String(v||'').trim();if(!s)return '';
+  try{return new URL(s,location.href).href;}catch(_){return s;}
+}
+function usageFor(url){
+  const target=normalizeUrl(url),hits=[];
+  if(!target)return hits;
+  document.querySelectorAll('[src],[href]').forEach(el=>{
+    const raw=el.getAttribute('src')||el.getAttribute('href')||'';
+    if(normalizeUrl(raw)!==target)return;
+    let label=el.tagName.toLowerCase();
+    if(el.matches('[data-site-program-id]'))label='программа';
+    else if(el.closest('[data-site-doc-grid]'))label='документы';
+    else if(el.closest('#contactsSection'))label='контакты';
+    else if(el.closest('.header-nav'))label='меню';
+    else if(el.id)label+='#'+el.id;
+    hits.push('страница: '+label);
+  });
+  const scan=(list,label,fields)=>{
+    (Array.isArray(list)?list:[]).forEach(item=>{
+      if(!item)return;
+      fields.forEach(field=>{if(normalizeUrl(item[field])===target)hits.push(label+': '+String(item.title_ru||item.title||item.name||item.label||item.id||field));});
+    });
+  };
+  scan(siteCustomPrograms,'программа',['pdf_link']);
+  scan(siteCustomContacts,'контакт',['image','url']);
+  scan(siteCustomFaqs,'FAQ',['image','url']);
+  scan(siteCustomNavItems,'меню',['url']);
+  scan(siteCustomDocs,'документ',['image','url']);
+  scan(siteCustomBlocks,'инфоблок',['url','image']);
+  Object.values(siteAttributeOverrides||{}).forEach(rec=>{
+    if(!rec)return;
+    if(normalizeUrl(rec.src)===target)hits.push('элемент: '+String(rec.selector||'изображение'));
+    if(normalizeUrl(rec.href)===target)hits.push('ссылка: '+String(rec.selector||'элемент'));
+  });
+  Object.entries(siteSeoConfig||{}).forEach(([page,seo])=>{
+    if(seo&&normalizeUrl(seo.ogImage)===target)hits.push('SEO '+page+': OpenGraph image');
+  });
+  return [...new Set(hits)];
+}
 function row(x){
-  return '<div class="cms-media-row"><div><b>'+esc(x.name||'Файл')+'</b><small>'+esc(humanSize(x.size))+' · '+esc(x.type||'файл')+'</small></div><button type="button" data-media-copy="'+esc(x.url)+'">Копировать ссылку</button></div>';
+  const uses=usageFor(x.url),usage=uses.length?('Используется: '+uses.join(' · ')):'Не найден в текущей странице/CMS';
+  return '<div class="cms-media-row"><div><b>'+esc(x.name||'Файл')+'</b><small>'+esc(humanSize(x.size))+' · '+esc(x.type||'файл')+'</small><small class="'+(uses.length?'cms-media-used':'cms-media-unused')+'">'+esc(usage)+'</small></div><button type="button" data-media-copy="'+esc(x.url)+'">Копировать ссылку</button></div>';
 }
 function renderPanel(){
   const root=document.getElementById('siteAdminControls');if(!root)return;
@@ -124,7 +165,7 @@ function renderPanel(){
 }
 function styles(){
   if(document.getElementById('siteAdminMediaStyles'))return;
-  const s=document.createElement('style');s.id='siteAdminMediaStyles';s.textContent='.cms-media-main{padding:9px}.cms-media-drop,.cms-media-pick{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(202,15,62,.42);background:rgba(202,15,62,.12);color:#fff;border-radius:8px;padding:7px 9px;font-size:.67rem;font-weight:850;cursor:pointer}.cms-media-field{display:flex;align-items:center;gap:7px;margin-top:6px}.cms-media-progress{font-size:.62rem;color:#94a3b8}.cms-media-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06)}.cms-media-row>div{display:flex;flex-direction:column;min-width:0}.cms-media-row b{font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cms-media-row small{font-size:.59rem;color:#94a3b8}.cms-media-row button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;border-radius:7px;padding:5px 7px;font-size:.6rem;cursor:pointer}.cms-media-empty,#siteAdminMediaStatus{font-size:.64rem;color:#94a3b8;padding:8px 0}';
+  const s=document.createElement('style');s.id='siteAdminMediaStyles';s.textContent='.cms-media-main{padding:9px}.cms-media-drop,.cms-media-pick{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(202,15,62,.42);background:rgba(202,15,62,.12);color:#fff;border-radius:8px;padding:7px 9px;font-size:.67rem;font-weight:850;cursor:pointer}.cms-media-field{display:flex;align-items:center;gap:7px;margin-top:6px}.cms-media-progress{font-size:.62rem;color:#94a3b8}.cms-media-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06)}.cms-media-row>div{display:flex;flex-direction:column;min-width:0}.cms-media-row b{font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cms-media-row small{font-size:.59rem;color:#94a3b8}.cms-media-used{color:#86efac!important}.cms-media-unused{color:#fbbf24!important}.cms-media-row button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;border-radius:7px;padding:5px 7px;font-size:.6rem;cursor:pointer}.cms-media-empty,#siteAdminMediaStatus{font-size:.64rem;color:#94a3b8;padding:8px 0}';
   document.head.appendChild(s);
 }
 const prevRender=renderSiteAdminPanel;
