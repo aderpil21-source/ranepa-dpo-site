@@ -209,9 +209,9 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     if(!target) return;
     target.querySelectorAll('.site-custom-faq').forEach(n=>n.remove());
     (siteCustomFaqs||[]).forEach(f=>{
-      if(!f||!f.id||f.active===false||f.sourceKey) return;
+      if(!f||!f.id||f.sourceKey||f.archived===true||(f.active===false&&!window.sitePreviewDraftMode)) return;
       const details=document.createElement('details');
-      details.className='faq-item site-custom-faq';
+      details.className='faq-item site-custom-faq'+(f.active===false&&window.sitePreviewDraftMode?' cms-preview-draft':'');
       details.dataset.siteFaqId=f.id;
       if(!siteKeyIsVisible('faq:'+f.id)) details.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');
       details.innerHTML='<summary>'+esc(f.question||'Новый вопрос')+'</summary><div class="faq-answer">'+esc(f.answer||'')+'</div>';
