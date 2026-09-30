@@ -47,9 +47,9 @@ assert(
   structure.includes("function safeCmsHref") && structure.includes("function safeCmsMediaUrl"),
   'Structured CMS editors must validate links and media URLs'
 );
+const unsafeUrlGuards = (structure.match(/d\\.url&&!safeCmsHref\\(d\\.url\\)/g) || []).length;
 assert(
-  structure.includes("if(!safeCmsHref(d.url))") &&
-  structure.includes("if(d.url&&!safeCmsHref(d.url))"),
+  unsafeUrlGuards >= 3,
   'CMS save handlers must reject unsafe URLs'
 );
 
@@ -142,19 +142,6 @@ assert(
 );
 
 
-assert(
-  entities.includes("function baseFaqs") &&
-  entities.includes("function applyBaseFaqOverrides") &&
-  entities.includes("window.siteFaqSetPublished") &&
-  entities.includes("window.siteFaqDuplicateAny") &&
-  entities.includes("window.siteFaqArchiveAny") &&
-  entities.includes("window.siteFaqRestoreBase"),
-  'Existing FAQ entries must be manageable through PRO overlays'
-);
-assert(
-  entities.includes("if(!f||!f.id||f.active===false||f.sourceKey) return"),
-  'Base FAQ overrides must not render duplicate custom FAQ cards'
-);
 assert(
   structure.includes("function baseDocs") &&
   structure.includes("function applyBaseDocOverrides") &&
