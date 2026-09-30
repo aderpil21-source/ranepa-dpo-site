@@ -329,33 +329,39 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const id=entityId||makeId('custom-p-');
       const prev=findProgram(id)||{};
       const record=Object.assign({},prev,data,{id,active:prev&&prev.active===false?false:true,custom:true,title_en:prev.title_en||data.title_ru,desc_en:prev.desc_en||data.desc_ru});
+      const before=siteCustomPrograms.slice();
       const idx=siteCustomPrograms.findIndex(x=>x&&x.id===id);
       if(idx>=0) siteCustomPrograms[idx]=record; else siteCustomPrograms.push(record);
       applySiteCustomContent();
       renderSiteAdminPanel();
-      await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменена':'Добавлена')+' программа: '+record.title_ru});
+      const saved=await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменена':'Добавлена')+' программа: '+record.title_ru});
+      if(!saved){siteCustomPrograms=before;applySiteCustomContent();renderSiteAdminPanel();return;}
       siteAdminSetStatus('Программа сохранена','ok');
     } else if(entityType==='contact'){
       if(!data.name){ siteAdminSetStatus('Укажите ФИО','err'); return; }
       const id=entityId||makeId('custom-c-');
       const prev=findContact(id)||{};
       const record=Object.assign({},prev,data,{id,custom:true});
+      const before=siteCustomContacts.slice();
       const idx=siteCustomContacts.findIndex(x=>x&&x.id===id);
       if(idx>=0) siteCustomContacts[idx]=record; else siteCustomContacts.push(record);
       applySiteCustomContent();
       renderSiteAdminPanel();
-      await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменён':'Добавлен')+' контакт: '+record.name});
+      const saved=await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменён':'Добавлен')+' контакт: '+record.name});
+      if(!saved){siteCustomContacts=before;applySiteCustomContent();renderSiteAdminPanel();return;}
       siteAdminSetStatus('Контакт сохранён','ok');
     } else if(entityType==='faq'){
       if(!data.question){ siteAdminSetStatus('Укажите вопрос','err'); return; }
       const id=entityId||makeId('custom-faq-');
       const prev=findFaq(id)||{};
       const record=Object.assign({},prev,data,{id,active:prev&&prev.active===false?false:true,custom:true});
+      const before=siteCustomFaqs.slice();
       const idx=siteCustomFaqs.findIndex(x=>x&&x.id===id);
       if(idx>=0) siteCustomFaqs[idx]=record; else siteCustomFaqs.push(record);
       renderSiteCustomFaqs();
       renderSiteAdminPanel();
-      await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменён':'Добавлен')+' FAQ: '+record.question});
+      const saved=await saveSiteSettings({recordVersion:true,reason:(entityId?'Изменён':'Добавлен')+' FAQ: '+record.question});
+      if(!saved){siteCustomFaqs=before;renderSiteCustomFaqs();renderSiteAdminPanel();return;}
       siteAdminSetStatus('FAQ сохранён','ok');
     } else if(entityType==='element'){
       const selector=entityId;
@@ -372,9 +378,16 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       if(Object.prototype.hasOwnProperty.call(data,'href')) rec.href=data.href;
       if(Object.prototype.hasOwnProperty.call(data,'src')) rec.src=data.src;
       if(Object.prototype.hasOwnProperty.call(data,'alt')) rec.alt=data.alt;
+      const hadPrev=Object.prototype.hasOwnProperty.call(siteAttributeOverrides,selector);
+      const before=hadPrev?Object.assign({},siteAttributeOverrides[selector]):null;
       siteAttributeOverrides[selector]=rec;
       applySiteAttributeOverrides();
-      await saveSiteSettings({recordVersion:true,reason:'Изменён элемент: '+selector});
+      const saved=await saveSiteSettings({recordVersion:true,reason:'Изменён элемент: '+selector});
+      if(!saved){
+        if(hadPrev)siteAttributeOverrides[selector]=before;else delete siteAttributeOverrides[selector];
+        applySiteAttributeOverrides();
+        return;
+      }
       siteAdminSetStatus('Элемент сохранён','ok');
     }
     closeSiteEntityEditor();
