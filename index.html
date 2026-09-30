@@ -2707,9 +2707,18 @@
         const opts = options || {};
         const target = findSiteVersion(versionId);
         if (!target) return false;
+        const beforeId = siteCurrentVersionId;
+        const beforeSnapshot = siteSnapshot();
         siteCurrentVersionId = target.id;
         applySiteVersionSnapshot(target.snapshot);
-        await saveSiteSettings({ recordVersion:false, reason:opts.reason || 'Восстановление версии' });
+        const saved = await saveSiteSettings({ recordVersion:false, reason:opts.reason || 'Восстановление версии' });
+        if (!saved) {
+            siteCurrentVersionId = beforeId;
+            applySiteVersionSnapshot(beforeSnapshot);
+            renderSiteVersionUI();
+            siteAdminSetStatus('Восстановление отменено: сервер не подтвердил сохранение', 'err');
+            return false;
+        }
         renderSiteVersionUI();
         if (opts.reload !== false) {
             setTimeout(function () { location.reload(); }, 120);
@@ -2722,27 +2731,42 @@
         if (!current || !current.parentId) return;
         const previous = findSiteVersion(current.parentId);
         if (!previous) return;
+        const beforeRedo = siteRedoStack.slice();
         siteRedoStack.push(current.id);
         saveSiteRedoStack();
-        await switchToSiteVersion(previous.id, { reason:'Отмена изменения' });
+        const ok = await switchToSiteVersion(previous.id, { reason:'Отмена изменения' });
+        if (!ok) {
+            siteRedoStack = beforeRedo;
+            saveSiteRedoStack();
+            renderSiteVersionUI();
+        }
     }
 
     async function redoSiteVersion() {
-        const nextId = siteRedoStack.pop();
-        saveSiteRedoStack();
+        const nextId = siteRedoStack.length ? siteRedoStack[siteRedoStack.length - 1] : null;
         if (!nextId) return;
         const next = findSiteVersion(nextId);
         if (!next) return;
-        await switchToSiteVersion(next.id, { reason:'Возврат изменения' });
+        const ok = await switchToSiteVersion(next.id, { reason:'Возврат изменения' });
+        if (ok) {
+            siteRedoStack.pop();
+            saveSiteRedoStack();
+        }
     }
 
     async function restoreSiteVersion(versionId) {
         const target = findSiteVersion(versionId);
         if (!target || target.id === siteCurrentVersionId) return;
         if (!confirm('Восстановить версию от ' + siteVersionDate(target.createdAt) + '?')) return;
-        siteRedoStack = [];
-        saveSiteRedoStack();
-        await switchToSiteVersion(target.id, { reason:'Восстановление из истории' });
+        const beforeRedo = siteRedoStack.slice();
+        const ok = await switchToSiteVersion(target.id, { reason:'Восстановление из истории' });
+        if (ok) {
+            siteRedoStack = [];
+            saveSiteRedoStack();
+        } else {
+            siteRedoStack = beforeRedo;
+            saveSiteRedoStack();
+        }
     }
 
     function readCachedSiteSettings() {
