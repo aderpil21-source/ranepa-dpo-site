@@ -638,13 +638,53 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const key=String(x.sourceKey||x.id),base=map.get(key)||{};
       map.set(key,Object.assign({},base,x,{id:key}));
     });
-    return [...map.values()];
+    return [...map.values()].sort((a,b)=>{
+      const ad=String(a&&a.departmentKey||''),bd=String(b&&b.departmentKey||'');
+      if(ad!==bd)return ad.localeCompare(bd);
+      const ao=Number.isFinite(Number(a&&a.cmsOrder))?Number(a.cmsOrder):null;
+      const bo=Number.isFinite(Number(b&&b.cmsOrder))?Number(b.cmsOrder):null;
+      if(ao!==null&&bo!==null&&ao!==bo)return ao-bo;
+      if(ao!==null&&bo===null)return -1;
+      if(ao===null&&bo!==null)return 1;
+      return String(a&&a.name||a&&a.id||'').localeCompare(String(b&&b.name||b&&b.id||''),'ru');
+    });
   }
   function upsertContactOverride(id,patch){
     const cid=String(id),idx=(siteCustomContacts||[]).findIndex(x=>x&&(String(x.id)===cid||String(x.sourceKey||'')===cid));
     if(idx>=0)siteCustomContacts[idx]=Object.assign({},siteCustomContacts[idx],patch,{id:cid,sourceKey:cid,custom:true});
     else siteCustomContacts.push(Object.assign({id:cid,sourceKey:cid,custom:true},patch));
   }
+  function patchContactAny(id,patch){
+    const cid=String(id),idx=(siteCustomContacts||[]).findIndex(x=>x&&(String(x.id)===cid||String(x.sourceKey||'')===cid));
+    if(idx>=0){siteCustomContacts[idx]=Object.assign({},siteCustomContacts[idx],patch);return;}
+    if(cid.indexOf('base-contact:')===0)siteCustomContacts.push(Object.assign({id:cid,sourceKey:cid,custom:true},patch));
+  }
+  function contactNodeId(node){
+    if(!node)return '';
+    if(node.classList.contains('site-custom-contact'))return String(node.dataset.siteContactId||'');
+    return baseContactKey(node);
+  }
+  function applyContactOrder(){
+    const order=new Map(contactCatalogForAdmin().map((x,i)=>[String(x.id),i]));
+    document.querySelectorAll('#contactsSection .contacts-grid').forEach(grid=>{
+      const cards=[...grid.querySelectorAll(':scope > .contact-card')];
+      cards.sort((a,b)=>(order.get(contactNodeId(a))??9999)-(order.get(contactNodeId(b))??9999)).forEach(n=>grid.appendChild(n));
+      [...grid.children].filter(n=>!n.classList?.contains('contact-card')).forEach(n=>grid.appendChild(n));
+    });
+  }
+  window.siteContactMoveAny=async function(id,dir){
+    const current=findContact(id);if(!current)return;
+    const dep=String(current.departmentKey||'');
+    const list=contactCatalogForAdmin().filter(x=>x&&x.archived!==true&&String(x.departmentKey||'')===dep);
+    const i=list.findIndex(x=>String(x.id)===String(id)),j=i+Number(dir);
+    if(i<0||j<0||j>=list.length)return;
+    [list[i],list[j]]=[list[j],list[i]];
+    const before=siteCustomContacts.map(x=>x&&Object.assign({},x));
+    list.forEach((x,index)=>patchContactAny(x.id,{cmsOrder:index}));
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Изменён порядок контактов'});
+    if(!ok){siteCustomContacts=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
   window.siteContactSetPublished=async function(id,published){
     const base=baseContacts().find(x=>String(x.id)===String(id));
     if(!base){
@@ -784,6 +824,8 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       (key?'<label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label>':'')+'</div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteContactRestoreBase(\''+esc(c.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'contacts\',\''+esc(c.id)+'\')">Восстановить</button>'):
+        '<button type="button" onclick="siteContactMoveAny(\''+esc(c.id)+'\',-1)">↑</button>'+
+        '<button type="button" onclick="siteContactMoveAny(\''+esc(c.id)+'\',1)">↓</button>'+
         '<button type="button" onclick="siteContactSetPublished(\''+esc(c.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
         '<button type="button" onclick="siteContactDuplicateAny(\''+esc(c.id)+'\')">Дублировать</button>'+
         '<button type="button" onclick="openSiteContactEditor(\''+esc(c.id)+'\')">Редактировать</button>'+
@@ -843,6 +885,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
   applySiteCustomContent=function(){
     originalApplySiteCustomContent();
     applyBaseContactOverrides();
+    applyContactOrder();
     applyBaseFaqOverrides();
     renderSiteCustomFaqs();
     applySiteThemeConfig();
