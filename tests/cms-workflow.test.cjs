@@ -244,4 +244,19 @@ assert(
   'PRO preview must support mobile and light/dark review'
 );
 
+
+assert(
+  indexHtml.includes("let siteSettingsDirty = false") &&
+  indexHtml.includes("function flushSiteSettingsSave()") &&
+  indexHtml.includes("siteSettingsDirty = true;") &&
+  indexHtml.includes("const dirtyBeforeSave = siteSettingsDirty") &&
+  indexHtml.includes("siteSettingsDirty = dirtyBeforeSave"),
+  'CMS must expose pending-save state and preserve it correctly across failed saves'
+);
+assert(
+  indexHtml.includes("window.addEventListener('beforeunload'") &&
+  indexHtml.includes("siteAdminSaveNowBtn"),
+  'CMS must warn on pending changes and provide Save now'
+);
+
 console.log('CMS workflow regression checks passed');
