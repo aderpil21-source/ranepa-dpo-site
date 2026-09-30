@@ -284,4 +284,28 @@ assert(
   'News media signing responses must be restricted to HTTPS URLs'
 );
 
+
+const cspExpectations = {
+  'index.html': ["'self'","'unsafe-inline'","https://mc.yandex.ru"],
+  'news.html': ["'self'","'unsafe-inline'","https://mc.yandex.ru"],
+  'programs.html': ["'self'","'unsafe-inline'"],
+  'program.html': ["'self'","'unsafe-inline'"],
+  'schedule.html': ["'self'","'unsafe-inline'"],
+  'students.html': ["'self'","'unsafe-inline'"],
+  'faq.html': ["'self'","'unsafe-inline'"],
+  'contacts.html': ["'self'","'unsafe-inline'"],
+  'media-player.html': ["'self'","'unsafe-inline'"],
+  'ai-lecture.html': ["'self'","'unsafe-inline'","'unsafe-eval'","https://mc.yandex.ru","https://cdn.jsdelivr.net","https://cdnjs.cloudflare.com"],
+  'vk-auth.html': ["'self'","'unsafe-inline'","https://unpkg.com"],
+  'pay/index.html': ["'none'"]
+};
+for (const [page, expected] of Object.entries(cspExpectations)) {
+  const html = fs.readFileSync(page,'utf8');
+  const tag = (html.match(/<meta[^>]+http-equiv=["']Content-Security-Policy["'][^>]*>/i)||[])[0] || '';
+  const content = (tag.match(/content="([^"]*)"/i)||tag.match(/content='([^']*)'/i)||[])[1] || '';
+  const scriptSrc = (content.match(/script-src\s+([^;]+)/i)||[])[1] || '';
+  for (const token of expected) assert(scriptSrc.includes(token), page+' missing required script-src token '+token);
+  assert(!/(^|\s)https:(\s|$)/.test(scriptSrc), page+' must not allow arbitrary HTTPS script origins');
+}
+
 console.log('Public snapshot security checks passed');
