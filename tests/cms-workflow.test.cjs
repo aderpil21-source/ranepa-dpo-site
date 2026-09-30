@@ -126,4 +126,19 @@ assert(
   'Base schedule entries must use overlay merges and full lifecycle controls'
 );
 
+
+assert(
+  entities.includes("function baseFaqs") &&
+  entities.includes("function applyBaseFaqOverrides") &&
+  entities.includes("window.siteFaqSetPublished") &&
+  entities.includes("window.siteFaqDuplicateAny") &&
+  entities.includes("window.siteFaqArchiveAny") &&
+  entities.includes("window.siteFaqRestoreBase"),
+  'Existing FAQ entries must be manageable through PRO overlays'
+);
+assert(
+  entities.includes("if(!f||!f.id||f.active===false||f.sourceKey) return"),
+  'Base FAQ overrides must not render duplicate custom FAQ cards'
+);
+
 console.log('CMS workflow regression checks passed');
