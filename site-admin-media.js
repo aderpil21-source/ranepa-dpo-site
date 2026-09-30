@@ -23,22 +23,33 @@ function validateFile(file){
   const max=file.type.startsWith('video/')?500*1024*1024:100*1024*1024;
   if(file.size>max)throw new Error('Файл слишком большой: '+humanSize(file.size));
 }
+function requireHttpsUrl(value,label){
+  try{
+    const u=new URL(String(value||'').trim());
+    if(u.protocol!=='https:')throw new Error();
+    return u.href;
+  }catch(_){
+    throw new Error((label||'URL')+' должен использовать HTTPS');
+  }
+}
 async function signedUrl(file){
   if(!siteAdminToken)throw new Error('Сессия PRO истекла');
-  const r=await fetch(SIGN_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+  const r=await fetch(SIGN_URL,{method:'POST',headers:{'Content-Type':'application/json'},referrerPolicy:'no-referrer',body:JSON.stringify({
     editorToken:siteAdminToken,
     filename:file.name,
     contentType:file.type||'application/octet-stream',
     size:file.size
   })});
   const text=await r.text();let data={};try{data=JSON.parse(text);}catch(_){}
-  if(!r.ok||!data.ok||!data.uploadUrl){
-    if(data.code==='SESSION_EXPIRED'||data.code==='UNAUTHORIZED'){
-      sessionStorage.removeItem('siteAdminToken');sessionStorage.removeItem('newsAdminToken');
-      throw new Error('Сессия PRO истекла. Войдите снова.');
-    }
-    throw new Error(data.error||('Хранилище вернуло HTTP '+r.status));
+  const code=String(data&&(data.code||data.error)||'').trim().toUpperCase();
+  if(r.status===401||r.status===403||code==='SESSION_EXPIRED'||code==='UNAUTHORIZED'){
+    if(typeof siteAdminLogout==='function')siteAdminLogout();
+    else{sessionStorage.removeItem('siteAdminToken');sessionStorage.removeItem('newsAdminToken');}
+    throw new Error('Сессия PRO истекла. Войдите снова.');
   }
+  if(!r.ok||!data.ok||!data.uploadUrl||!data.publicUrl)throw new Error(data.error||('Хранилище вернуло HTTP '+r.status));
+  data.uploadUrl=requireHttpsUrl(data.uploadUrl,'Адрес загрузки');
+  data.publicUrl=requireHttpsUrl(data.publicUrl,'Публичный адрес файла');
   return data;
 }
 function put(file,url,onProgress){
