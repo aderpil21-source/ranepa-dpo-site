@@ -282,4 +282,12 @@ assert(
   'Menu ordering must persist across built-in and custom entries'
 );
 
+
+assert(
+  entities.includes("field('departmentKey','Раздел контактов'") &&
+  entities.includes("function contactGridByKey") &&
+  indexHtml.includes("function gridForContact(contact)"),
+  'Contacts must render and move by stable department keys'
+);
+
 console.log('CMS workflow regression checks passed');
