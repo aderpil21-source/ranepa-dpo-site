@@ -177,4 +177,12 @@ assert(
   'Base navigation overlays must stay out of custom workflow lists'
 );
 
+
+assert(
+  workflow.includes("window.siteWorkflowPreview") &&
+  workflow.includes("function previewMarkup") &&
+  workflow.includes("Предпросмотр"),
+  'Draft workflow must provide a non-publishing preview modal'
+);
+
 console.log('CMS workflow regression checks passed');
