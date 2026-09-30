@@ -14,6 +14,37 @@ const defs={
 };
 const uid=p=>p+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
 let previewDrafts=false;
+let previewModal=null;
+function ensurePreviewModal(){
+  if(previewModal)return previewModal;
+  previewModal=document.createElement('div');
+  previewModal.className='cms-preview-modal';
+  previewModal.id='cmsPreviewModal';
+  previewModal.innerHTML='<div class="cms-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="cmsPreviewTitle"><div class="cms-preview-head"><div><small>Предпросмотр черновика</small><h3 id="cmsPreviewTitle">Предпросмотр</h3></div><button type="button" class="cms-preview-close" aria-label="Закрыть">×</button></div><div id="cmsPreviewBody" class="cms-preview-body"></div></div>';
+  document.body.appendChild(previewModal);
+  previewModal.querySelector('.cms-preview-close').onclick=()=>previewModal.classList.remove('active');
+  previewModal.addEventListener('click',e=>{if(e.target===previewModal)previewModal.classList.remove('active');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&previewModal.classList.contains('active'))previewModal.classList.remove('active');});
+  return previewModal;
+}
+function previewMarkup(type,x){
+  if(type==='programs')return '<article class="cms-preview-card"><div class="cms-preview-meta">'+esc(x.type||'Программа')+' · '+esc(x.hours||'')+'</div><h4>'+esc(x.title_ru||'Без названия')+'</h4><p>'+esc(x.desc_ru||'')+'</p><div class="cms-preview-tags">'+[x.format,x.dates,x.price].filter(Boolean).map(v=>'<span>'+esc(v)+'</span>').join('')+'</div></article>';
+  if(type==='contacts')return '<article class="cms-preview-card"><h4>'+esc(x.name||'Контакт')+'</h4><p><b>'+esc(x.position||'')+'</b></p><p>'+esc(x.department||'')+'</p><p>'+[x.office,x.phone,x.extension,x.email].filter(Boolean).map(esc).join(' · ')+'</p></article>';
+  if(type==='faq')return '<article class="cms-preview-card"><h4>'+esc(x.question||'Вопрос')+'</h4><p>'+esc(x.answer||'')+'</p></article>';
+  if(type==='schedule')return '<article class="cms-preview-card"><h4>'+esc(x.program||'Занятие')+'</h4><p>'+[x.date,x.time].filter(Boolean).map(esc).join(' · ')+'</p><p>'+esc(x.subject||'')+'</p><p>'+[x.teacher,x.room].filter(Boolean).map(esc).join(' · ')+'</p></article>';
+  if(type==='nav')return '<article class="cms-preview-nav"><span>'+esc(x.label||'Пункт меню')+'</span><small>'+esc(x.url||'встроенное действие')+'</small></article>';
+  if(type==='docs')return '<article class="cms-preview-card">'+(x.image?'<img src="'+esc(x.image)+'" alt="">':'')+'<h4>'+esc(x.title||'Документ')+'</h4><p>'+esc(x.subtitle||'')+'</p></article>';
+  if(type==='blocks')return '<article class="cms-preview-card"><h4>'+esc(x.title||'Информационный блок')+'</h4><p class="cms-preview-pre">'+esc(x.text||'')+'</p>'+(x.linkLabel?'<div class="cms-preview-link">'+esc(x.linkLabel)+'</div>':'')+'</article>';
+  return '<pre>'+esc(JSON.stringify(x,null,2))+'</pre>';
+}
+window.siteWorkflowPreview=function(type,id){
+  const d=defs[type];if(!d)return;
+  const x=d.get().find(y=>y&&String(y.id)===String(id));if(!x)return;
+  const m=ensurePreviewModal();
+  m.querySelector('#cmsPreviewTitle').textContent=d.title(x);
+  m.querySelector('#cmsPreviewBody').innerHTML=previewMarkup(type,x);
+  m.classList.add('active');
+};
 window.siteWorkflowBulk=async function(type,action){
   const d=defs[type];if(!d)return;
   const selected=[...document.querySelectorAll('.cms-flow-select[data-type="'+type+'"]:checked')].map(x=>x.value);
@@ -102,6 +133,7 @@ function row(type,x,index,total){
     '<div class="cms-flow-actions">'+
       '<button type="button" '+(index===0?'disabled':'')+' onclick="siteWorkflowMove(\''+type+'\',\''+esc(x.id)+'\',-1)">↑</button>'+
       '<button type="button" '+(index===total-1?'disabled':'')+' onclick="siteWorkflowMove(\''+type+'\',\''+esc(x.id)+'\',1)">↓</button>'+
+      '<button type="button" onclick="siteWorkflowPreview(\''+type+'\',\''+esc(x.id)+'\')">Предпросмотр</button>'+
       '<button type="button" onclick="siteWorkflowTogglePublish(\''+type+'\',\''+esc(x.id)+'\')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
       '<button type="button" onclick="siteWorkflowDuplicate(\''+type+'\',\''+esc(x.id)+'\')">Дублировать</button>'+
       '<button type="button" onclick="defsShimEdit(\''+type+'\',\''+esc(x.id)+'\')">Изменить</button>'+
@@ -205,6 +237,7 @@ function styles(){
 .cms-draft-preview{position:relative;border:1px dashed rgba(148,163,184,.45);background:rgba(100,116,139,.10);border-radius:14px;padding:14px;opacity:.72;filter:saturate(.65);pointer-events:none}
 .cms-draft-preview-label{font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:5px}
 .cms-draft-preview-title{font-size:.82rem;font-weight:800;color:var(--text-main,#e5e7eb)}
+.cms-preview-modal{position:fixed;inset:0;z-index:30180;display:none;place-items:center;padding:18px;background:rgba(2,6,15,.82);backdrop-filter:blur(12px)}.cms-preview-modal.active{display:grid}.cms-preview-dialog{width:min(760px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(56,189,248,.38);border-radius:20px;background:var(--bg-deep,#0b1220);color:var(--text-main,#fff);box-shadow:0 30px 90px rgba(0,0,0,.58);padding:20px}.cms-preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.cms-preview-head small{display:block;color:#94a3b8;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.cms-preview-head h3{margin:3px 0 0;font-size:1.05rem}.cms-preview-close{width:36px;height:36px;border-radius:10px;border:1px solid var(--border-glass,rgba(255,255,255,.12));background:var(--btn-glass,rgba(255,255,255,.06));color:var(--text-main,#fff);font-size:1.25rem;cursor:pointer}.cms-preview-body{padding:4px}.cms-preview-card{border:1px solid var(--border-glass,rgba(255,255,255,.1));border-radius:18px;padding:22px;background:var(--bg-card,#111827);box-shadow:0 18px 45px rgba(0,0,0,.22)}.cms-preview-card h4{margin:0 0 10px;font-size:1.1rem}.cms-preview-card p{margin:6px 0;color:var(--text-muted,#94a3b8);line-height:1.6}.cms-preview-card img{display:block;width:100%;max-height:360px;object-fit:contain;border-radius:12px;margin-bottom:16px}.cms-preview-meta{font-size:.7rem;font-weight:850;color:#38bdf8;margin-bottom:8px}.cms-preview-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}.cms-preview-tags span,.cms-preview-link{display:inline-flex;padding:6px 9px;border-radius:999px;background:rgba(202,15,62,.13);border:1px solid rgba(202,15,62,.28);font-size:.68rem;font-weight:800}.cms-preview-pre{white-space:pre-line}.cms-preview-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--bg-card,#111827);border:1px solid var(--border-glass,rgba(255,255,255,.1));font-weight:850}.cms-preview-nav small{color:var(--text-muted,#94a3b8)}
 `;document.head.appendChild(s);
 }
 const old=renderSiteAdminPanel;renderSiteAdminPanel=function(){old();panel();};
