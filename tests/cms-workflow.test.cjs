@@ -333,4 +333,31 @@ assert(
   'All primary overlay CMS rows must expose drag reorder metadata'
 );
 
+
+assert(
+  entities.includes("function baseFaqs") &&
+  entities.includes("function applyBaseFaqOverrides") &&
+  entities.includes("window.siteFaqSetPublished") &&
+  entities.includes("window.siteFaqDuplicateAny") &&
+  entities.includes("window.siteFaqArchiveAny") &&
+  entities.includes("window.siteFaqRestoreBase"),
+  'Existing FAQ items must have full CMS overlay lifecycle'
+);
+assert(
+  structure.includes("function baseDocs") &&
+  structure.includes("function applyBaseDocOverrides") &&
+  structure.includes("window.siteDocSetPublished") &&
+  structure.includes("window.siteDocDuplicateAny") &&
+  structure.includes("window.siteDocArchiveAny") &&
+  structure.includes("window.siteDocRestoreBase"),
+  'Existing document cards must have full CMS overlay lifecycle'
+);
+assert(
+  structure.includes("siteWorkflowTogglePublish('blocks'") &&
+  structure.includes("siteWorkflowDuplicate('blocks'") &&
+  structure.includes("siteWorkflowDelete('blocks'") &&
+  structure.includes("siteWorkflowRestore('blocks'"),
+  'Information blocks must expose the full CMS lifecycle in the structure panel'
+);
+
 console.log('CMS workflow regression checks passed');
