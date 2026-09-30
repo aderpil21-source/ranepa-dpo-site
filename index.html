@@ -3512,7 +3512,7 @@
         if (!target) return;
         target.querySelectorAll('.site-custom-contact').forEach(function (node) { node.remove(); });
         (Array.isArray(siteCustomContacts) ? siteCustomContacts : []).forEach(function (contact) {
-            if (!contact || !contact.id) return;
+            if (!contact || !contact.id || contact.active === false) return;
             const card = document.createElement('div');
             card.className = 'contact-card site-custom-contact';
             card.dataset.siteContactId = String(contact.id);
@@ -3534,7 +3534,7 @@
     }
 
     function applySiteCustomContent() {
-        if (basePrograms.length) buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms));
+        if (basePrograms.length) buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) { return p && p.active !== false; }));
         renderSiteCustomContacts();
         applySiteVisibility();
         if (siteAdminMode && typeof renderSiteAdminPanel === 'function') renderSiteAdminPanel();
@@ -5733,6 +5733,7 @@ if (legacyNewsHash.startsWith('#news=')) {
 </script>
 <script src="./site-admin-entities.js?v=4"></script>
 <script src="./site-admin-structure.js?v=2"></script>
+<script src="./site-admin-workflow.js?v=1"></script>
 <script src="./owl-engine.js?v=20260927-4"></script>
 <script src="./portal-live-alert.js?v=20260927-1"></script>
 </html>

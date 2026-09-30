@@ -44,7 +44,7 @@
       const key='contact-static:'+encodeURIComponent(name);
       if(settings.visibility[key]===false) card.style.display='none';
     });
-    const html=settings.contacts.filter(c=>c&&c.id&&settings.visibility['contact:'+encodeURIComponent(c.id)]!==false).map(cardHtml).join('');
+    const html=settings.contacts.filter(c=>c&&c.id&&c.active!==false&&settings.visibility['contact:'+encodeURIComponent(c.id)]!==false).map(cardHtml).join('');
     if(html) target.insertAdjacentHTML('beforeend',html);
   }
 
