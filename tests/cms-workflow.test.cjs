@@ -361,7 +361,7 @@ assert(
 );
 
 
-const overlayDnd = fs.readFileSync('site-admin-overlay-dnd.js','utf8');
+
 assert(
   overlayDnd.includes("if(type==='blocks')return siteCustomBlocks") &&
   overlayDnd.includes("else if(type==='blocks')siteCustomBlocks=value"),
