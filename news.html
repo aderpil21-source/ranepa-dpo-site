@@ -1054,11 +1054,12 @@ async function refreshPublicNewsSnapshot(options){
 
     publicNewsRefreshInFlight = (async () => {
         try {
-            const data = await requestJson(CONFIG.api + '?type=news&_cb=' + now, { method:'GET' }, 1);
+            const response = await fetch(publicNewsSnapshotUrl(), { cache:'no-store' });
+            if (!response.ok) throw new Error('Local news HTTP ' + response.status);
+            const data = await response.json();
             if (!data || !Array.isArray(data.items)) {
-                throw new Error('Public news API returned invalid format');
+                throw new Error('Local news snapshot has invalid format');
             }
-
             return applyPublicNewsItems(data.items, { openHash: true });
         } catch(error){
             if (!opts.silent) console.warn('Не удалось обновить свежие новости:', error);
@@ -1161,21 +1162,8 @@ async function fetchNews(){
         startPublicNewsPolling();
         return;
     } catch(localError){
-        console.warn('Локальный снимок новостей недоступен, обращаемся к API:', localError);
-    }
-
-    // Аварийный резерв для первого визита: прямой API только если статический JSON недоступен.
-    try {
-        const data = await requestJson(CONFIG.api + '?type=news', { method:'GET' });
-        newsItems = Array.isArray(data.items)
-            ? data.items.filter(n => n && n.status === 'published' && !isSystemNewsItem(n))
-            : [];
-        cacheNews(newsItems);
-        renderGrid();
-        openHashNewsIfPresent();
-        startPublicNewsPolling();
-    } catch(e){
-        $('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Не удалось связаться с базой. Обновите страницу или попробуйте позже.</div>`;
+        console.warn('Локальный снимок новостей недоступен:', localError);
+        $('newsGrid').innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">Новости временно недоступны. Обновите страницу или попробуйте позже.</div>`;
     }
 }
 
