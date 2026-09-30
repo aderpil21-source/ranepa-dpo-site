@@ -1,0 +1,26 @@
+name: CMS workflow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site-admin-*.js'
+      - 'index.html'
+      - 'tests/cms-workflow.test.cjs'
+      - '.github/workflows/cms-check.yml'
+  pull_request:
+    paths:
+      - 'site-admin-*.js'
+      - 'index.html'
+      - 'tests/cms-workflow.test.cjs'
+      - '.github/workflows/cms-check.yml'
+
+jobs:
+  cms-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/cms-workflow.test.cjs
