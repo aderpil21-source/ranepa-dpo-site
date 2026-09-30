@@ -368,4 +368,18 @@ assert(
   'Overlay drag-and-drop must persist information block order'
 );
 
+
+const indexHtml = fs.readFileSync('index.html','utf8');
+assert(
+  indexHtml.includes("const beforeSnapshot = siteSnapshot()") &&
+  indexHtml.includes("if (!saved) {") &&
+  indexHtml.includes("siteCurrentVersionId = beforeId"),
+  'Version restore must rollback local CMS state when server save fails'
+);
+assert(
+  indexHtml.includes("const beforeRedo = siteRedoStack.slice()") &&
+  indexHtml.includes("const nextId = siteRedoStack.length ? siteRedoStack[siteRedoStack.length - 1] : null"),
+  'Undo and redo stacks must remain consistent when version switching fails'
+);
+
 console.log('CMS workflow regression checks passed');
