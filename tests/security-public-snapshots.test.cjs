@@ -389,4 +389,21 @@ assert(
   'Sparse contact ordering overrides must not erase contact details'
 );
 
+
+const sectionPage = fs.readFileSync('section-page.js','utf8');
+const faqHtml = fs.readFileSync('faq.html','utf8');
+
+assert(
+  sectionPage.includes("async function applyPublicFaqCms()") &&
+  sectionPage.includes("const sourceKey='base-faq:'+staticId") &&
+  sectionPage.includes("override.active===false||override.archived===true") &&
+  sectionPage.includes("!x.sourceKey&&x.active!==false&&x.archived!==true"),
+  'Public FAQ page must honor base tombstones and keep custom drafts private'
+);
+assert(
+  faqHtml.includes('data-site-faq-static="1"') &&
+  faqHtml.includes('data-site-faq-static="5"'),
+  'Public FAQ page must retain stable base FAQ identifiers'
+);
+
 console.log('Public snapshot security checks passed');
