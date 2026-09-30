@@ -217,6 +217,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       details.innerHTML='<summary>'+esc(f.question||'Новый вопрос')+'</summary><div class="faq-answer">'+esc(f.answer||'')+'</div>';
       target.appendChild(details);
     });
+    applyFaqOrder();
   }
 
   function baseFaqNodeByKey(key){return [...document.querySelectorAll('.faq-container .faq-item[data-site-faq-static]')].find(n=>baseFaqKey(n)===key)||null;}
@@ -530,13 +531,49 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const key=String(x.sourceKey||x.id),base=map.get(key)||{};
       map.set(key,Object.assign({},base,x,{id:key}));
     });
-    return [...map.values()];
+    return [...map.values()].sort((a,b)=>{
+      const ao=Number.isFinite(Number(a&&a.cmsOrder))?Number(a.cmsOrder):null;
+      const bo=Number.isFinite(Number(b&&b.cmsOrder))?Number(b.cmsOrder):null;
+      if(ao!==null&&bo!==null&&ao!==bo)return ao-bo;
+      if(ao!==null&&bo===null)return -1;
+      if(ao===null&&bo!==null)return 1;
+      const ai=String(a&&a.id||''),bi=String(b&&b.id||'');
+      const an=Number(ai.replace('base-faq:','')),bn=Number(bi.replace('base-faq:',''));
+      if(Number.isFinite(an)&&Number.isFinite(bn))return an-bn;
+      return ai.localeCompare(bi);
+    });
   }
   function upsertFaqOverride(id,patch){
     const fid=String(id),idx=(siteCustomFaqs||[]).findIndex(x=>x&&(String(x.id)===fid||String(x.sourceKey||'')===fid));
     if(idx>=0)siteCustomFaqs[idx]=Object.assign({},siteCustomFaqs[idx],patch,{id:fid,sourceKey:fid,custom:true});
     else siteCustomFaqs.push(Object.assign({id:fid,sourceKey:fid,custom:true},patch));
   }
+  function patchFaqAny(id,patch){
+    const fid=String(id),idx=(siteCustomFaqs||[]).findIndex(x=>x&&(String(x.id)===fid||String(x.sourceKey||'')===fid));
+    if(idx>=0){siteCustomFaqs[idx]=Object.assign({},siteCustomFaqs[idx],patch);return;}
+    if(fid.indexOf('base-faq:')===0)siteCustomFaqs.push(Object.assign({id:fid,sourceKey:fid,custom:true},patch));
+  }
+  function faqNodeId(node){
+    if(!node)return '';
+    if(node.classList.contains('site-custom-faq'))return String(node.dataset.siteFaqId||'');
+    const sid=String(node.dataset.siteFaqStatic||'').trim();
+    return sid?'base-faq:'+sid:'';
+  }
+  function applyFaqOrder(){
+    const target=document.querySelector('.faq-container');if(!target)return;
+    const order=new Map(faqCatalogForAdmin().map((x,i)=>[String(x.id),i]));
+    [...target.querySelectorAll('.faq-item')].sort((a,b)=>(order.get(faqNodeId(a))??9999)-(order.get(faqNodeId(b))??9999)).forEach(n=>target.appendChild(n));
+  }
+  window.siteFaqMoveAny=async function(id,dir){
+    const list=faqCatalogForAdmin().filter(x=>x&&x.archived!==true),i=list.findIndex(x=>String(x.id)===String(id)),j=i+Number(dir);
+    if(i<0||j<0||j>=list.length)return;
+    [list[i],list[j]]=[list[j],list[i]];
+    const before=siteCustomFaqs.map(x=>x&&Object.assign({},x));
+    list.forEach((x,index)=>patchFaqAny(x.id,{cmsOrder:index}));
+    renderSiteCustomFaqs();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Изменён порядок FAQ'});
+    if(!ok){siteCustomFaqs=before;renderSiteCustomFaqs();renderSiteAdminPanel();}
+  };
   window.siteFaqSetPublished=async function(id,published){
     const base=baseFaqs().find(x=>String(x.id)===String(id));
     if(!base){
@@ -751,6 +788,8 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       (key?'<label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label>':'')+'</div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteFaqRestoreBase(\''+esc(f.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'faq\',\''+esc(f.id)+'\')">Восстановить</button>'):
+        '<button type="button" onclick="siteFaqMoveAny(\''+esc(f.id)+'\',-1)">↑</button>'+
+        '<button type="button" onclick="siteFaqMoveAny(\''+esc(f.id)+'\',1)">↓</button>'+
         '<button type="button" onclick="siteFaqSetPublished(\''+esc(f.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
         '<button type="button" onclick="siteFaqDuplicateAny(\''+esc(f.id)+'\')">Дублировать</button>'+
         '<button type="button" onclick="openSiteFaqEditor(\''+esc(f.id)+'\')">Редактировать</button>'+
