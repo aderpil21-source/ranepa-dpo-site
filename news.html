@@ -1168,11 +1168,10 @@ async function fetchNews(){
         renderGrid();
         openHashNewsIfPresent();
 
-        // При прямой ссылке на новую публикацию локальный кэш может ещё не знать её.
-        // В этом случае сразу принудительно запрашиваем свежий публичный список.
-        const requestedHash = location.hash.replace('#','').replace('news=','');
-        const hashMissing = requestedHash && !newsItems.find(n => n.id === requestedHash);
-        if (hashMissing) refreshPublicNewsSnapshot({ silent:true, force:true, openHash:true });
+        // Кэш нужен только для мгновенной отрисовки. Сразу сверяемся со свежим
+        // публичным snapshot, чтобы скрытая/удалённая новость не оставалась
+        // видимой посетителю до истечения локального TTL.
+        refreshPublicNewsSnapshot({ silent:true, force:true, openHash:true });
         startPublicNewsPolling();
         return;
     }
