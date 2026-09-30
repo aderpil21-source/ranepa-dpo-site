@@ -87,4 +87,17 @@ const payHtml = fs.readFileSync('pay/index.html','utf8');
 assert(/default-src 'none'/i.test(payHtml) && /content=["']no-referrer["']/i.test(payHtml),
   'Payment page must retain its strict isolated CSP and no-referrer policy');
 
+
+assert(
+  vkAuth.includes('@vkontakte/vk-bridge@2.15.12/dist/browser.min.js') &&
+  !vkAuth.includes('@vkontakte/vk-bridge/dist/browser.min.js'),
+  'VK auth helper must pin the browser bridge to a known compatible version'
+);
+
+const robots = fs.readFileSync('robots.txt','utf8');
+for (const path of ['/vk-auth.html','/media-player.html','/site-settings.json','/owl-files.json','/portal-snapshot.js']) {
+  assert(robots.includes('Disallow: '+path),
+    'robots.txt must discourage indexing of '+path);
+}
+
 console.log('Public snapshot security checks passed');
