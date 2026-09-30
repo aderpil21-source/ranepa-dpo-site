@@ -1,6 +1,5 @@
 let programsCache = [];
 const PROGRAM_REFRESH_MS = 5 * 60 * 1000;
-const SITE_SETTINGS_API = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
 let programRefreshTimer = null;
 let programSettings = { visibility:{}, customPrograms:[] };
 
@@ -16,24 +15,13 @@ function mergeProgramSets(base, custom) {
 
 async function loadProgramSettings(){
   try {
-    const res = await fetch(SITE_SETTINGS_API + '?type=news&_sitecfg=' + Date.now(), {cache:'no-store'});
+    const res = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), {cache:'no-store'});
     if (!res.ok) throw new Error('HTTP '+res.status);
     const data = await res.json();
-    const item = (data.items || []).find(x => x && x.id === '__site_admin_settings__');
-    const parsed = item ? JSON.parse(item.lead || '{}') : {};
-    return {
-      visibility: parsed?.visibility && typeof parsed.visibility === 'object' ? parsed.visibility : {},
-      customPrograms: Array.isArray(parsed?.customPrograms) ? parsed.customPrograms : []
-    };
+    const s = data?.settings || {};
+    return {visibility:s.visibility||{}, customPrograms:Array.isArray(s.customPrograms)?s.customPrograms:[]};
   } catch (_) {
-    try {
-      const res = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), {cache:'no-store'});
-      const data = await res.json();
-      const s = data?.settings || {};
-      return {visibility:s.visibility||{}, customPrograms:Array.isArray(s.customPrograms)?s.customPrograms:[]};
-    } catch (_) {
-      return {visibility:{},customPrograms:[]};
-    }
+    return {visibility:{},customPrograms:[]};
   }
 }
 
