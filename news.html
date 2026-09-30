@@ -457,8 +457,10 @@ function vkPostUrl(postId){
 }
 
 function openVkWindowForManualPhoto(){
-    // Открываем сразу нужную группу по клику, чтобы пользователь не видел пустую about:blank.
-    return window.open(VK_GROUP_URL, 'ranepaVkManualPhoto');
+    // Открываем сразу нужную группу по клику, но не отдаём внешней вкладке window.opener.
+    const win = window.open(VK_GROUP_URL, 'ranepaVkManualPhoto');
+    try { if (win) win.opener = null; } catch(e){}
+    return win;
 }
 
 function rememberVkChoice(id, enabled){
@@ -1632,7 +1634,7 @@ async function saveNews(){
 
     // Открываем VK только если галочка включена.
     // Никаких wall.post / newsRetryVk сайт больше не вызывает.
-    const vkWindow = wantsVkNow ? window.open(VK_GROUP_URL, 'ranepaVkManualPhoto') : null;
+    const vkWindow = wantsVkNow ? openVkWindowForManualPhoto() : null;
 
     btn.disabled = true;
     btn.textContent = 'Сохраняем';
