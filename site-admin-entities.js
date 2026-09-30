@@ -776,6 +776,32 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     openSiteProgramEditor(copy.id);
   };
 
+  window.siteProgramArchiveAny=async function(id){
+    const current=findProgram(id);if(!current)return;
+    const isBase=(Array.isArray(basePrograms)?basePrograms:[]).some(x=>x&&String(x.id)===String(id));
+    if(!isBase){
+      if(typeof siteWorkflowDelete==='function')return siteWorkflowDelete('programs',id);
+      return;
+    }
+    if(!confirm('Переместить программу «'+(current.title_ru||id)+'» в корзину?'))return;
+    const before=siteCustomPrograms.map(x=>x&&Object.assign({},x));
+    upsertProgramOverride(id,{active:false,archived:true,archivedAt:new Date().toISOString()});
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'В корзину программа: '+(current.title_ru||id)});
+    if(!ok){siteCustomPrograms=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+
+  window.siteProgramRestoreBase=async function(id){
+    const base=(Array.isArray(basePrograms)?basePrograms:[]).find(x=>x&&String(x.id)===String(id));if(!base)return;
+    const before=siteCustomPrograms.map(x=>x&&Object.assign({},x));
+    upsertProgramOverride(id,{active:false,archived:false});
+    const idx=siteCustomPrograms.findIndex(x=>x&&String(x.id)===String(id));if(idx>=0)delete siteCustomPrograms[idx].archivedAt;
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Восстановлена программа из корзины: '+(base.title_ru||id)});
+    if(!ok){siteCustomPrograms=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+
+
   window.siteProgramMoveAny=async function(id,dir){
     const list=programCatalogForAdmin(),i=list.findIndex(x=>x&&String(x.id)===String(id)),j=i+Number(dir);
     if(i<0||j<0||j>=list.length)return;
@@ -803,15 +829,17 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     const programs=programList.map((p,index)=>{
       const key='program:'+p.id;
       const isCustom=(siteCustomPrograms||[]).some(x=>x&&String(x.id)===String(p.id));
-      const draft=p.active===false;
-      return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="programs" data-cms-dnd-id="'+esc(p.id)+'"><span>'+esc(p.title_ru||p.id)+(isCustom?' · PRO':'')+(draft?' · ЧЕРНОВИК':'')+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
+      const isBase=(Array.isArray(basePrograms)?basePrograms:[]).some(x=>x&&String(x.id)===String(p.id));
+      const arch=p.archived===true,draft=p.active===false&&!arch;
+      return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="programs" data-cms-dnd-id="'+esc(p.id)+'"><span>'+esc(p.title_ru||p.id)+(isCustom?' · PRO':'')+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
       '<div class="site-admin-entity-actions">'+
+      (arch?(isBase?'<button type="button" onclick="siteProgramRestoreBase(\''+esc(p.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'programs\',\''+esc(p.id)+'\')">Восстановить</button>'):
       '<button type="button" '+(index===0?'disabled':'')+' onclick="siteProgramMoveAny(\''+esc(p.id)+'\',-1)">↑</button>'+
       '<button type="button" '+(index===programList.length-1?'disabled':'')+' onclick="siteProgramMoveAny(\''+esc(p.id)+'\',1)">↓</button>'+
       '<button type="button" onclick="siteProgramSetPublished(\''+esc(p.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
       '<button type="button" onclick="siteProgramDuplicateAny(\''+esc(p.id)+'\')">Дублировать</button>'+
       '<button type="button" onclick="openSiteProgramEditor(\''+esc(p.id)+'\')">Редактировать</button>'+
-      (isCustom?'<button type="button" class="danger" onclick="deleteSiteCustomProgram(\''+esc(p.id)+'\')">В корзину</button>':'')+
+      '<button type="button" class="danger" onclick="siteProgramArchiveAny(\''+esc(p.id)+'\')">В корзину</button>')+
       '</div>';
     }).join('')||'<div class="site-admin-entity-empty">Программы пока не загружены.</div>';
 
