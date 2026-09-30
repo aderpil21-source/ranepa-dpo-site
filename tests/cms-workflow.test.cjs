@@ -369,7 +369,7 @@ assert(
 );
 
 
-const indexHtml = fs.readFileSync('index.html','utf8');
+
 assert(
   indexHtml.includes("const beforeSnapshot = siteSnapshot()") &&
   indexHtml.includes("if (!saved) {") &&
