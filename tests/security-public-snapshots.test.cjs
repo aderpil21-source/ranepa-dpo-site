@@ -111,4 +111,12 @@ for (const file of ['programs-page.js','schedule-page.js','contacts-page.js']) {
     file+' must use the sanitized public settings snapshot');
 }
 
+
+const newsHtml = fs.readFileSync('news.html','utf8');
+const publicSettingsFn = newsHtml.match(/async function loadPublicNewsPageEnabled\(\)[\s\S]*?\n\}/);
+assert(publicSettingsFn && publicSettingsFn[0].includes('site-settings.json'),
+  'Public news visibility must use the sanitized site settings snapshot');
+assert(publicSettingsFn && !publicSettingsFn[0].includes('__site_admin_settings__') && !publicSettingsFn[0].includes('?type=news'),
+  'Public news visibility must not read raw system settings from Apps Script');
+
 console.log('Public snapshot security checks passed');
