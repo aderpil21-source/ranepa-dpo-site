@@ -298,4 +298,20 @@ assert(
   'Contact ordering must persist within departments'
 );
 
+
+const seo = fs.readFileSync('site-admin-seo.js','utf8');
+const media = fs.readFileSync('site-admin-media.js','utf8');
+assert(
+  seo.includes("function safeSeoUrl") &&
+  seo.includes("meta[property=\"og:image\"]") &&
+  seo.includes("const before=JSON.parse(JSON.stringify(siteSeoConfig||{}))") &&
+  seo.includes("if(!ok){siteSeoConfig=before;applySiteSeoConfig();return;}"),
+  'SEO editing must validate URLs, support og:image, and rollback failed saves'
+);
+assert(
+  media.includes("input[data-seo=\"ogImage\"]") &&
+  media.includes("Загрузить OG изображение"),
+  'SEO editor must support direct OpenGraph image upload'
+);
+
 console.log('CMS workflow regression checks passed');
