@@ -3272,7 +3272,7 @@
             return siteSaveInFlight;
         }
 
-        updateSiteSaveUi();
+        const dirtyBeforeSave = siteSettingsDirty;
         siteSaveInFlight = (async function () {
             const now = new Date().toISOString();
             const base = siteSettingsItem || {};
@@ -3335,11 +3335,12 @@
             siteAdminSetStatus('Сохранено. Версия записана в историю.', 'ok');
             return true;
         })();
+        updateSiteSaveUi();
 
         try {
             return await siteSaveInFlight;
         } catch (e) {
-            siteSettingsDirty = true;
+            siteSettingsDirty = dirtyBeforeSave;
             updateSiteSaveUi();
             siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
             return false;
