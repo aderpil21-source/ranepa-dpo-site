@@ -360,4 +360,12 @@ assert(
   'Information blocks must expose the full CMS lifecycle in the structure panel'
 );
 
+
+const overlayDnd = fs.readFileSync('site-admin-overlay-dnd.js','utf8');
+assert(
+  overlayDnd.includes("if(type==='blocks')return siteCustomBlocks") &&
+  overlayDnd.includes("else if(type==='blocks')siteCustomBlocks=value"),
+  'Overlay drag-and-drop must persist information block order'
+);
+
 console.log('CMS workflow regression checks passed');
