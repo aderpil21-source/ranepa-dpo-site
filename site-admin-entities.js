@@ -94,7 +94,73 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     if(base&&override) return Object.assign({},base,override);
     return override||base||null;
   }
-  function findContact(id){ return (siteCustomContacts||[]).find(x=>x&&x.id===id)||null; }
+  function baseContactKey(card){
+    if(!card)return '';
+    const name=card.querySelector('h4');
+    const token=name&&name.dataset&&name.dataset.i18n?name.dataset.i18n:'';
+    return 'base-contact:'+(token||String(name&&name.textContent||'').trim().toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'-'));
+  }
+  function baseContactRecord(card){
+    if(!card)return null;
+    const id=baseContactKey(card);if(!id)return null;
+    const nameEl=card.querySelector('h4'),posEl=card.querySelector('.position'),details=card.querySelector('.details');
+    const phone=details&&details.querySelector('a[href^="tel:"]');
+    const email=details&&details.querySelector('a[href^="mailto:"]');
+    const text=details?details.innerText:'';
+    const office=(text.match(/Каб\.?\s*([^\n]+)/i)||[])[1]||'';
+    const ext=(text.match(/доб\.?\s*(\d+)/i)||[])[1]||'';
+    const grid=card.closest('.contacts-grid');
+    let dep='';if(grid){let p=grid.previousElementSibling;while(p&&!dep){if(p.classList&&p.classList.contains('department-title'))dep=String(p.textContent||'').trim();p=p.previousElementSibling;}}
+    return {id,sourceKey:id,name:String(nameEl&&nameEl.textContent||'').trim(),position:String(posEl&&posEl.textContent||'').trim(),department:dep,office:String(office).trim(),phone:String(phone&&phone.textContent||'').trim(),extension:String(ext).trim(),email:String(email&&email.textContent||'').trim(),active:true,custom:false};
+  }
+  function baseContacts(){
+    return [...document.querySelectorAll('#contactsSection .contacts-grid .contact-card:not(.site-custom-contact)')].map(baseContactRecord).filter(Boolean);
+  }
+  function findContact(id){
+    const cid=String(id||'');
+    const custom=(siteCustomContacts||[]).find(x=>x&&(String(x.id)===cid||String(x.sourceKey||'')===cid))||null;
+    const base=baseContacts().find(x=>String(x.id)===cid)||null;
+    if(base&&custom)return Object.assign({},base,custom,{id:cid,sourceKey:cid});
+    return custom||base||null;
+  }
+
+  function baseContactCardByKey(key){
+    return [...document.querySelectorAll('#contactsSection .contacts-grid .contact-card:not(.site-custom-contact)')].find(card=>baseContactKey(card)===key)||null;
+  }
+  function applyBaseContactOverrides(){
+    baseContacts().forEach(base=>{
+      const card=baseContactCardByKey(base.id);if(!card)return;
+      if(!card.__cmsOriginalContact){
+        card.__cmsOriginalContact={
+          name:card.querySelector('h4')?.innerHTML||'',
+          position:card.querySelector('.position')?.innerHTML||'',
+          details:card.querySelector('.details')?.innerHTML||''
+        };
+      }
+      const orig=card.__cmsOriginalContact;
+      const nameEl=card.querySelector('h4'),posEl=card.querySelector('.position'),details=card.querySelector('.details');
+      if(nameEl)nameEl.innerHTML=orig.name;
+      if(posEl)posEl.innerHTML=orig.position;
+      if(details)details.innerHTML=orig.details;
+      card.classList.remove('site-admin-force-hidden','site-admin-preview-hidden');
+      const ov=(siteCustomContacts||[]).find(x=>x&&String(x.sourceKey||'')===String(base.id));
+      if(!ov)return;
+      if(ov.active===false||ov.archived===true){
+        card.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');
+        return;
+      }
+      if(nameEl&&ov.name!=null)nameEl.textContent=ov.name;
+      if(posEl&&ov.position!=null)posEl.textContent=ov.position;
+      if(details){
+        const office=String(ov.office||'').trim(),phone=String(ov.phone||'').trim(),ext=String(ov.extension||'').trim(),email=String(ov.email||'').trim();
+        let html='';
+        if(office)html+='<p><span>Каб.</span> '+esc(office)+'</p>';
+        if(phone)html+='<p><span>Тел:</span> <a href="tel:'+esc(phone.replace(/[^+\d]/g,''))+'">'+esc(phone)+'</a>'+(ext?' (доб. '+esc(ext)+')':'')+'</p>';
+        if(email)html+='<p>E-mail: <a href="mailto:'+esc(email)+'">'+esc(email)+'</a></p>';
+        details.innerHTML=html;
+      }
+    });
+  }
 
   const SITE_THEME_DEFAULTS={
     accent:'#CA0F3E',burgundy:'#881337',blue:'#1E3A8A',
@@ -343,11 +409,14 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       siteAdminSetStatus('Программа сохранена','ok');
     } else if(entityType==='contact'){
       if(!data.name){ siteAdminSetStatus('Укажите ФИО','err'); return; }
-      const id=entityId||makeId('custom-c-');
+      const baseId=String(entityId||'');
+      const isBase=baseId.indexOf('base-contact:')===0;
+      const id=isBase?baseId:(entityId||makeId('custom-c-'));
       const prev=findContact(id)||{};
       const record=Object.assign({},prev,data,{id,custom:true});
+      if(isBase)record.sourceKey=id;
       const before=siteCustomContacts.slice();
-      const idx=siteCustomContacts.findIndex(x=>x&&x.id===id);
+      const idx=siteCustomContacts.findIndex(x=>x&&(String(x.id)===String(id)||String(x.sourceKey||'')===String(id)));
       if(idx>=0) siteCustomContacts[idx]=record; else siteCustomContacts.push(record);
       applySiteCustomContent();
       renderSiteAdminPanel();
@@ -551,6 +620,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
   const originalApplySiteCustomContent=applySiteCustomContent;
   applySiteCustomContent=function(){
     originalApplySiteCustomContent();
+    applyBaseContactOverrides();
     renderSiteCustomFaqs();
     applySiteThemeConfig();
     applySiteAttributeOverrides();
