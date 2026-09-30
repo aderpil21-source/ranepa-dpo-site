@@ -88,6 +88,65 @@ window.siteScheduleRestoreBase=async function(i){
   if(!ok){siteCustomSchedules=before;if(typeof applySiteCustomContent==='function')applySiteCustomContent();}
   renderSiteAdminPanel();
 };
+function docCatalogForAdmin(){
+  const map=new Map();
+  baseDocs().forEach(x=>{if(x&&x.id)map.set(String(x.id),Object.assign({},x));});
+  (siteCustomDocs||[]).forEach(x=>{
+    if(!x||!x.id)return;
+    const key=String(x.sourceKey||x.id),base=map.get(key)||{};
+    map.set(key,Object.assign({},base,x,{id:key}));
+  });
+  return [...map.values()];
+}
+function upsertDocOverride(id,patch){
+  const did=String(id),idx=(siteCustomDocs||[]).findIndex(x=>x&&(String(x.id)===did||String(x.sourceKey||'')===did));
+  if(idx>=0)siteCustomDocs[idx]=Object.assign({},siteCustomDocs[idx],patch,{id:did,sourceKey:did,custom:true});
+  else siteCustomDocs.push(Object.assign({id:did,sourceKey:did,custom:true},patch));
+}
+window.siteDocSetPublished=async function(id,published){
+  const base=baseDocs().find(x=>String(x.id)===String(id));
+  if(!base){
+    if(typeof siteWorkflowTogglePublish==='function')return siteWorkflowTogglePublish('docs',id);
+    return;
+  }
+  const before=siteCustomDocs.map(x=>x&&Object.assign({},x));
+  upsertDocOverride(id,{active:!!published,archived:false});
+  applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:(published?'Опубликован документ: ':'Документ в черновик: ')+(base.title||id)});
+  if(!ok){siteCustomDocs=before;applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();}
+};
+window.siteDocDuplicateAny=async function(id){
+  const src=findDoc(id);if(!src)return;
+  const before=siteCustomDocs.map(x=>x&&Object.assign({},x));
+  const copy=JSON.parse(JSON.stringify(src));copy.id=uid('custom-doc-');delete copy.sourceKey;copy.custom=true;copy.active=false;copy.archived=false;delete copy.archivedAt;copy.title=(copy.title||'Документ')+' — копия';
+  siteCustomDocs.push(copy);applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'Создана копия документа: '+copy.title});
+  if(!ok){siteCustomDocs=before;applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();return;}
+  openSiteDocEditor(copy.id);
+};
+window.siteDocArchiveAny=async function(id){
+  const base=baseDocs().find(x=>String(x.id)===String(id));
+  if(!base){
+    if(typeof siteWorkflowDelete==='function')return siteWorkflowDelete('docs',id);
+    return;
+  }
+  if(!confirm('Переместить документ «'+(base.title||id)+'» в корзину?'))return;
+  const before=siteCustomDocs.map(x=>x&&Object.assign({},x));
+  upsertDocOverride(id,{active:false,archived:true,archivedAt:new Date().toISOString()});
+  applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'В корзину документ: '+(base.title||id)});
+  if(!ok){siteCustomDocs=before;applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();}
+};
+window.siteDocRestoreBase=async function(id){
+  const base=baseDocs().find(x=>String(x.id)===String(id));if(!base)return;
+  const before=siteCustomDocs.map(x=>x&&Object.assign({},x));
+  upsertDocOverride(id,{active:false,archived:false});
+  const idx=siteCustomDocs.findIndex(x=>x&&(String(x.id)===String(id)||String(x.sourceKey||'')===String(id)));if(idx>=0)delete siteCustomDocs[idx].archivedAt;
+  applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();
+  const ok=await saveSiteSettings({recordVersion:true,reason:'Восстановлен документ из корзины: '+(base.title||id)});
+  if(!ok){siteCustomDocs=before;applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();}
+}
+
 function renderNav(){document.querySelectorAll('.site-custom-nav-item').forEach(n=>n.remove());const n=document.querySelector('.header-nav');if(!n)return;const b=n.querySelector('.header-nav-btn');(siteCustomNavItems||[]).forEach(x=>{if(!x||x.active===false||siteVisibility['nav-custom:'+x.id]===false)return;const href=safeCmsHref(x.url);if(!href)return;const a=document.createElement('a');a.className='header-nav-link site-custom-nav-item';a.textContent=x.label||'Новый пункт';a.href=href;a.dataset.siteNavId=x.id;if(x.newTab){a.target='_blank';a.rel='noopener noreferrer'}n.insertBefore(a,b||null)})}
 function baseDocCardByKey(key){return [...document.querySelectorAll('[data-site-doc-grid] .doc-card:not(.site-custom-doc)')].find(card=>baseDocKey(card)===key)||null}
 function applyBaseDocOverrides(){
@@ -155,7 +214,17 @@ function groups(){
       '<button type="button" class="danger" onclick="siteScheduleArchiveAny(\''+esc(x.id)+'\')">В корзину</button></div>';
   }).join('');
   const nav=(siteCustomNavItems||[]).map(x=>'<div class="site-admin-row"><span>'+esc(x.label||'')+'</span></div><div class="site-admin-entity-actions"><button type="button" onclick="openSiteNavEditor(\''+esc(x.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomNav(\''+esc(x.id)+'\')">Удалить</button></div>').join('');
-  const docs=(siteCustomDocs||[]).map(x=>'<div class="site-admin-row"><span>'+esc(x.title||'')+'</span></div><div class="site-admin-entity-actions"><button type="button" onclick="openSiteDocEditor(\''+esc(x.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomDoc(\''+esc(x.id)+'\')">Удалить</button></div>').join('');
+  const docs=docCatalogForAdmin().map(x=>{
+    const isBase=String(x.id||'').indexOf('base-doc:')===0,draft=x.active===false&&x.archived!==true,arch=x.archived===true;
+    return '<div class="site-admin-row"><span>'+esc(x.title||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
+      '<div class="site-admin-entity-actions">'+
+      (arch?(isBase?'<button type="button" onclick="siteDocRestoreBase(\''+esc(x.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'docs\',\''+esc(x.id)+'\')">Восстановить</button>'):
+        '<button type="button" onclick="siteDocSetPublished(\''+esc(x.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
+        '<button type="button" onclick="siteDocDuplicateAny(\''+esc(x.id)+'\')">Дублировать</button>'+
+        '<button type="button" onclick="openSiteDocEditor(\''+esc(x.id)+'\')">Редактировать</button>'+
+        '<button type="button" class="danger" onclick="siteDocArchiveAny(\''+esc(x.id)+'\')">В корзину</button>')+
+      '</div>';
+  }).join('');
   const blocks=(siteCustomBlocks||[]).map(x=>'<div class="site-admin-row"><span>'+esc(x.title||'')+'</span></div><div class="site-admin-entity-actions"><button type="button" onclick="openSiteBlockEditor(\''+esc(x.id)+'\')">Редактировать</button><button type="button" class="danger" onclick="deleteSiteCustomBlock(\''+esc(x.id)+'\')">Удалить</button></div>').join('');
   return '<details class="site-admin-group"><summary>Расписание</summary><button class="site-admin-entity-add" type="button" onclick="openSiteScheduleEditor()">＋ Добавить занятие</button>'+baseRows+manualRows+'</details>'+
     '<details class="site-admin-group"><summary>Меню</summary><button class="site-admin-entity-add" type="button" onclick="openSiteNavEditor()">＋ Добавить пункт меню</button>'+nav+'</details>'+
