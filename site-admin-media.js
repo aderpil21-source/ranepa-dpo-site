@@ -14,6 +14,12 @@ function remember(item){
 function humanSize(n){n=Number(n)||0;if(n<1024)return n+' Б';if(n<1048576)return (n/1024).toFixed(1)+' КБ';return (n/1048576).toFixed(1)+' МБ';}
 function validateFile(file){
   if(!file||!file.name)throw new Error('Файл не выбран');
+  const name=String(file.name||'').toLowerCase();
+  const ext=(name.match(/\.([a-z0-9]+)$/i)||[])[1]||'';
+  const allowed=new Set(['png','jpg','jpeg','webp','gif','pdf','doc','docx','ppt','pptx','xls','xlsx','zip','mp4','webm','mov','m4v','avi','mkv','mp3','wav','m4a','ogg']);
+  if(!allowed.has(ext))throw new Error('Этот тип файла запрещён для загрузки');
+  const dangerousMime=/^(text\/html|application\/(javascript|x-javascript|xml|xhtml\+xml)|image\/svg\+xml)$/i;
+  if(dangerousMime.test(String(file.type||'')))throw new Error('Активный веб-файл запрещён для загрузки');
   const max=file.type.startsWith('video/')?500*1024*1024:100*1024*1024;
   if(file.size>max)throw new Error('Файл слишком большой: '+humanSize(file.size));
 }
