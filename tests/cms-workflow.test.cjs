@@ -77,8 +77,8 @@ assert(
 
 
 assert(
-  structure.includes("if(override.active===false||override.archived===true)return"),
-  'Inactive schedule overrides must suppress base schedule entries'
+  structure.includes("if(override.archived===true||(override.active===false&&!window.sitePreviewDraftMode))return"),
+  'Inactive schedule overrides must stay hidden in production and appear only in authenticated preview'
 );
 
 
