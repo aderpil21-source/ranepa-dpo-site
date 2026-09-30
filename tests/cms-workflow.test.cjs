@@ -42,4 +42,15 @@ assert(
   'Legacy delete handlers must not hard-delete CMS content'
 );
 
+
+assert(
+  structure.includes("function safeCmsHref") && structure.includes("function safeCmsMediaUrl"),
+  'Structured CMS editors must validate links and media URLs'
+);
+assert(
+  structure.includes("if(!safeCmsHref(d.url))") &&
+  structure.includes("if(d.url&&!safeCmsHref(d.url))"),
+  'CMS save handlers must reject unsafe URLs'
+);
+
 console.log('CMS workflow regression checks passed');
