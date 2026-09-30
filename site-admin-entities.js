@@ -416,6 +416,64 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(item.name||id)});
   };
 
+  function programCatalogForAdmin(){
+    const map=new Map();
+    (Array.isArray(basePrograms)?basePrograms:[]).forEach(p=>{if(p&&p.id)map.set(String(p.id),Object.assign({},p));});
+    (siteCustomPrograms||[]).forEach(p=>{
+      if(!p||!p.id)return;
+      const pid=String(p.id),base=map.get(pid)||{};
+      map.set(pid,Object.assign({},base,p));
+    });
+    return [...map.values()].filter(p=>p&&p.archived!==true).sort((a,b)=>{
+      const ao=Number.isFinite(Number(a.cmsOrder))?Number(a.cmsOrder):null;
+      const bo=Number.isFinite(Number(b.cmsOrder))?Number(b.cmsOrder):null;
+      if(ao!==null&&bo!==null&&ao!==bo)return ao-bo;
+      if(ao!==null&&bo===null)return -1;
+      if(ao===null&&bo!==null)return 1;
+      return String(a.title_ru||'').localeCompare(String(b.title_ru||''),'ru');
+    });
+  }
+
+  function upsertProgramOverride(id,patch){
+    const pid=String(id),idx=(siteCustomPrograms||[]).findIndex(x=>x&&String(x.id)===pid);
+    if(idx>=0) siteCustomPrograms[idx]=Object.assign({},siteCustomPrograms[idx],patch,{id:pid,custom:true});
+    else siteCustomPrograms.push(Object.assign({id:pid,custom:true},patch));
+  }
+
+  window.siteProgramSetPublished=async function(id,published){
+    const current=findProgram(id);if(!current)return;
+    const before=siteCustomPrograms.map(x=>x&&Object.assign({},x));
+    upsertProgramOverride(id,{active:!!published,archived:false});
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:(published?'Опубликована программа: ':'Программа в черновик: ')+(current.title_ru||id)});
+    if(!ok){siteCustomPrograms=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+
+  window.siteProgramDuplicateAny=async function(id){
+    const src=findProgram(id);if(!src)return;
+    const before=siteCustomPrograms.map(x=>x&&Object.assign({},x));
+    const copy=JSON.parse(JSON.stringify(src));
+    copy.id=makeId('custom-p-');copy.custom=true;copy.active=false;copy.archived=false;
+    delete copy.archivedAt;
+    copy.title_ru=(copy.title_ru||'Программа')+' — копия';
+    siteCustomPrograms.push(copy);
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Создана копия программы: '+copy.title_ru});
+    if(!ok){siteCustomPrograms=before;applySiteCustomContent();renderSiteAdminPanel();return;}
+    openSiteProgramEditor(copy.id);
+  };
+
+  window.siteProgramMoveAny=async function(id,dir){
+    const list=programCatalogForAdmin(),i=list.findIndex(x=>x&&String(x.id)===String(id)),j=i+Number(dir);
+    if(i<0||j<0||j>=list.length)return;
+    [list[i],list[j]]=[list[j],list[i]];
+    const before=siteCustomPrograms.map(x=>x&&Object.assign({},x));
+    list.forEach((p,index)=>upsertProgramOverride(p.id,{cmsOrder:index}));
+    applySiteCustomContent();renderSiteAdminPanel();
+    const ok=await saveSiteSettings({recordVersion:true,reason:'Изменён порядок программ'});
+    if(!ok){siteCustomPrograms=before;applySiteCustomContent();renderSiteAdminPanel();}
+  };
+
   function managerHtml(){
     const owlItems=[
       ['owl_menu_test','Тест на профориентацию'],
@@ -428,14 +486,20 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       '<label class="site-admin-owl-row"><span>'+esc(item[1])+'</span><input type="checkbox" data-site-entity-visibility="'+esc(item[0])+'"'+(siteKeyIsVisible(item[0])?' checked':'')+'></label>'
     ).join('');
 
-    const allProgramMap=new Map();
-    (Array.isArray(globalPrograms)?globalPrograms:[]).forEach(p=>{if(p&&p.id) allProgramMap.set(String(p.id),p);});
-    (siteCustomPrograms||[]).forEach(p=>{if(p&&p.id) allProgramMap.set(String(p.id),p);});
-    const programs=[...allProgramMap.values()].map(p=>{
+    const programList=programCatalogForAdmin();
+    const programs=programList.map((p,index)=>{
       const key='program:'+p.id;
       const isCustom=(siteCustomPrograms||[]).some(x=>x&&String(x.id)===String(p.id));
-      return '<div class="site-admin-row"><span>'+esc(p.title_ru||p.id)+(isCustom?' · PRO':'')+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
-      '<div class="site-admin-entity-actions"><button type="button" onclick="openSiteProgramEditor(\''+esc(p.id)+'\')">Редактировать</button>'+(isCustom?'<button type="button" class="danger" onclick="deleteSiteCustomProgram(\''+esc(p.id)+'\')">Удалить PRO-версию</button>':'')+'</div>';
+      const draft=p.active===false;
+      return '<div class="site-admin-row"><span>'+esc(p.title_ru||p.id)+(isCustom?' · PRO':'')+(draft?' · ЧЕРНОВИК':'')+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
+      '<div class="site-admin-entity-actions">'+
+      '<button type="button" '+(index===0?'disabled':'')+' onclick="siteProgramMoveAny(\''+esc(p.id)+'\',-1)">↑</button>'+
+      '<button type="button" '+(index===programList.length-1?'disabled':'')+' onclick="siteProgramMoveAny(\''+esc(p.id)+'\',1)">↓</button>'+
+      '<button type="button" onclick="siteProgramSetPublished(\''+esc(p.id)+'\','+(draft?'true':'false')+')">'+(draft?'Опубликовать':'В черновик')+'</button>'+
+      '<button type="button" onclick="siteProgramDuplicateAny(\''+esc(p.id)+'\')">Дублировать</button>'+
+      '<button type="button" onclick="openSiteProgramEditor(\''+esc(p.id)+'\')">Редактировать</button>'+
+      (isCustom?'<button type="button" class="danger" onclick="deleteSiteCustomProgram(\''+esc(p.id)+'\')">В корзину</button>':'')+
+      '</div>';
     }).join('')||'<div class="site-admin-entity-empty">Программы пока не загружены.</div>';
 
     const contacts=(siteCustomContacts||[]).map(c=>{
@@ -460,7 +524,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
 
     return '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Дизайн сайта" open><summary>🎨 Дизайн сайта</summary><div class="site-admin-theme-grid">'+themeHtml+'<button type="button" class="site-admin-theme-reset" onclick="resetSiteThemeConfig()">Вернуть фирменные цвета</button></div></details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Сова: кнопки меню" open><summary>Сова: кнопки меню</summary><div class="site-admin-owl-grid">'+owlItems+'</div></details>'+
-      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные программы"><summary>Программы — ручное управление ('+(siteCustomPrograms||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteProgramEditor()">＋ Добавить программу</button>'+programs+'</details>'+
+      '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные программы"><summary>Программы — управление ('+(siteCustomPrograms||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteProgramEditor()">＋ Добавить программу</button>'+programs+'</details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="Ручные контакты"><summary>Контакты — ручное управление ('+(siteCustomContacts||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteContactEditor()">＋ Добавить контакт</button>'+contacts+'</details>'+
       '<details class="site-admin-group site-admin-entity-group" data-site-admin-group="FAQ — ручное управление"><summary>FAQ — ручное управление ('+(siteCustomFaqs||[]).length+')</summary><button type="button" class="site-admin-entity-add" onclick="openSiteFaqEditor()">＋ Добавить вопрос</button>'+faqs+'</details>';
   }
