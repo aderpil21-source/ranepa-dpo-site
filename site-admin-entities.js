@@ -804,7 +804,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const key='program:'+p.id;
       const isCustom=(siteCustomPrograms||[]).some(x=>x&&String(x.id)===String(p.id));
       const draft=p.active===false;
-      return '<div class="site-admin-row"><span>'+esc(p.title_ru||p.id)+(isCustom?' · PRO':'')+(draft?' · ЧЕРНОВИК':'')+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
+      return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="programs" data-cms-dnd-id="'+esc(p.id)+'"><span>'+esc(p.title_ru||p.id)+(isCustom?' · PRO':'')+(draft?' · ЧЕРНОВИК':'')+'</span><label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label></div>'+
       '<div class="site-admin-entity-actions">'+
       '<button type="button" '+(index===0?'disabled':'')+' onclick="siteProgramMoveAny(\''+esc(p.id)+'\',-1)">↑</button>'+
       '<button type="button" '+(index===programList.length-1?'disabled':'')+' onclick="siteProgramMoveAny(\''+esc(p.id)+'\',1)">↓</button>'+
@@ -820,7 +820,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const isBase=String(c.id||'').indexOf('base-contact:')===0;
       const draft=c.active===false&&c.archived!==true,arch=c.archived===true;
       const key=isBase?'':('contact:'+encodeURIComponent(c.id));
-      return '<div class="site-admin-row"><span>'+esc(c.name||c.id)+(c.position?' · '+esc(c.position):'')+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span>'+
+      return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="contacts" data-cms-dnd-id="'+esc(c.id)+'" data-cms-dnd-group="'+esc(c.departmentKey||'')+'"><span>'+esc(c.name||c.id)+(c.position?' · '+esc(c.position):'')+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span>'+
       (key?'<label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label>':'')+'</div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteContactRestoreBase(\''+esc(c.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'contacts\',\''+esc(c.id)+'\')">Восстановить</button>'):
@@ -838,7 +838,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       const isBase=String(f.id||'').indexOf('base-faq:')===0;
       const draft=f.active===false&&f.archived!==true,arch=f.archived===true;
       const key=isBase?'':('faq:'+f.id);
-      return '<div class="site-admin-row"><span>'+esc(f.question||f.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span>'+
+      return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="faq" data-cms-dnd-id="'+esc(f.id)+'"><span>'+esc(f.question||f.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span>'+
       (key?'<label class="site-admin-switch"><input type="checkbox" data-site-entity-visibility="'+esc(key)+'"'+(siteKeyIsVisible(key)?' checked':'')+'><span class="site-admin-slider"></span></label>':'')+'</div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteFaqRestoreBase(\''+esc(f.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'faq\',\''+esc(f.id)+'\')">Восстановить</button>'):
