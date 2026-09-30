@@ -161,4 +161,20 @@ assert(
   'External VK windows must be detached from the news page opener'
 );
 
+
+const aiLecture = fs.readFileSync('ai-lecture.html','utf8');
+assert(
+  aiLecture.includes('@mediapipe/camera_utils@0.3.1675466862/camera_utils.js') &&
+  aiLecture.includes('@mediapipe/drawing_utils@0.3.1675466124/drawing_utils.js') &&
+  aiLecture.includes('@mediapipe/hands@0.4.1675469240/hands.js') &&
+  aiLecture.includes('@mediapipe/hands@0.4.1675469240/${file}'),
+  'AI lecture MediaPipe dependencies must be pinned to exact versions'
+);
+assert(
+  !aiLecture.includes('@mediapipe/camera_utils/camera_utils.js') &&
+  !aiLecture.includes('@mediapipe/drawing_utils/drawing_utils.js') &&
+  !aiLecture.includes('@mediapipe/hands/hands.js'),
+  'AI lecture must not use unversioned MediaPipe CDN URLs'
+);
+
 console.log('Public snapshot security checks passed');
