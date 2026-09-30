@@ -21,6 +21,7 @@ function arrayFor(type){
   if(type==='faq')return siteCustomFaqs;
   if(type==='nav')return siteCustomNavItems;
   if(type==='docs')return siteCustomDocs;
+  if(type==='blocks')return siteCustomBlocks;
   return null;
 }
 function setArray(type,value){
@@ -29,9 +30,10 @@ function setArray(type,value){
   else if(type==='faq')siteCustomFaqs=value;
   else if(type==='nav')siteCustomNavItems=value;
   else if(type==='docs')siteCustomDocs=value;
+  else if(type==='blocks')siteCustomBlocks=value;
 }
 function title(type){
-  return ({programs:'программ',contacts:'контактов',faq:'FAQ',nav:'меню',docs:'документов'})[type]||type;
+  return ({programs:'программ',contacts:'контактов',faq:'FAQ',nav:'меню',docs:'документов',blocks:'информационных блоков'})[type]||type;
 }
 function visibleRows(type,group){
   return [...document.querySelectorAll('.site-admin-row[data-cms-dnd-type="'+type+'"]')]
