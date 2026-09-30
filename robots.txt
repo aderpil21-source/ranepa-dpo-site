@@ -2,4 +2,9 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /private/
+Disallow: /vk-auth.html
+Disallow: /media-player.html
+Disallow: /site-settings.json
+Disallow: /owl-files.json
+Disallow: /portal-snapshot.js
 Sitemap: https://ranepa-dpo39.ru/sitemap.xml
