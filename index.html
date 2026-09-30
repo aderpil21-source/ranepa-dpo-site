@@ -3600,9 +3600,31 @@
     }
 
     function renderSiteCustomContacts() {
-        const target = document.querySelector('#contactsSection .contacts-grid:last-of-type');
-        if (!target) return;
-        target.querySelectorAll('.site-custom-contact').forEach(function (node) { node.remove(); });
+        const grids = Array.from(document.querySelectorAll('#contactsSection .contacts-grid'));
+        if (!grids.length) return;
+        document.querySelectorAll('#contactsSection .site-custom-contact').forEach(function (node) { node.remove(); });
+        function gridForContact(contact) {
+            const key = String(contact && contact.departmentKey || '').trim();
+            if (key) {
+                const title = document.querySelector('#contactsSection .department-title[data-i18n="' + key.replace(/"/g,'\\\"') + '"]');
+                if (title) {
+                    let node = title.nextElementSibling;
+                    while (node && !(node.classList && node.classList.contains('contacts-grid'))) node = node.nextElementSibling;
+                    if (node) return node;
+                }
+            }
+            const wanted = String(contact && contact.department || '').trim().toLowerCase();
+            if (wanted) {
+                const titles = Array.from(document.querySelectorAll('#contactsSection .department-title'));
+                const match = titles.find(function (title) { return String(title.textContent || '').trim().toLowerCase() === wanted; });
+                if (match) {
+                    let node = match.nextElementSibling;
+                    while (node && !(node.classList && node.classList.contains('contacts-grid'))) node = node.nextElementSibling;
+                    if (node) return node;
+                }
+            }
+            return grids[grids.length - 1];
+        }
         (Array.isArray(siteCustomContacts) ? siteCustomContacts : []).forEach(function (contact) {
             if (!contact || !contact.id || contact.sourceKey || contact.archived === true || (contact.active === false && !window.sitePreviewDraftMode)) return;
             const card = document.createElement('div');
@@ -3621,7 +3643,7 @@
             if (phone) details += '<p><span>Тел:</span> <a href="tel:' + phone.replace(/[^+\d]/g,'') + '">' + phone + '</a>' + (ext ? ' (доб. ' + ext + ')' : '') + '</p>';
             if (email) details += '<p>E-mail: <a href="mailto:' + email + '">' + email + '</a></p>';
             card.innerHTML = '<h4>' + name + '</h4><div class="position">' + position + '</div><div class="details">' + details + '</div>';
-            target.appendChild(card);
+            gridForContact(contact).appendChild(card);
         });
     }
 
