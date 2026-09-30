@@ -401,13 +401,11 @@ let publicNewsPageEnabled = true;
 async function loadPublicNewsPageEnabled(){
     if (adminToken) return true;
     try {
-        const data = await requestJson(CONFIG.api + '?type=news&_sitecfg=' + Date.now(), { method:'GET' }, 1);
-        const items = Array.isArray(data.items) ? data.items : [];
-        const settings = items.find(isSystemNewsItem);
-        if (!settings) return true;
-        const parsed = JSON.parse(settings.lead || '{}');
-        const visibility = parsed && parsed.visibility && typeof parsed.visibility === 'object'
-            ? parsed.visibility : {};
+        const response = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), { cache:'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        const visibility = data && data.settings && typeof data.settings.visibility === 'object'
+            ? data.settings.visibility : {};
         return visibility.news_page !== false;
     } catch(e) {
         console.warn('Не удалось проверить доступность раздела новостей:', e);
