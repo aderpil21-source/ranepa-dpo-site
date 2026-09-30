@@ -12,7 +12,18 @@ function open(t,i,title,html){if(!siteAdminMode)return openSiteAdminLogin();type
 function key(x){return 'schedule:'+[x?.id,x?.date,x?.time,x?.subject].map(v=>encodeURIComponent(String(v||'').trim())).join('|')}
 function merge(base,custom){const o=new Map(),a=[];(custom||[]).forEach(x=>{if(!x)return;if(x.sourceKey){o.set(x.sourceKey,x);return}if(x.active===false||x.archived===true)return;a.push(x)});const out=[];(base||[]).forEach(x=>{const k=key(x);if(o.has(k)){const override=o.get(k);o.delete(k);if(override.active===false||override.archived===true)return;const y={...x,...override};delete y.sourceKey;out.push(y)}else out.push(x)});o.forEach(x=>{if(x.active===false||x.archived===true)return;const y={...x};delete y.sourceKey;out.push(y)});return out.concat(a)}
 const findSchedule=i=>{const custom=(siteCustomSchedules||[]).find(x=>x&&(x.id===i||x.sourceKey===i))||null;if(custom&&custom.sourceKey){const base=(window.schedules||[]).find(x=>key(x)===custom.sourceKey)||null;return base?Object.assign({},base,custom):custom}return custom||(window.schedules||[]).find(x=>key(x)===i)||null};
-const findNav=i=>(siteCustomNavItems||[]).find(x=>x&&x.id===i)||null;
+function baseNavKey(node){
+  if(!node)return '';
+  const token=node.dataset&&node.dataset.i18n?node.dataset.i18n:'';
+  const href=node.matches('a')?(node.getAttribute('href')||''):'';
+  return 'base-nav:'+(token||href||String(node.textContent||'').trim().toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'-'));
+}
+function baseNavRecord(node){
+  if(!node)return null;const id=baseNavKey(node);if(!id||id==='base-nav:')return null;
+  return {id,sourceKey:id,label:String(node.textContent||'').trim(),url:node.matches('a')?String(node.getAttribute('href')||'').trim():'',newTab:node.getAttribute('target')==='_blank',active:true,custom:false};
+}
+function baseNavItems(){return [...document.querySelectorAll('.header-nav .header-nav-link:not(.site-custom-nav-item)')].map(baseNavRecord).filter(Boolean);}
+const findNav=i=>{const nid=String(i||'');const custom=(siteCustomNavItems||[]).find(x=>x&&(String(x.id)===nid||String(x.sourceKey||'')===nid))||null;const base=baseNavItems().find(x=>String(x.id)===nid)||null;if(base&&custom)return Object.assign({},base,custom,{id:nid,sourceKey:nid});return custom||base||null};
 function baseDocKey(card){
   if(!card)return '';
   const title=card.querySelector('h4'),img=card.querySelector('img');
@@ -147,7 +158,35 @@ window.siteDocRestoreBase=async function(id){
   if(!ok){siteCustomDocs=before;applyBaseDocOverrides();renderDocs();renderSiteAdminPanel();}
 }
 
-function renderNav(){document.querySelectorAll('.site-custom-nav-item').forEach(n=>n.remove());const n=document.querySelector('.header-nav');if(!n)return;const b=n.querySelector('.header-nav-btn');(siteCustomNavItems||[]).forEach(x=>{if(!x||x.active===false||siteVisibility['nav-custom:'+x.id]===false)return;const href=safeCmsHref(x.url);if(!href)return;const a=document.createElement('a');a.className='header-nav-link site-custom-nav-item';a.textContent=x.label||'Новый пункт';a.href=href;a.dataset.siteNavId=x.id;if(x.newTab){a.target='_blank';a.rel='noopener noreferrer'}n.insertBefore(a,b||null)})}
+function baseNavNodeByKey(key){return [...document.querySelectorAll('.header-nav .header-nav-link:not(.site-custom-nav-item)')].find(n=>baseNavKey(n)===key)||null}
+function applyBaseNavOverrides(){
+  baseNavItems().forEach(base=>{
+    const node=baseNavNodeByKey(base.id);if(!node)return;
+    if(!node.__cmsOriginalNav){
+      node.__cmsOriginalNav={label:node.innerHTML,href:node.matches('a')?(node.getAttribute('href')||''):'',target:node.getAttribute('target')||'',rel:node.getAttribute('rel')||'',onclick:node.getAttribute('onclick')||''};
+    }
+    const orig=node.__cmsOriginalNav;
+    node.innerHTML=orig.label;
+    if(node.matches('a')){if(orig.href)node.setAttribute('href',orig.href);else node.removeAttribute('href');}
+    if(orig.target)node.setAttribute('target',orig.target);else node.removeAttribute('target');
+    if(orig.rel)node.setAttribute('rel',orig.rel);else node.removeAttribute('rel');
+    node.onclick=null;if(orig.onclick)node.setAttribute('onclick',orig.onclick);else node.removeAttribute('onclick');
+    node.classList.remove('site-admin-force-hidden','site-admin-preview-hidden');
+    const ov=(siteCustomNavItems||[]).find(x=>x&&String(x.sourceKey||'')===String(base.id));
+    if(!ov)return;
+    if(ov.active===false||ov.archived===true){node.classList.add(siteAdminMode?'site-admin-preview-hidden':'site-admin-force-hidden');return;}
+    if(ov.label!=null)node.textContent=ov.label;
+    const href=safeCmsHref(ov.url);
+    if(href){
+      node.removeAttribute('onclick');node.onclick=null;
+      if(node.matches('a'))node.setAttribute('href',href);
+      else node.onclick=()=>{if(ov.newTab)window.open(href,'_blank','noopener');else location.href=href;};
+      if(ov.newTab){node.setAttribute('target','_blank');node.setAttribute('rel','noopener noreferrer');}
+      else{node.removeAttribute('target');node.removeAttribute('rel');}
+    }
+  });
+}
+function renderNav(){document.querySelectorAll('.site-custom-nav-item').forEach(n=>n.remove());const n=document.querySelector('.header-nav');if(!n)return;const b=n.querySelector('.header-nav-btn');(siteCustomNavItems||[]).forEach(x=>{if(!x||x.active===false||x.sourceKey||siteVisibility['nav-custom:'+x.id]===false)return;const href=safeCmsHref(x.url);if(!href)return;const a=document.createElement('a');a.className='header-nav-link site-custom-nav-item';a.textContent=x.label||'Новый пункт';a.href=href;a.dataset.siteNavId=x.id;if(x.newTab){a.target='_blank';a.rel='noopener noreferrer'}n.insertBefore(a,b||null)})}
 function baseDocCardByKey(key){return [...document.querySelectorAll('[data-site-doc-grid] .doc-card:not(.site-custom-doc)')].find(card=>baseDocKey(card)===key)||null}
 function applyBaseDocOverrides(){
   baseDocs().forEach(base=>{
@@ -181,7 +220,7 @@ function renderDocs(){const g=document.querySelector('[data-site-doc-grid]');if(
 function renderBlocks(){document.querySelectorAll('.site-custom-info-block').forEach(n=>n.remove());(siteCustomBlocks||[]).forEach(x=>{if(!x||x.active===false||siteVisibility['block-custom:'+x.id]===false)return;const t=x.placement==='before-contacts'?document.querySelector('#contactsSection'):x.placement==='before-documents'?document.querySelector('.documents-section'):document.querySelector('.faq-container');if(!t||!t.parentNode)return;const href=safeCmsHref(x.url);const e=document.createElement('section');e.className='site-custom-info-block';e.dataset.siteBlockId=x.id;e.style.cssText='max-width:950px;margin:28px auto;padding:24px;border-radius:18px;border:1px solid var(--border-glass);background:var(--bg-card);position:relative;z-index:5';e.innerHTML='<h3 style="color:var(--text-main)">'+esc(x.title||'Информационный блок')+'</h3><div style="color:var(--text-muted);white-space:pre-line;line-height:1.7">'+esc(x.text||'')+'</div>'+(href?'<a href="'+esc(href)+'"'+(x.newTab?' target="_blank" rel="noopener noreferrer"':'')+' style="display:inline-flex;margin-top:14px;color:var(--ranepa-red);font-weight:800">'+esc(x.linkLabel||'Подробнее')+'</a>':'');t.parentNode.insertBefore(e,t)})}
 async function save(ev){ev.preventDefault();if(!siteAdminMode)return;const d=Object.fromEntries(new FormData(ev.currentTarget).entries());let saved=false;
 if(type==='schedule'){if(!d.program||!d.date||!d.subject)return siteAdminSetStatus('Укажите программу, дату и тему','err');const base=id?findSchedule(id):null,source=id&&(window.schedules||[]).some(x=>key(x)===id)?id:(base&&base.sourceKey)||'',rid=base&&String(base.id||'').startsWith('custom-s-')?base.id:uid('custom-s-'),r={...(base||{}),...d,id:rid,active:base&&base.active===false?false:true,custom:true};if(source)r.sourceKey=source;const before=siteCustomSchedules.slice(),p=siteCustomSchedules.findIndex(x=>x===base||x&&x.id===rid||source&&x&&x.sourceKey===source);p>=0?siteCustomSchedules[p]=r:siteCustomSchedules.push(r);saved=await saveSiteSettings({recordVersion:true,reason:'Изменено расписание'});if(!saved){siteCustomSchedules=before;return;}}
-if(type==='nav'){if(!d.label||!d.url)return siteAdminSetStatus('Укажите название и ссылку','err');if(!safeCmsHref(d.url))return siteAdminSetStatus('Недопустимая ссылка. Разрешены http, https, mailto, tel и внутренние ссылки.','err');const rid=id||uid('custom-nav-'),prev=findNav(rid)||{},r={...prev,...d,id:rid,active:prev.active===false?false:true,newTab:d.newTab==='yes'},before=siteCustomNavItems.slice(),p=siteCustomNavItems.findIndex(x=>x&&x.id===rid);p>=0?siteCustomNavItems[p]=r:siteCustomNavItems.push(r);renderNav();saved=await saveSiteSettings({recordVersion:true,reason:'Изменено меню'});if(!saved){siteCustomNavItems=before;renderNav();return;}}
+if(type==='nav'){const baseId=String(id||''),isBase=baseId.indexOf('base-nav:')===0;if(!d.label||(!isBase&&!d.url))return siteAdminSetStatus(isBase?'Укажите название':'Укажите название и ссылку','err');if(d.url&&!safeCmsHref(d.url))return siteAdminSetStatus('Недопустимая ссылка. Разрешены http, https, mailto, tel и внутренние ссылки.','err');const rid=isBase?baseId:(id||uid('custom-nav-')),prev=findNav(rid)||{},r={...prev,...d,id:rid,active:prev.active===false?false:true,newTab:d.newTab==='yes'};if(isBase)r.sourceKey=rid;const before=siteCustomNavItems.slice(),p=siteCustomNavItems.findIndex(x=>x&&(String(x.id)===String(rid)||String(x.sourceKey||'')===String(rid)));p>=0?siteCustomNavItems[p]=r:siteCustomNavItems.push(r);applyBaseNavOverrides();renderNav();saved=await saveSiteSettings({recordVersion:true,reason:'Изменено меню'});if(!saved){siteCustomNavItems=before;applyBaseNavOverrides();renderNav();return;}}
 if(type==='doc'){if(!d.title)return siteAdminSetStatus('Укажите название документа','err');if(d.url&&!safeCmsHref(d.url))return siteAdminSetStatus('Недопустимая ссылка документа.','err');if(d.image&&!safeCmsMediaUrl(d.image))return siteAdminSetStatus('Недопустимый адрес изображения.','err');const baseId=String(id||''),isBase=baseId.indexOf('base-doc:')===0,rid=isBase?baseId:(id||uid('custom-doc-')),prev=findDoc(rid)||{},r={...prev,...d,id:rid,active:prev.active===false?false:true,newTab:d.newTab==='yes'};if(isBase)r.sourceKey=rid;const before=siteCustomDocs.slice(),p=siteCustomDocs.findIndex(x=>x&&(String(x.id)===String(rid)||String(x.sourceKey||'')===String(rid)));p>=0?siteCustomDocs[p]=r:siteCustomDocs.push(r);applyBaseDocOverrides();renderDocs();saved=await saveSiteSettings({recordVersion:true,reason:'Изменены документы'});if(!saved){siteCustomDocs=before;applyBaseDocOverrides();renderDocs();return;}}
 if(type==='block'){if(!d.title&&!d.text)return siteAdminSetStatus('Заполните заголовок или текст','err');if(d.url&&!safeCmsHref(d.url))return siteAdminSetStatus('Недопустимая ссылка блока.','err');const rid=id||uid('custom-block-'),prev=findBlock(rid)||{},r={...prev,...d,id:rid,active:prev.active===false?false:true,newTab:d.newTab==='yes'},before=siteCustomBlocks.slice(),p=siteCustomBlocks.findIndex(x=>x&&x.id===rid);p>=0?siteCustomBlocks[p]=r:siteCustomBlocks.push(r);renderBlocks();saved=await saveSiteSettings({recordVersion:true,reason:'Изменён информационный блок'});if(!saved){siteCustomBlocks=before;renderBlocks();return;}}
 if(saved){close();renderSiteAdminPanel();}}
@@ -189,7 +228,7 @@ window.deleteSiteCustomNav=async i=>{if(typeof siteWorkflowDelete==='function')r
 window.deleteSiteCustomDoc=async i=>{if(typeof siteWorkflowDelete==='function')return siteWorkflowDelete('docs',i);const x=findDoc(i);if(x&&confirm('Переместить документ в корзину?')){x.active=false;x.archived=true;x.archivedAt=new Date().toISOString();renderDocs();await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(x.title||i)});renderSiteAdminPanel()}};
 window.deleteSiteCustomBlock=async i=>{if(typeof siteWorkflowDelete==='function')return siteWorkflowDelete('blocks',i);const x=findBlock(i);if(x&&confirm('Переместить блок в корзину?')){x.active=false;x.archived=true;x.archivedAt=new Date().toISOString();renderBlocks();await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(x.title||i)});renderSiteAdminPanel()}};
 if(typeof getVisibleSchedules==='function'){const base=getVisibleSchedules;getVisibleSchedules=x=>base(merge(x,siteCustomSchedules||[]))}
-const pa=applySiteCustomContent;applySiteCustomContent=function(){pa();renderNav();applyBaseDocOverrides();renderDocs();renderBlocks()};
+const pa=applySiteCustomContent;applySiteCustomContent=function(){pa();applyBaseNavOverrides();renderNav();applyBaseDocOverrides();renderDocs();renderBlocks()};
 function groups(){
   const baseRows=(window.schedules||[]).map(x=>{
     const sid=key(x),ov=scheduleOverrideByKey(sid),arch=!!(ov&&ov.archived===true),draft=!!(ov&&ov.active===false&&!arch);
