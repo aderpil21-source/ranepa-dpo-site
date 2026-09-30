@@ -185,4 +185,13 @@ assert(
   'Draft workflow must provide a non-publishing preview modal'
 );
 
+
+assert(
+  workflow.includes("data-preview-viewport=\"mobile\"") &&
+  workflow.includes("data-preview-theme=\"light\"") &&
+  workflow.includes("preview-mobile") &&
+  workflow.includes("preview-light"),
+  'Draft preview must support mobile and light-theme modes'
+);
+
 console.log('CMS workflow regression checks passed');
