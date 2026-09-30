@@ -381,7 +381,7 @@ function groups(){
   }).join('');
   const nav=navCatalogForAdmin().map(x=>{
     const isBase=String(x.id||'').indexOf('base-nav:')===0,draft=x.active===false&&x.archived!==true,arch=x.archived===true;
-    return '<div class="site-admin-row"><span>'+esc(x.label||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
+    return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="nav" data-cms-dnd-id="'+esc(x.id)+'"><span>'+esc(x.label||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteNavRestoreBase(\''+esc(x.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'nav\',\''+esc(x.id)+'\')">Восстановить</button>'):
         '<button type="button" onclick="siteNavMoveAny(\''+esc(x.id)+'\',-1)">↑</button>'+
@@ -394,7 +394,7 @@ function groups(){
   }).join('');
   const docs=docCatalogForAdmin().map(x=>{
     const isBase=String(x.id||'').indexOf('base-doc:')===0,draft=x.active===false&&x.archived!==true,arch=x.archived===true;
-    return '<div class="site-admin-row"><span>'+esc(x.title||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
+    return '<div class="site-admin-row" draggable="true" data-cms-dnd-type="docs" data-cms-dnd-id="'+esc(x.id)+'"><span>'+esc(x.title||x.id)+(arch?' · В КОРЗИНЕ':draft?' · ЧЕРНОВИК':'')+'</span></div>'+
       '<div class="site-admin-entity-actions">'+
       (arch?(isBase?'<button type="button" onclick="siteDocRestoreBase(\''+esc(x.id)+'\')">Восстановить</button>':'<button type="button" onclick="siteWorkflowRestore(\'docs\',\''+esc(x.id)+'\')">Восстановить</button>'):
         '<button type="button" onclick="siteDocMoveAny(\''+esc(x.id)+'\',-1)">↑</button>'+
