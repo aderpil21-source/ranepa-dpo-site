@@ -2396,6 +2396,9 @@
     let siteRedoStack = [];
     let siteSaveInFlight = null;
     let siteSaveQueued = false;
+    let siteSaveRevision = 0;
+    let siteSavedRevision = 0;
+    let siteSaveWaiters = [];
     let siteAdminToken = sessionStorage.getItem('siteAdminToken') || null;
     let siteAdminMode = !!siteAdminToken;
     window.sitePreviewDraftMode = new URLSearchParams(location.search).get('cmsPreview') === 'drafts' && !!siteAdminToken;
@@ -3283,6 +3286,15 @@
         return saveSiteSettings({ recordVersion:true, reason:'Ручное сохранение изменений' });
     }
 
+    function settleSiteSaveWaiters(ok, throughRevision) {
+        const remaining = [];
+        siteSaveWaiters.forEach(function (waiter) {
+            if (waiter.revision <= throughRevision) waiter.resolve(!!ok);
+            else remaining.push(waiter);
+        });
+        siteSaveWaiters = remaining;
+    }
+
     async function saveSiteSettings(options) {
         const opts = options || {};
         if (!siteAdminToken) {
@@ -3291,12 +3303,19 @@
             return false;
         }
 
+        const requestedRevision = ++siteSaveRevision;
+        siteSettingsDirty = true;
+        updateSiteSaveUi();
+
         if (siteSaveInFlight) {
             siteSaveQueued = true;
-            return siteSaveInFlight;
+            return new Promise(function (resolve) {
+                siteSaveWaiters.push({ revision:requestedRevision, resolve:resolve });
+            });
         }
 
         const dirtyBeforeSave = siteSettingsDirty;
+        const savingRevision = requestedRevision;
         siteSaveInFlight = (async function () {
             const now = new Date().toISOString();
             const base = siteSettingsItem || {};
@@ -3354,9 +3373,11 @@
             siteSettingsItem = Object.assign({}, item, { id:data.id || SITE_SETTINGS_ID });
             cacheSiteSettings(payload);
             renderSiteVersionUI();
-            siteSettingsDirty = false;
+            siteSavedRevision = Math.max(siteSavedRevision, savingRevision);
+            siteSettingsDirty = siteSavedRevision < siteSaveRevision;
+            settleSiteSaveWaiters(true, siteSavedRevision);
             updateSiteSaveUi();
-            siteAdminSetStatus('Сохранено. Версия записана в историю.', 'ok');
+            siteAdminSetStatus(siteSettingsDirty ? 'Сохранено. Есть следующее изменение…' : 'Сохранено. Версия записана в историю.', 'ok');
             return true;
         })();
         updateSiteSaveUi();
@@ -3364,7 +3385,8 @@
         try {
             return await siteSaveInFlight;
         } catch (e) {
-            siteSettingsDirty = dirtyBeforeSave;
+            siteSettingsDirty = true;
+            settleSiteSaveWaiters(false, savingRevision);
             updateSiteSaveUi();
             siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
             return false;
@@ -3373,7 +3395,9 @@
             updateSiteSaveUi();
             if (siteSaveQueued) {
                 siteSaveQueued = false;
-                scheduleSiteSettingsSave('Следующее изменение');
+                setTimeout(function () {
+                    saveSiteSettings({ recordVersion:true, reason:'Следующее изменение' });
+                }, 0);
             }
         }
     }
