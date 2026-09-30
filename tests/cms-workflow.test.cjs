@@ -194,4 +194,31 @@ assert(
   'Draft preview must support mobile and light-theme modes'
 );
 
+
+assert(
+  entities.includes("function baseFaqs") &&
+  entities.includes("function applyBaseFaqOverrides") &&
+  entities.includes("window.siteFaqSetPublished") &&
+  entities.includes("window.siteFaqDuplicateAny") &&
+  entities.includes("window.siteFaqArchiveAny") &&
+  entities.includes("window.siteFaqRestoreBase"),
+  'Built-in FAQ must have full PRO overlay lifecycle'
+);
+assert(
+  structure.includes("data-site-doc-static") || fs.readFileSync('index.html','utf8').includes('data-site-doc-static="1"'),
+  'Built-in documents must have stable CMS IDs'
+);
+assert(
+  structure.includes("function applyBaseDocOverrides") &&
+  structure.includes("window.siteDocSetPublished") &&
+  structure.includes("window.siteDocDuplicateAny") &&
+  structure.includes("window.siteDocArchiveAny") &&
+  structure.includes("window.siteDocRestoreBase"),
+  'Built-in documents must have full PRO overlay lifecycle'
+);
+assert(
+  structure.includes("x.sourceKey||siteVisibility['doc-custom:'"),
+  'Document overrides must not render as duplicate custom cards'
+);
+
 console.log('CMS workflow regression checks passed');
