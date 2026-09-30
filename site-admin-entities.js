@@ -151,13 +151,15 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
   };
 
   window.deleteSiteCustomFaq=async function(id){
+    if(typeof siteWorkflowDelete==='function') return siteWorkflowDelete('faq',id);
     const item=findFaq(id); if(!item) return;
-    if(!confirm('Удалить вопрос «'+(item.question||id)+'»?')) return;
-    siteCustomFaqs=siteCustomFaqs.filter(x=>!x||x.id!==id);
-    delete siteVisibility['faq:'+id];
+    if(!confirm('Переместить вопрос «'+(item.question||id)+'» в корзину?')) return;
+    const idx=siteCustomFaqs.findIndex(x=>x&&x.id===id);
+    if(idx<0) return;
+    siteCustomFaqs[idx]=Object.assign({},item,{active:false,archived:true,archivedAt:new Date().toISOString()});
     renderSiteCustomFaqs();
     renderSiteAdminPanel();
-    await saveSiteSettings({recordVersion:true,reason:'Удалён FAQ: '+(item.question||id)});
+    await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(item.question||id)});
   };
 
   window.resetSiteThemeConfig=async function(){
@@ -326,7 +328,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       if(!data.title_ru){ siteAdminSetStatus('Укажите название программы','err'); return; }
       const id=entityId||makeId('custom-p-');
       const prev=findProgram(id)||{};
-      const record=Object.assign({},prev,data,{id,active:true,custom:true,title_en:prev.title_en||data.title_ru,desc_en:prev.desc_en||data.desc_ru});
+      const record=Object.assign({},prev,data,{id,active:prev&&prev.active===false?false:true,custom:true,title_en:prev.title_en||data.title_ru,desc_en:prev.desc_en||data.desc_ru});
       const idx=siteCustomPrograms.findIndex(x=>x&&x.id===id);
       if(idx>=0) siteCustomPrograms[idx]=record; else siteCustomPrograms.push(record);
       applySiteCustomContent();
@@ -348,7 +350,7 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
       if(!data.question){ siteAdminSetStatus('Укажите вопрос','err'); return; }
       const id=entityId||makeId('custom-faq-');
       const prev=findFaq(id)||{};
-      const record=Object.assign({},prev,data,{id,active:true,custom:true});
+      const record=Object.assign({},prev,data,{id,active:prev&&prev.active===false?false:true,custom:true});
       const idx=siteCustomFaqs.findIndex(x=>x&&x.id===id);
       if(idx>=0) siteCustomFaqs[idx]=record; else siteCustomFaqs.push(record);
       renderSiteCustomFaqs();
@@ -378,23 +380,27 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
     closeSiteEntityEditor();
   }
   window.deleteSiteCustomProgram=async function(id){
+    if(typeof siteWorkflowDelete==='function') return siteWorkflowDelete('programs',id);
     const item=findProgram(id); if(!item) return;
-    if(!confirm('Удалить программу «'+(item.title_ru||id)+'»?')) return;
-    siteCustomPrograms=siteCustomPrograms.filter(x=>!x||x.id!==id);
-    delete siteVisibility['program:'+id];
+    if(!confirm('Переместить программу «'+(item.title_ru||id)+'» в корзину?')) return;
+    const idx=siteCustomPrograms.findIndex(x=>x&&String(x.id)===String(id));
+    if(idx<0) return;
+    siteCustomPrograms[idx]=Object.assign({},siteCustomPrograms[idx],{active:false,archived:true,archivedAt:new Date().toISOString()});
     applySiteCustomContent();
     renderSiteAdminPanel();
-    await saveSiteSettings({recordVersion:true,reason:'Удалена программа: '+(item.title_ru||id)});
+    await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(item.title_ru||id)});
   };
 
   window.deleteSiteCustomContact=async function(id){
+    if(typeof siteWorkflowDelete==='function') return siteWorkflowDelete('contacts',id);
     const item=findContact(id); if(!item) return;
-    if(!confirm('Удалить контакт «'+(item.name||id)+'»?')) return;
-    siteCustomContacts=siteCustomContacts.filter(x=>!x||x.id!==id);
-    delete siteVisibility['contact:'+encodeURIComponent(id)];
+    if(!confirm('Переместить контакт «'+(item.name||id)+'» в корзину?')) return;
+    const idx=siteCustomContacts.findIndex(x=>x&&x.id===id);
+    if(idx<0) return;
+    siteCustomContacts[idx]=Object.assign({},item,{active:false,archived:true,archivedAt:new Date().toISOString()});
     applySiteCustomContent();
     renderSiteAdminPanel();
-    await saveSiteSettings({recordVersion:true,reason:'Удалён контакт: '+(item.name||id)});
+    await saveSiteSettings({recordVersion:true,reason:'В корзину: '+(item.name||id)});
   };
 
   function managerHtml(){
