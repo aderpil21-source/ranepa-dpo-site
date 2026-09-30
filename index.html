@@ -2146,6 +2146,7 @@
             <button type="button" onclick="openSiteProgramEditor()">➕ Программа</button>
             <button type="button" onclick="openSiteContactEditor()">➕ Контакт</button>
             <button type="button" onclick="openStudyPlanUpload()">📄 Учебные планы</button>
+            <button type="button" id="siteAdminSaveNowBtn" onclick="flushSiteSettingsSave()" disabled>💾 Сохранить сейчас</button>
             <button type="button" onclick="resetSiteTextOverrides()">↶ Сбросить правки текста</button>
         </div>
         <div class="site-admin-edit-hint" id="siteAdminEditHint">Редактирование включено: нажмите на подсвеченный текст, напечатайте новый и щёлкните вне него. Изменение сохранится автоматически для текущего языка.</div>
@@ -2402,6 +2403,7 @@
     let siteAdminSaveTimer = null;
     let siteAdminObserver = null;
     let siteAdminMutationTimer = null;
+    let siteSettingsDirty = false;
     const siteEditBefore = new WeakMap();
 
     const SITE_ADMIN_REGISTRY = [
@@ -3236,6 +3238,27 @@
         }
     }
 
+    function updateSiteSaveUi() {
+        const btn = document.getElementById('siteAdminSaveNowBtn');
+        if (!btn) return;
+        btn.disabled = !siteSettingsDirty && !siteSaveInFlight;
+        btn.textContent = siteSaveInFlight ? '💾 Сохраняем…' : (siteSettingsDirty ? '💾 Сохранить сейчас •' : '💾 Всё сохранено');
+    }
+
+    async function flushSiteSettingsSave() {
+        if (!siteAdminMode) return openSiteAdminLogin();
+        if (siteAdminSaveTimer) {
+            clearTimeout(siteAdminSaveTimer);
+            siteAdminSaveTimer = null;
+        }
+        if (!siteSettingsDirty && !siteSaveInFlight) {
+            siteAdminSetStatus('Все изменения уже сохранены', 'ok');
+            updateSiteSaveUi();
+            return true;
+        }
+        return saveSiteSettings({ recordVersion:true, reason:'Ручное сохранение изменений' });
+    }
+
     async function saveSiteSettings(options) {
         const opts = options || {};
         if (!siteAdminToken) {
@@ -3249,6 +3272,7 @@
             return siteSaveInFlight;
         }
 
+        updateSiteSaveUi();
         siteSaveInFlight = (async function () {
             const now = new Date().toISOString();
             const base = siteSettingsItem || {};
@@ -3306,6 +3330,8 @@
             siteSettingsItem = Object.assign({}, item, { id:data.id || SITE_SETTINGS_ID });
             cacheSiteSettings(payload);
             renderSiteVersionUI();
+            siteSettingsDirty = false;
+            updateSiteSaveUi();
             siteAdminSetStatus('Сохранено. Версия записана в историю.', 'ok');
             return true;
         })();
@@ -3313,10 +3339,13 @@
         try {
             return await siteSaveInFlight;
         } catch (e) {
+            siteSettingsDirty = true;
+            updateSiteSaveUi();
             siteAdminSetStatus('Ошибка сохранения: ' + e.message, 'err');
             return false;
         } finally {
             siteSaveInFlight = null;
+            updateSiteSaveUi();
             if (siteSaveQueued) {
                 siteSaveQueued = false;
                 scheduleSiteSettingsSave('Следующее изменение');
@@ -3325,8 +3354,11 @@
     }
 
     function scheduleSiteSettingsSave(reason) {
+        siteSettingsDirty = true;
+        updateSiteSaveUi();
         if (siteAdminSaveTimer) clearTimeout(siteAdminSaveTimer);
         siteAdminSaveTimer = setTimeout(function () {
+            siteAdminSaveTimer = null;
             saveSiteSettings({ recordVersion:true, reason:reason || 'Изменение сайта' });
         }, 450);
     }
@@ -3461,6 +3493,12 @@
         applySiteContentOverrides();
             if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
     }
+
+    window.addEventListener('beforeunload', function (event) {
+        if (!siteSettingsDirty && !siteSaveInFlight) return;
+        event.preventDefault();
+        event.returnValue = '';
+    });
 
     function initSiteAdminVisibility() {
         loadSiteRedoStack();
