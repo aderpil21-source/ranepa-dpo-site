@@ -615,6 +615,89 @@ async function requestJson(url, options, attempts){
     throw lastError;
 }
 
+/* ============================================================================
+   БЛОК 5. ПРОВЕРКА ФАЙЛА И СЖАТИЕ
+   ============================================================================ */
+const SIGNATURES = [
+    { offset:0, bytes:[0xFF,0xD8,0xFF] },            // jpeg
+    { offset:0, bytes:[0x89,0x50,0x4E,0x47] },       // png
+    { offset:0, bytes:[0x47,0x49,0x46,0x38] },       // gif
+    { offset:8, bytes:[0x57,0x45,0x42,0x50] },       // webp
+    { offset:4, bytes:[0x66,0x74,0x79,0x70] },       // mp4 / mov
+    { offset:0, bytes:[0x1A,0x45,0xDF,0xA3] }        // webm
+];
+
+/* Проверяем по первым байтам, а не по расширению:
+   переименованный исполняемый файл дальше не пройдёт. */
+async function verifySignature(file){
+    try {
+        const head = new Uint8Array(await file.slice(0,16).arrayBuffer());
+        const ok = SIGNATURES.some(sig => sig.bytes.every((b,i) => head[sig.offset + i] === b));
+        if (!ok) throw Object.assign(new Error('Это не похоже на картинку или видео'), { code:'BAD_SIGNATURE' });
+    } catch(e){
+        if (e.code === 'BAD_SIGNATURE') throw e;
+        // Не смогли прочитать заголовок — не блокируем, доверимся типу файла
+    }
+}
+
+/* Отпечаток: один и тот же снимок не уедет в хранилище дважды */
+async function fileHash(file){
+    if (!crypto.subtle) return null;
+    try {
+        const buf = await file.slice(0, 2*1024*1024).arrayBuffer();
+        const digest = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2,'0')).join('') + '-' + file.size;
+    } catch(e){ return null; }
+}
+
+/* Снимок на 6 МБ превращается в ~250 КБ WebP без видимой потери качества */
+/* Сжатие картинок строго в JPG (ВК не переваривает WebP) */
+async function compressImage(file){
+    const skip = ['image/gif','image/svg+xml'];
+    if (!file.type.startsWith('image/') || skip.includes(file.type)) return file;
+    if (typeof createImageBitmap !== 'function') return file;
+
+    let bitmap;
+    try { bitmap = await createImageBitmap(file); } catch(e){ return file; }
+
+    const scale = Math.min(1, CONFIG.storage.imageMaxSide / Math.max(bitmap.width, bitmap.height));
+    const w = Math.round(bitmap.width*scale), h = Math.round(bitmap.height*scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    
+    // Обязательно белый фон, чтобы прозрачные PNG не чернели
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    if (bitmap.close) bitmap.close();
+
+    // Форсируем сохранение ИСКЛЮЧИТЕЛЬНО в JPEG
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', CONFIG.storage.imageQuality));
+    if (!blob || blob.size >= file.size) return file;
+
+    return new File([blob], file.name.replace(/\.[^.]+$/,'') + '.jpg', { type: 'image/jpeg' });
+}
+
+/* ============================================================================
+   БЛОК 6. ЗАГРУЗКА В ХРАНИЛИЩЕ
+   Цепочка страховок: основное хранилище → резервное → диск браузера
+   ============================================================================ */
+const activeProviders = () => CONFIG.storage.providers.filter(p => p.enabled && p.signUrl);
+
+async function checkStorageHealth(){
+    if (!activeProviders().length){
+        storageHealth = { state:'unconfigured', message:'Хранилище не подключено. Медиа можно добавлять только ссылкой.' };
+    } else if (!adminToken) {
+        storageHealth = { state:'unconfigured', message:'Войдите в режим редактора для загрузки медиа.' };
+    } else {
+        storageHealth = { state:'ok', message:'Защищённая загрузка готова' };
+    }
+    renderStorageStatus();
+}
+
 function renderStorageStatus(){
     const dot = $('storageDot'), text = $('storageStatusText');
     if (!dot) return;
