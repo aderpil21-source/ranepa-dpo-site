@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-30T16:31:19.793Z",
+  "generatedAt": "2026-09-30T16:32:07.785Z",
   "programs": [
     {
       "id": "c14",
@@ -3521,23 +3521,6 @@
       "room": "ул. Артиллерийская, д.62, 308 ауд."
     }
   ],
-  "owlFiles": [
-    {
-      "code": "ЛК-9991",
-      "title": "Тест на многозадачность",
-      "url": "https://drive.google.com/uc?export=download&id=13C_1iuaZQmZ6_XnN3d9W0YhcePNpHdhi",
-      "date": "08.09.2026 23:26",
-      "comment": "",
-      "isPublished": true
-    },
-    {
-      "code": "ЛК-4857",
-      "title": "Лекции ДПО",
-      "url": "https://drive.google.com/uc?export=download&id=1XM2WtwA6urmMIy7YhjZb7gW-vTPwZaaW",
-      "date": "29.09.2026 11:36",
-      "comment": "Отправлено из мобильной Почты Mail",
-      "isPublished": true
-    }
-  ],
+  "owlFiles": [],
   "currentAlert": null
 }
