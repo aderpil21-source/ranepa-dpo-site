@@ -86,9 +86,13 @@ body.site-admin-pick-mode .site-admin-pick-target{outline:2px solid #38bdf8!impo
   }
 
   function findProgram(id){
-    return (siteCustomPrograms||[]).find(x=>x&&x.id===id)||
-      (Array.isArray(globalPrograms)?globalPrograms.find(x=>x&&String(x.id)===String(id)):null)||
+    const pid=String(id||'');
+    const base=(Array.isArray(basePrograms)?basePrograms.find(x=>x&&String(x.id)===pid):null)||
+      (Array.isArray(globalPrograms)?globalPrograms.find(x=>x&&String(x.id)===pid):null)||
       null;
+    const override=(siteCustomPrograms||[]).find(x=>x&&String(x.id)===pid)||null;
+    if(base&&override) return Object.assign({},base,override);
+    return override||base||null;
   }
   function findContact(id){ return (siteCustomContacts||[]).find(x=>x&&x.id===id)||null; }
 
