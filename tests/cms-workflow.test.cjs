@@ -314,4 +314,23 @@ assert(
   'SEO editor must support direct OpenGraph image upload'
 );
 
+
+const overlayDnd = fs.readFileSync('site-admin-overlay-dnd.js','utf8');
+assert(
+  overlayDnd.includes("data-cms-dnd-type") &&
+  overlayDnd.includes("type==='contacts'") &&
+  overlayDnd.includes("siteCustomContacts") &&
+  overlayDnd.includes("const ok=await saveSiteSettings") &&
+  overlayDnd.includes("setArray(type,before)"),
+  'Base overlay drag-and-drop must preserve contact groups and rollback failed saves'
+);
+assert(
+  entities.includes('data-cms-dnd-type="programs"') &&
+  entities.includes('data-cms-dnd-type="contacts"') &&
+  entities.includes('data-cms-dnd-type="faq"') &&
+  structure.includes('data-cms-dnd-type="nav"') &&
+  structure.includes('data-cms-dnd-type="docs"'),
+  'All primary overlay CMS rows must expose drag reorder metadata'
+);
+
 console.log('CMS workflow regression checks passed');
