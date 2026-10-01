@@ -2665,11 +2665,51 @@ if (document.readyState === 'loading') {
 }
 
 
+function showOwlHelp() {
+    addUserMsg(currentLang === 'ru' ? 'Что ты умеешь?' : 'What can you do?');
+    addBotMsg(currentLang === 'ru'
+        ? '<b>Я могу помочь с сайтом ДПО:</b><br>' +
+          '• подобрать программу по теме, профессии, сроку или формату;<br>' +
+          '• уточнить стоимость, часы, сроки, форму обучения и преподавателя;<br>' +
+          '• подсказать документы для поступления и итоговый документ;<br>' +
+          '• показать расписание занятий;<br>' +
+          '• найти контакты сотрудника;<br>' +
+          '• открыть материалы преподавателя по выданному коду;<br>' +
+          '• помочь с каталогом и профориентационным тестом;<br>' +
+          '• в <b>Расширенном режиме</b> разобрать более свободный или сложный вопрос с учётом контекста разговора.' +
+          '<br><br><span class="owl-guided-hint">Пишите обычными словами. Чем конкретнее цель, тем точнее ответ. Например: «подбери программу по закупкам до 72 часов», «сколько стоит эта программа?», «какие документы нужны?», «покажи расписание».</span>'
+        : '<b>I can help with DPO programs and site information:</b><br>' +
+          '• find a program by topic, profession, duration or format;<br>' +
+          '• clarify tuition, hours, dates, format and instructors;<br>' +
+          '• explain admission and completion documents;<br>' +
+          '• show the class schedule and staff contacts;<br>' +
+          '• open instructor materials by code;<br>' +
+          '• use Advanced mode for freer, contextual questions.' +
+          '<br><br><span class="owl-guided-hint">Write naturally. More context usually gives a more precise answer.</span>'
+    );
+    setOptions(currentLang === 'ru'
+        ? '<button class="chat-opt-btn" onclick="owlAskPreset(\'подбери программу по госзакупкам\')">🔎 Подобрать по теме</button>' +
+          '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие документы нужны для поступления\')">📎 Документы</button>' +
+          '<button class="chat-opt-btn" onclick="owlAskPreset(\'покажи расписание\')">📅 Расписание</button>' +
+          '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>'
+        : '<button class="chat-opt-btn" onclick="resetMenu()">← Menu</button>'
+    );
+}
+
+function owlUpdateInputHint() {
+    const input = document.getElementById('chatUserInput');
+    if (!input) return;
+    input.placeholder = currentLang === 'ru'
+        ? 'Например: «подбери программу по закупкам» или «какие документы нужны?»'
+        : 'For example: “find a program about procurement”';
+}
+
 function resetMenu() {
     chatBody.innerHTML = `<div class="msg-bot"><b>${currentLang === 'ru' ? 'Сова:' : 'Owl:'}</b> <span>${currentLang === 'ru'
-        ? 'Здравствуйте. Можно писать коротко и своими словами. Я постараюсь понять вопрос и предложить подходящий следующий шаг.'
-        : 'Hello. You can write briefly and in your own words. I first use the site data and local scenarios.'
+        ? 'Здравствуйте. Пишите своими словами — можно коротко. Например: «подбери программу по закупкам», «сколько стоит?», «какие документы нужны?».'
+        : 'Hello. Write naturally — short questions are fine. For example: “find a procurement program” or “what documents are required?”.'
     }</span></div>`;
+    owlUpdateInputHint();
     setOptions(`
         <button class="chat-opt-btn" data-site-owl-control="test" onclick="startTest()">${translationsHTML[currentLang].owlOpt1}</button>
         <button class="chat-opt-btn" data-site-owl-control="catalog" onclick="showCatalog()">${translationsHTML[currentLang].owlOpt2}</button>
@@ -2683,6 +2723,10 @@ function resetMenu() {
         </button>
 
         <button class="chat-opt-btn" data-site-owl-control="contacts" onclick="document.getElementById('contactsSection').scrollIntoView({behavior: 'smooth'}); toggleChat();">${translationsHTML[currentLang].owlOpt3}</button>
+
+        <button class="chat-opt-btn" data-site-owl-control="help" onclick="showOwlHelp()" style="background:rgba(148,163,184,.08);">
+            💡 ${currentLang === 'ru' ? 'Что я умею и как спрашивать' : 'What I can do'}
+        </button>
         
         <!-- ИЗМЕНЕННАЯ КНОПКА (ССЫЛКА) -->
         <a href="ai-lecture.html" target="_blank" rel="noopener noreferrer" class="chat-opt-btn" data-site-owl-control="ai" style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-color: #8b5cf6; text-align: center; font-size: 0.9rem; text-decoration: none; display: block; color: #fff; box-sizing: border-box;">
