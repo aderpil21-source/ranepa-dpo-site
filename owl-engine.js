@@ -737,8 +737,13 @@ return;
 }
 
 function showProgramDetailsById(id) {
-    const p = globalPrograms.find(x => x.id === id);
-    if (p) showProgramDetails(p);
+    const p = globalPrograms.find(x => String(x.id || '') === String(id || ''));
+    if (p) {
+        if (window.OwlLearning) {
+            try { window.OwlLearning.resolvePending('program', String(id || ''), 'program-clarify-select'); } catch (e) {}
+        }
+        showProgramDetails(p);
+    }
 }
 
 function showProgramDetails(p) {
@@ -1621,6 +1626,24 @@ async function handleOwlNegativeFeedback(query) {
     const currentProgram = owlLastProgramContext();
     const candidates = owlCandidatePrograms();
 
+    // Если пользователь отвергает только что выбранную программу, это
+    // отрицательное подтверждение для того же обученного соответствия.
+    // Оно отправляется на сервер и учитывается в коллективном рейтинге.
+    if (
+        currentProgram &&
+        /^(нет|неа|не подходит|не подходят|не то|не это|ошибка|неверно|мимо|другой вариант|другие варианты)[!?.\s]*$/i.test(raw) &&
+        window.OwlLearning &&
+        typeof window.OwlLearning.rejectLastResolved === 'function'
+    ) {
+        try {
+            window.OwlLearning.rejectLastResolved(
+                'program',
+                String(currentProgram.id || ''),
+                'user-negative-feedback'
+            );
+        } catch (e) {}
+    }
+
     // Короткое "нет" после конкретного ответа — это не повод включать
     // "расширенный режим". Сохраняем предмет разговора и уточняем намерение.
     if (/^(нет|неа|не подходит|не подходят|не то|другое|другой вариант|другие варианты)[!?.(\s]*$/i.test(raw)) {
@@ -1858,6 +1881,19 @@ function owlTopicProgramResult(query) {
 
     owlConversationState.lastCandidateIds = items.map(item => String(item.id));
     saveOwlConversationState();
+
+    // Несколько найденных вариантов — это ещё не знание. Запоминаем вопрос
+    // как ожидающий подтверждения; правилом он станет только после явного
+    // выбора конкретной программы пользователем.
+    if (items.length > 1 && window.OwlLearning) {
+        try {
+            window.OwlLearning.rememberUnknown(query, {
+                mode: owlConversationState.mode,
+                intent: 'topic-programs',
+                page: location.pathname || '/'
+            });
+        } catch (e) {}
+    }
 
     const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
     const uniqueTitles = new Set(items.map(item => owlSmartNormalize(item[titleKey] || '')));
