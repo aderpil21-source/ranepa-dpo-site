@@ -50,6 +50,14 @@ async function refreshProgramsInBackground(){
   } catch (_) {}
 }
 
+let programRenderCount = 0;
+let programRenderTimer = 0;
+
+function scheduleProgramRender() {
+  clearTimeout(programRenderTimer);
+  programRenderTimer = setTimeout(renderPrograms, 85);
+}
+
 function renderPrograms() {
   const q = document.getElementById('programSearch').value.trim().toLowerCase();
   const type = document.getElementById('programType').value;
@@ -73,6 +81,7 @@ function renderPrograms() {
     return;
   }
 
+  programRenderCount += 1;
   grid.innerHTML = items.map(p => {
     const meta = [p.type,p.hours,p.format].filter(Boolean).map(x => '<span class="badge">'+escapeHtml(x)+'</span>').join('');
     const dates = p.dates ? '<div class="muted" style="margin-top:10px"><b>Сроки:</b> '+escapeHtml(p.dates)+'</div>' : '';
@@ -91,6 +100,14 @@ function renderPrograms() {
       '</div>'+
     '</article>';
   }).join('');
+
+  // Entrance motion only on the initial catalog load. Search/filter updates stay instant.
+  if (programRenderCount > 1) {
+    grid.querySelectorAll('.card').forEach(card => {
+      card.classList.add('pm-reveal','pm-in','pm-done');
+      card.style.transitionDelay = '0ms';
+    });
+  }
 }
 
 async function initPrograms() {
@@ -113,7 +130,7 @@ async function initPrograms() {
       o.value = t; o.textContent = t; select.appendChild(o);
     });
 
-    document.getElementById('programSearch').oninput = renderPrograms;
+    document.getElementById('programSearch').oninput = scheduleProgramRender;
     select.onchange = renderPrograms;
     renderPrograms();
     clearInterval(programRefreshTimer);
