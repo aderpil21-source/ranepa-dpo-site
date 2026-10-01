@@ -147,7 +147,7 @@
     };
     try{
       await request({action:'newsSave',token,item});
-      try{localStorage.setItem('ranepa_site_settings_v5',JSON.stringify(payload));}catch(_){}
+      try{localStorage.setItem('ranepa_site_settings_v2',JSON.stringify(payload));}catch(_){}
       settings=payload;
       status('Сохранено','ok');
       setTimeout(()=>status(''),1600);
