@@ -1,0 +1,13 @@
+/* Motion WOW layer: premium motion without repaint-heavy background loops. */
+:root{--motion-ease:cubic-bezier(.22,1,.36,1)}
+@media (prefers-reduced-motion:no-preference){
+  .motion-reveal{opacity:0;transform:translate3d(0,28px,0) scale(.985)}
+  .motion-reveal.motion-in{opacity:1;transform:translate3d(0,0,0) scale(1);transition:opacity .72s var(--motion-ease),transform .82s var(--motion-ease)}
+  .program-card,.doc-card,.faq-item,.timeline-card{transform:translateZ(0);backface-visibility:hidden}
+  .program-card:hover,.doc-card:hover{transform:translate3d(0,-6px,0) scale(1.008)!important}
+  .shape{animation:none!important;filter:blur(90px)!important;will-change:auto!important}
+  .bg-tag{animation:none!important;will-change:auto!important}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
