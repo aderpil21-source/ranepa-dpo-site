@@ -1,0 +1,31 @@
+/* Premium Motion — lightweight shared layer for internal pages */
+:root{--pm-ease:cubic-bezier(.22,1,.36,1);--pm-fast:420ms;--pm-med:620ms;--pm-slow:760ms}
+@media (prefers-reduced-motion:no-preference){
+  .pm-reveal{opacity:0;transform:translate3d(0,22px,0);transition:opacity var(--pm-med) var(--pm-ease),transform var(--pm-slow) var(--pm-ease)}
+  .pm-reveal.pm-from-left{transform:translate3d(-24px,0,0)}
+  .pm-reveal.pm-from-right{transform:translate3d(24px,0,0)}
+  .pm-reveal.pm-scale{transform:scale(.975)}
+  .pm-reveal.pm-in{opacity:1;transform:none}
+  .pm-reveal.pm-done{will-change:auto}
+  .pm-nav-in{animation:pmNavIn 560ms var(--pm-ease) both}
+  @keyframes pmNavIn{from{opacity:0;transform:translate3d(0,-10px,0)}to{opacity:1;transform:none}}
+  .pm-title-line{display:block;width:min(132px,28vw);height:2px;margin:16px 0 0;overflow:hidden;border-radius:999px;background:color-mix(in srgb,currentColor 10%,transparent);transform-origin:left}
+  .pm-title-line:after{content:"";display:block;width:100%;height:100%;background:linear-gradient(90deg,#CA0F3E,#ff5f61);transform:scaleX(0);transform-origin:left;transition:transform 820ms var(--pm-ease)}
+  .pm-title-line.pm-in:after{transform:scaleX(1)}
+  .pm-lift{position:relative;isolation:isolate;transform:translateZ(0);transition:transform var(--pm-fast) var(--pm-ease),box-shadow var(--pm-fast) var(--pm-ease),border-color var(--pm-fast) ease}
+  @media (hover:hover) and (pointer:fine){
+    .pm-lift:hover{transform:translate3d(0,-4px,0)}
+    .pm-sheen{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(320px circle at var(--pm-x,50%) var(--pm-y,50%),rgba(255,255,255,.16),rgba(202,15,62,.055) 32%,transparent 67%);transition:opacity 180ms ease}
+    .pm-lift:hover>.pm-sheen{opacity:1}
+    .pm-lift>*:not(.pm-sheen){position:relative;z-index:1}
+  }
+  .page-nav a,.audience-nav a,.topbar a,.back-btn{transition:transform 260ms var(--pm-ease),opacity 260ms ease}
+  @media (hover:hover) and (pointer:fine){
+    .page-nav a:hover,.audience-nav a:hover,.topbar a:hover,.back-btn:hover{transform:translate3d(0,-2px,0)}
+  }
+  .faq-item[open]{transform:none!important}
+}
+@media (prefers-reduced-motion:reduce){
+  .pm-reveal{opacity:1!important;transform:none!important}
+  .pm-title-line:after{transform:none!important}
+}
