@@ -258,17 +258,26 @@ async function askOwlAI(message) {
         const failures = owlRegisterUnresolved();
         const escalation = owlBrainConfig().escalation || {};
         if (failures >= Number(escalation.humanHandoffAfter || 4)) {
-            showOwlHumanHandoff('repeated');
+            addBotMsg(
+                currentLang === 'ru'
+                    ? 'Расширенный ответ несколько раз не загрузился. Я не буду показывать контактные данные без вашего запроса.'
+                    : 'The extended answer failed several times. I will not show contact details unless you ask for them.'
+            );
+            setOptions(
+                '<button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Каталог программ</button>' +
+                '<button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Показать контакты сотрудников</button>' +
+                '<button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>'
+            );
         } else {
             addBotMsg(
                 currentLang === 'ru'
-                    ? 'Сейчас не удалось получить расширенный ответ. Я могу попробовать помочь через каталог или передать вас сотруднику Центра.'
-                    : 'I could not get an extended answer right now. I can use the catalog or connect you with the Center staff.'
+                    ? 'Сейчас не удалось получить расширенный ответ. Попробую помочь через каталог.'
+                    : 'I could not get an extended answer right now. I can use the catalog instead.'
             );
             if (failures >= Number(escalation.softOfferAfter || 2)) {
                 setOptions(
                     '<button class="chat-opt-btn" onclick="offerAllPrograms(true)">📚 Каталог программ</button>' +
-                    owlContactOptions()
+                    '<button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Показать контакты сотрудников</button>'
                 );
             } else {
                 offerAllPrograms(true);
@@ -2010,8 +2019,17 @@ function owlIsExplicitStaffRequest(query) {
 
 function owlStaffContextRequested(query) {
     const q = owlSmartNormalize(query);
-    return /\b(он|она|ее|её|его|ней|нем|нём|такая|такой|этот человек|эта сотрудница|этот сотрудник)\b/i.test(q) ||
-        /^(кто такая|кто такой|кто это|а телефон|а номер|а почта|а email|а кабинет)/i.test(q);
+    if (!q) return false;
+
+    const refersBack =
+        /(?:^|\s)(?:он|она|ее|её|его|ней|нем|нём|такая|такой)(?:\s|$)/i.test(q) ||
+        /(?:этот человек|эта сотрудница|этот сотрудник)/i.test(q) ||
+        /^(?:кто такая|кто такой|кто это|а телефон|а номер|а почта|а email|а кабинет)/i.test(q);
+
+    // Местоимение относится к сотруднику только если сотрудник уже был
+    // подтверждён контекстом разговора. "Для кого она?" после списка программ
+    // не должно превращаться в поиск контактов.
+    return refersBack && !!owlConversationState.lastStaffKey;
 }
 
 function owlFindStaffMatches(query) {
@@ -2654,7 +2672,7 @@ function resolveOwlLocally(query) {
         return {
             handled: true,
             html: 'Расписание можно открыть прямо здесь, не выходя из чата.',
-            options: '<button class="chat-opt-btn" onclick="showSchedule()">📅 Открыть расписание</button>' + owlContactOptions(),
+            options: '<button class="chat-opt-btn" onclick="showSchedule()">📅 Открыть расписание</button><button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
             intent: 'schedule'
         };
     }
@@ -2662,8 +2680,8 @@ function resolveOwlLocally(query) {
     if (owlIntent('enroll', query) && !facets.length) {
         return {
             handled: true,
-            html: 'Помогу с записью. Можно сразу открыть форму записи или связаться с сотрудником, если нужна консультация.',
-            options: '<button class="chat-opt-btn" onclick="openModal()">✍️ Записаться на обучение</button>' + owlContactOptions(),
+            html: 'Помогу с записью. Можно сразу открыть форму записи. Контакты сотрудников покажу только если вы их попросите.',
+            options: '<button class="chat-opt-btn" onclick="openModal()">✍️ Записаться на обучение</button><button class="chat-opt-btn" onclick="showOwlHumanHandoff(\'manual\')">👤 Показать контакты сотрудников</button><button class="chat-opt-btn" onclick="resetMenu()">← В меню</button>',
             intent: 'enroll'
         };
     }
