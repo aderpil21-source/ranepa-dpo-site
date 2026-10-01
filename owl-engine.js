@@ -1596,11 +1596,39 @@ function owlTopicTokens(query) {
         .filter(word => word.length >= 4 && !generic.has(word));
 }
 
+function owlTopicConcepts(token) {
+    const word = owlSmartNormalize(token);
+    if (!word) return [];
+
+    // Семантические семейства: разные бытовые формулировки должны
+    // сопоставляться с официальными названиями программ.
+    const families = [
+        { test:/^(гос)?закуп|контрактн|44.?фз|223.?фз/, words:['закуп','госзакуп','контрактн','44-фз','223-фз'] },
+        { test:/бухгал|бухуч|учет|учетн/, words:['бухгал','бухуч','учет'] },
+        { test:/кадр|персонал|hr/, words:['кадр','персонал','hr'] },
+        { test:/охран.*труд|безопасн.*труд/, words:['охран труда','безопасн труда'] },
+        { test:/пожар|пож.*безопасн/, words:['пожар','пожарн безопасн'] },
+        { test:/тамож|экспорт|импорт|вэд/, words:['тамож','экспорт','импорт','вэд'] },
+        { test:/туризм|гостини|отел|horeca/, words:['туризм','гостини','отел','horeca'] },
+        { test:/нейросет|искусствен.*интеллект|(^|\s)ии($|\s)/, words:['нейросет','искусствен интеллект','ии'] }
+    ];
+
+    const family = families.find(item => item.test.test(word));
+    return family ? Array.from(new Set([word].concat(family.words))) : [word];
+}
+
 function owlLooseWordMatch(a, b) {
     if (!a || !b) return false;
     if (a === b || a.includes(b) || b.includes(a)) return true;
     if (a.length >= 5 && b.length >= 5 && a.slice(0,5) === b.slice(0,5)) return true;
     return false;
+}
+
+function owlConceptMatchesWords(concepts, words) {
+    return concepts.some(concept => {
+        const conceptWords = owlWords(concept);
+        return conceptWords.every(part => words.some(word => owlLooseWordMatch(part, word)));
+    });
 }
 
 function owlFindProgramsByTopic(query, limit) {
@@ -1614,30 +1642,47 @@ function owlFindProgramsByTopic(query, limit) {
             const descWords = owlWords(
                 (program.desc_ru || '') + ' ' +
                 (program.long_desc_ru || '') + ' ' +
+                (program.official_desc_ru || '') + ' ' +
                 (Array.isArray(program.bullets_ru) ? program.bullets_ru.join(' ') : '') + ' ' +
+                (program.topics_ru || '') + ' ' +
                 (program.sector || '')
             );
             let score = 0;
             let titleHits = 0;
+            let bodyHits = 0;
 
             tokens.forEach(token => {
-                if (titleWords.some(word => owlLooseWordMatch(token, word))) {
-                    score += 7;
+                const concepts = owlTopicConcepts(token);
+                if (owlConceptMatchesWords(concepts, titleWords)) {
+                    score += 10;
                     titleHits += 1;
-                } else if (descWords.some(word => owlLooseWordMatch(token, word))) {
-                    score += 2;
+                } else if (owlConceptMatchesWords(concepts, descWords)) {
+                    score += 3;
+                    bodyHits += 1;
                 }
             });
 
-            return { program, score, titleHits };
+            return { program, score, titleHits, bodyHits };
         })
         .filter(item => item.score > 0)
         .sort((a,b) => (b.titleHits - a.titleHits) || (b.score - a.score));
 
-    const hasTitleHits = ranked.some(item => item.titleHits > 0);
-    const filtered = hasTitleHits
-        ? ranked.filter(item => item.titleHits > 0)
+    if (!ranked.length) return [];
+
+    // Если тема найдена прямо в названии, описание больше не имеет права
+    // подтягивать посторонние программы. Иначе оставляем только кандидатов,
+    // близких к лучшему результату, вместо искусственного заполнения списка.
+    const bestTitleHits = ranked[0].titleHits;
+    let filtered = bestTitleHits > 0
+        ? ranked.filter(item => item.titleHits === bestTitleHits)
         : ranked;
+
+    const bestScore = filtered.length ? filtered[0].score : 0;
+    const minRelevantScore = bestTitleHits > 0
+        ? Math.max(7, bestScore * 0.70)
+        : Math.max(3, bestScore * 0.72);
+
+    filtered = filtered.filter(item => item.score >= minRelevantScore);
 
     return filtered
         .slice(0, limit || 8)
