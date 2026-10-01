@@ -9,21 +9,21 @@
     const style=document.createElement('style');
     style.textContent=`
       .students-owl-system{
-        position:fixed;right:-12px;bottom:0;z-index:14500;width:500px;height:390px;
+        position:fixed;right:-6px;bottom:0;z-index:14500;width:350px;height:270px;
         pointer-events:none;transform-origin:bottom right;
-        transition:transform .4s cubic-bezier(.2,.8,.2,1);
+        transition:transform .4s cubic-bezier(.2,.8,.2,1),right .25s ease,bottom .25s ease;
       }
-      .students-owl-system.scroll-mini{transform:scale(.65)}
+      .students-owl-system.scroll-mini{transform:scale(.82)}
       .students-owl-branch{
-        position:absolute;bottom:7px;right:-26px;width:535px;height:auto;
-        filter:drop-shadow(0 28px 34px rgba(0,0,0,.78));pointer-events:none;
+        position:absolute;bottom:5px;right:-18px;width:365px;height:auto;
+        filter:drop-shadow(0 18px 24px rgba(0,0,0,.7));pointer-events:none;
       }
       .students-owl-hit{
-        position:absolute;bottom:50px;left:0;width:100%;height:235px;border:0;padding:0;
+        position:absolute;bottom:34px;left:0;width:100%;height:170px;border:0;padding:0;
         background:transparent;cursor:pointer;pointer-events:auto;z-index:2;overflow:visible;
       }
       .students-owl-media-stage{
-        position:absolute;left:var(--owl-start-left,6px);bottom:-6px;width:390px;height:260px;
+        position:absolute;left:var(--owl-start-left,4px);bottom:-4px;width:260px;height:180px;
         pointer-events:none;overflow:visible;transform-origin:50% 100%;
         animation:studentsOwlBranchGlide 11s cubic-bezier(.42,0,.58,1) infinite;
         will-change:transform;
@@ -34,7 +34,7 @@
         94%,100%{transform:translate3d(0,0,0)}
       }
       .students-owl-media-stage::after{
-        content:"";position:absolute;left:50%;bottom:5px;width:132px;height:18px;
+        content:"";position:absolute;left:50%;bottom:4px;width:92px;height:12px;
         transform:translateX(-50%) scaleX(.96);border-radius:50%;
         background:radial-gradient(ellipse at center,rgba(0,0,0,.34) 0%,rgba(0,0,0,.18) 42%,rgba(0,0,0,.06) 62%,rgba(0,0,0,0) 78%);
         filter:blur(5px);opacity:.62;pointer-events:none;
@@ -50,7 +50,7 @@
         68%{opacity:.66;filter:blur(4.5px)}
       }
       .students-owl-frame{
-        position:absolute;left:50%;bottom:0;width:168px;height:224px;object-fit:contain;
+        position:absolute;left:50%;bottom:0;width:118px;height:158px;object-fit:contain;
         transform:translateX(-50%);pointer-events:none;user-select:none;-webkit-user-drag:none;
         filter:drop-shadow(0 22px 26px rgba(0,0,0,.48)) drop-shadow(0 8px 10px rgba(0,0,0,.30)) drop-shadow(0 2px 2px rgba(255,255,255,.08));
         animation:studentsOwlBreath 7.3s ease-in-out infinite,studentsOwlDepth 11.7s ease-in-out infinite;
@@ -70,13 +70,34 @@
       .students-owl-bubble{
         position:absolute;bottom:92%;left:50%;transform:translateX(-50%) scale(.5);
         background:var(--glass,var(--card,rgba(17,24,39,.86)));backdrop-filter:blur(15px);
-        color:var(--text,#f8fafc);padding:12px 18px;border-radius:20px 20px 20px 0;
-        font:800 .9rem Montserrat,Arial,sans-serif;box-shadow:0 15px 30px rgba(0,0,0,.36);
+        color:var(--text,#f8fafc);padding:9px 13px;border-radius:16px 16px 16px 0;
+        font:800 .76rem Montserrat,Arial,sans-serif;box-shadow:0 15px 30px rgba(0,0,0,.36);
         opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
         border:1px solid #CA0F3E;white-space:nowrap;
       }
       .students-owl-bubble.show{opacity:1;transform:translateX(-50%) scale(1)}
       .students-owl-mobile-icon{display:none;width:30px;height:30px;fill:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+
+      .students-owl-visibility-toggle{
+        position:absolute;right:12px;bottom:92px;z-index:5;width:34px;height:34px;
+        display:grid;place-items:center;border-radius:50%;border:1px solid var(--border,rgba(255,255,255,.16));
+        background:var(--glass,var(--card,rgba(10,15,28,.88)));color:var(--text,#f8fafc);
+        box-shadow:0 8px 22px rgba(2,6,23,.28);backdrop-filter:blur(12px);
+        cursor:pointer;pointer-events:auto;font:900 20px/1 system-ui;transition:.2s ease;
+      }
+      .students-owl-visibility-toggle:hover{transform:translateY(-2px);border-color:rgba(202,15,62,.58)}
+      .students-owl-toggle-arrow{display:block;transform:translateX(-1px);transition:transform .2s ease}
+      .students-owl-system.owl-user-hidden .students-owl-branch,
+      .students-owl-system.owl-user-hidden .students-owl-hit{display:none!important}
+      .students-owl-system.owl-user-hidden{
+        width:48px;height:48px;right:10px;bottom:10px;transform:none!important;
+      }
+      .students-owl-system.owl-user-hidden .students-owl-visibility-toggle{
+        position:fixed;right:14px;bottom:14px;
+      }
+      .students-owl-system.owl-user-hidden .students-owl-toggle-arrow{
+        transform:rotate(180deg) translateX(-1px);
+      }
       .students-owl-shell{
         position:fixed;right:10px;bottom:8px;z-index:16000;width:min(820px,calc(100vw - 20px));
         height:min(860px,calc(100vh - 16px));display:none;overflow:hidden;border-radius:24px;
@@ -95,6 +116,8 @@
       @media(max-width:768px){
         .students-owl-system{right:0;bottom:0;width:auto;height:auto;transform:none!important}
         .students-owl-branch,.students-owl-media-stage,.students-owl-bubble{display:none!important}
+        .students-owl-visibility-toggle{position:fixed;right:max(31px,calc(env(safe-area-inset-right) + 31px));bottom:max(88px,calc(env(safe-area-inset-bottom) + 88px));width:32px;height:32px;font-size:18px}
+        .students-owl-system.owl-user-hidden .students-owl-visibility-toggle{right:14px;bottom:max(14px,env(safe-area-inset-bottom))}
         .students-owl-hit{
           position:fixed;bottom:max(18px,env(safe-area-inset-bottom));right:max(18px,env(safe-area-inset-right));
           left:auto;width:62px;height:62px;border-radius:50%;overflow:hidden;
@@ -127,6 +150,7 @@
         <path d="M135 55 q 8 -26 24 -36 q -4 20 -10 40 Z" fill="url(#studentsBarkGrad)"/>
         <path d="M345 46 q -8 -22 -22 -30 q 4 18 10 34 Z" fill="url(#studentsBarkGrad)"/>
       </svg>
+      <button class="students-owl-visibility-toggle" type="button" aria-label="Скрыть сову" title="Скрыть сову" aria-pressed="false" data-system-ui="owl" data-site-admin-protected="true"><span class="students-owl-toggle-arrow">‹</span></button>
       <button class="students-owl-hit" type="button" aria-label="Открыть цифрового ассистента Сову">
         <span class="students-owl-bubble">Нужна помощь с выбором программы?</span>
         <span class="students-owl-media-stage" aria-hidden="true">
@@ -144,14 +168,34 @@
     shell.innerHTML='<button class="students-owl-close" type="button" aria-label="Закрыть Сову">×</button><iframe class="students-owl-frame-shell" title="Цифровой ассистент Сова" loading="lazy"></iframe>';
 
     const hit=system.querySelector('.students-owl-hit');
+    const visibilityToggle=system.querySelector('.students-owl-visibility-toggle');
     const bubble=system.querySelector('.students-owl-bubble');
     const stage=system.querySelector('.students-owl-media-stage');
     const frame=shell.querySelector('iframe');
 
     function updateTravel(){
       if(!stage || window.matchMedia('(max-width:768px)').matches) return;
-      const distance=Math.max(0,500-stage.offsetWidth-12);
+      const distance=Math.max(0,system.clientWidth-stage.offsetWidth-8);
       stage.style.setProperty('--owl-travel-x',Math.round(distance)+'px');
+    }
+
+    const OWL_VISIBILITY_KEY='ranepa_owl_hidden_v1';
+
+    function applyVisibilityPreference(){
+      let hidden=false;
+      try{hidden=localStorage.getItem(OWL_VISIBILITY_KEY)==='1';}catch(_){}
+      system.classList.toggle('owl-user-hidden',hidden);
+      visibilityToggle.setAttribute('aria-pressed',hidden?'true':'false');
+      visibilityToggle.setAttribute('aria-label',hidden?'Показать сову':'Скрыть сову');
+      visibilityToggle.setAttribute('title',hidden?'Показать сову':'Скрыть сову');
+      if(hidden) bubble.classList.remove('show');
+    }
+
+    function toggleVisibility(event){
+      if(event){event.preventDefault();event.stopPropagation();}
+      const hidden=!system.classList.contains('owl-user-hidden');
+      try{localStorage.setItem(OWL_VISIBILITY_KEY,hidden?'1':'0');}catch(_){}
+      applyVisibilityPreference();
     }
 
     function open(){
@@ -188,12 +232,13 @@
       system.style.display='';
     }
 
+    visibilityToggle.addEventListener('click',toggleVisibility);
     hit.addEventListener('click',open);
     shell.querySelector('.students-owl-close').addEventListener('click',close);
     document.addEventListener('keydown',event=>{if(event.key==='Escape'&&shell.classList.contains('active')) close();});
 
     let bubbleTimer=setInterval(()=>{
-      if(shell.classList.contains('active')||document.hidden) return;
+      if(shell.classList.contains('active')||document.hidden||system.classList.contains('owl-user-hidden')) return;
       bubble.classList.toggle('show');
     },5000);
 
@@ -207,6 +252,7 @@
     },{passive:true});
 
     window.addEventListener('resize',updateTravel,{passive:true});
+    applyVisibilityPreference();
     updateTravel();
     document.body.append(system,shell);
   }
