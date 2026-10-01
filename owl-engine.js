@@ -128,17 +128,40 @@ function owlRecentConversationContext() {
 
 const OWL_AI_ENDPOINT = 'https://functions.yandexcloud.net/d4eatbt80ae5r5402i3g';
 let owlAiRequestInFlight = false;
+const owlPendingUserMessages = [];
+let owlQueuedDispatchScheduled = false;
+
+function owlDispatchNextQueuedMessage() {
+    if (owlAiRequestInFlight || owlQueuedDispatchScheduled || !owlPendingUserMessages.length) return;
+    owlQueuedDispatchScheduled = true;
+    queueMicrotask(() => {
+        owlQueuedDispatchScheduled = false;
+        if (owlAiRequestInFlight || !owlPendingUserMessages.length) return;
+        const next = owlPendingUserMessages.shift();
+        handleUserMessage(next, true);
+    });
+}
 
 function setOwlAiBusy(busy) {
     owlAiRequestInFlight = !!busy;
     const input = document.getElementById('chatUserInput');
     const button = document.querySelector('.chat-send-btn');
-    if (input) input.disabled = !!busy;
-    if (button) {
-        button.disabled = !!busy;
-        button.style.opacity = busy ? '.55' : '';
-        button.style.cursor = busy ? 'wait' : '';
+
+    // Поле и кнопка больше не блокируются, пока Сова отвечает.
+    // Новое сообщение сразу появляется в чате и при необходимости становится
+    // в короткую очередь, вместо того чтобы первый клик/Enter игнорировался.
+    if (input) {
+        input.disabled = false;
+        input.setAttribute('aria-busy', busy ? 'true' : 'false');
     }
+    if (button) {
+        button.disabled = false;
+        button.style.opacity = '';
+        button.style.cursor = '';
+        button.setAttribute('aria-busy', busy ? 'true' : 'false');
+    }
+
+    if (!busy) owlDispatchNextQueuedMessage();
 }
 
 async function askOwlAI(message) {
@@ -411,21 +434,32 @@ async function owlApplyLearnedRule(rule, currentQuery) {
 
 let owlLastSubmit = { text:'', at:0 };
 
-async function handleUserMessage() {
+async function handleUserMessage(messageOverride, alreadyRendered) {
     const input = document.getElementById('chatUserInput');
-    if (owlAiRequestInFlight) return;
-    const originalText = input.value.trim();
+    const hasOverride = typeof messageOverride === 'string';
+    const originalText = (hasOverride ? messageOverride : (input ? input.value : '')).trim();
     if (!originalText) return;
 
-    const now = Date.now();
-    if (owlLastSubmit.text === originalText && now - owlLastSubmit.at < 1200) {
-        input.value = '';
+    if (!alreadyRendered) {
+        const now = Date.now();
+        if (owlLastSubmit.text === originalText && now - owlLastSubmit.at < 700) {
+            if (input) input.value = '';
+            return;
+        }
+        owlLastSubmit = { text:originalText, at:now };
+
+        // Отправка для пользователя происходит сразу: сначала рисуем его
+        // сообщение и очищаем поле, затем уже выполняем поиск/ИИ.
+        addUserMsg(originalText);
+        if (input) input.value = '';
+    }
+
+    // Если предыдущий ответ ещё формируется, не теряем нажатие Enter/кнопки.
+    // Сообщение уже видно пользователю и будет обработано сразу следующим.
+    if (owlAiRequestInFlight) {
+        owlPendingUserMessages.push(originalText);
         return;
     }
-    owlLastSubmit = { text:originalText, at:now };
-
-    addUserMsg(originalText);
-    input.value = '';
 
     // Обычный режим зависит от локального каталога. Если пользователь успел
     // спросить раньше окончания фоновой загрузки, дожидаемся/повторяем её,
@@ -713,7 +747,7 @@ return;
         .sort((a, b) => b.score - a.score)
         .slice(0, 4);
 
-    setTimeout(() => {
+    queueMicrotask(() => {
         const lead = scored[0] || null;
         const runnerUp = scored[1] || null;
         const confidentLead = !!lead && lead.score >= 0.72 && (!runnerUp || lead.score - runnerUp.score >= 0.16);
@@ -742,7 +776,7 @@ return;
                 setOptions(owlGuidedFallbackOptions());
             }
         }
-    }, 450);
+    });
 }
 
 function showProgramDetailsById(id) {
@@ -896,7 +930,11 @@ function removeOwlThinking() {
     const thinking = document.getElementById('owlThinkingMsg');
     if (thinking) thinking.remove();
 }
-function scrollToBottom() { setTimeout(() => { chatBody.scrollTop = chatBody.scrollHeight; }, 100); }
+function scrollToBottom() {
+    if (!chatBody) return;
+    chatBody.scrollTop = chatBody.scrollHeight;
+    requestAnimationFrame(() => { chatBody.scrollTop = chatBody.scrollHeight; });
+}
 function setOptions(html) {
     chatOptions.innerHTML = html;
     if (typeof applySiteVisibility === 'function') {
@@ -2872,9 +2910,8 @@ function resolveOwlLocally(query) {
 async function presentOwlLocal(result, query) {
     if (!result || !result.handled) return false;
     setOwlAiBusy(true);
-    showOwlThinking();
-    const delay = Math.min(720, 260 + String(query || '').length * 5 + Math.floor(Math.random() * 140));
-    await new Promise(resolve => setTimeout(resolve, delay));
+    // Для локальных ответов больше нет искусственной паузы "на размышление":
+    // результат уже вычислен, поэтому показываем его немедленно.
     removeOwlThinking();
     addBotMsg(result.html || '');
     if (result.options) setOptions(result.options);
