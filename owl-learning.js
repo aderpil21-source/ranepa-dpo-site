@@ -9,6 +9,8 @@
     const MAX_RULES = 240;
     const MAX_QUEUE = 120;
     const MAX_TEXT = 180;
+    const FLUSH_DEBOUNCE_MS = 1200;
+    let flushTimer = null;
 
     function normalize(value) {
         return String(value || '')
@@ -381,6 +383,14 @@
         const list = Array.isArray(queue) ? queue : [];
         list.push(item);
         writeJson(LEARNING_QUEUE_KEY, list.slice(-MAX_QUEUE));
+
+        // Отправляем только уже обезличенные события и не блокируем ответ пользователю.
+        if (String(window.OWL_LEARNING_ENDPOINT || '').trim()) {
+            if (flushTimer) clearTimeout(flushTimer);
+            flushTimer = setTimeout(() => {
+                flush().catch(() => {});
+            }, FLUSH_DEBOUNCE_MS);
+        }
     }
 
     function getQueue() {
@@ -426,6 +436,15 @@
             return { ok: false, reason: e && e.name ? e.name : 'network' };
         }
     }
+
+    window.addEventListener('online', () => {
+        if (String(window.OWL_LEARNING_ENDPOINT || '').trim()) flush().catch(() => {});
+    });
+
+    window.addEventListener('pagehide', () => {
+        // Очередь уже сохранена в localStorage; на следующем открытии повторим отправку.
+        if (flushTimer) clearTimeout(flushTimer);
+    });
 
     window.OwlLearning = {
         normalize,
