@@ -29,3 +29,47 @@
   .pm-reveal{opacity:1!important;transform:none!important}
   .pm-title-line:after{transform:none!important}
 }
+
+/* ===== Premium page-specific microinteractions ===== */
+@media (prefers-reduced-motion:no-preference){
+  .toolbar input,
+  .toolbar select,
+  .material-lookup input{
+    transition:border-color 220ms ease,box-shadow 220ms ease,transform 220ms var(--pm-ease);
+  }
+  .toolbar input:focus,
+  .toolbar select:focus,
+  .material-lookup input:focus{
+    transform:translate3d(0,-1px,0);
+  }
+
+  .audience-card .icon{
+    transition:transform 360ms var(--pm-ease),background 260ms ease,border-color 260ms ease;
+    transform:translateZ(0);
+  }
+  .audience-card .action,
+  .card .button,
+  .side-card .cta,
+  .side-card .secondary{
+    transition:transform 240ms var(--pm-ease),box-shadow 240ms ease,filter 240ms ease!important;
+  }
+  .payment-card-qr .payment-qr-art{
+    transition:transform 420ms var(--pm-ease);
+    transform:translateZ(0);
+  }
+
+  @media (hover:hover) and (pointer:fine){
+    .audience-card:hover .icon{transform:translate3d(0,-3px,0) scale(1.055)}
+    .audience-card .action:hover,
+    .card .button:hover,
+    .side-card .cta:hover,
+    .side-card .secondary:hover{transform:translate3d(0,-2px,0)}
+    .payment-card-qr:hover .payment-qr-art{transform:scale(1.025)}
+  }
+
+  .audience-hero .audience-kicker,
+  .audience-hero h1,
+  .audience-hero p{
+    transition:opacity var(--pm-med) var(--pm-ease),transform var(--pm-slow) var(--pm-ease);
+  }
+}
