@@ -48,7 +48,7 @@ function boot(){
   document.documentElement.classList.add('pm-ready');
   document.querySelectorAll('.page-nav a,.audience-nav a,.topbar a,.back-btn').forEach((el,i)=>{el.classList.add('pm-nav-in');el.style.animationDelay=Math.min(i*32,224)+'ms'});
   titleLine();scan();
-  let raf=0;const mo=new MutationObserver(ms=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;for(const m of ms)for(const n of m.addedNodes)if(n.nodeType===1){reveal(n,0);scan(n)}})});mo.observe(document.body,{childList:true,subtree:true});
+  let raf=0;const mo=new MutationObserver(ms=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;for(const m of ms){if(m.type==='attributes'){if(!m.target.hidden)scan(m.target);continue}for(const n of m.addedNodes)if(n.nodeType===1){if(n.matches?.(selectors))reveal(n,0);if(n.matches?.('.contact-card,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.news-card,.grid > *,.schedule-list > *'))enhanceLift(n);scan(n)}}})});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
