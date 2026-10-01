@@ -1877,6 +1877,29 @@ function owlFindStaffMatches(query) {
     const qWords = q.split(' ').filter(word => word.length >= 3);
     const staff = owlCollectStaffContacts();
 
+    // Карточки сотрудников не должны перехватывать предметные запросы о программах.
+    // Ищем человека только когда пользователь действительно спрашивает о сотруднике/
+    // контакте либо вводит имя/фамилию, а не при случайном fuzzy-совпадении слова.
+    const explicitStaffIntent =
+        owlStaffContextRequested(query) ||
+        /\b(сотрудник|преподавател|директор|заместител|руководител|специалист|методист|контакт|телефон|номер|почт|email|кабинет|кто такая|кто такой|как связат|кому написат|кому позвон)\w*/i.test(q);
+
+    const hasNameEvidence = staff.some(person => {
+        const surname = person.nameParts[0] || '';
+        const first = person.nameParts[1] || '';
+        return qWords.some(word =>
+            (surname && word.length >= 4 && owlFuzzyStaffWord(word, surname)) ||
+            (first && word.length >= 4 && owlFuzzyStaffWord(word, first))
+        );
+    });
+
+    const programIntent =
+        owlIntent('programs', query) ||
+        /\b(программ|курс|обучен|повысить квалификац|переподготов|что.*посмотреть|что.*подобрать|подбери|посоветуй)\w*/i.test(q);
+
+    if (programIntent && !explicitStaffIntent && !hasNameEvidence) return [];
+    if (!explicitStaffIntent && !hasNameEvidence) return [];
+
     if (owlStaffContextRequested(query) && owlConversationState.lastStaffKey) {
         const contextual = owlStaffByKey(owlConversationState.lastStaffKey);
         if (contextual) return [contextual];
