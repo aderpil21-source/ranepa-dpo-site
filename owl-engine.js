@@ -418,6 +418,27 @@ async function handleUserMessage() {
     addUserMsg(originalText);
     input.value = '';
 
+    // Обычный режим зависит от локального каталога. Если пользователь успел
+    // спросить раньше окончания фоновой загрузки, дожидаемся/повторяем её,
+    // вместо того чтобы оборвать обработчик без ответа.
+    if (!Array.isArray(globalPrograms) || !globalPrograms.length) {
+        try {
+            if (typeof fetchPrograms === 'function') await fetchPrograms();
+        } catch (catalogLoadError) {
+            console.warn('Owl catalog readiness fallback:', catalogLoadError);
+        }
+    }
+
+    if (!Array.isArray(globalPrograms) || !globalPrograms.length) {
+        addBotMsg(
+            currentLang === 'ru'
+                ? 'Каталог программ сейчас не успел загрузиться. Попробуйте повторить вопрос через несколько секунд — я не буду подбирать случайный вариант.'
+                : 'The program catalog has not finished loading yet. Please repeat the question in a few seconds.'
+        );
+        setOptions(owlGuidedFallbackOptions());
+        return;
+    }
+
     let text = originalText;
 
     // Критичные FAQ сайта обрабатываем раньше обучаемых правил.
