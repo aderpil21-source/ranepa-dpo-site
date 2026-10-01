@@ -341,6 +341,9 @@ async function owlApplyLearnedRule(rule) {
     if (!rule || !rule.action) return false;
 
     if (rule.action === 'staff') {
+        // Learned mappings may never reveal staff/contact data without an explicit request in the current message.
+        const currentQuery = (document.getElementById('chatUserInput') && document.getElementById('chatUserInput').value) || '';
+        if (!owlIsExplicitStaffRequest(currentQuery)) return false;
         const person = owlStaffByKey(rule.value);
         if (!person) return false;
         owlRememberStaff(person);
@@ -1921,12 +1924,14 @@ function owlFindStaffMatches(query) {
         owlStaffContextRequested(query) ||
         /\b(сотрудник|преподавател|директор|заместител|руководител|специалист|методист|контакт|телефон|номер|почт|email|кабинет|кто такая|кто такой|как связат|кому написат|кому позвон)\w*/i.test(q);
 
+    // Имя само по себе считается явным запросом только при достаточно точном
+    // совпадении с ФИО, а не по fuzzy-совпадению любого слова фразы.
     const hasNameEvidence = staff.some(person => {
         const surname = person.nameParts[0] || '';
         const first = person.nameParts[1] || '';
         return qWords.some(word =>
-            (surname && word.length >= 4 && owlFuzzyStaffWord(word, surname)) ||
-            (first && word.length >= 4 && owlFuzzyStaffWord(word, first))
+            (surname && word.length >= 4 && (word === surname || surname.startsWith(word) || word.startsWith(surname))) ||
+            (first && word.length >= 4 && word === first)
         );
     });
 
@@ -2058,6 +2063,8 @@ function owlStaffAnswer(person, query) {
 }
 
 function owlResolveStaff(query) {
+    // Privacy/UX guard: never surface a person or contact unless the user explicitly asks for staff/contact information.
+    if (!owlIsExplicitStaffRequest(query)) return null;
     const matches = owlFindStaffMatches(query);
     if (!matches.length) return null;
 
