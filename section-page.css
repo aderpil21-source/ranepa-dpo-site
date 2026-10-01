@@ -1225,3 +1225,45 @@ body::after{
 
 /* Programs must appear immediately after data arrives: no reveal delay. */
 #programGrid .card{animation:none !important;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease !important;}
+
+/* ===== Performance motion reset: premium-motion.js owns animation ===== */
+.section-motion-lite body::before,
+.section-motion-lite body::after{
+  animation:none!important;
+  transform:none!important;
+  will-change:auto!important;
+}
+.section-motion-lite .page-header,
+.section-motion-lite .page-kicker,
+.section-motion-lite .page-title,
+.section-motion-lite .page-lead,
+.section-motion-lite .back-link,
+.section-motion-lite .toolbar{
+  transform:none!important;
+  will-change:auto!important;
+}
+.section-motion-lite .card,
+.section-motion-lite .lesson,
+.section-motion-lite .faq-item,
+.section-motion-lite .contact-card{
+  transform-style:flat!important;
+  perspective:none!important;
+}
+.section-motion-lite .card.depth-item,
+.section-motion-lite .lesson.depth-item,
+.section-motion-lite .faq-item.depth-item,
+.section-motion-lite .contact-card.depth-item,
+.section-motion-lite .card.tilt-active,
+.section-motion-lite .lesson.tilt-active,
+.section-motion-lite .contact-card.tilt-active{
+  opacity:1!important;
+  transform:none!important;
+}
+.section-motion-lite .toolbar::after,
+.section-motion-lite .panel::after,
+.section-motion-lite .lesson::after,
+.section-motion-lite .faq-item::after{
+  display:none!important;
+  animation:none!important;
+  transition:none!important;
+}
