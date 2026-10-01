@@ -425,6 +425,7 @@ let newsItems = [], adminToken = sessionStorage.getItem('newsAdminToken') || nul
 let vkState = { version:2, items:{} };
 let visitorPreview = false;
 let activeTagFilter = null, editingNewsId = null;
+let newsGridRenderCount = 0;
 let articleMedia = [], lightboxIndex = 0;
 let editorBlocks = [], editorTags = [], uploadJobs = [];
 let dragIndex = null, draftTimer = null;
@@ -1216,6 +1217,7 @@ function renderGrid(){
         return;
     }
 
+    newsGridRenderCount += 1;
     grid.innerHTML = items.map((n, index) => {
         const cb = (n.blocks || []).find(b => b.type === 'image' && !b.hidden && b.url);
         const cover = imageUrl(n.coverImage || (cb ? cb.url : ''));
@@ -1237,6 +1239,12 @@ function renderGrid(){
             <div class="news-card-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
         </div>`;
     }).join('');
+    if (newsGridRenderCount > 1) {
+        grid.querySelectorAll('.card').forEach(card => {
+            card.classList.add('pm-reveal','pm-in','pm-done');
+            card.style.transitionDelay = '0ms';
+        });
+    }
 }
 
 function showListView(){
