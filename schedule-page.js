@@ -3,6 +3,9 @@ const SCHEDULE_TIME_ZONE = 'Europe/Kaliningrad';
 const SCHEDULE_CUTOFF_HOUR = 21;
 let scheduleCutoffTimer = null;
 let schedulePollTimer = null;
+let scheduleRenderCount = 0;
+let scheduleRenderTimer = 0;
+function scheduleRenderDebounced(){ clearTimeout(scheduleRenderTimer); scheduleRenderTimer = setTimeout(renderSchedule, 85); }
 function scheduleKey(x){return 'schedule:'+[x?.id,x?.date,x?.time,x?.subject].map(v=>encodeURIComponent(String(v||'').trim())).join('|')}
 function mergeSchedule(base,custom){const o=new Map(),a=[];(custom||[]).forEach(x=>{if(!x)return;if(x.sourceKey){o.set(x.sourceKey,x);return}if(x.active===false||x.archived===true)return;a.push(x)});const out=[];(base||[]).forEach(x=>{const k=scheduleKey(x);if(o.has(k)){const ov=o.get(k);o.delete(k);if(ov.active===false||ov.archived===true)return;const y={...x,...ov};delete y.sourceKey;out.push(y)}else out.push(x)});o.forEach(x=>{if(x.active===false||x.archived===true)return;const y={...x};delete y.sourceKey;out.push(y)});return out.concat(a).sort((x,y)=>{const xo=Number.isFinite(Number(x&&x.cmsOrder))?Number(x.cmsOrder):null,yo=Number.isFinite(Number(y&&y.cmsOrder))?Number(y.cmsOrder):null;if(xo!==null&&yo!==null&&xo!==yo)return xo-yo;if(xo!==null&&yo===null)return -1;if(xo===null&&yo!==null)return 1;return 0})}
 async function loadProSchedule(){try{const r=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json(),s=d?.settings||{};return {v:s.visibility||{},c:Array.isArray(s.customSchedules)?s.customSchedules:[]}}catch(_){return {v:{},c:[]}}}
@@ -112,7 +115,14 @@ function renderSchedule() {
       '</div>'+
     '</article>';
   }
+  scheduleRenderCount += 1;
   list.innerHTML = html;
+  if (scheduleRenderCount > 1) {
+    list.querySelectorAll('.lesson,.schedule-day').forEach(el => {
+      el.classList.add('pm-reveal','pm-in','pm-done');
+      el.style.transitionDelay = '0ms';
+    });
+  }
 }
 
 async function loadScheduleSnapshot(silent) {
@@ -150,7 +160,7 @@ async function initSchedule() {
   const loaded = await loadScheduleSnapshot(false);
   if (!loaded) return;
 
-  document.getElementById('scheduleSearch').addEventListener('input', renderSchedule);
+  document.getElementById('scheduleSearch').addEventListener('input', scheduleRenderDebounced);
   document.getElementById('scheduleProgram').addEventListener('change', renderSchedule);
 
   scheduleNextCutoffRefresh();
