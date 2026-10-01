@@ -2356,7 +2356,7 @@
             }
         });
     </script>
-    <script src="./owl-learning.js?v=20260927-2"></script>
+    <script src="./owl-learning.js?v=20261001-3"></script>
     <script src="./owl-brain.js?v=20260927-4"></script>
     <script src="./portal-snapshot.js?v=20261001-1"></script>
 
@@ -2369,6 +2369,16 @@
     let API_URL;
     try { API_URL = atob(_p1.replace('eHh4','x')); } catch (e) { API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec'; }
     API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
+
+    // Общая обезличенная память Совы использует тот же серверный Apps Script.
+    // Если сервер ещё не поддерживает learn_context, owl-learning.js сохранит очередь локально
+    // и не потеряет накопленные события.
+    window.OWL_LEARNING_ENDPOINT = API_URL;
+    if (window.OwlLearning) {
+        setTimeout(() => {
+            window.OwlLearning.flush().catch(() => {});
+        }, 1500);
+    }
 
 
     // ===== PRO РЕЖИМ / ВИДИМОСТЬ + РЕДАКТИРОВАНИЕ ТЕКСТОВ =====
