@@ -563,9 +563,15 @@ return;
     }
 
     const hasFactQuestion = owlRequestedFacets(text).length > 0;
-    const hasStaffMatch = owlFindStaffMatches(text).length > 0;
+    const hardProgramDiscovery = owlIsProgramDiscoveryRequest(text);
+    const hardStaffRequest = owlIsExplicitStaffRequest(text);
+    if (hardProgramDiscovery && !hardStaffRequest) {
+        owlConversationState.lastStaffKey = null;
+        saveOwlConversationState();
+    }
+    const hasStaffMatch = !hardProgramDiscovery && owlFindStaffMatches(text).length > 0;
     const isProgramDiscovery =
-        owlIntent('programs', text) ||
+        hardProgramDiscovery ||
         /(^|\s)(что есть|что у вас есть|покажи|найди|подбери|варианты)(\s|$)/i.test(owlSmartNormalize(text));
 
     const topicResolution = (!hasFactQuestion && !hasStaffMatch && isProgramDiscovery)
@@ -1882,6 +1888,21 @@ function owlFuzzyStaffWord(queryWord, staffWord) {
         queryWord.slice(0, 5) === staffWord.slice(0, 5);
 }
 
+function owlIsProgramDiscoveryRequest(query) {
+    const q = owlSmartNormalize(query);
+    if (!q) return false;
+    return owlIntent('programs', query) ||
+        /\b(программ|курс|обучен|переподготов|квалификац)\w*/i.test(q) ||
+        /\b(подбери|подобрать|посоветуй|порекомендуй|рекомендуй|что\s+из\s+.*посмотреть|что\s+.*посмотреть|что\s+.*выбрать)\b/i.test(q);
+}
+
+function owlIsExplicitStaffRequest(query) {
+    const q = owlSmartNormalize(query);
+    if (!q) return false;
+    return owlStaffContextRequested(query) ||
+        /\b(сотрудник|преподавател|директор|заместител|руководител|специалист|методист|контакт|телефон|номер|почт|email|кабинет|кто такая|кто такой|как связат|кому написат|кому позвон)\w*/i.test(q);
+}
+
 function owlStaffContextRequested(query) {
     const q = owlSmartNormalize(query);
     return /\b(он|она|ее|её|его|ней|нем|нём|такая|такой|этот человек|эта сотрудница|этот сотрудник)\b/i.test(q) ||
@@ -2489,10 +2510,19 @@ function resolveOwlLocally(query) {
     const brain = owlBrainConfig();
     const replies = brain.replies || {};
     const facets = owlRequestedFacets(query);
+    const hardProgramIntent = owlIsProgramDiscoveryRequest(query);
+    const hardStaffIntent = owlIsExplicitStaffRequest(query);
 
-    const staffResolution = owlResolveStaff(query);
-    if (staffResolution && staffResolution.handled) {
-        return staffResolution;
+    // Жёсткий маршрутизатор: программный запрос не может уйти в карточку сотрудника.
+    // Это правило выше fuzzy-поиска и выше старого разговорного контекста.
+    if (hardProgramIntent && !hardStaffIntent) {
+        owlConversationState.lastStaffKey = null;
+        saveOwlConversationState();
+    } else {
+        const staffResolution = owlResolveStaff(query);
+        if (staffResolution && staffResolution.handled) {
+            return staffResolution;
+        }
     }
 
     if (owlIntent('contacts', query)) {
