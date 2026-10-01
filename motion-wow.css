@@ -1,22 +1,25 @@
-/* Motion WOW v2 — isolated preview layer */
-:root{--motion-ease:cubic-bezier(.22,1,.36,1);--mx:50%;--my:50%}
-@media (prefers-reduced-motion:no-preference){
-html{scroll-behavior:smooth}
-.motion-reveal{opacity:0;transform:translate3d(0,34px,0) scale(.975);filter:blur(5px)}
-.motion-reveal.motion-in{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0);transition:opacity .7s var(--motion-ease),transform .95s var(--motion-ease),filter .75s var(--motion-ease)}
-.hero{perspective:1200px;transform-style:preserve-3d;overflow:hidden}
-.hero>*{will-change:transform}
-.hero h1,.hero .hero-title{transform:translate3d(0,var(--hero-title-y,0),0) scale(var(--hero-title-scale,1))}
-.hero p,.hero .hero-subtitle{transform:translate3d(0,var(--hero-copy-y,0),0)}
-.shape{animation:none!important;filter:blur(80px)!important;will-change:transform!important;transform:translate3d(var(--shape-x,0),var(--shape-y,0),0) scale(var(--shape-scale,1))}
-.bg-tag{animation:none!important;will-change:auto!important}
-.program-card,.doc-card,.faq-item,.timeline-card{position:relative;transform-style:preserve-3d;backface-visibility:hidden;will-change:transform;transition:box-shadow .45s var(--motion-ease),border-color .45s var(--motion-ease)}
-.program-card::after,.doc-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(420px circle at var(--mx) var(--my),rgba(255,255,255,.18),transparent 42%);transition:opacity .3s ease}
+/* WOW v3 — cinematic layer */
+:root{--motion-ease:cubic-bezier(.16,1,.3,1);--scroll-p:0}
+@media(prefers-reduced-motion:no-preference){
+.motion-reveal{opacity:0;transform:translate3d(0,52px,0) scale(.965);filter:blur(8px)}
+.motion-reveal.motion-in{opacity:1;transform:none;filter:none;transition:opacity .75s var(--motion-ease),transform 1.05s var(--motion-ease),filter .85s var(--motion-ease)}
+.hero{perspective:1400px;transform-style:preserve-3d;overflow:clip}
+.hero::after{content:"";position:absolute;inset:-25%;pointer-events:none;background:radial-gradient(circle at 50% calc(38% + var(--scroll-p)*18%),rgba(202,15,62,.13),transparent 35%);transform:translateZ(-1px);opacity:.85}
+.hero h1,.hero .hero-title{transform:translate3d(0,calc(var(--scroll-p)*-90px),calc(var(--scroll-p)*80px)) scale(calc(1 - var(--scroll-p)*.08));transform-origin:center}
+.hero p,.hero .hero-subtitle{transform:translate3d(0,calc(var(--scroll-p)*-38px),0);opacity:calc(1 - var(--scroll-p)*.55)}
+.shape{animation:none!important;filter:blur(72px)!important;transform:translate3d(var(--sx,0),var(--sy,0),0) scale(var(--ss,1));will-change:transform!important}
+.bg-tag{animation:none!important}
+.program-card,.doc-card,.faq-item,.timeline-card{position:relative;transform-style:preserve-3d;backface-visibility:hidden;will-change:transform;transition:box-shadow .45s var(--motion-ease),border-color .4s ease}
+.program-card::after,.doc-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(520px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.22),rgba(255,255,255,.05) 24%,transparent 48%);transition:opacity .25s ease}
 .program-card.motion-hover::after,.doc-card.motion-hover::after{opacity:1}
-.program-card.motion-hover,.doc-card.motion-hover{box-shadow:0 24px 60px rgba(0,0,0,.18)}
+.program-card.motion-hover,.doc-card.motion-hover{box-shadow:0 30px 80px rgba(0,0,0,.22)}
 .motion-magnetic{will-change:transform}
-.motion-word{display:inline-block;opacity:0;transform:translate3d(0,.7em,0);filter:blur(4px)}
-.motion-in .motion-word{opacity:1;transform:none;filter:none;transition:opacity .55s var(--motion-ease),transform .7s var(--motion-ease),filter .6s var(--motion-ease);transition-delay:var(--word-delay)}
+.motion-cinematic-title{overflow:hidden}
+.motion-cinematic-title .mw{display:inline-block;opacity:0;transform:translate3d(0,1em,0) rotate(2deg);filter:blur(6px)}
+.motion-cinematic-title.motion-in .mw{opacity:1;transform:none;filter:none;transition:opacity .55s var(--motion-ease),transform .85s var(--motion-ease),filter .7s ease;transition-delay:var(--d)}
+section{position:relative}
+section.motion-section::before{content:"";position:absolute;left:50%;top:-1px;width:min(82vw,1100px);height:1px;transform:translateX(-50%) scaleX(var(--line,0));transform-origin:center;background:linear-gradient(90deg,transparent,rgba(202,15,62,.5),rgba(255,255,255,.32),transparent);transition:transform 1.2s var(--motion-ease);pointer-events:none}
+section.motion-section.motion-section-in::before{--line:1}
 }
-@media (hover:none),(pointer:coarse){.program-card::after,.doc-card::after{display:none}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}}
+@media(hover:none),(pointer:coarse){.program-card::after,.doc-card::after{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
