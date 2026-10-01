@@ -68,6 +68,36 @@ function matchScore(query, title) {
     return hits / qWords.length;
 }
 
+function owlProgramProbability(query, program) {
+    if (!program) return 0;
+    const q = owlSmartNormalize(query);
+    if (!q) return 0;
+
+    const title = currentLang === 'ru' ? (program.title_ru || '') : (program.title_en || program.title_ru || '');
+    const description = currentLang === 'ru'
+        ? [program.desc_ru,program.long_desc_ru,program.official_desc_ru].filter(Boolean).join(' ')
+        : [program.desc_en,program.long_desc_en,program.official_desc_en,program.desc_ru].filter(Boolean).join(' ');
+    const metadata = [program.type,program.format,program.hours,program.price,program.sector,(program.bullets_ru||[]).join(' '),(program.topics_ru||'')].join(' ');
+
+    const titleScore = matchScore(q, title);
+    const descriptionScore = matchScore(q, description);
+    const metaScore = matchScore(q, metadata);
+    let score = titleScore * 0.56 + descriptionScore * 0.24 + metaScore * 0.20;
+
+    if (String(owlConversationState.lastProgramId || '') === String(program.id || '')) score += 0.08;
+    if ((owlConversationState.lastCandidateIds || []).map(String).includes(String(program.id || ''))) score += 0.04;
+
+    const nq = normalizeText(q);
+    const format = normalizeText(program.format || '');
+    const type = normalizeText(program.type || '');
+    if (/онлайн|дистанц|удален|дот|электрон/.test(nq) && /дот|эо|дистанц|онлайн/.test(format)) score += 0.12;
+    if (/переподготов/.test(nq) && /переподготов/.test(type)) score += 0.12;
+    if (/повышен.*квалификац|повысить квалификац/.test(nq) && /повышен.*квалификац/.test(type)) score += 0.12;
+    if (/проф.*обуч/.test(nq) && /профессиональн.*обуч/.test(type)) score += 0.12;
+
+    return Math.max(0, Math.min(1, score));
+}
+
 function findProgramsExplicitlyNamed(query) {
     const normalizedQuery = normalizeText(query);
     const titleKey = currentLang === 'ru' ? 'title_ru' : 'title_en';
@@ -558,14 +588,17 @@ return;
     }
 
     const scored = globalPrograms
-        .map(p => ({ p, score: matchScore(text, p[titleKey]) }))
-        .filter(x => x.score > 0.4)
+        .map(p => ({ p, score: owlProgramProbability(text, p) }))
+        .filter(x => x.score >= 0.34)
         .sort((a, b) => b.score - a.score)
         .slice(0, 4);
 
     setTimeout(() => {
-        if (scored.length === 1 && scored[0].score >= 0.95) {
-            showProgramDetails(scored[0].p);
+        const lead = scored[0] || null;
+        const runnerUp = scored[1] || null;
+        const confidentLead = !!lead && lead.score >= 0.72 && (!runnerUp || lead.score - runnerUp.score >= 0.16);
+        if (confidentLead) {
+            showProgramDetails(lead.p);
         } else if (scored.length > 0) {
             const pool = (owlBrainConfig().replies || {}).clarify || [];
             addBotMsg(owlPickReply(pool, 'clarify') || translationsHTML[currentLang].maybeYouMean);
