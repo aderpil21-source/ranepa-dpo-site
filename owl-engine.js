@@ -2279,6 +2279,18 @@ function owlLastProgramContext() {
         const remembered = globalPrograms.find(p => String(p.id || '') === String(id));
         if (remembered) return remembered;
     }
+
+    // Если в диалоге уже есть несколько кандидатов, конкретная программа ещё
+    // не выбрана. Карточка, случайно видимая под окном чата на странице, не
+    // имеет права становиться объектом местоимений "она/эта программа" и
+    // вопросов "сколько стоит?". Сначала пользователь должен выбрать вариант.
+    const candidateIds = Array.isArray(owlConversationState.lastCandidateIds)
+        ? owlConversationState.lastCandidateIds.filter(Boolean)
+        : [];
+    if (candidateIds.length) return null;
+
+    // Видимую на странице программу используем только когда в самом разговоре
+    // вообще нет более сильного контекста.
     return owlVisibleProgramContext();
 }
 
