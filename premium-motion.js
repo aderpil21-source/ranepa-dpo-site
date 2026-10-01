@@ -8,8 +8,9 @@ const selectors=[
   '.toolbar','.panel','.contact-card','.faq-item',
   '.audience-kicker','.audience-hero h1','.audience-hero p','.audience-card','.material-card','.payment-card',
   '.hero .eyebrow','.hero h1','.hero .lead','.meta-card','.section','.side-card',
-  '.related-section','.news-card','.news-tags-bar',
-  '.grid > *','.schedule-list > *'
+  '.related-section','.related-card','.topic-grid li','.news-tags-bar','#newsGrid .card',
+  '.news-detail-title','.news-detail-lead','.news-body-text','.news-insert','.news-media-figure',
+  '.grid > *','.schedule-day','.lesson'
 ].join(',');
 let observer=null;
 function variant(el,i){
@@ -41,14 +42,14 @@ function titleLine(){
 }
 function scan(root=document){
   [...root.querySelectorAll?.(selectors)||[]].forEach((el,i)=>reveal(el,i));
-  [...root.querySelectorAll?.('.contact-card,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.news-card,.grid > *,.schedule-list > *')||[]].forEach(enhanceLift);
+  [...root.querySelectorAll?.('.contact-card,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.related-card,.topic-grid li,#newsGrid .card,.grid > *,.lesson')||[]].forEach(enhanceLift);
 }
 observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('pm-in');observer.unobserve(e.target);setTimeout(()=>e.target.classList.add('pm-done'),850)}),{threshold:.08,rootMargin:'0px 0px -5% 0px'});
 function boot(){
   document.documentElement.classList.add('pm-ready');
   document.querySelectorAll('.page-nav a,.audience-nav a,.topbar a,.back-btn').forEach((el,i)=>{el.classList.add('pm-nav-in');el.style.animationDelay=Math.min(i*32,224)+'ms'});
   titleLine();scan();
-  let raf=0;const mo=new MutationObserver(ms=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;for(const m of ms){if(m.type==='attributes'){if(!m.target.hidden)scan(m.target);continue}for(const n of m.addedNodes)if(n.nodeType===1){if(n.matches?.(selectors))reveal(n,0);if(n.matches?.('.contact-card,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.news-card,.grid > *,.schedule-list > *'))enhanceLift(n);scan(n)}}})});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
+  let raf=0;const mo=new MutationObserver(ms=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;for(const m of ms){if(m.type==='attributes'){if(!m.target.hidden)scan(m.target);continue}for(const n of m.addedNodes)if(n.nodeType===1){if(n.matches?.(selectors))reveal(n,0);if(n.matches?.('.contact-card,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.related-card,.topic-grid li,#newsGrid .card,.grid > *,.lesson'))enhanceLift(n);scan(n)}}})});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
