@@ -1593,7 +1593,17 @@ function owlTopicTokens(query) {
     ]);
     return owlSmartNormalize(query)
         .split(' ')
-        .filter(word => word.length >= 4 && !generic.has(word));
+        .filter(word => {
+            if (word.length < 4 || generic.has(word)) return false;
+
+            // Отсекаем падежные формы служебных слов без перечисления
+            // каждой формы отдельно: "программу", "программе", "курсом" и т.п.
+            if (/^(программ|курс)(?:а|ы|у|е|ой|ою|ам|ами|ах|ов|ом)?$/i.test(word)) return false;
+            if (/^обучени(?:е|я|ю|ем|и)$/i.test(word)) return false;
+            if (/^вариант(?:а|ы|у|е|ом|ов|ам|ами|ах)?$/i.test(word)) return false;
+
+            return true;
+        });
 }
 
 function owlTopicConcepts(token) {
