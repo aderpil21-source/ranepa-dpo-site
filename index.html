@@ -2452,7 +2452,6 @@
         { key:'faq_static_5', label:'FAQ: Доступ к учебным материалам', group:'FAQ: отдельные вопросы', selector:'[data-site-faq-static="5"]' },
         { key:'documents', label:'Образцы документов об образовании', group:'Главная страница', selector:'.documents-section' },
         { key:'contacts', label:'Контакты и нижняя часть сайта', group:'Главная страница', selector:'#contactsSection' },
-        { key:'owl', label:'Сова / цифровой ассистент', group:'Интерактив', selector:'#owlContainer' },
         { key:'owl_menu_test', label:'Сова: тест на профориентацию', group:'Сова: кнопки меню', selector:'[data-site-owl-control="test"]' },
         { key:'owl_menu_catalog', label:'Сова: кратко обо всех программах', group:'Сова: кнопки меню', selector:'[data-site-owl-control="catalog"]' },
         { key:'owl_menu_news', label:'Сова: новости центра', group:'Сова: кнопки меню', selector:'[data-site-owl-control="news"]' },
@@ -2823,6 +2822,9 @@
     }
 
     function siteKeyIsVisible(key) {
+        // Сова — системный интерфейс сайта. Старое сохранённое owl:false
+        // не должно скрывать ассистента даже после обновления настроек PRO.
+        if (key === 'owl') return true;
         return siteVisibility[key] !== false;
     }
 
@@ -3000,6 +3002,7 @@
     function isSiteEditableElement(el) {
         if (!el || el.nodeType !== 1) return false;
         if (el.closest('#siteAdminPanel, #siteAdminLoginModal, #siteAdminReopen')) return false;
+        if (el.closest('#owlContainer, #owlChat, [data-system-ui], [data-site-admin-protected]')) return false;
         if (el.closest('#enrollModal, #leavingSiteModal, .consent-block, [data-payment-protected]')) return false;
         if (el.closest('script,style,noscript')) return false;
         if (el.matches('input,textarea,select,option,img,svg,path,iframe,video,audio')) return false;
