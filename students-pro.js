@@ -43,14 +43,22 @@
     return String(el.textContent||'').trim();
   }
 
+  function isSystemUi(el){
+    return !!(el && el.closest && el.closest('[data-system-ui], [data-site-admin-protected]'));
+  }
+
+  function editableNodes(){
+    return [...document.querySelectorAll('[data-site-edit-key]')].filter(el=>!isSystemUi(el));
+  }
+
   function blockNodes(){
-    return [...document.querySelectorAll('[data-site-visibility-key]')];
+    return [...document.querySelectorAll('[data-site-visibility-key]')].filter(el=>!isSystemUi(el));
   }
 
   function setEditing(on){
     editing=!!on;
     document.body.classList.toggle('students-pro-editing',editing);
-    document.querySelectorAll('[data-site-edit-key]').forEach(el=>{
+    editableNodes().forEach(el=>{
       el.contentEditable=editing?'true':'false';
       el.spellcheck=editing;
       if(editing) el.classList.add('students-pro-editable');
@@ -115,7 +123,7 @@
   }
 
   function collect(){
-    document.querySelectorAll('[data-site-edit-key]').forEach(el=>{
+    editableNodes().forEach(el=>{
       const key=String(el.dataset.siteEditKey||'').trim();
       if(!key) return;
       settings.content['custom:'+key]={ru:String(el.textContent||'').trim()};
@@ -161,13 +169,13 @@
     document.addEventListener('click',event=>{
       if(!editing) return;
       const link=event.target.closest('[data-site-edit-link]');
-      if(link){event.preventDefault();}
+      if(link && !isSystemUi(link)){event.preventDefault();}
     },true);
 
     document.addEventListener('dblclick',event=>{
       if(!editing) return;
       const link=event.target.closest('[data-site-edit-link]');
-      if(!link) return;
+      if(!link || isSystemUi(link)) return;
       event.preventDefault();
       const selector='#'+link.id;
       if(!link.id) return;
@@ -210,7 +218,7 @@
     styles();
     bindLinks();
     await loadSettings();
-    document.querySelectorAll('[data-site-edit-key]').forEach(el=>{
+    editableNodes().forEach(el=>{
       const key=String(el.dataset.siteEditKey||'').trim();
       if(key) el.textContent=currentContentValue(key,el);
     });
