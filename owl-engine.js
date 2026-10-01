@@ -347,13 +347,12 @@ function owlResolveSiteFaq(query) {
     return null;
 }
 
-async function owlApplyLearnedRule(rule) {
+async function owlApplyLearnedRule(rule, currentQuery) {
     if (!rule || !rule.action) return false;
 
     if (rule.action === 'staff') {
         // Learned mappings may never reveal staff/contact data without an explicit request in the current message.
-        const currentQuery = (document.getElementById('chatUserInput') && document.getElementById('chatUserInput').value) || '';
-        if (!owlIsExplicitStaffRequest(currentQuery)) return false;
+        if (!owlIsExplicitStaffRequest(currentQuery || '')) return false;
         const person = owlStaffByKey(rule.value);
         if (!person) return false;
         owlRememberStaff(person);
@@ -446,7 +445,7 @@ async function handleUserMessage() {
                 if (!conflictsWithIntent) {
                     if (learnedRule.action === 'preset' && learnedRule.value) {
                         text = learnedRule.value;
-                    } else if (await owlApplyLearnedRule(learnedRule)) {
+                    } else if (await owlApplyLearnedRule(learnedRule, originalText)) {
                         return;
                     }
                 }
@@ -578,7 +577,7 @@ return;
     const hasFactQuestion = owlRequestedFacets(text).length > 0;
 
     // Контекстные вопросы не запускают новый вероятностный поиск.
-    const refersToCurrentProgram = /\b(эта|этой|эту|этот|этого|этому)\s+(программ|курс)\w*/i.test(owlSmartNormalize(text));
+    const refersToCurrentProgram = /\b(эта|этой|эту|этот|этого|этому)\s+(программ|курс)\w*|\b(по ней|о ней|про нее|про неё)\b/i.test(owlSmartNormalize(text));
     if (hasFactQuestion && refersToCurrentProgram) {
         const currentProgram = owlLastProgramContext();
         if (!currentProgram) {
