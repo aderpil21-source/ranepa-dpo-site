@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: https:; frame-src https:; child-src 'self' blob: https:; worker-src 'self' blob:; form-action 'self' https:; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<link rel="stylesheet" href="./theme.css?v=2">
+<link rel="stylesheet" href="./theme.css?v=3">
 <!-- SEO: generated -->
 <meta name="description" content="Информация для слушателей Центра дополнительного образования Западного филиала РАНХиГС: учебные материалы, расписание, документы и оплата обучения.">
 <meta name="robots" content="index, follow, max-image-preview:large">
@@ -22,7 +22,7 @@
 <meta property="og:url" content="https://ranepa-dpo39.ru/students.html">
 <link rel="canonical" href="https://ranepa-dpo39.ru/students.html">
 <!-- /SEO -->
-<script src="./theme.js?v=4"></script>
+<script src="./theme.js?v=5"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Слушателям: обучение и документы | РАНХиГС Калининград</title>
@@ -49,54 +49,54 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
     <button class="audience-theme-toggle" data-theme-toggle type="button" aria-label="Переключить тему" title="Переключить тему">☀</button>
   </header>
   <main class="audience-main">
-    <section class="audience-hero">
-      <span class="audience-kicker">Учебный раздел</span>
-      <h1>Слушателям</h1>
-      <p>Материалы, расписание, программы, новости и помощь — основные сервисы Центра дополнительного образования собраны на одной странице.</p>
+    <section class="audience-hero" data-site-visibility-key="students.hero" data-site-block-label="Вступительный блок">
+      <span class="audience-kicker" data-site-edit-key="students.hero.kicker">Учебный раздел</span>
+      <h1 data-site-edit-key="students.hero.title">Слушателям</h1>
+      <p data-site-edit-key="students.hero.lead">Материалы, расписание, программы, новости и помощь — основные сервисы Центра дополнительного образования собраны на одной странице.</p>
     </section>
     <section class="audience-grid">
-      <article class="audience-card material-card">
+      <article class="audience-card material-card" data-site-visibility-key="students.materials" data-site-block-label="Материалы по коду">
         <div class="icon">🔐</div>
-        <h2>Материалы по коду</h2>
-        <p>Введите код, полученный от преподавателя. Материал откроется прямо здесь.</p>
+        <h2 data-site-edit-key="students.materials.title">Материалы по коду</h2>
+        <p data-site-edit-key="students.materials.text">Введите код, полученный от преподавателя. Материал откроется прямо здесь.</p>
         <form id="materialLookupForm" class="material-lookup">
           <input id="materialCode" type="text" autocomplete="off" spellcheck="false" placeholder="Например: AB12CD" aria-label="Код доступа к материалам">
-          <button class="action" type="submit">Найти материал</button>
+          <button class="action" type="submit" data-site-edit-key="students.materials.action">Найти материал</button>
         </form>
         <div id="materialResult" class="material-result" aria-live="polite"></div>
       </article>
-      <article class="audience-card">
+      <article class="audience-card" data-site-visibility-key="students.schedule" data-site-block-label="Расписание занятий">
         <div class="icon">🗓️</div>
-        <h2>Расписание занятий</h2>
-        <p>Быстрый доступ к актуальному расписанию занятий.</p>
-        <a class="action" href="schedule.html">Открыть расписание</a>
+        <h2 data-site-edit-key="students.schedule.title">Расписание занятий</h2>
+        <p data-site-edit-key="students.schedule.text">Быстрый доступ к актуальному расписанию занятий.</p>
+        <a id="studentsActionSchedule" class="action" href="schedule.html" data-site-edit-link data-site-edit-key="students.schedule.action">Открыть расписание</a>
       </article>
-      <article class="audience-card">
+      <article class="audience-card" data-site-visibility-key="students.programs" data-site-block-label="Программы обучения">
         <div class="icon">🎓</div>
-        <h2>Программы обучения</h2>
-        <p>Каталог программ повышения квалификации, переподготовки и профессионального обучения.</p>
-        <a class="action secondary" href="programs.html">Смотреть программы</a>
+        <h2 data-site-edit-key="students.programs.title">Программы обучения</h2>
+        <p data-site-edit-key="students.programs.text">Каталог программ повышения квалификации, переподготовки и профессионального обучения.</p>
+        <a id="studentsActionPrograms" class="action secondary" href="programs.html" data-site-edit-link data-site-edit-key="students.programs.action">Смотреть программы</a>
       </article>
-      <article class="audience-card">
+      <article class="audience-card" data-site-visibility-key="students.news" data-site-block-label="Новости Академии">
         <div class="icon">📰</div>
-        <h2>Новости Академии</h2>
-        <p>Актуальные новости, объявления и информация Центра дополнительного образования.</p>
-        <a class="action secondary" href="news.html">Читать новости</a>
+        <h2 data-site-edit-key="students.news.title">Новости Академии</h2>
+        <p data-site-edit-key="students.news.text">Актуальные новости, объявления и информация Центра дополнительного образования.</p>
+        <a id="studentsActionNews" class="action secondary" href="news.html" data-site-edit-link data-site-edit-key="students.news.action">Читать новости</a>
       </article>
-      <article class="audience-card">
+      <article class="audience-card" data-site-visibility-key="students.faq" data-site-block-label="Частые вопросы">
         <div class="icon">❓</div>
-        <h2>Частые вопросы</h2>
-        <p>Документы для поступления, формат обучения, диплом и совмещение занятий с работой.</p>
-        <a class="action secondary" href="faq.html">Открыть FAQ</a>
+        <h2 data-site-edit-key="students.faq.title">Частые вопросы</h2>
+        <p data-site-edit-key="students.faq.text">Документы для поступления, формат обучения, диплом и совмещение занятий с работой.</p>
+        <a id="studentsActionFaq" class="action secondary" href="faq.html" data-site-edit-link data-site-edit-key="students.faq.action">Открыть FAQ</a>
       </article>
-      <article class="audience-card payment-card">
+      <article class="audience-card payment-card" data-site-visibility-key="students.payment" data-site-block-label="Оплата и реквизиты">
         <div class="payment-card-copy">
           <div class="icon">💳</div>
-          <h2>Оплата и реквизиты</h2>
-          <p>Оплатите обучение через защищённую страницу Западного филиала РАНХиГС или откройте полные банковские реквизиты.</p>
+          <h2 data-site-edit-key="students.payment.title">Оплата и реквизиты</h2>
+          <p data-site-edit-key="students.payment.text">Оплатите обучение через защищённую страницу Западного филиала РАНХиГС или откройте полные банковские реквизиты.</p>
           <div class="payment-card-actions">
-            <a class="action" href="https://ranepa-dpo39.ru/pay/" target="_blank" rel="noopener noreferrer">Перейти к оплате</a>
-            <button class="action secondary requisites-open" type="button">Реквизиты для оплаты</button>
+            <a id="studentsActionPay" class="action" href="https://ranepa-dpo39.ru/pay/" target="_blank" rel="noopener noreferrer" data-site-edit-link data-site-edit-key="students.payment.action">Перейти к оплате</a>
+            <button class="action secondary requisites-open" type="button" data-site-edit-key="students.payment.requisites">Реквизиты для оплаты</button>
           </div>
           <a class="payment-page-link" href="https://ranepa-dpo39.ru/pay/" target="_blank" rel="noopener noreferrer">https://ranepa-dpo39.ru/pay/</a>
         </div>
@@ -105,11 +105,11 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
           <span>Сканировать QR-код</span>
         </a>
       </article>
-      <article class="audience-card">
+      <article class="audience-card" data-site-visibility-key="students.contacts" data-site-block-label="Контакты и помощь">
         <div class="icon">☎️</div>
-        <h2>Контакты и помощь</h2>
-        <p>Связь с Центром дополнительного образования и быстрые контакты.</p>
-        <a class="action secondary" href="contacts.html">Открыть контакты</a>
+        <h2 data-site-edit-key="students.contacts.title">Контакты и помощь</h2>
+        <p data-site-edit-key="students.contacts.text">Связь с Центром дополнительного образования и быстрые контакты.</p>
+        <a id="studentsActionContacts" class="action secondary" href="contacts.html" data-site-edit-link data-site-edit-key="students.contacts.action">Открыть контакты</a>
       </article>
     </section>
   </main>
@@ -117,8 +117,8 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
   <footer class="audience-footer">
     <div class="audience-footer-inner">
       <div class="audience-footer-brand">
-        <strong>Центр дополнительного профессионального образования</strong>
-        <span>Западный филиал Президентской академии</span>
+        <strong data-site-edit-key="students.footer.title">Центр дополнительного профессионального образования</strong>
+        <span data-site-edit-key="students.footer.subtitle">Западный филиал Президентской академии</span>
       </div>
       <div class="audience-footer-links">
         <a href="tel:+74012972379">+7 (4012) 97-23-79</a>
@@ -259,7 +259,7 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
     </div>
   </div>
 
-  <script src="./students.js?v=5"></script>
+  <script src="./students.js?v=5"></script>\n  <script src="./students-pro.js?v=1"></script>\n  <script src="./students-owl.js?v=1"></script>
 
 <script src="./premium-motion.js?v=4"></script>
 </body>
