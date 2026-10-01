@@ -217,9 +217,24 @@ async function askOwlAI(message) {
             owlRememberProgram(mentionedPrograms[0]);
         }
 
+        // Факты о найденной реальной программе всегда дополняем данными каталога,
+        // чтобы цена/часы не зависели от генеративного ответа.
+        let verifiedProgramFacts = '';
+        if (mentionedPrograms.length === 1) {
+            const verified = mentionedPrograms[0];
+            const verifiedPrice = localizedProgramMeta(verified, 'price', currentLang);
+            const verifiedHours = localizedProgramMeta(verified, 'hours', currentLang);
+            verifiedProgramFacts =
+                '<br><br><span class="owl-guided-hint"><b>Проверено по каталогу:</b> ' +
+                (verifiedPrice ? '💰 ' + escapeOwlText(verifiedPrice) : '') +
+                (verifiedPrice && verifiedHours ? ' · ' : '') +
+                (verifiedHours ? '⏱ ' + escapeOwlText(verifiedHours) : '') +
+                '</span>';
+        }
+
         const safeAnswer = escapeOwlText(answerText).replace(/\n/g, '<br>');
         addBotMsg(
-            safeAnswer +
+            safeAnswer + verifiedProgramFacts +
             (currentLang === 'ru'
                 ? '<br><br><span class="owl-guided-hint">Можно продолжить: уточните стоимость, сроки, документы, преподавателя или попросите подобрать другой вариант.</span>'
                 : '<br><br><span class="owl-guided-hint">You can continue by asking about tuition, duration, documents, instructors, or another option.</span>')
