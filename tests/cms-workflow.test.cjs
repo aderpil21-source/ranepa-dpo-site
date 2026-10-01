@@ -436,4 +436,16 @@ assert(
   'Schedule merge must honor persisted cmsOrder'
 );
 
+
+assert(
+  indexHtml.includes('<script src="./portal-snapshot.js?v=20261001-1"></script>') &&
+  indexHtml.indexOf('<script src="./portal-snapshot.js?v=20261001-1"></script>') < indexHtml.indexOf('function loadPortalData()'),
+  'Homepage must load the embedded portal snapshot before program data is requested'
+);
+assert(
+  indexHtml.includes("scheduleNextCutoffRefresh();") &&
+  !indexHtml.includes("if (scheduleRefreshTimer) {\n            clearTimeout(scheduleRefreshTimer);\n            scheduleRefreshTimer = null;\n        }\n        stopScheduleSnapshotPolling();"),
+  'Kaliningrad 21:00 schedule cutoff clock must survive closing the schedule overlay'
+);
+
 console.log('CMS workflow regression checks passed');
