@@ -5,6 +5,7 @@
     const LEARNING_QUEUE_KEY = 'ranepa_owl_learning_queue_v1';
     const PENDING_KEY = 'ranepa_owl_learning_pending_v1';
     const SESSION_KEY = 'ranepa_owl_learning_session_v1';
+    const LAST_RESOLVED_KEY = 'ranepa_owl_learning_last_resolved_v1';
 
     const MAX_RULES = 240;
     const MAX_QUEUE = 120;
@@ -360,6 +361,17 @@
         }
 
         saveRules(rules);
+
+        // Запоминаем последнее явно подтверждённое соответствие только в рамках
+        // текущей вкладки. Если пользователь сразу скажет "не то", сможем
+        // отправить отрицательное подтверждение именно для этой пары.
+        writeJson(LAST_RESOLVED_KEY, {
+            phrase,
+            action,
+            value,
+            at: now
+        }, sessionStorage);
+
         queueEvent({
             type: 'resolved',
             phrase,
@@ -367,6 +379,39 @@
             value,
             source: source || 'local'
         });
+        return true;
+    }
+
+    function rejectLastResolved(action, value, source) {
+        const last = readJson(LAST_RESOLVED_KEY, null, sessionStorage);
+        if (!last || !last.phrase || !last.action) return false;
+        if (Date.now() - Number(last.at || 0) > 30 * 60 * 1000) return false;
+
+        const expectedAction = String(action || '');
+        const expectedValue = safeText(value || '');
+        if (expectedAction && String(last.action || '') !== expectedAction) return false;
+        if (expectedValue && safeText(last.value || '') !== expectedValue) return false;
+
+        // Убираем отвергнутое соответствие из локальной памяти немедленно,
+        // чтобы Сова не повторяла его в этой же сессии.
+        const rules = getRules().filter(rule => !(
+            rule &&
+            rule.phrase === last.phrase &&
+            rule.action === last.action &&
+            safeText(rule.value || '') === safeText(last.value || '')
+        ));
+        saveRules(rules);
+
+        queueEvent({
+            type: 'feedback',
+            verdict: 'rejected',
+            phrase: last.phrase,
+            action: last.action,
+            value: last.value,
+            source: source || 'explicit-rejection'
+        });
+
+        try { sessionStorage.removeItem(LAST_RESOLVED_KEY); } catch (e) {}
         return true;
     }
 
@@ -530,6 +575,7 @@
         clearPending,
         resolvePending,
         resolvePendingAsPreset,
+        rejectLastResolved,
         queueEvent,
         getQueue,
         clearQueue,
