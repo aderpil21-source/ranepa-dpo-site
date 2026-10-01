@@ -2294,9 +2294,9 @@
                 data-lpignore="true"
                 data-1p-ignore="true"
                 data-bwignore="true"
-                onkeydown="if(event.key === 'Enter') handleUserMessage()"
+                onkeydown="if(event.key === 'Enter' && !event.isComposing){ event.preventDefault(); handleUserMessage(); }"
             >
-            <button class="chat-send-btn" onclick="handleUserMessage()">➔</button>
+            <button type="button" class="chat-send-btn" onclick="handleUserMessage()">➔</button>
         </div>
 
         <div class="chat-options" id="chatOptions">
@@ -5930,7 +5930,7 @@ if (legacyNewsHash.startsWith('#news=')) {
 <script src="./site-admin-seo.js?v=2"></script>
 <script src="./site-admin-preview.js?v=1"></script>
 <script src="./site-admin-overlay-dnd.js?v=2"></script>
-<script src="./owl-engine.js?v=20261001-17"></script>
+<script src="./owl-engine.js?v=20261001-18"></script>
 <script src="./portal-live-alert.js?v=20260927-1"></script>
 </body>
 </html>
