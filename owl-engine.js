@@ -78,6 +78,24 @@ function findProgramsExplicitlyNamed(query) {
     });
 }
 
+function owlSafeContextText(value) {
+    return String(value || '')
+        .replace(/https?:\/\/\S+/gi, ' ')
+        .replace(/[\w.+-]+@[\w.-]+\.[a-zа-я]{2,}/gi, ' ')
+        .replace(/(?:\+?\d[\d\s().-]{7,}\d)/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 500);
+}
+
+function owlRecentConversationContext() {
+    const nodes = Array.from(chatBody ? chatBody.querySelectorAll('.msg-user,.msg-bot') : []);
+    return nodes.slice(-8).map(node => ({
+        role: node.classList.contains('msg-user') ? 'user' : 'assistant',
+        text: owlSafeContextText(node.textContent || '')
+    })).filter(item => item.text);
+}
+
 const OWL_AI_ENDPOINT = 'https://functions.yandexcloud.net/d4eatbt80ae5r5402i3g';
 let owlAiRequestInFlight = false;
 
@@ -112,6 +130,13 @@ async function askOwlAI(message) {
             },
             body: JSON.stringify({
                 message: String(message || '').slice(0, 800),
+                conversation: owlRecentConversationContext(),
+                conversationState: {
+                    mode: owlConversationState.mode,
+                    lastIntent: owlConversationState.lastIntent || '',
+                    lastProgramId: owlConversationState.lastProgramId || '',
+                    lastCandidateIds: (owlConversationState.lastCandidateIds || []).slice(0, 8)
+                },
                 pageContext: {
                     site: 'ranepa-dpo39.ru',
                     page: location.pathname || '/',
