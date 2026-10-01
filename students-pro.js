@@ -15,7 +15,6 @@
   async function request(body){
     const response=await fetch(API,{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
       body:JSON.stringify(body)
     });
     const data=await response.json();
