@@ -640,14 +640,8 @@ return;
         if (confidentLead) {
             showProgramDetails(lead.p);
         } else if (scored.length > 0) {
-            const pool = (owlBrainConfig().replies || {}).clarify || [];
-            addBotMsg(owlPickReply(pool, 'clarify') || translationsHTML[currentLang].maybeYouMean);
-            let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
-            scored.forEach(({ p }) => {
-                html += owlProgramLink(p);
-            });
-            html += '</div><button class="chat-opt-btn" onclick="offerAllPrograms()">' + translationsHTML[currentLang].goAllPrograms + '</button>';
-            setOptions(html);
+            addBotMsg('Похоже, я не нашёл именно то, что вы искали. Попробуйте сформулировать вопрос немного иначе: укажите тему, профессию, длительность или название программы.<div class="owl-guided-hint">Я не буду показывать случайные программы, если не уверен в совпадении.</div>');
+            setOptions(owlGuidedFallbackOptions());
         } else {
             if (owlConversationState.mode === 'advanced' && owlConversationState.advancedUnlocked) {
                 askOwlAI(text);
