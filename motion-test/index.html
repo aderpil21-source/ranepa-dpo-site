@@ -5899,6 +5899,21 @@ if (legacyNewsHash.startsWith('#news=')) {
 <script src="../site-admin-overlay-dnd.js?v=2"></script>
 <script src="../owl-engine.js?v=20261001-19"></script>
 <script src="../portal-live-alert.js?v=20261001-2"></script>
-<script src="../motion-wow.js?v=4"></script>
+
+<script id="wow-v5-inline">
+(()=>{try{
+document.documentElement.setAttribute('data-wow','5');
+const b=document.createElement('div');
+b.textContent='WOW v5 ACTIVE';
+b.setAttribute('aria-hidden','true');
+b.style.cssText='position:fixed;right:18px;bottom:18px;z-index:2147483647;padding:10px 14px;border-radius:999px;background:#CA0F3E;color:#fff;font:800 12px/1 Arial,sans-serif;letter-spacing:.08em;box-shadow:0 10px 34px rgba(0,0,0,.35);pointer-events:none';
+document.body.appendChild(b);
+document.querySelectorAll('.program-card,.doc-card').forEach(el=>{
+ el.style.transition='transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease';
+ el.addEventListener('mouseenter',()=>{el.style.transform='translateY(-12px) scale(1.025)';el.style.boxShadow='0 28px 70px rgba(0,0,0,.28)'});
+ el.addEventListener('mouseleave',()=>{el.style.transform='';el.style.boxShadow=''});
+});
+}catch(e){document.documentElement.setAttribute('data-wow-error',String(e&&e.message||e))}})();
+</script>
 </body>
 </html>
