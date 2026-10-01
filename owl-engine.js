@@ -207,6 +207,16 @@ async function askOwlAI(message) {
                 : 'I can help you choose a program or clarify tuition, duration, format, or required documents.';
         }
 
+        // Если расширенный режим назвал ровно одну программу из реального каталога,
+        // она становится подтверждённым объектом следующего вопроса.
+        const mentionedPrograms = globalPrograms.filter(program => {
+            const title = String(program[currentLang === 'ru' ? 'title_ru' : 'title_en'] || '').trim();
+            return title.length >= 8 && answerText.toLowerCase().includes(title.toLowerCase());
+        });
+        if (mentionedPrograms.length === 1) {
+            owlRememberProgram(mentionedPrograms[0]);
+        }
+
         const safeAnswer = escapeOwlText(answerText).replace(/\n/g, '<br>');
         addBotMsg(
             safeAnswer +
