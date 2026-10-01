@@ -208,7 +208,22 @@ async function askOwlAI(message) {
         }
 
         const safeAnswer = escapeOwlText(answerText).replace(/\n/g, '<br>');
-        addBotMsg(safeAnswer);
+        addBotMsg(
+            safeAnswer +
+            (currentLang === 'ru'
+                ? '<br><br><span class="owl-guided-hint">Можно продолжить: уточните стоимость, сроки, документы, преподавателя или попросите подобрать другой вариант.</span>'
+                : '<br><br><span class="owl-guided-hint">You can continue by asking about tuition, duration, documents, instructors, or another option.</span>')
+        );
+        const contextualProgram = owlLastProgramContext();
+        if (contextualProgram) {
+            setOptions(owlProgramActionOptions(contextualProgram));
+        } else {
+            setOptions(
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'подбери программу по теме\')">🔎 Подобрать программу</button>' +
+                '<button class="chat-opt-btn" onclick="owlAskPreset(\'какие документы нужны для поступления\')">📎 Документы</button>' +
+                '<button class="chat-opt-btn" onclick="showOwlHelp()">💡 Что ещё умеет Сова</button>'
+            );
+        }
         owlResetUnresolved();
         owlConversationState.advancedNegativeCount = 0;
         saveOwlConversationState();
@@ -652,11 +667,7 @@ function showProgramDetails(p) {
     }
     html += owlRecommendationBlock(p);
     addBotMsg(html);
-    setOptions(`
-        <a class="chat-opt-btn" href="${owlProgramPageUrl(p)}" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>
-        <button class="chat-opt-btn" onclick="openModal()">${botTexts[currentLang].resEnroll}</button>
-        <button class="chat-opt-btn" onclick="resetMenu()">${botTexts[currentLang].optBack}</button>
-    `);
+    setOptions(owlProgramActionOptions(p));
 }
 
 function offerAllPrograms(autoFly) {
@@ -2294,7 +2305,12 @@ function owlProgramAnswer(program, facets) {
 }
 
 function owlProgramActionOptions(program) {
+    const id = escapeOwlJsString(program && program.id || '');
     return (
+        '<div class="owl-guided-hint" style="margin:2px 0 8px;">Могу сразу уточнить следующий шаг:</div>' +
+        '<button class="chat-opt-btn" onclick="owlRememberProgramById(\'' + id + '\');owlAskPreset(\'сколько стоит эта программа?\')">💰 Стоимость</button>' +
+        '<button class="chat-opt-btn" onclick="owlRememberProgramById(\'' + id + '\');owlAskPreset(\'сколько длится эта программа?\')">⏱ Срок и часы</button>' +
+        '<button class="chat-opt-btn" onclick="owlRememberProgramById(\'' + id + '\');owlAskPreset(\'какой документ выдают после этой программы?\')">🎓 Итоговый документ</button>' +
         '<a class="chat-opt-btn" href="' + owlProgramPageUrl(program) + '" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,rgba(202,15,62,.22),rgba(56,189,248,.14));border-color:rgba(202,15,62,.55);">📘 Полное описание программы</a>' +
         '<button class="chat-opt-btn" onclick="openModal()">✍️ Записаться</button>' +
         '<button class="chat-opt-btn" onclick="resetMenu()">⬅️ В меню</button>'
