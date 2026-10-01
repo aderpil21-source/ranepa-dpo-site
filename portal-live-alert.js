@@ -1,9 +1,10 @@
-// Live refresh for the site-wide "МОЛНИЯ" alert.
-// Keeps the alert synchronized with Apps Script/Alerts!A2:B2 independently of GitHub snapshots.
+// Lightweight refresh for the site-wide "МОЛНИЯ" alert.
+// Thousands of visitors poll a tiny static JSON file from GitHub Pages/CDN.
+// Only the scheduled GitHub Action talks to Apps Script/Google Sheets.
 (function () {
     'use strict';
 
-    const POLL_MS = 60 * 1000;
+    const POLL_MS = 5 * 60 * 1000;
     let timer = null;
     let inFlight = null;
 
@@ -14,15 +15,13 @@
 
         inFlight = (async () => {
             try {
-                if (typeof API_URL !== 'string' || !API_URL) return false;
-
-                const liveUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_alert=' + Date.now();
-                const response = await fetch(liveUrl, {
+                const bucket = Math.floor(Date.now() / POLL_MS);
+                const snapshotUrl = './portal-alert.json?v=' + bucket;
+                const response = await fetch(snapshotUrl, {
                     method: 'GET',
-                    cache: 'no-store',
-                    redirect: 'follow'
+                    cache: 'no-store'
                 });
-                if (!response.ok) throw new Error('Live alert API HTTP ' + response.status);
+                if (!response.ok) throw new Error('Alert snapshot HTTP ' + response.status);
 
                 const data = await response.json();
                 if (typeof globalAlertLiveVerified !== 'undefined') {
@@ -53,7 +52,7 @@
                 return before !== after;
             } catch (error) {
                 if (!opts.silent) {
-                    console.warn('Не удалось обновить важное уведомление из live API:', error);
+                    console.warn('Не удалось обновить важное уведомление из статического snapshot:', error);
                 }
                 return false;
             } finally {
