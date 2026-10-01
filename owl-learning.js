@@ -429,6 +429,24 @@
                 return { ok: false, reason: 'http_' + response.status };
             }
 
+            let serverPayload = null;
+            try {
+                serverPayload = await response.clone().json();
+            } catch (e) {}
+
+            if (serverPayload && serverPayload.error) {
+                return {
+                    ok: false,
+                    reason: 'server_' + String(serverPayload.error).slice(0, 80)
+                };
+            }
+            if (serverPayload && serverPayload.ok === false) {
+                return {
+                    ok: false,
+                    reason: 'server_rejected'
+                };
+            }
+
             const rest = queue.slice(batch.length);
             writeJson(LEARNING_QUEUE_KEY, rest);
             return { ok: true, sent: batch.length };
