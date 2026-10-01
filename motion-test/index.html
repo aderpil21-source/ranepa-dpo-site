@@ -5900,29 +5900,36 @@ if (legacyNewsHash.startsWith('#news=')) {
 <script src="../owl-engine.js?v=20261001-19"></script>
 <script src="../portal-live-alert.js?v=20261001-2"></script>
 
-<script id="wow-v6-inline">
+<script id="wow-v7-inline">
 (()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-const q=(s,r=document)=>[...r.querySelectorAll(s)],fine=matchMedia('(hover:hover) and (pointer:fine)').matches,cl=(a,b,v)=>Math.max(a,Math.min(b,v));
-document.documentElement.dataset.wow='6';
+const q=(s,r=document)=>[...r.querySelectorAll(s)],fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
+document.documentElement.dataset.wow='7';
 const st=document.createElement('style');st.textContent=`
 @media(prefers-reduced-motion:no-preference){
-.w6-reveal{opacity:0!important;transform:translate3d(0,46px,0) scale(.97)!important;filter:blur(7px);transition:opacity .75s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1),filter .8s ease!important}
-.w6-reveal.w6-in{opacity:1!important;transform:none!important;filter:none}
-.program-card,.doc-card{transform-style:preserve-3d;will-change:transform;position:relative;transition:box-shadow .35s ease!important}
-.program-card.w6-hover,.doc-card.w6-hover{box-shadow:0 30px 80px rgba(0,0,0,.28)!important}
-.w6-glow{position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(460px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.24),transparent 43%);transition:opacity .2s}
-.w6-hover>.w6-glow{opacity:1}
-.hero{perspective:1300px;overflow:clip}
-.hero>*{will-change:transform}
-.w6-section-line{position:absolute;left:10%;right:10%;top:0;height:1px;transform:scaleX(0);background:linear-gradient(90deg,transparent,rgba(202,15,62,.65),rgba(255,255,255,.25),transparent);transition:transform 1.1s cubic-bezier(.16,1,.3,1)}
-.w6-section-on>.w6-section-line{transform:scaleX(1)}
+.w7-up,.w7-left,.w7-right,.w7-scale{opacity:0!important;filter:blur(8px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform 1.05s cubic-bezier(.16,1,.3,1),filter .8s ease!important}
+.w7-up{transform:translateY(58px) scale(.97)!important}.w7-left{transform:translateX(-72px) rotate(-1.5deg)!important}.w7-right{transform:translateX(72px) rotate(1.5deg)!important}.w7-scale{transform:scale(.88)!important}
+.w7-in{opacity:1!important;transform:none!important;filter:none!important}
+.program-card,.doc-card{position:relative;overflow:hidden;transition:transform .45s cubic-bezier(.16,1,.3,1),box-shadow .45s ease,border-color .35s ease!important}
+.program-card:hover,.doc-card:hover{transform:translateY(-12px) scale(1.018)!important;box-shadow:0 32px 90px rgba(0,0,0,.3)!important}
+.w7-spot{position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(360px circle at var(--gx,50%) var(--gy,50%),rgba(255,255,255,.28),rgba(202,15,62,.09) 24%,transparent 52%);mix-blend-mode:screen;transition:opacity .18s}
+.w7-hover>.w7-spot{opacity:1}
+.hero{perspective:1400px;overflow:clip}.hero>*{will-change:transform}
+.w7-line{position:absolute;left:8%;right:8%;top:0;height:1px;overflow:hidden;background:rgba(255,255,255,.05)}
+.w7-line:after{content:"";position:absolute;top:0;bottom:0;width:32%;left:-35%;background:linear-gradient(90deg,transparent,#CA0F3E,rgba(255,255,255,.9),transparent);animation:w7scan 4.8s ease-in-out infinite}
+@keyframes w7scan{0%,18%{transform:translateX(0)}65%,100%{transform:translateX(430%)}}
+.section-header{transform-origin:left center}
+.faq-item:nth-child(odd).w7-in{animation:w7breathe 1.1s cubic-bezier(.16,1,.3,1)}
+@keyframes w7breathe{0%{letter-spacing:.02em}45%{letter-spacing:.008em}100%{letter-spacing:normal}}
+.w7-ripple{position:absolute;border-radius:50%;pointer-events:none;width:12px;height:12px;background:rgba(255,255,255,.28);transform:translate(-50%,-50%) scale(0);animation:w7r .65s ease-out forwards}
+@keyframes w7r{to{opacity:0;transform:translate(-50%,-50%) scale(18)}}
 }`;document.head.appendChild(st);
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('w6-in');e.target.parentElement?.classList.add('w6-section-on');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -7% 0px'});
-q('.section-header,.program-card,.faq-item,.doc-card,.contacts-section > *').forEach((e,i)=>{e.classList.add('w6-reveal');e.style.transitionDelay=(i%5)*55+'ms';io.observe(e)});
-q('section').forEach(s=>{if(getComputedStyle(s).position==='static')s.style.position='relative';const l=document.createElement('i');l.className='w6-section-line';s.prepend(l)});
-if(fine)q('.program-card,.doc-card').forEach(el=>{if(!el.querySelector('.w6-glow')){const g=document.createElement('i');g.className='w6-glow';el.prepend(g)};let tx=0,ty=0,x=0,y=0,raf=0;const draw=()=>{x+=(tx-x)*.16;y+=(ty-y)*.16;el.style.transform=`perspective(900px) rotateX(${-y}deg) rotateY(${x}deg) translate3d(0,-8px,18px)`;raf=Math.abs(tx-x)+Math.abs(ty-y)>.02?requestAnimationFrame(draw):0};el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;tx=(px-.5)*11;ty=(py-.5)*9;el.style.setProperty('--gx',px*100+'%');el.style.setProperty('--gy',py*100+'%');el.classList.add('w6-hover');if(!raf)raf=requestAnimationFrame(draw)});el.addEventListener('pointerleave',()=>{tx=ty=0;el.classList.remove('w6-hover');if(!raf)raf=requestAnimationFrame(draw)})});
-if(fine)q('button,a[class*="btn"],.cta-button').forEach(el=>{el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect();el.style.transform=`translate3d(${(e.clientX-r.left-r.width/2)*.13}px,${(e.clientY-r.top-r.height/2)*.16}px,0)`});el.addEventListener('pointerleave',()=>{el.style.transition='transform .6s cubic-bezier(.16,1,.3,1)';el.style.transform='';setTimeout(()=>el.style.transition='',620)})});
-let raf=0;const scrollfx=()=>{raf=0;const p=cl(0,1,scrollY/(innerHeight*.9));q('.hero > *').forEach((e,i)=>{const d=(i%4+1)*10;e.style.transform=`translate3d(0,${-p*d}px,${p*(i%3)*22}px) scale(${1-p*.02*(i%2)})`})};addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(scrollfx)},{passive:true});scrollfx();
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('w7-in');io.unobserve(e.target)}}),{threshold:.08,rootMargin:'0px 0px -8% 0px'});
+const groups=[['.section-header,.contacts-section > *','w7-left'],['.program-card:nth-child(odd),.doc-card:nth-child(odd)','w7-up'],['.program-card:nth-child(even),.doc-card:nth-child(even)','w7-scale'],['.faq-item:nth-child(odd)','w7-left'],['.faq-item:nth-child(even)','w7-right']];
+groups.forEach(([s,k])=>q(s).forEach((e,i)=>{e.classList.add(k);e.style.transitionDelay=(i%4)*55+'ms';io.observe(e)}));
+q('section').forEach(s=>{if(getComputedStyle(s).position==='static')s.style.position='relative';if(!s.querySelector(':scope > .w7-line')){const l=document.createElement('i');l.className='w7-line';s.prepend(l)}});
+if(fine)q('.program-card,.doc-card').forEach(el=>{const g=document.createElement('i');g.className='w7-spot';el.prepend(g);el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect();el.style.setProperty('--gx',(e.clientX-r.left)/r.width*100+'%');el.style.setProperty('--gy',(e.clientY-r.top)/r.height*100+'%');el.classList.add('w7-hover')});el.addEventListener('pointerleave',()=>el.classList.remove('w7-hover'));el.addEventListener('click',e=>{const r=el.getBoundingClientRect(),x=document.createElement('i');x.className='w7-ripple';x.style.left=e.clientX-r.left+'px';x.style.top=e.clientY-r.top+'px';el.appendChild(x);setTimeout(()=>x.remove(),700)})});
+if(fine)q('button,a[class*="btn"],.cta-button').forEach(el=>{el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect();el.style.transform=`translate3d(${(e.clientX-r.left-r.width/2)*.16}px,${(e.clientY-r.top-r.height/2)*.19}px,0) scale(1.02)`});el.addEventListener('pointerleave',()=>{el.style.transition='transform .65s cubic-bezier(.16,1,.3,1)';el.style.transform='';setTimeout(()=>el.style.transition='',670)})});
+let raf=0;const sf=()=>{raf=0;const p=Math.max(0,Math.min(1,scrollY/(innerHeight*.95)));q('.hero > *').forEach((e,i)=>{const y=-p*(18+(i%5)*13),z=p*(i%4)*28,s=1-p*(i%3)*.018;e.style.transform=`translate3d(0,${y}px,${z}px) scale(${s})`;e.style.opacity=String(Math.max(.35,1-p*(i%4)*.12))})};addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(sf)},{passive:true});sf();
 })();
 </script>
 </body>
