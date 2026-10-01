@@ -470,7 +470,12 @@ async function handleUserMessage() {
                 owlStaffContextRequested(originalText) ||
                 /\b(сотрудник|преподавател|директор|заместител|руководител|специалист|методист|контакт|телефон|номер|почт|email|кабинет|кто такая|кто такой|как связат|кому написат|кому позвон)\w*/i.test(normalizedOriginal);
 
-            const learnedRule = protectedGeneralQuery ? null : window.OwlLearning.lookup(originalText);
+            // Явный поиск программы сначала обязан пройти по актуальному каталогу.
+            // Обученная память используется только для неоднозначных формулировок и
+            // не может закрепить широкий тематический запрос за одной старой карточкой.
+            const learnedRule = (protectedGeneralQuery || explicitProgramRequest)
+                ? null
+                : window.OwlLearning.lookup(originalText);
             if (learnedRule) {
                 // Обучение не имеет права менять тип намерения пользователя.
                 // Старое ошибочное правило "запрос программы -> сотрудник" игнорируем.
