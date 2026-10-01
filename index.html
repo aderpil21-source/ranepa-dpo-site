@@ -5759,8 +5759,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             const overlay = document.getElementById('scheduleOverlay');
             if (overlay && overlay.classList.contains('active')) {
                 renderSchedule();
-                scheduleNextCutoffRefresh();
             }
+            scheduleNextCutoffRefresh();
         }, Math.max(1000, secondsUntilCutoff * 1000 + 250));
     }
 
@@ -5808,10 +5808,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     function closeSchedule() {
         const overlay = document.getElementById('scheduleOverlay');
         if (overlay) overlay.classList.remove('active');
-        if (scheduleRefreshTimer) {
-            clearTimeout(scheduleRefreshTimer);
-            scheduleRefreshTimer = null;
-        }
         stopScheduleSnapshotPolling();
         disconnectScheduleObservers();
     }
@@ -5894,6 +5890,7 @@ document.getElementById('mediaLightbox').addEventListener('click', function(e) {
         window.scrollTo(0, 0);
 
         fetchPrograms();
+        scheduleNextCutoffRefresh();
         initDeferredDocumentPreviews();
         initOwlMedia();
         armRevealTargets();
