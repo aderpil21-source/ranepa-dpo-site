@@ -2375,11 +2375,10 @@
     // и не потеряет накопленные события.
     window.OWL_LEARNING_ENDPOINT = API_URL;
     if (window.OwlLearning) {
+        // Отправляем только уже накопленную локальную очередь. Общие правила
+        // загружаются лениво при открытии Совы, а не каждым посетителем сайта.
         setTimeout(() => {
             window.OwlLearning.flush().catch(() => {});
-            if (typeof window.OwlLearning.refreshShared === 'function') {
-                window.OwlLearning.refreshShared().catch(() => {});
-            }
         }, 1500);
     }
 
@@ -3768,35 +3767,37 @@
         owlFilesSnapshotRefreshInFlight = (async () => {
             let liveError = null;
 
-            // Сначала всегда спрашиваем живой Apps Script, чтобы новые ЛК-коды
-            // появлялись в Сове сразу после обработки письма.
-            try {
-                const liveUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_owl=' + Date.now();
-                const response = await fetch(liveUrl, {
-                    method: 'GET',
-                    cache: 'no-store',
-                    redirect: 'follow'
-                });
-                if (!response.ok) throw new Error('Live Owl API HTTP ' + response.status);
+            // Секретный каталог материалов не публикуется в статике. К Apps Script
+            // обращаемся только по явному запросу конкретного ЛК-кода, а не при
+            // открытии чата и не по таймеру у каждого посетителя.
+            if (opts.live === true) {
+                try {
+                    const liveUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_owl=' + Date.now();
+                    const response = await fetch(liveUrl, {
+                        method: 'GET',
+                        cache: 'no-store',
+                        redirect: 'follow'
+                    });
+                    if (!response.ok) throw new Error('Live Owl API HTTP ' + response.status);
 
-                const data = await response.json();
-                if (!data || !Array.isArray(data.owlFiles)) {
-                    throw new Error('Live Owl API has invalid format');
+                    const data = await response.json();
+                    if (!data || !Array.isArray(data.owlFiles)) {
+                        throw new Error('Live Owl API has invalid format');
+                    }
+
+                    const changed = owlFilesFingerprint(data.owlFiles) !== owlFilesFingerprint(globalOwlFiles);
+                    if (changed) {
+                        globalOwlFiles = data.owlFiles;
+                        if (siteAdminMode) renderSiteAdminPanel();
+                    }
+
+                    return changed;
+                } catch (error) {
+                    liveError = error;
                 }
-
-                const changed = owlFilesFingerprint(data.owlFiles) !== owlFilesFingerprint(globalOwlFiles);
-                if (changed) {
-                    globalOwlFiles = data.owlFiles;
-                    if (siteAdminMode) renderSiteAdminPanel();
-                }
-
-                return changed;
-            } catch (error) {
-                liveError = error;
             }
 
-            // Если живой backend временно недоступен, сохраняем старый
-            // статический снимок как резервный источник.
+            // Статический файл остаётся безопасным резервным источником.
             try {
                 const response = await fetch(owlFilesSnapshotUrl(), { cache: 'no-store' });
                 if (!response.ok) throw new Error('Owl files snapshot HTTP ' + response.status);
@@ -4468,39 +4469,9 @@
                 ? data.programs.map(p => Object.assign({}, p))
                 : (Array.isArray(data) ? data.map(p => Object.assign({}, p)) : []);
 
-            // Учебные планы загружаются напрямую в Google Sheets через Apps Script.
-            // Статические portal-data/program-data могут обновиться позже, поэтому
-            // подтягиваем свежие pdf_link из живого backend и накладываем их по ID.
-            try {
-                const liveUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_plans=' + Date.now();
-                const response = await fetch(liveUrl, {
-                    method: 'GET',
-                    cache: 'no-store',
-                    redirect: 'follow'
-                });
-                if (!response.ok) throw new Error('Live plans API HTTP ' + response.status);
-
-                const liveData = await response.json();
-                const livePrograms = liveData && Array.isArray(liveData.programs)
-                    ? liveData.programs
-                    : [];
-
-                if (livePrograms.length) {
-                    const byId = new Map(
-                        livePrograms.map(p => [String(p.id || '').trim(), p])
-                    );
-
-                    programs = programs.map(p => {
-                        const live = byId.get(String(p.id || '').trim());
-                        if (!live) return p;
-                        return Object.assign({}, p, {
-                            pdf_link: String(live.pdf_link || '').trim()
-                        });
-                    });
-                }
-            } catch (livePlansError) {
-                console.warn('Не удалось обновить учебные планы из live API, используем локальный снимок:', livePlansError);
-            }
+            // Публичный каталог читается только из CDN-снимка. GitHub Action
+            // раз в 5 минут сам забирает Google API и накладывает свежий pdf_link.
+            // Это убирает один Apps Script запрос с каждого открытия сайта.
 
             basePrograms = programs.map(function (p) { return Object.assign({}, p); });
             buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) { return p && p.archived !== true && (p.active !== false || window.sitePreviewDraftMode); }));
@@ -5115,8 +5086,12 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             clearTimeout(owlStepTimer);
             chat.classList.add('active');
             ecosystem.classList.add('chat-opened');
-            refreshOwlFilesSnapshot({ silent: true });
-            startOwlFilesSnapshotPolling();
+
+            // Не создаём постоянных запросов к Google при открытом чате.
+            // Общую память Совы обновляем лениво; owl-learning.js сам ограничит частоту.
+            if (window.OwlLearning && typeof window.OwlLearning.refreshShared === 'function') {
+                window.OwlLearning.refreshShared().catch(() => {});
+            }
         }
     }
 
@@ -5128,17 +5103,9 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             scheduleOwlStep();
         }
 
-        if (!isOwlChatActive()) {
-            stopOwlFilesSnapshotPolling();
-            return;
-        }
-
-        if (document.visibilityState === 'visible') {
-            refreshOwlFilesSnapshot({ silent: true });
-            startOwlFilesSnapshotPolling();
-        } else {
-            stopOwlFilesSnapshotPolling();
-        }
+        // Материалы Совы больше не опрашивают backend по таймеру.
+        // Live-проверка выполняется только при вводе реального ЛК-кода.
+        stopOwlFilesSnapshotPolling();
     });
 
     function updateScrollNav() {
