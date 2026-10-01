@@ -1,14 +1,100 @@
 {
-  "generatedAt": "2026-09-30T16:31:13.107Z",
+  "generatedAt": "2026-10-01T16:34:26.575749+00:00",
   "settings": {
-    "version": 5,
+    "version": 7,
     "visibility": {
       "program:c50": false,
-      "owl_menu_ai": false
+      "owl_menu_ai": false,
+      "students.contacts": true,
+      "students.payment": true,
+      "students.news": true,
+      "students.programs": true,
+      "students.materials": true
     },
     "content": {
       "dom:header > div:nth-of-type(1) > div > div:nth-of-type(1) > button:nth-of-type(2)": {
         "ru": "Аа"
+      },
+      "custom:students.hero.kicker": {
+        "ru": "Учебный раздел"
+      },
+      "custom:students.hero.title": {
+        "ru": "Слушателям"
+      },
+      "custom:students.hero.lead": {
+        "ru": "Материалы, расписание, программы, новости и помощь — основные сервисы Центра дополнительного образования собраны на одной странице."
+      },
+      "custom:students.materials.title": {
+        "ru": "Материалы по коду"
+      },
+      "custom:students.materials.text": {
+        "ru": "Введите код, полученный от преподавателя. Материал откроется прямо здесь."
+      },
+      "custom:students.materials.action": {
+        "ru": "Найти материал"
+      },
+      "custom:students.schedule.title": {
+        "ru": "Расписание занятий"
+      },
+      "custom:students.schedule.text": {
+        "ru": "Быстрый доступ к актуальному расписанию занятий."
+      },
+      "custom:students.schedule.action": {
+        "ru": "Открыть расписание"
+      },
+      "custom:students.programs.title": {
+        "ru": "Программы обучения"
+      },
+      "custom:students.programs.text": {
+        "ru": "Каталог программ повышения квалификации, переподготовки и профессионального обучения."
+      },
+      "custom:students.programs.action": {
+        "ru": "Смотреть программы"
+      },
+      "custom:students.news.title": {
+        "ru": "Новости Академии"
+      },
+      "custom:students.news.text": {
+        "ru": "Актуальные новости, объявления и информация Центра дополнительного образования."
+      },
+      "custom:students.news.action": {
+        "ru": "Читать новости"
+      },
+      "custom:students.faq.title": {
+        "ru": "Частые вопросы"
+      },
+      "custom:students.faq.text": {
+        "ru": "Документы для поступления, формат обучения, диплом и совмещение занятий с работой."
+      },
+      "custom:students.faq.action": {
+        "ru": "Открыть FAQ"
+      },
+      "custom:students.payment.title": {
+        "ru": "Оплата и реквизиты"
+      },
+      "custom:students.payment.text": {
+        "ru": "Оплатите обучение через защищённую страницу Западного филиала РАНХиГС или откройте полные банковские реквизиты."
+      },
+      "custom:students.payment.action": {
+        "ru": "Перейти к оплате"
+      },
+      "custom:students.payment.requisites": {
+        "ru": "Реквизиты для оплаты"
+      },
+      "custom:students.contacts.title": {
+        "ru": "Контакты и помощь"
+      },
+      "custom:students.contacts.text": {
+        "ru": "Связь с Центром дополнительного образования и быстрые контакты."
+      },
+      "custom:students.contacts.action": {
+        "ru": "Открыть контакты"
+      },
+      "custom:students.footer.title": {
+        "ru": "Центр дополнительного профессионального образования"
+      },
+      "custom:students.footer.subtitle": {
+        "ru": "Академия кадров • Западный филиал Президентской академии"
       }
     },
     "attributes": {
@@ -24,11 +110,8 @@
     "customNavItems": [],
     "customDocs": [],
     "customBlocks": [],
-    "theme": {
-      "accent": "#c7002e",
-      "burgundy": "#b30036"
-    },
+    "theme": {},
     "seo": {},
-    "updatedAt": "2026-09-29T10:55:00.456Z"
+    "updatedAt": "2026-10-01T15:57:12.845Z"
   }
 }
