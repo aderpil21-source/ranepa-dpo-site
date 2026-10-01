@@ -4722,24 +4722,14 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
 
     function animateAssembly(tabId) {
-        if (isMobile()) return;
-
+        // Motion preview: intentionally disable the legacy random 100–500px
+        // puzzle flight. Switching tabs should feel stable, not re-animate cards.
         const cards = document.querySelectorAll('#' + tabId + ' .card');
-        cards.forEach((card, index) => {
-            const signX = Math.random() > 0.5 ? 1 : -1;
-            const signY = Math.random() > 0.5 ? 1 : -1;
-            card.style.setProperty('--x-dist', (Math.random() * 400 + 100) * signX + 'px');
-            card.style.setProperty('--y-dist', (Math.random() * 400 + 100) * signY + 'px');
-            card.classList.remove('puzzle-piece', 'glow-effect');
-            void card.offsetWidth;
-            const delay = Math.min(index * 0.15, 3);
-            card.style.animationDelay = delay + 's';
-            card.style.animationDuration = (4 - delay) + 's';
-            card.classList.add('puzzle-piece');
-            setTimeout(() => {
-                card.classList.add('glow-effect');
-                setTimeout(() => card.classList.remove('glow-effect'), 1800);
-            }, (delay + (4 - delay)) * 1000 * 0.3);
+        cards.forEach((card) => {
+            card.classList.remove('puzzle-piece', 'glow-effect', 'reveal-3d');
+            card.style.animation = 'none';
+            card.style.animationDelay = '0s';
+            card.style.animationDuration = '0s';
         });
     }
 
@@ -5187,7 +5177,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
     function armRevealTargets(root = document) {
-        root.querySelectorAll('.card, .faq-item, .contact-card, .main-contact-box, .sector-header').forEach(el => {
+        root.querySelectorAll('.faq-item, .contact-card, .main-contact-box, .sector-header').forEach(el => {
             if (!el.classList.contains('reveal-3d')) {
                 el.classList.add('reveal-3d');
                 revealObserver.observe(el);
@@ -5900,12 +5890,16 @@ if (legacyNewsHash.startsWith('#news=')) {
 <script src="../owl-engine.js?v=20261001-19"></script>
 <script src="../portal-live-alert.js?v=20261001-2"></script>
 
-<script id="wow-v8-inline">
+<script id="wow-v9-inline">
 (()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
 const q=(s,r=document)=>[...r.querySelectorAll(s)],fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
-document.documentElement.dataset.wow='8';
+document.documentElement.dataset.wow='9';
 const st=document.createElement('style');st.textContent=`
 @media(prefers-reduced-motion:no-preference){
+.card{transform:none!important;animation:none!important;}
+.card:hover{transform:translateY(-5px)!important;box-shadow:0 22px 55px var(--shadow-color),0 0 26px rgba(202,15,62,.10)!important;}
+.card.reveal-3d,.card.reveal-3d.in-view,.card.puzzle-piece,.card.glow-effect{opacity:1!important;transform:none!important;animation:none!important;}
+
 .w7-up,.w7-left,.w7-right,.w7-scale{opacity:0!important;filter:blur(8px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform 1.05s cubic-bezier(.16,1,.3,1),filter .8s ease!important}
 .w7-up{transform:translateY(58px) scale(.97)!important}.w7-left{transform:translateX(-72px) rotate(-1.5deg)!important}.w7-right{transform:translateX(72px) rotate(1.5deg)!important}.w7-scale{transform:scale(.88)!important}
 .w7-in{opacity:1!important;transform:none!important;filter:none!important}
