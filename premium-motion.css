@@ -80,7 +80,6 @@
   #newsGrid .card .news-card-cover{
     transform:scale(1.001);
     transition:transform 640ms var(--pm-ease),filter 360ms ease;
-    will-change:transform;
   }
   @media (hover:hover) and (pointer:fine){
     #newsGrid .card:hover .news-card-cover{transform:scale(1.035)}
@@ -125,4 +124,22 @@
   .news-detail-title,.news-detail-lead,.news-body-text,.news-insert,.news-media-figure{
     will-change:auto;
   }
+}
+
+/* ===== Premium modal entrances ===== */
+@media (prefers-reduced-motion:no-preference){
+  .section-modal.active,
+  .requisites-modal.active,
+  .deep-view.active,
+  .enroll-overlay.active{
+    animation:pmOverlayIn 180ms ease-out both;
+  }
+  .section-modal.active .section-modal-box,
+  .requisites-modal.active .requisites-dialog,
+  .deep-view.active .deep-view-shell,
+  .enroll-overlay.active .enroll-box{
+    animation:pmModalIn 360ms var(--pm-ease) both;
+  }
+  @keyframes pmOverlayIn{from{opacity:0}to{opacity:1}}
+  @keyframes pmModalIn{from{opacity:.01;transform:translate3d(0,14px,0) scale(.985)}to{opacity:1;transform:none}}
 }
