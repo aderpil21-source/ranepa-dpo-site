@@ -414,12 +414,28 @@ async function handleUserMessage() {
                 /(документ[а-я-]*|паспорт[а-я-]*|снилс|поступлен[а-я-]*|зачислен[а-я-]*|диплом[а-я-]*|удостоверен[а-я-]*|сертификат[а-я-]*|фрдо)/i
                     .test(normalizeText(String(originalText || '').replace(/ё/g, 'е')));
 
+            const normalizedOriginal = owlSmartNormalize(originalText);
+            const explicitProgramRequest =
+                owlIntent('programs', originalText) ||
+                /\b(программ|курс|обучен|переподготов|квалификац|что.*посмотреть|что.*подобрать|подбери|посоветуй)\w*/i.test(normalizedOriginal);
+            const explicitStaffRequest =
+                owlStaffContextRequested(originalText) ||
+                /\b(сотрудник|преподавател|директор|заместител|руководител|специалист|методист|контакт|телефон|номер|почт|email|кабинет|кто такая|кто такой|как связат|кому написат|кому позвон)\w*/i.test(normalizedOriginal);
+
             const learnedRule = protectedGeneralQuery ? null : window.OwlLearning.lookup(originalText);
             if (learnedRule) {
-                if (learnedRule.action === 'preset' && learnedRule.value) {
-                    text = learnedRule.value;
-                } else if (await owlApplyLearnedRule(learnedRule)) {
-                    return;
+                // Обучение не имеет права менять тип намерения пользователя.
+                // Старое ошибочное правило "запрос программы -> сотрудник" игнорируем.
+                const conflictsWithIntent =
+                    (explicitProgramRequest && learnedRule.action === 'staff' && !explicitStaffRequest) ||
+                    (explicitStaffRequest && learnedRule.action === 'program' && !explicitProgramRequest);
+
+                if (!conflictsWithIntent) {
+                    if (learnedRule.action === 'preset' && learnedRule.value) {
+                        text = learnedRule.value;
+                    } else if (await owlApplyLearnedRule(learnedRule)) {
+                        return;
+                    }
                 }
             }
         } catch (e) {}
