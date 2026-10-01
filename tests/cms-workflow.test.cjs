@@ -448,4 +448,26 @@ assert(
   'Kaliningrad 21:00 schedule cutoff clock must survive closing the schedule overlay'
 );
 
+
+const owlEngine = fs.readFileSync('owl-engine.js','utf8');
+assert(
+  owlEngine.includes("if (switcher) switcher.hidden = false") &&
+  owlEngine.includes("if (target === 'advanced') owlConversationState.advancedUnlocked = true"),
+  'Owl advanced mode must be selectable immediately'
+);
+assert(
+  owlEngine.includes("function owlRecentConversationContext") &&
+  owlEngine.includes("conversation: owlRecentConversationContext()") &&
+  owlEngine.includes("lastProgramId: owlConversationState.lastProgramId"),
+  'Owl advanced AI must receive safe current-conversation context'
+);
+assert(
+  owlEngine.includes("function owlProgramProbability") &&
+  owlEngine.includes("titleScore * 0.56") &&
+  owlEngine.includes("descriptionScore * 0.24") &&
+  owlEngine.includes("metaScore * 0.20") &&
+  owlEngine.includes("lead.score - runnerUp.score >= 0.16"),
+  'Owl program matching must compare weighted hypotheses before auto-selecting'
+);
+
 console.log('CMS workflow regression checks passed');
