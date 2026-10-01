@@ -566,6 +566,22 @@ return;
     }
 
     const hasFactQuestion = owlRequestedFacets(text).length > 0;
+
+    // Контекстные вопросы не запускают новый вероятностный поиск.
+    const refersToCurrentProgram = /\b(эта|этой|эту|этот|этого|этому)\s+(программ|курс)\w*/i.test(owlSmartNormalize(text));
+    if (hasFactQuestion && refersToCurrentProgram) {
+        const currentProgram = owlLastProgramContext();
+        if (!currentProgram) {
+            addBotMsg('Уточните, пожалуйста, название программы. Я не хочу угадывать и показывать неверный вариант.');
+            setOptions(owlGuidedFallbackOptions());
+            return;
+        }
+        const contextAnswer = owlProgramFactResponse(currentProgram, owlRequestedFacets(text), text);
+        if (contextAnswer && contextAnswer.handled) {
+            await presentOwlLocal(contextAnswer, text);
+            return;
+        }
+    }
     const hardProgramDiscovery = owlIsProgramDiscoveryRequest(text);
     const hardStaffRequest = owlIsExplicitStaffRequest(text);
     if (hardProgramDiscovery && !hardStaffRequest) {
