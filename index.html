@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" id="htmlRoot" data-theme="dark">
 <head>
+<script>(function(){try{if(new URLSearchParams(location.search).get('owlEmbed')==='1')document.documentElement.classList.add('owl-embed-mode');}catch(_){}})();</script>
 <link rel="stylesheet" href="./theme.css?v=1">
 <!-- SEO: generated -->
 <meta name="description" content="Программы профессиональной переподготовки и повышения квалификации в Калининграде. Очно и дистанционно. Госзакупки, управление и другие направления ДПО РАНХиГС.">
@@ -1656,7 +1657,18 @@
             .site-admin-panel { top: 10px; right: 12px; max-height: calc(100vh - 20px); }
         }
 
-    </style>
+    
+        html.owl-embed-mode,html.owl-embed-mode body{background:transparent!important;min-height:100%!important;overflow:hidden!important}
+        html.owl-embed-mode body::before,html.owl-embed-mode body::after{display:none!important}
+        html.owl-embed-mode body>*:not(#owlContainer):not(#owlChat){display:none!important}
+        html.owl-embed-mode #owlContainer{display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;right:0!important;bottom:0!important;pointer-events:auto!important}
+        html.owl-embed-mode #owlContainer .oak-branch{opacity:1!important}
+        html.owl-embed-mode #owlChat{right:14px!important;bottom:94px!important;max-height:calc(100vh - 110px)!important}
+        @media(max-width:680px){
+          html.owl-embed-mode #owlChat{left:8px!important;right:8px!important;bottom:8px!important;width:calc(100vw - 16px)!important;height:calc(100vh - 16px)!important;max-height:none!important}
+          html.owl-embed-mode #owlContainer{display:none!important}
+        }
+</style>
 </head>
 <body>
 
