@@ -115,7 +115,7 @@ function renderSchedule() {
   list.innerHTML = html;
 }
 
-async function initSchedule(silent) {
+async function loadScheduleSnapshot(silent) {
   const list = document.getElementById('scheduleList');
   if (!silent) list.innerHTML = '<div class="empty">Загрузка расписания…</div>';
   try {
@@ -127,21 +127,37 @@ async function initSchedule(silent) {
 
     const programs = [...new Set(scheduleCache.map(x => x.program).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
     const select = document.getElementById('scheduleProgram');
+    const previousValue = select.value;
+    while (select.options.length > 1) select.remove(1);
     programs.forEach(name => {
       const o = document.createElement('option');
-      o.value = name; o.textContent = name; select.appendChild(o);
+      o.value = name;
+      o.textContent = name;
+      select.appendChild(o);
     });
+    if (programs.includes(previousValue)) select.value = previousValue;
 
-    document.getElementById('scheduleSearch').addEventListener('input', renderSchedule);
-    select.addEventListener('change', renderSchedule);
     renderSchedule();
-    scheduleNextCutoffRefresh();
-    if (schedulePollTimer) clearInterval(schedulePollTimer);
-    schedulePollTimer = setInterval(() => initSchedule(true), 60 * 1000);
+    return true;
   } catch (e) {
     console.error(e);
-    list.innerHTML = '<div class="empty">Не удалось загрузить расписание.</div>';
+    if (!silent) list.innerHTML = '<div class="empty">Не удалось загрузить расписание.</div>';
+    return false;
   }
+}
+
+async function initSchedule() {
+  const loaded = await loadScheduleSnapshot(false);
+  if (!loaded) return;
+
+  document.getElementById('scheduleSearch').addEventListener('input', renderSchedule);
+  document.getElementById('scheduleProgram').addEventListener('change', renderSchedule);
+
+  scheduleNextCutoffRefresh();
+  if (schedulePollTimer) clearInterval(schedulePollTimer);
+  schedulePollTimer = setInterval(() => {
+    loadScheduleSnapshot(true);
+  }, 60 * 1000);
 }
 
 document.addEventListener('DOMContentLoaded', initSchedule);
