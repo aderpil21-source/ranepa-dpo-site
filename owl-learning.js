@@ -5,6 +5,8 @@
     const LEARNING_QUEUE_KEY = 'ranepa_owl_learning_queue_v1';
     const PENDING_KEY = 'ranepa_owl_learning_pending_v1';
     const SESSION_KEY = 'ranepa_owl_learning_session_v1';
+    const SHARED_REFRESH_AT_KEY = 'ranepa_owl_shared_refresh_at_v1';
+    const SHARED_REFRESH_TTL_MS = 10 * 60 * 1000;
     const LAST_RESOLVED_KEY = 'ranepa_owl_learning_last_resolved_v1';
 
     const MAX_RULES = 240;
@@ -284,9 +286,18 @@
         return accepted;
     }
 
-    async function refreshShared(endpoint) {
+    async function refreshShared(endpoint, options) {
         endpoint = String(endpoint || window.OWL_LEARNING_ENDPOINT || '').trim();
         if (!endpoint) return { ok:false, reason:'no_endpoint' };
+
+        const opts = options && typeof options === 'object' ? options : {};
+        if (!opts.force) {
+            const lastAt = Number(localStorage.getItem(SHARED_REFRESH_AT_KEY) || 0);
+            if (lastAt && Date.now() - lastAt < SHARED_REFRESH_TTL_MS) {
+                return { ok:true, skipped:true, reason:'fresh_cache' };
+            }
+        }
+
         try {
             const url = endpoint + (endpoint.includes('?') ? '&' : '?') + 'action=owl_learning_rules';
             const response = await fetch(url, { method:'GET', mode:'cors', cache:'no-store' });
@@ -295,7 +306,9 @@
             if (!payload || payload.ok === false || !Array.isArray(payload.rules)) {
                 return { ok:false, reason:'bad_payload' };
             }
-            return { ok:true, imported:importSharedRules(payload.rules) };
+            const imported = importSharedRules(payload.rules);
+            try { localStorage.setItem(SHARED_REFRESH_AT_KEY, String(Date.now())); } catch (e) {}
+            return { ok:true, imported:imported };
         } catch (e) {
             return { ok:false, reason:e && e.name ? e.name : 'network' };
         }
