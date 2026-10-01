@@ -47,7 +47,7 @@ jobs:
             "$API_URL" \
             --output "$tmp_file"
 
-          python - "$tmp_file" program-data.json portal-data.json schedule-data.json owl-files.json portal-snapshot.js <<'PY'
+          python - "$tmp_file" program-data.json portal-data.json schedule-data.json owl-files.json portal-snapshot.js portal-alert.json <<'PY'
           import json
           import sys
           from datetime import datetime, timezone
@@ -59,6 +59,7 @@ jobs:
           schedule_path = Path(sys.argv[4])
           owl_path = Path(sys.argv[5])
           snapshot_js_path = Path(sys.argv[6])
+          alert_path = Path(sys.argv[7])
 
           data = json.loads(api_path.read_text(encoding="utf-8"))
           if not isinstance(data, dict):
@@ -166,6 +167,13 @@ jobs:
           if not isinstance(current_owl, dict) or current_owl.get("owlFiles") != owl_files:
               write_json(owl_path, {"generatedAt": now, "owlFiles": owl_files})
               print("owl-files.json updated")
+
+          # Tiny public alert snapshot: safe to poll from thousands of browsers
+          # without touching Apps Script/Google Sheets.
+          current_alert_file = read_json(alert_path)
+          if not isinstance(current_alert_file, dict) or current_alert_file.get("currentAlert") != current_alert:
+              write_json(alert_path, {"generatedAt": now, "currentAlert": current_alert})
+              print("portal-alert.json updated")
           PY
 
           rm -f "$tmp_file"
@@ -178,7 +186,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if git diff --quiet -- portal-data.json schedule-data.json owl-files.json portal-snapshot.js sitemap.xml; then
+          if git diff --quiet -- portal-data.json schedule-data.json owl-files.json portal-snapshot.js portal-alert.json sitemap.xml; then
             echo "Public portal snapshots are already up to date"
             exit 0
           fi
@@ -186,6 +194,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add portal-data.json schedule-data.json owl-files.json portal-snapshot.js sitemap.xml
+          git add portal-data.json schedule-data.json owl-files.json portal-snapshot.js portal-alert.json sitemap.xml
           git commit -m "data: refresh public portal snapshots"
           git push
