@@ -840,7 +840,7 @@ function updateOwlModeUI() {
     const normalBtn = document.getElementById('owlModeNormalBtn');
     const advancedBtn = document.getElementById('owlModeAdvancedBtn');
 
-    if (switcher) switcher.hidden = !state.advancedUnlocked;
+    if (switcher) switcher.hidden = false;
     if (badge) {
         const advanced = state.mode === 'advanced';
         badge.textContent = advanced ? 'Расширенный' : 'Обычный';
@@ -855,7 +855,7 @@ function updateOwlModeUI() {
 
 function setOwlMode(mode, announce) {
     const target = mode === 'advanced' ? 'advanced' : 'normal';
-    if (target === 'advanced' && !owlConversationState.advancedUnlocked) return;
+    if (target === 'advanced') owlConversationState.advancedUnlocked = true;
 
     owlConversationState.mode = target;
     if (target === 'advanced') {
