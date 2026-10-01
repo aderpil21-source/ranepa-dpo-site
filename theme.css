@@ -87,3 +87,46 @@ html[data-theme="light"] .position,
 html[data-theme="light"] .lesson-program{
   color:#A00F33!important;
 }
+
+
+/* Listener page: explicit light-theme contrast */
+html[data-theme="light"] .audience-card .action.secondary,
+html[data-theme="light"] .payment-card-actions .action.secondary{
+  background:#fff!important;
+  color:#9f1239!important;
+  border-color:rgba(159,18,57,.34)!important;
+  box-shadow:0 6px 16px rgba(15,23,42,.07)!important;
+}
+html[data-theme="light"] .audience-card .action.secondary:hover,
+html[data-theme="light"] .payment-card-actions .action.secondary:hover{
+  background:#fff1f4!important;
+  color:#881337!important;
+  border-color:rgba(159,18,57,.58)!important;
+}
+html[data-theme="light"] .payment-tool,
+html[data-theme="light"] .payment-hide,
+html[data-theme="light"] .copy-row button,
+html[data-theme="light"] .requisites-close{
+  background:#fff!important;
+  color:#111827!important;
+  border-color:rgba(15,23,42,.18)!important;
+}
+html[data-theme="light"] .requisites-head{background:rgba(248,250,252,.98)!important}
+html[data-theme="light"] .requisites-body,
+html[data-theme="light"] .payment-online-copy p,
+html[data-theme="light"] .payment-callout p,
+html[data-theme="light"] .payment-section-body p,
+html[data-theme="light"] .detail-step p,
+html[data-theme="light"] .mini-steps{color:#536072!important}
+html[data-theme="light"] .payment-online-link,
+html[data-theme="light"] .payment-section-body strong,
+html[data-theme="light"] .payment-situations summary,
+html[data-theme="light"] .detail-step h5{color:#111827!important}
+html[data-theme="light"] .payment-section,
+html[data-theme="light"] .payment-steps>li,
+html[data-theme="light"] .copy-row,
+html[data-theme="light"] .payment-situations details{
+  background:#fff!important;
+  border-color:rgba(15,23,42,.13)!important;
+}
+html[data-theme="light"] .material-result.error{color:#9f1239!important;background:#fff1f4!important}
