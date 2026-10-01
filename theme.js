@@ -93,6 +93,11 @@
     }
     const list=document.querySelector('.faq-list');
     if(list) list.style.display=visible('faq')?'':'none';
+    document.querySelectorAll('[data-site-visibility-key]').forEach(el=>{
+      const key=String(el.getAttribute('data-site-visibility-key')||'').trim();
+      if(!key) return;
+      el.style.display=visible(key)?'':'none';
+    });
   }
   function renderCustomNav(){
     document.querySelectorAll('.site-custom-nav-item').forEach(n=>n.remove());
