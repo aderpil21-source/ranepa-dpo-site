@@ -6,14 +6,14 @@ const seen=new WeakSet(), observed=new WeakSet();
 const selectors=[
   '.page-kicker','.page-title','.page-lead','.schedule-header',
   '.toolbar','.panel','.contact-card','.faq-item',
-  '.audience-hero','.audience-card','.material-card','.payment-card',
+  '.audience-kicker','.audience-hero h1','.audience-hero p','.audience-card','.material-card','.payment-card',
   '.hero .eyebrow','.hero h1','.hero .lead','.meta-card','.section','.side-card',
   '.related-section','.news-card','.news-tags-bar',
   '.grid > *','.schedule-list > *'
 ].join(',');
 let observer=null;
 function variant(el,i){
-  if(el.matches('.page-kicker,.page-title,.page-lead,.schedule-header,.audience-hero,.hero h1,.hero .lead'))return '';
+  if(el.matches('.page-kicker,.page-title,.page-lead,.schedule-header,.audience-kicker,.audience-hero h1,.audience-hero p,.hero h1,.hero .lead'))return '';
   if(el.matches('.faq-item') && i%2)return ' pm-from-right';
   if(el.matches('.section,.panel') && i%3===1)return ' pm-scale';
   return i%4===2?' pm-from-left':'';
