@@ -249,6 +249,57 @@
         return Array.isArray(rules) ? rules : [];
     }
 
+    function importSharedRules(items) {
+        if (!Array.isArray(items)) return 0;
+        const rules = getRules().filter(rule => rule && rule.source !== 'shared');
+        let accepted = 0;
+
+        items.slice(0, 240).forEach(item => {
+            if (!item || String(item.status || '').toLowerCase() !== 'active') return;
+            const confirmations = Number(item.confirmations || 0);
+            const rejections = Number(item.rejections || 0);
+            if (confirmations < 2 || confirmations <= rejections) return;
+
+            const phrase = safeText(item.phrase);
+            const action = String(item.action || '').slice(0, 40);
+            const value = safeText(item.value || '');
+            if (!phrase || !action || !value) return;
+            if (!['program','preset','filter','staff'].includes(action)) return;
+
+            rules.push({
+                phrase,
+                action,
+                value,
+                hits: confirmations,
+                confirmations,
+                rejections,
+                updatedAt: Date.now(),
+                source: 'shared'
+            });
+            accepted++;
+        });
+
+        saveRules(rules);
+        return accepted;
+    }
+
+    async function refreshShared(endpoint) {
+        endpoint = String(endpoint || window.OWL_LEARNING_ENDPOINT || '').trim();
+        if (!endpoint) return { ok:false, reason:'no_endpoint' };
+        try {
+            const url = endpoint + (endpoint.includes('?') ? '&' : '?') + 'action=owl_learning_rules';
+            const response = await fetch(url, { method:'GET', mode:'cors', cache:'no-store' });
+            if (!response.ok) return { ok:false, reason:'http_' + response.status };
+            const payload = await response.json();
+            if (!payload || payload.ok === false || !Array.isArray(payload.rules)) {
+                return { ok:false, reason:'bad_payload' };
+            }
+            return { ok:true, imported:importSharedRules(payload.rules) };
+        } catch (e) {
+            return { ok:false, reason:e && e.name ? e.name : 'network' };
+        }
+    }
+
     function saveRules(rules) {
         const clean = Array.isArray(rules) ? rules.slice(-MAX_RULES) : [];
         writeJson(LOCAL_RULES_KEY, clean);
@@ -482,6 +533,8 @@
         queueEvent,
         getQueue,
         clearQueue,
-        flush
+        flush,
+        importSharedRules,
+        refreshShared
     };
 })();
