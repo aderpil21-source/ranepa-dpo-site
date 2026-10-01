@@ -618,12 +618,14 @@ return;
     }
 
     const cleanCode = String(text || '').trim().toUpperCase();
+    const looksLikeLectureCode = /^ЛК-(?:\d{4}|[A-F0-9]{8})$/i.test(cleanCode);
     let foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
 
-    // Если кода ещё нет в локальном списке, один раз тихо перепроверяем
-    // свежий статический снимок, прежде чем считать код неизвестным.
-    if (!foundFile) {
-        await refreshOwlFilesSnapshot({ silent: true });
+    // В Google идём только для реального формата лекционного кода.
+    // Обычные вопросы ("сколько стоит?", "госзакупки" и т.п.) больше
+    // вообще не создают live-запрос к Apps Script.
+    if (!foundFile && looksLikeLectureCode && typeof refreshOwlFilesSnapshot === 'function') {
+        await refreshOwlFilesSnapshot({ silent: true, live: true });
         foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
     }
 
