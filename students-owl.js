@@ -150,7 +150,7 @@
         <path d="M135 55 q 8 -26 24 -36 q -4 20 -10 40 Z" fill="url(#studentsBarkGrad)"/>
         <path d="M345 46 q -8 -22 -22 -30 q 4 18 10 34 Z" fill="url(#studentsBarkGrad)"/>
       </svg>
-      <button class="students-owl-visibility-toggle" type="button" aria-label="Скрыть сову" title="Скрыть сову" aria-pressed="false" data-system-ui="owl" data-site-admin-protected="true"><span class="students-owl-toggle-arrow">‹</span></button>
+      <button class="students-owl-visibility-toggle" type="button" aria-label="Скрыть сову" title="Скрыть сову" aria-pressed="false" data-system-ui="owl" data-site-admin-protected="true"><span class="students-owl-toggle-arrow">›</span></button>
       <button class="students-owl-hit" type="button" aria-label="Открыть цифрового ассистента Сову">
         <span class="students-owl-bubble">Нужна помощь с выбором программы?</span>
         <span class="students-owl-media-stage" aria-hidden="true">
