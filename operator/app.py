@@ -86,6 +86,59 @@ def session_short(session_id):
     return hashlib.sha256(session_id.encode('utf-8')).hexdigest()[:12]
 
 
+OPERATOR_ALIASES = ('Анна', 'Мария', 'Елена', 'Ирина', 'Дарья', 'Ольга', 'Алексей', 'Никита')
+
+
+def ensure_operator_alias(session):
+    current = clean_text(session.get('operator_name'), 40) if isinstance(session, dict) else ''
+    if current:
+        return current
+    seed = str((session or {}).get('id') or (session or {}).get('short') or 'owl')
+    digest = hashlib.sha256(seed.encode('utf-8')).digest()
+    alias = OPERATOR_ALIASES[digest[0] % len(OPERATOR_ALIASES)]
+    session['operator_name'] = alias
+    return alias
+
+
+def rehydrate_session(session_id, secret='', status='waiting'):
+    with lock:
+        existing = sessions.get(session_id)
+        if existing:
+            if not existing.get('secret') and secret:
+                existing['secret'] = secret
+                existing['recovered'] = False
+            return existing
+        short = session_short(session_id)
+        session = {
+            'id': session_id,
+            'short': short,
+            'secret': secret,
+            'status': status,
+            'operator_name': '',
+            'created_at': now_ts(),
+            'updated_at': now_ts(),
+            'next_event_id': 1,
+            'events': [],
+            'recovered': True
+        }
+        sessions[session_id] = session
+        short_to_session[short] = session_id
+        add_event(session, 'status', status=status, reason='recovered')
+        return session
+
+
+def resolve_session_ref(ref, recover=False):
+    ref = str(ref or '').strip()
+    with lock:
+        if valid_session_id(ref) and len(ref) > 12:
+            session = sessions.get(ref)
+            if not session and recover:
+                session = rehydrate_session(ref, '', 'waiting')
+            return session
+        session_id = short_to_session.get(ref.lower()) if re.fullmatch(r'[a-f0-9]{12}', ref, re.I) else None
+        return sessions.get(session_id) if session_id else None
+
+
 def add_event(session, event_type, **data):
     next_id = int(session.get('next_event_id', 1))
     event = {'id': next_id, 'type': event_type, **data, 'at': now_ts()}
@@ -103,7 +156,11 @@ def get_session(session_id, secret=None, allow_closed=True):
         if not session:
             return None
         if secret is not None and session.get('secret') != secret:
-            return None
+            if not session.get('secret') and session.get('recovered') and valid_secret(secret):
+                session['secret'] = secret
+                session['recovered'] = False
+            else:
+                return None
         if now_ts() - int(session.get('updated_at', 0)) > SESSION_TTL_SECONDS:
             if session.get('status') != 'closed':
                 session['status'] = 'closed'
@@ -128,11 +185,16 @@ def tg(method, payload=None, timeout=20):
     return data.get('result')
 
 
-def keyboard(short):
+def keyboard(session):
+    session_id = str(session.get('id') or '')
+    short = str(session.get('short') or '')
+    use_id = bool(valid_session_id(session_id) and len(session_id) <= 48)
+    reply_data = f'owl_replyid:{session_id}' if use_id else f'owl_reply:{short}'
+    end_data = f'owl_endid:{session_id}' if use_id else f'owl_end:{short}'
     return {
         'inline_keyboard': [[
-            {'text': '✍️ Ответить', 'callback_data': f'owl_reply:{short}'},
-            {'text': '✅ Завершить', 'callback_data': f'owl_end:{short}'}
+            {'text': '👀 Открыть и ответить', 'callback_data': reply_data},
+            {'text': '✅ Завершить', 'callback_data': end_data}
         ]]
     }
 
@@ -157,12 +219,13 @@ def send_start_card(session, conversation, page):
         '🦉 Новый запрос оператору с сайта\n\n'
         + (context if context else 'Контекст чата не передан.')
         + ('\n\n🌐 ' + page_line if page_line else '')
-        + f'\n\nOWL_SESSION:{short}'
+        + '\n\nНажмите «👀 Открыть и ответить», чтобы посетитель увидел подключение оператора.'
+        + f'\n\nOWL_SESSION_ID:{session["id"]}'
     )
     return tg('sendMessage', {
         'chat_id': OPERATOR_CHAT_ID,
         'text': text[:3900],
-        'reply_markup': keyboard(short),
+        'reply_markup': keyboard(session),
         'disable_web_page_preview': True
     })
 
@@ -174,11 +237,11 @@ def send_user_message_card(session, text, page=''):
     msg = '🦉 Сообщение с сайта\n\n👤 ' + body
     if page_line:
         msg += '\n\n🌐 ' + page_line
-    msg += f'\n\nOWL_SESSION:{short}'
+    msg += f'\n\nOWL_SESSION_ID:{session["id"]}'
     return tg('sendMessage', {
         'chat_id': OPERATOR_CHAT_ID,
         'text': msg[:3900],
-        'reply_markup': keyboard(short),
+        'reply_markup': keyboard(session),
         'disable_web_page_preview': True
     })
 
@@ -236,7 +299,8 @@ def handoff_start():
                 'created_at': now_ts(),
                 'updated_at': now_ts(),
                 'next_event_id': 1,
-                'events': []
+                'events': [],
+                'recovered': False
             }
             sessions[session_id] = session
             short_to_session[short] = session_id
@@ -272,8 +336,10 @@ def handoff_message():
     if not text:
         return jsonify({'ok': False, 'error': 'empty_message'}), 400
 
-    session = get_session(session_id, secret, allow_closed=False)
+    session = get_session(session_id, secret, allow_closed=True)
     if not session:
+        session = rehydrate_session(session_id, secret, 'waiting')
+    if session.get('status') == 'closed':
         return jsonify({'ok': False, 'error': 'session_not_active'}), 404
 
     try:
@@ -302,7 +368,7 @@ def handoff_events():
 
     session = get_session(session_id, secret, allow_closed=True)
     if not session:
-        return jsonify({'ok': False, 'error': 'session_not_found'}), 404
+        session = rehydrate_session(session_id, secret, 'waiting')
 
     with lock:
         events = [e for e in session.get('events', []) if int(e.get('id', 0)) > after]
@@ -356,50 +422,52 @@ def operator_display(user):
     return full or user.get('username') or 'Оператор Центра ДПО'
 
 
-def activate_reply(short, from_user, callback_id=None):
+def activate_reply(ref, from_user, callback_id=None):
     with lock:
-        session_id = short_to_session.get(short)
-        session = sessions.get(session_id) if session_id else None
-        if not session or session.get('status') == 'closed':
+        session = resolve_session_ref(ref, recover=True)
+        if not session:
+            if callback_id:
+                callback_answer(callback_id, 'Диалог не найден. Откройте самый новый запрос.')
+            return
+        if session.get('status') == 'closed':
             if callback_id:
                 callback_answer(callback_id, 'Диалог уже закрыт')
             return
 
-        name = operator_display(from_user)
+        name = ensure_operator_alias(session)
         session['status'] = 'active'
-        session['operator_name'] = name
         add_event(session, 'status', status='active', operator_name=name)
         admin_id = str((from_user or {}).get('id') or '')
         if admin_id:
-            reply_state[admin_id] = (short, now_ts() + 600)
+            reply_state[admin_id] = (session['id'], now_ts() + 600)
+        logging.info('Owl operator accepted session=%s alias=%s', session['short'], name)
 
     try:
         tg('sendMessage', {
             'chat_id': OPERATOR_CHAT_ID,
             'text': (
-                '✍️ Ответ посетителю сайта\n'
+                f'🟢 Вы подключились как оператор {name}.\n'
                 'Напишите следующее сообщение — оно появится прямо в чате Совы.\n\n'
-                f'OWL_REPLY:{short}'
+                f'OWL_REPLY_ID:{session["id"]}'
             ),
             'reply_markup': {'force_reply': True, 'selective': True}
         })
         if callback_id:
-            callback_answer(callback_id, 'Пишите ответ')
+            callback_answer(callback_id, f'Открыто. Вы — оператор {name}')
     except Exception:
         logging.exception('Failed to arm operator reply')
 
 
-def close_from_telegram(short, from_user, callback_id=None):
+def close_from_telegram(ref, from_user, callback_id=None):
     with lock:
-        session_id = short_to_session.get(short)
-        session = sessions.get(session_id) if session_id else None
+        session = resolve_session_ref(ref, recover=False)
         if not session:
             if callback_id:
                 callback_answer(callback_id, 'Диалог не найден')
             return
         if session.get('status') != 'closed':
             session['status'] = 'closed'
-            name = operator_display(from_user)
+            name = ensure_operator_alias(session)
             add_event(session, 'status', status='closed', reason='operator', operator_name=name)
 
     if callback_id:
@@ -407,7 +475,7 @@ def close_from_telegram(short, from_user, callback_id=None):
     try:
         tg('sendMessage', {
             'chat_id': OPERATOR_CHAT_ID,
-            'text': f'✅ Диалог с посетителем завершён.\n\nOWL_SESSION:{short}'
+            'text': f'✅ Диалог с посетителем завершён.\n\nOWL_SESSION:{session["short"]}'
         })
     except Exception:
         logging.exception('Failed to announce operator close')
@@ -416,6 +484,9 @@ def close_from_telegram(short, from_user, callback_id=None):
 def marker_from_message(message):
     reply = (message or {}).get('reply_to_message') or {}
     src = str(reply.get('text') or reply.get('caption') or '')
+    match = re.search(r'OWL_(?:REPLY_ID|SESSION_ID):([A-Za-z0-9_-]{12,100})', src)
+    if match:
+        return match.group(1)
     match = re.search(r'OWL_(?:REPLY|SESSION):([a-f0-9]{12})', src, re.I)
     if match:
         return match.group(1).lower()
@@ -423,9 +494,9 @@ def marker_from_message(message):
     user_id = str(((message or {}).get('from') or {}).get('id') or '')
     pending = reply_state.get(user_id)
     if pending:
-        short, expires = pending
+        ref, expires = pending
         if expires >= now_ts():
-            return short
+            return ref
         reply_state.pop(user_id, None)
     return ''
 
@@ -438,18 +509,16 @@ def handle_operator_message(message):
     if not text or text.startswith('/'):
         return
 
-    short = marker_from_message(message)
-    if not short:
+    ref = marker_from_message(message)
+    if not ref:
         return
 
     with lock:
-        session_id = short_to_session.get(short)
-        session = sessions.get(session_id) if session_id else None
+        session = resolve_session_ref(ref, recover=True)
         if not session or session.get('status') == 'closed':
             return
-        name = operator_display((message or {}).get('from') or {})
+        name = ensure_operator_alias(session)
         session['status'] = 'active'
-        session['operator_name'] = name
         add_event(session, 'message', text=text[:1800], operator_name=name)
         user_id = str(((message or {}).get('from') or {}).get('id') or '')
         if user_id:
@@ -458,8 +527,8 @@ def handle_operator_message(message):
     try:
         tg('sendMessage', {
             'chat_id': OPERATOR_CHAT_ID,
-            'text': f'✅ Ответ отправлен на сайт.\n\nOWL_SESSION:{short}',
-            'reply_markup': keyboard(short)
+            'text': f'✅ Ответ отправлен на сайт.\n\nOWL_SESSION:{session["short"]}',
+            'reply_markup': keyboard(session)
         })
     except Exception:
         logging.exception('Failed to acknowledge operator message')
@@ -472,14 +541,17 @@ def handle_callback(callback):
         return
 
     data = str((callback or {}).get('data') or '')
-    match = re.fullmatch(r'owl_(reply|end):([a-f0-9]{12})', data, re.I)
+    match = re.fullmatch(r'owl_(reply|end)(id)?:([A-Za-z0-9_-]{12,100})', data, re.I)
     if not match:
         return
-    action, short = match.group(1).lower(), match.group(2).lower()
+    action, id_mode, ref = match.group(1).lower(), bool(match.group(2)), match.group(3)
+    if not id_mode:
+        ref = ref.lower()
+    logging.info('Owl callback action=%s ref=%s', action, ref[:16])
     if action == 'reply':
-        activate_reply(short, (callback or {}).get('from') or {}, callback.get('id'))
+        activate_reply(ref, (callback or {}).get('from') or {}, callback.get('id'))
     else:
-        close_from_telegram(short, (callback or {}).get('from') or {}, callback.get('id'))
+        close_from_telegram(ref, (callback or {}).get('from') or {}, callback.get('id'))
 
 
 def process_update(update):
