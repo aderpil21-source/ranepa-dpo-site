@@ -65,6 +65,53 @@
         return state.status === 'waiting' || state.status === 'active';
     }
 
+    function normalizeOperatorCommand(value) {
+        return String(value || '')
+            .toLowerCase()
+            .replace(/ё/g, 'е')
+            .replace(/[.,!?;:()[\]{}"'«»]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function wantsOperator(text) {
+        const value = normalizeOperatorCommand(text);
+        if (!value) return false;
+
+        const exact = new Set([
+            'оператор',
+            'оператора',
+            'позови оператора',
+            'позвать оператора',
+            'вызови оператора',
+            'вызвать оператора',
+            'хочу оператора',
+            'нужен оператор',
+            'нужна помощь оператора',
+            'живой человек',
+            'позови человека',
+            'хочу живого человека',
+            'соедини с оператором',
+            'соедините с оператором',
+            'соедини с человеком',
+            'соедините с человеком',
+            'соедини с сотрудником',
+            'соедините с сотрудником',
+            'хочу поговорить с оператором',
+            'хочу поговорить с человеком',
+            'хочу поговорить с сотрудником',
+            'менеджер',
+            'позови менеджера',
+            'вызови менеджера',
+            'соедини с менеджером',
+            'сотрудник',
+            'позови сотрудника'
+        ]);
+        if (exact.has(value)) return true;
+
+        return /^(?:пожалуйста\s+)?(?:позови|позвать|вызови|вызвать|соедини|соедините|переключи|переключите)\s+(?:меня\s+)?(?:с\s+)?(?:оператором|оператора|оператор|человеком|человека|сотрудником|сотрудника|менеджером|менеджера)$/.test(value);
+    }
+
     function operatorButtonHtml() {
         if (isOperatorMode()) {
             return '<div class="owl-guided-hint" data-owl-operator-status style="margin-top:8px;">' +
@@ -313,6 +360,15 @@
             const hasOverride = typeof messageOverride === 'string';
             const text = (hasOverride ? messageOverride : (input ? input.value : '')).trim();
             if (!text) return;
+
+            if (!isOperatorMode() && wantsOperator(text)) {
+                if (!alreadyRendered) {
+                    if (typeof window.addUserMsg === 'function') window.addUserMsg(text);
+                    if (input) input.value = '';
+                }
+                await startHandoff();
+                return;
+            }
 
             if (isOperatorMode()) {
                 if (!alreadyRendered) {
