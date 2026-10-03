@@ -53,9 +53,6 @@ jobs:
 
           @app.before_request
           def ensure_telegram_polling_in_http_worker():
-              # Gunicorn may import application code outside the request-serving worker.
-              # Starting the polling thread here guarantees Telegram callbacks and
-              # HTTP polling share the same in-memory session/event store.
               start_telegram_thread()
 
 
@@ -82,52 +79,22 @@ jobs:
           if old_events not in text:
               raise SystemExit('events block not found')
           text = text.replace(old_events, new_events, 1)
-          app.write_text(text, encoding='utf-8')
 
-          js = Path('owl-operator.js')
-          s = js.read_text(encoding='utf-8')
-          old_js = '''        if (event.type === 'message' && event.text) {
-              state.status = 'active';
-              saveState();
-              announcedActive = true;
-              const name = event.operator_name ? event.operator_name : 'Мария';
-              if (!announcedActive && typeof window.addBotMsg === 'function') {
-                  window.addBotMsg('🟢 <b>Оператор ' + esc(name) + ' подключился.</b>');
-              }
-              announcedActive = true;
-              showOperatorTyping(name, event.text);
-          }
-          '''
-          new_js = '''        if (event.type === 'message' && event.text) {
-              const wasAnnounced = announcedActive;
-              state.status = 'active';
-              saveState();
-              const name = event.operator_name ? event.operator_name : 'Мария';
-              if (!wasAnnounced && typeof window.addBotMsg === 'function') {
-                  window.addBotMsg('🟢 <b>Оператор ' + esc(name) + ' подключился.</b>');
-              }
-              announcedActive = true;
-              showOperatorTyping(name, event.text);
-          }
-          '''
-          if old_js not in s:
-              raise SystemExit('frontend message block not found')
-          s = s.replace(old_js, new_js, 1)
-          js.write_text(s, encoding='utf-8')
+          app.write_text(text, encoding='utf-8')
           PY
 
       - name: Validate
         run: |
           python -m py_compile operator/app.py
-          node --check owl-operator.js
           grep -F '@app.before_request' operator/app.py
+          grep -F 'Starting Owl Telegram polling in pid=' operator/app.py
           grep -F 'Owl operator message stored' operator/app.py
-          grep -F 'const wasAnnounced = announcedActive;' owl-operator.js
+          grep -F 'Owl events delivered' operator/app.py
 
       - name: Commit fix
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add operator/app.py owl-operator.js
+          git add operator/app.py
           git commit -m "Keep Owl Telegram polling in the HTTP worker"
           git push origin HEAD:feature/owl-telegram-operator
