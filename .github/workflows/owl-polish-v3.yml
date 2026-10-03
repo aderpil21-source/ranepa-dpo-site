@@ -1,0 +1,39 @@
+name: Owl operator polish v3
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/owl-telegram-operator
+          fetch-depth: 0
+
+      - name: Apply patch
+        run: python scripts/owl_polish_run.py
+
+      - name: Validate
+        run: |
+          python -m py_compile operator/app.py
+          node --check owl-operator.js
+          grep -F 'owl-operator.js?v=20261003-2' index.html
+          grep -F '👀 Открыть и ответить' operator/app.py
+          grep -F 'WAIT_REASONS' owl-operator.js
+          grep -F 'showOperatorTyping' owl-operator.js
+          grep -F 'owl_replyid:' operator/app.py
+
+      - name: Commit feature changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Polish Owl operator handoff and reply reliability"
+          git push origin HEAD:feature/owl-telegram-operator
