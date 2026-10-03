@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Apply patch
-        run: python scripts/owl_polish_v2.py
+        run: python scripts/owl_polish_run.py
 
       - name: Validate
         run: |
