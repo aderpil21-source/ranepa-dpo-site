@@ -8,6 +8,13 @@
     const STORAGE_KEY = 'ranepa_owl_operator_v1';
     const POLL_MS = 2200;
     const MAX_CONTEXT_MESSAGES = 10;
+    const WAIT_REASONS = [
+        'Передаю сотруднику контекст разговора, чтобы вам не пришлось повторять вопрос.',
+        'Проверяю, кто из специалистов Центра ДПО сейчас свободен.',
+        'Подбираю сотрудника, который лучше всего сможет помочь по вашему вопросу.',
+        'Передаю запрос операторской группе и жду, пока сотрудник откроет диалог.',
+        'Ищу свободного оператора — обычно это занимает совсем немного времени.'
+    ];
 
     let state = loadState();
     let pollTimer = null;
@@ -54,6 +61,39 @@
         return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
             '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
         })[ch]);
+    }
+
+    function randomWaitReason() {
+        return WAIT_REASONS[Math.floor(Math.random() * WAIT_REASONS.length)];
+    }
+
+    function showOperatorTyping(name, text) {
+        const root = document.getElementById('owlChat');
+        const safeName = esc(name || 'Мария');
+        const safeText = esc(text || '').replace(/\n/g, '<br>');
+        if (!root || typeof window.addBotMsg !== 'function') {
+            if (typeof window.addBotMsg === 'function') window.addBotMsg('<b>👤 Оператор ' + safeName + ':</b><br>' + safeText);
+            return;
+        }
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bot owl-operator-typing';
+        bubble.setAttribute('aria-live', 'polite');
+        bubble.innerHTML = '<b>👤 Оператор ' + safeName + '</b> печатает<span data-typing-dots>…</span>';
+        root.appendChild(bubble);
+        try { bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+        const dots = bubble.querySelector('[data-typing-dots]');
+        let step = 0;
+        const ticker = setInterval(() => {
+            step = (step + 1) % 3;
+            if (dots) dots.textContent = '.'.repeat(step + 1);
+        }, 320);
+        const delay = Math.min(4600, Math.max(1200, 850 + String(text || '').length * 24 + Math.random() * 700));
+        setTimeout(() => {
+            clearInterval(ticker);
+            if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
+            window.addBotMsg('<b>👤 Оператор ' + safeName + ':</b><br>' + safeText);
+            refreshOptions();
+        }, delay);
     }
 
     function userMessageCount() {
@@ -117,7 +157,7 @@
             return '<div class="owl-guided-hint" data-owl-operator-status style="margin-top:8px;">' +
                 (state.status === 'active'
                     ? '🟢 Оператор подключён. Пишите сообщения прямо здесь.'
-                    : '🟡 Оператор вызван. Можно продолжать писать, сообщения уже передаются сотруднику.') +
+                    : '🟡 Ждём оператора. Сообщим здесь, когда сотрудник откроет запрос.') +
                 '</div>' +
                 '<button class="chat-opt-btn" data-owl-operator-control="cancel" onclick="window.endOwlOperatorHandoff()">✕ Завершить связь с оператором</button>';
         }
@@ -188,6 +228,7 @@
 
         if (typeof window.addBotMsg === 'function') {
             window.addBotMsg('👤 Зову сотрудника Центра ДПО. Передаю оператору последние сообщения этого диалога.');
+            window.addBotMsg('⏳ <b>Ждём оператора.</b> ' + randomWaitReason());
         }
         state.status = 'waiting';
         saveState();
@@ -271,8 +312,8 @@
             if (event.status === 'active') {
                 state.status = 'active';
                 if (!announcedActive && typeof window.addBotMsg === 'function') {
-                    const who = event.operator_name ? ' — ' + esc(event.operator_name) : '';
-                    window.addBotMsg('🟢 <b>Оператор подключился' + who + '.</b> Теперь ваши сообщения идут сотруднику напрямую.');
+                    const name = event.operator_name ? esc(event.operator_name) : 'Мария';
+                    window.addBotMsg('🟢 <b>Оператор ' + name + ' подключился.</b> Теперь ваши сообщения идут сотруднику напрямую.');
                     announcedActive = true;
                 }
             } else if (event.status === 'closed') {
@@ -294,11 +335,12 @@
             state.status = 'active';
             saveState();
             announcedActive = true;
-            if (typeof window.addBotMsg === 'function') {
-                const name = event.operator_name ? esc(event.operator_name) : 'Оператор Центра ДПО';
-                window.addBotMsg('<b>👤 ' + name + ':</b><br>' + esc(event.text).replace(/\n/g, '<br>'));
+            const name = event.operator_name ? event.operator_name : 'Мария';
+            if (!announcedActive && typeof window.addBotMsg === 'function') {
+                window.addBotMsg('🟢 <b>Оператор ' + esc(name) + ' подключился.</b>');
             }
-            refreshOptions();
+            announcedActive = true;
+            showOperatorTyping(name, event.text);
         }
     }
 
