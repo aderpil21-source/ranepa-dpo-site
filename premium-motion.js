@@ -6,7 +6,10 @@
   if (!api?.animate || !api?.inView || !api?.hover || !api?.scroll) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
-  const selectors = '.card,.contact-card,.main-contact-box,.faq-item,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.related-card,.topic-grid li,.lesson,.timeline-card,.doc-card';
+  const headingSelectors = '.hero h1,.hero p,.audience-hero h1,.audience-hero p,.page-title,.page-lead,.page-kicker,.schedule-title,.section-header,.sector-header';
+  const controlSelectors = '.button,.buy-btn,.header-nav-btn,.tab-btn,.nav-enroll,.action,.cta,.cta-button,.back-btn,.control-panel-btn';
+  const cardSelectors = '.card,.contact-card,.main-contact-box,.faq-item,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.related-card,.topic-grid li,.lesson,.timeline-card,.doc-card';
+  const selectors = cardSelectors + ',' + headingSelectors;
   const modalSelector = '.modal-overlay,.section-modal,.requisites-modal,.deep-view,.enroll-overlay,.schedule-overlay';
   const boxSelector = '.modal-box,.section-modal-box,.requisites-dialog,.deep-view-shell,.enroll-box,.schedule-container';
   const records = new Map();
@@ -21,6 +24,7 @@
 
   function key(el) {
     const id = el.dataset.siteProgramId || el.dataset.motionKey || el.dataset.openid || el.dataset.siteVisibilityKey || el.id;
+    if (!id && el.matches(headingSelectors)) return 'heading:' + el.textContent.trim();
     return id ? (el.dataset.siteProgramId ? 'program:' : 'item:') + id : null;
   }
   function stop(rec) {
@@ -31,6 +35,8 @@
     stop(rec);
     el.style.opacity = '1';
     el.style.translate = '0px 0px';
+    el.style.setProperty('--motion-scale', '1');
+    el.style.setProperty('--motion-line', '1');
   }
   function play(el, values, options = {}) {
     const rec = records.get(el);
@@ -43,16 +49,84 @@
     });
   }
   function bindHover(el, rec) {
-    if (rec.hover || !fine.matches || reduce.matches || el.matches('.faq-item,.main-contact-box')) return;
+    if (rec.hover || !fine.matches || reduce.matches || el.matches(headingSelectors + ',.faq-item,.main-contact-box')) return;
+    if (!rec.isControl) bindLight(el, rec);
     rec.hover = api.hover(el, () => {
       // Retarget rather than enqueue hover over a still-running entrance.
       appeared.add(el);
       if (key(el)) seen.add(key(el));
       if (rec.batch) {releaseBatch(rec.batch, el); rec.batch = null;}
       settle(el, rec);
-      play(el, {translate: '0px -3px'}, {type: 'spring', stiffness: 380, damping: 32});
-      return () => play(el, {translate: '0px 0px'}, {type: 'spring', stiffness: 380, damping: 32});
+      play(el, {translate: rec.isControl ? '0px -2px' : '0px -7px', '--motion-scale': rec.isControl ? 1.025 : 1.012}, {type: 'spring', stiffness: 320, damping: 28});
+      return () => play(el, {translate: '0px 0px', '--motion-scale': 1}, {type: 'spring', stiffness: 320, damping: 28});
     });
+  }
+  function bindLight(el, rec) {
+    if (rec.light || !el.matches(cardSelectors) || el.matches('.faq-item,.lesson,.timeline-card')) return;
+    const oldPosition = el.style.position;
+    const needsPosition = getComputedStyle(el).position === 'static';
+    if (needsPosition) el.style.position = 'relative';
+    el.classList.add('motion-card');
+    let layer = el.querySelector(':scope > .motion-sheen');
+    if (!layer) {
+      layer = document.createElement('i');
+      layer.className = 'motion-sheen';
+      layer.setAttribute('aria-hidden', 'true');
+      el.prepend(layer);
+    }
+    let raf = 0, rect = null, x = 50, y = 50;
+    const enter = () => {rect = el.getBoundingClientRect();};
+    const move = event => {
+      if (!rect) return;
+      x = Math.max(0, Math.min(100, (event.clientX - rect.left) / rect.width * 100));
+      y = Math.max(0, Math.min(100, (event.clientY - rect.top) / rect.height * 100));
+      if (!raf) raf = requestAnimationFrame(() => {
+        raf = 0;
+        layer.style.setProperty('--light-x', x + '%');
+        layer.style.setProperty('--light-y', y + '%');
+      });
+    };
+    const leave = () => {rect = null; cancelAnimationFrame(raf); raf = 0;};
+    el.addEventListener('pointerenter', enter, {passive:true});
+    el.addEventListener('pointermove', move, {passive:true});
+    el.addEventListener('pointerleave', leave, {passive:true});
+    rec.light = () => {
+      leave();
+      el.removeEventListener('pointerenter', enter);
+      el.removeEventListener('pointermove', move);
+      el.removeEventListener('pointerleave', leave);
+      layer.remove();
+      if (needsPosition) el.style.position = oldPosition;
+    };
+  }
+  function controls(root) {
+    const nodes = [...root.querySelectorAll(controlSelectors)];
+    if (root.matches?.(controlSelectors)) nodes.unshift(root);
+    for (const el of nodes) {
+      if (records.has(el)) continue;
+      const rec = {control:null, hover:null, batch:null, isControl:true};
+      records.set(el, rec);
+      el.classList.add('motion-owned', 'motion-control');
+      bindHover(el, rec);
+      const focus = () => {
+        if (rec.pressed) return;
+        settle(el, rec);
+        play(el, {translate:'0px -2px', '--motion-scale':1.025}, {type:'spring', stiffness:320, damping:28});
+      };
+      const blur = () => play(el, {translate:'0px 0px', '--motion-scale':1}, {type:'spring', stiffness:320, damping:28});
+      el.addEventListener('focus', focus);
+      el.addEventListener('blur', blur);
+      rec.focus = () => {el.removeEventListener('focus', focus); el.removeEventListener('blur', blur);};
+      if (api.press) rec.press = api.press(el, () => {
+        rec.pressed = true;
+        settle(el, rec);
+        play(el, {'--motion-scale':0.97}, {type:'spring', stiffness:460, damping:32});
+        return () => {
+          rec.pressed = false;
+          play(el, {'--motion-scale':1, translate:'0px 0px'}, {type:'spring', stiffness:320, damping:28});
+        };
+      });
+    }
   }
   function releaseBatch(batch, el) {
     batch.pending.delete(el);
@@ -63,15 +137,17 @@
   }
   function scan(root = document) {
     if (!running) return;
+    controls(root);
     const matches = [...root.querySelectorAll(selectors)];
     if (root.matches?.(selectors)) matches.unshift(root);
     const fresh = [];
     for (const el of matches) {
       // Animate the outer card only; don't reveal its child tiles a second time.
       if (records.has(el) || el.parentElement?.closest(selectors)) continue;
-      const rec = {control: null, hover: null, batch: null};
+      const rec = {control: null, hover: null, batch: null, isHeading:el.matches(headingSelectors)};
       records.set(el, rec);
       el.classList.add('motion-owned');
+      if (rec.isHeading && !el.matches('p,.page-lead,.page-kicker')) el.classList.add('motion-heading');
       bindHover(el, rec);
       if (el.closest(modalSelector) || appeared.has(el) || reduce.matches || el.classList.contains('pm-done') || (key(el) && seen.has(key(el)))) continue;
       fresh.push(el);
@@ -87,7 +163,9 @@
       appeared.add(el);
       if (!reduce.matches && !(id && seen.has(id)) && !el.classList.contains('pm-done')) {
         if (id) seen.add(id);
-        play(el, {opacity: [0, 1], translate: ['0px 12px', '0px 0px']});
+        const distance = rec.isHeading ? 28 : (fine.matches ? 26 : 16);
+        const delay = rec.isHeading ? 0 : Math.min((fresh.indexOf(el) % 4) * 0.045, 0.135);
+        play(el, {opacity: [0, 1], translate: [`0px ${distance}px`, '0px 0px'], '--motion-line':[0, 1]}, {duration:rec.isHeading ? 0.6 : 0.5, delay});
       }
       rec.batch = null;
       releaseBatch(batch, el);
@@ -98,7 +176,7 @@
     for (const [el, rec] of records) {
       if (el.isConnected) continue;
       stop(rec);
-      rec.hover?.();
+      rec.hover?.(); rec.light?.(); rec.focus?.(); rec.press?.();
       if (rec.batch) releaseBatch(rec.batch, el);
       records.delete(el);
     }
@@ -116,7 +194,7 @@
       box.classList.add('motion-owned');
     }
     settle(box, rec);
-    if (active) play(box, {opacity: [0, 1], translate: ['0px 10px', '0px 0px']}, {duration: 0.22});
+    if (active) play(box, {opacity: [0, 1], translate: ['0px 20px', '0px 0px']}, {duration: 0.32});
   }
   function answer(el) {
     if (!el.open && !el.classList.contains('active')) return;
@@ -138,7 +216,7 @@
     const hero = document.querySelector('.hero');
     if (!hero || reduce.matches || !fine.matches) return;
     document.querySelectorAll('.shape').forEach((el, i) => {
-      const control = api.animate(el, {translate: ['0px 0px', `0px -${18 + i * 4}px`]}, {ease: 'linear'});
+      const control = api.animate(el, {translate: ['0px 0px', `0px -${42 + i * 10}px`]}, {ease: 'linear'});
       const dispose = api.scroll(control, {target: hero, offset: ['start start', 'end start']});
       scrollDisposers.push(() => {dispose(); control.stop(); el.style.translate = '';});
     });
@@ -146,6 +224,7 @@
   function preferences() {
     for (const [el, rec] of records) {
       rec.hover?.(); rec.hover = null;
+      rec.light?.(); rec.light = null;
       settle(el, rec);
       bindHover(el, rec);
     }
@@ -221,7 +300,7 @@
     cancelAnimationFrame(frame); frame = 0; queued.clear();
     for (const batch of batches) batch.dispose();
     batches.clear();
-    for (const [el, rec] of records) {settle(el, rec); rec.hover?.();}
+    for (const [el, rec] of records) {settle(el, rec); rec.hover?.(); rec.light?.(); rec.focus?.(); rec.press?.();}
     records.clear();
     scrollDisposers.splice(0).forEach(fn => fn());
     document.removeEventListener('toggle', toggle, true);

@@ -8,6 +8,8 @@
 .site-motion .motion-owned,
 .site-motion .motion-owned:hover,
 .site-motion .motion-owned[open] {
+  --motion-scale:1;
+  scale:var(--motion-scale);
   animation:none!important;
   transform:none!important;
   transform-style:flat!important;
@@ -38,4 +40,29 @@
 @media(prefers-reduced-motion:reduce) {
   .motion-owned,.shape {translate:none!important;}
   #newsGrid .news-card-cover {transition:none;transform:none!important;}
+}
+
+/* Visible accents, still with a single positional owner. */
+.motion-heading {position:relative;}
+.motion-heading::after {
+  content:"";position:absolute;left:0;bottom:-12px;
+  width:clamp(64px,10vw,112px);height:3px;border-radius:999px;
+  background:linear-gradient(90deg,#CA0F3E,#FF5F61,transparent);
+  transform:scaleX(var(--motion-line,1));transform-origin:left;pointer-events:none;
+}
+.hero .motion-heading::after {left:50%;margin-left:-56px;}
+.motion-card {isolation:isolate;}
+.motion-sheen {
+  position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;opacity:0;
+  background:radial-gradient(320px circle at var(--light-x,50%) var(--light-y,50%),rgba(255,255,255,.19),rgba(202,15,62,.08) 36%,transparent 72%);
+  transition:opacity 200ms ease;
+}
+[data-theme="light"] .motion-sheen {background:radial-gradient(320px circle at var(--light-x,50%) var(--light-y,50%),rgba(202,15,62,.15),transparent 68%);}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  .motion-card:hover>.motion-sheen {opacity:1;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .motion-owned {scale:1!important;}
+  .motion-sheen {display:none;}
+  .motion-heading::after {transform:none;}
 }
