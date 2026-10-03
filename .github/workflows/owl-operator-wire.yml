@@ -1,0 +1,55 @@
+name: Wire Owl operator client
+
+on:
+  push:
+    branches:
+      - feature/owl-telegram-operator
+
+permissions:
+  contents: write
+
+jobs:
+  wire:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/owl-telegram-operator
+
+      - name: Add operator client script after Owl engine
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          tag = '<script src="./owl-operator.js?v=20261003-1"></script>'
+          if tag in text:
+              raise SystemExit(0)
+
+          needle = '<script src="./owl-engine.js?v=20261001-19"></script>'
+          if needle not in text:
+              raise SystemExit('owl-engine script tag not found')
+
+          text = text.replace(needle, needle + '\n' + tag, 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate wiring
+        run: |
+          grep -F './owl-engine.js?v=20261001-19' index.html
+          grep -F './owl-operator.js?v=20261003-1' index.html
+          python -m py_compile operator/app.py
+
+      - name: Commit wiring
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Enable live Telegram operator in Owl"
+          git push origin HEAD:feature/owl-telegram-operator
