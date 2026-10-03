@@ -67,29 +67,152 @@
         return WAIT_REASONS[Math.floor(Math.random() * WAIT_REASONS.length)];
     }
 
-    function showOperatorTyping(name, text) {
+
+    // OWL_IMESSAGE_MOTION_V1
+    let owlMessageMotionObserver = null;
+
+    function owlMessageStream() {
         const root = document.getElementById('owlChat');
+        if (!root) return null;
+        const bubbles = root.querySelectorAll('.msg-user,.msg-bot');
+        if (bubbles.length && bubbles[bubbles.length - 1].parentElement) {
+            return bubbles[bubbles.length - 1].parentElement;
+        }
+        return root;
+    }
+
+    function markOwlMessageForMotion(node) {
+        if (!(node instanceof Element)) return;
+        const bubbles = node.matches('.msg-user,.msg-bot') ? [node] : Array.from(node.querySelectorAll('.msg-user,.msg-bot'));
+        bubbles.forEach((bubble) => {
+            if (bubble.classList.contains('owl-operator-typing')) return;
+            bubble.classList.remove('owl-message-enter');
+            requestAnimationFrame(() => bubble.classList.add('owl-message-enter'));
+            setTimeout(() => bubble.classList.remove('owl-message-enter'), 620);
+        });
+    }
+
+    function installOwlIMessageMotion() {
+        if (!document.getElementById('owl-imessage-motion-style')) {
+            const style = document.createElement('style');
+            style.id = 'owl-imessage-motion-style';
+            style.textContent = `
+                #owlChat .msg-bot,
+                #owlChat .msg-user {
+                    animation: none !important;
+                    will-change: transform, opacity;
+                }
+                #owlChat .msg-bot.owl-message-enter {
+                    transform-origin: 8% 100%;
+                    animation: owlMessageInLeft .42s cubic-bezier(.2,1.28,.32,1) both !important;
+                }
+                #owlChat .msg-user.owl-message-enter {
+                    transform-origin: 92% 100%;
+                    animation: owlMessageInRight .42s cubic-bezier(.2,1.28,.32,1) both !important;
+                }
+                #owlChat .owl-operator-typing {
+                    width: fit-content;
+                    max-width: min(76%, 330px);
+                    display: flex !important;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 6px;
+                    padding: 10px 14px !important;
+                    transform-origin: 8% 100%;
+                    animation: owlMessageInLeft .34s cubic-bezier(.2,1.2,.32,1) both !important;
+                }
+                #owlChat .owl-typing-label {
+                    font-size: 12px;
+                    line-height: 1.2;
+                    opacity: .72;
+                    font-weight: 700;
+                    white-space: nowrap;
+                }
+                #owlChat .owl-typing-dots {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    height: 16px;
+                }
+                #owlChat .owl-typing-dots i {
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 999px;
+                    background: currentColor;
+                    opacity: .38;
+                    animation: owlTypingDot 1.05s ease-in-out infinite;
+                }
+                #owlChat .owl-typing-dots i:nth-child(2) { animation-delay: .14s; }
+                #owlChat .owl-typing-dots i:nth-child(3) { animation-delay: .28s; }
+                @keyframes owlMessageInLeft {
+                    0% { opacity: 0; transform: translateX(-8px) scale(.82); }
+                    62% { opacity: 1; transform: translateX(0) scale(1.025); }
+                    100% { opacity: 1; transform: translateX(0) scale(1); }
+                }
+                @keyframes owlMessageInRight {
+                    0% { opacity: 0; transform: translateX(8px) scale(.82); }
+                    62% { opacity: 1; transform: translateX(0) scale(1.025); }
+                    100% { opacity: 1; transform: translateX(0) scale(1); }
+                }
+                @keyframes owlTypingDot {
+                    0%, 60%, 100% { transform: translateY(0) scale(.92); opacity: .34; }
+                    30% { transform: translateY(-3px) scale(1); opacity: .9; }
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    #owlChat .msg-bot.owl-message-enter,
+                    #owlChat .msg-user.owl-message-enter,
+                    #owlChat .owl-operator-typing,
+                    #owlChat .owl-typing-dots i {
+                        animation: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const attach = () => {
+            const root = document.getElementById('owlChat');
+            if (!root || owlMessageMotionObserver) return;
+            owlMessageMotionObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => mutation.addedNodes.forEach(markOwlMessageForMotion));
+            });
+            owlMessageMotionObserver.observe(root, { childList: true, subtree: true });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', attach, { once: true });
+        } else {
+            attach();
+        }
+    }
+
+    installOwlIMessageMotion();
+
+    function showOperatorTyping(name, text) {
+        installOwlIMessageMotion();
+        const root = document.getElementById('owlChat');
+        const stream = owlMessageStream();
         const safeName = esc(name || 'Мария');
         const safeText = esc(text || '').replace(/\n/g, '<br>');
-        if (!root || typeof window.addBotMsg !== 'function') {
+        if (!root || !stream || typeof window.addBotMsg !== 'function') {
             if (typeof window.addBotMsg === 'function') window.addBotMsg('<b>👤 Оператор ' + safeName + ':</b><br>' + safeText);
             return;
         }
+
+        const previous = stream.querySelector('.owl-operator-typing');
+        if (previous) previous.remove();
+
         const bubble = document.createElement('div');
         bubble.className = 'msg-bot owl-operator-typing';
         bubble.setAttribute('aria-live', 'polite');
-        bubble.innerHTML = '<b>👤 Оператор ' + safeName + '</b> печатает<span data-typing-dots>…</span>';
-        root.appendChild(bubble);
+        bubble.setAttribute('aria-label', 'Оператор ' + String(name || 'Мария') + ' печатает');
+        bubble.innerHTML = '<span class="owl-typing-label">' + safeName + ' печатает</span>' +
+            '<span class="owl-typing-dots" aria-hidden="true"><i></i><i></i><i></i></span>';
+        stream.appendChild(bubble);
         try { bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
-        const dots = bubble.querySelector('[data-typing-dots]');
-        let step = 0;
-        const ticker = setInterval(() => {
-            step = (step + 1) % 3;
-            if (dots) dots.textContent = '.'.repeat(step + 1);
-        }, 320);
-        const delay = Math.min(4600, Math.max(1200, 850 + String(text || '').length * 24 + Math.random() * 700));
+
+        const delay = Math.min(3900, Math.max(1500, 1050 + String(text || '').length * 18 + Math.random() * 520));
         setTimeout(() => {
-            clearInterval(ticker);
             if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
             window.addBotMsg('<b>👤 Оператор ' + safeName + ':</b><br>' + safeText);
             refreshOptions();
@@ -334,7 +457,6 @@
         if (event.type === 'message' && event.text) {
             state.status = 'active';
             saveState();
-            announcedActive = true;
             const name = event.operator_name ? event.operator_name : 'Мария';
             if (!announcedActive && typeof window.addBotMsg === 'function') {
                 window.addBotMsg('🟢 <b>Оператор ' + esc(name) + ' подключился.</b>');
