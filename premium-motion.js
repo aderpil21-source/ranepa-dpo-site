@@ -48,17 +48,30 @@
       if (rec.control === control) rec.control = null;
     });
   }
+  function controlFeedback(el, rec) {
+    const state = rec.pressed ? 'pressed' : (rec.hovered || rec.focused ? 'active' : 'idle');
+    if (rec.feedbackState === state) return;
+    rec.feedbackState = state;
+    play(el, {
+      '--motion-scale': state === 'pressed' ? 0.97 : state === 'active' ? 1.025 : 1,
+      translate: state === 'active' ? '0px -2px' : '0px 0px'
+    }, {type:'spring', stiffness:state === 'pressed' ? 460 : 320, damping:state === 'pressed' ? 32 : 28});
+  }
   function bindHover(el, rec) {
     if (rec.hover || !fine.matches || reduce.matches || el.matches(headingSelectors + ',.faq-item,.main-contact-box')) return;
     if (!rec.isControl) bindLight(el, rec);
     rec.hover = api.hover(el, () => {
-      // Retarget rather than enqueue hover over a still-running entrance.
+      if (rec.isControl) {
+        rec.hovered = true;
+        controlFeedback(el, rec);
+        return () => {rec.hovered = false; controlFeedback(el, rec);};
+      }
       appeared.add(el);
       if (key(el)) seen.add(key(el));
       if (rec.batch) {releaseBatch(rec.batch, el); rec.batch = null;}
       settle(el, rec);
-      play(el, {translate: rec.isControl ? '0px -2px' : '0px -7px', '--motion-scale': rec.isControl ? 1.025 : 1.012}, {type: 'spring', stiffness: 320, damping: 28});
-      return () => play(el, {translate: '0px 0px', '--motion-scale': 1}, {type: 'spring', stiffness: 320, damping: 28});
+      play(el, {translate:'0px -7px', '--motion-scale':1.012}, {type:'spring', stiffness:320, damping:28});
+      return () => play(el, {translate:'0px 0px', '--motion-scale':1}, {type:'spring', stiffness:320, damping:28});
     });
   }
   function bindLight(el, rec) {
@@ -108,23 +121,15 @@
       records.set(el, rec);
       el.classList.add('motion-owned', 'motion-control');
       bindHover(el, rec);
-      const focus = () => {
-        if (rec.pressed) return;
-        settle(el, rec);
-        play(el, {translate:'0px -2px', '--motion-scale':1.025}, {type:'spring', stiffness:320, damping:28});
-      };
-      const blur = () => play(el, {translate:'0px 0px', '--motion-scale':1}, {type:'spring', stiffness:320, damping:28});
+      const focus = () => {rec.focused = true; controlFeedback(el, rec);};
+      const blur = () => {rec.focused = false; controlFeedback(el, rec);};
       el.addEventListener('focus', focus);
       el.addEventListener('blur', blur);
       rec.focus = () => {el.removeEventListener('focus', focus); el.removeEventListener('blur', blur);};
       if (api.press) rec.press = api.press(el, () => {
         rec.pressed = true;
-        settle(el, rec);
-        play(el, {'--motion-scale':0.97}, {type:'spring', stiffness:460, damping:32});
-        return () => {
-          rec.pressed = false;
-          play(el, {'--motion-scale':1, translate:'0px 0px'}, {type:'spring', stiffness:320, damping:28});
-        };
+        controlFeedback(el, rec);
+        return () => {rec.pressed = false; controlFeedback(el, rec);};
       });
     }
   }
@@ -225,6 +230,7 @@
     for (const [el, rec] of records) {
       rec.hover?.(); rec.hover = null;
       rec.light?.(); rec.light = null;
+      rec.hovered = false; rec.focused = false; rec.pressed = false; rec.feedbackState = null;
       settle(el, rec);
       bindHover(el, rec);
     }

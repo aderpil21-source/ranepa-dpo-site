@@ -91,7 +91,7 @@ let browser;
   assert(await tabButton.evaluate(el=>parseFloat(getComputedStyle(el).scale)<0.985),'button press gives visible feedback');
   await page.mouse.up();
   await page.waitForTimeout(400);
-  assert(await tabButton.evaluate(el=>Math.abs(parseFloat(getComputedStyle(el).scale)-1)<0.01),'button press settles without queued effects');
+  assert(await tabButton.evaluate(el=>parseFloat(getComputedStyle(el).scale)>=1 && parseFloat(getComputedStyle(el).scale)<1.035),'button press settles without queued effects');
   await page.locator('#tab-all .card').first().scrollIntoViewIfNeeded();
   await page.waitForTimeout(400);
   for (let i=0;i<3;i++) {
