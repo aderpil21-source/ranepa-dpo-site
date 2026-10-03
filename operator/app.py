@@ -372,6 +372,8 @@ def handoff_events():
 
     with lock:
         events = [e for e in session.get('events', []) if int(e.get('id', 0)) > after]
+        if events:
+            logging.info('Owl events delivered session=%s after=%s status=%s count=%s pid=%s', session.get('short'), after, session.get('status'), len(events), os.getpid())
         return jsonify({
             'ok': True,
             'status': session.get('status', 'waiting'),
@@ -440,7 +442,7 @@ def activate_reply(ref, from_user, callback_id=None):
         admin_id = str((from_user or {}).get('id') or '')
         if admin_id:
             reply_state[admin_id] = (session['id'], now_ts() + 600)
-        logging.info('Owl operator accepted session=%s alias=%s', session['short'], name)
+        logging.info('Owl operator accepted session=%s alias=%s pid=%s', session['short'], name, os.getpid())
 
     try:
         tg('sendMessage', {
@@ -519,7 +521,8 @@ def handle_operator_message(message):
             return
         name = ensure_operator_alias(session)
         session['status'] = 'active'
-        add_event(session, 'message', text=text[:1800], operator_name=name)
+        event = add_event(session, 'message', text=text[:1800], operator_name=name)
+        logging.info('Owl operator message stored session=%s event=%s pid=%s', session['short'], event.get('id'), os.getpid())
         user_id = str(((message or {}).get('from') or {}).get('id') or '')
         if user_id:
             reply_state.pop(user_id, None)
@@ -584,13 +587,19 @@ def telegram_poll_loop():
 
 def start_telegram_thread():
     global telegram_thread_started
-    if telegram_thread_started or not BOT_TOKEN or not OPERATOR_CHAT_ID:
+    if not BOT_TOKEN or not OPERATOR_CHAT_ID:
         return
-    telegram_thread_started = True
+    with lock:
+        if telegram_thread_started:
+            return
+        telegram_thread_started = True
+    logging.info('Starting Owl Telegram polling in pid=%s', os.getpid())
     threading.Thread(target=telegram_poll_loop, name='telegram-operator', daemon=True).start()
 
 
-start_telegram_thread()
+@app.before_request
+def ensure_telegram_polling_in_http_worker():
+    start_telegram_thread()
 
 
 if __name__ == '__main__':
