@@ -1,0 +1,100 @@
+name: Bootstrap Owl operator chat id
+
+on:
+  push:
+    branches:
+      - feature/owl-telegram-operator
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/owl-telegram-operator
+
+      - name: Enable temporary chat ID discovery
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('operator/app.py')
+          text = path.read_text(encoding='utf-8')
+
+          old = '''def process_update(update):
+    if update.get('callback_query'):
+        handle_callback(update['callback_query'])
+    elif update.get('message'):
+        handle_operator_message(update['message'])
+'''
+          new = '''def process_update(update):
+    if not OPERATOR_CHAT_ID:
+        source = update.get('message') or ((update.get('callback_query') or {}).get('message') or {})
+        chat = (source or {}).get('chat') or {}
+        chat_id = str(chat.get('id') or '')
+        if chat_id:
+            logging.warning(
+                'OWL_OPERATOR_CHAT_DISCOVERED id=%s type=%s title=%s',
+                chat_id,
+                chat.get('type') or '',
+                clean_text(chat.get('title') or '', 120)
+            )
+            message = update.get('message') or {}
+            text = str(message.get('text') or '').strip()
+            if text.startswith('/id'):
+                try:
+                    tg('sendMessage', {
+                        'chat_id': chat_id,
+                        'text': '✅ Операторская группа обнаружена. Настройка продолжается.'
+                    })
+                except Exception:
+                    logging.exception('Failed to acknowledge discovered operator chat')
+        return
+
+    if update.get('callback_query'):
+        handle_callback(update['callback_query'])
+    elif update.get('message'):
+        handle_operator_message(update['message'])
+'''
+          if old not in text:
+              if 'OWL_OPERATOR_CHAT_DISCOVERED' not in text:
+                  raise SystemExit('process_update block not found')
+          else:
+              text = text.replace(old, new, 1)
+
+          old2 = '''def start_telegram_thread():
+    global telegram_thread_started
+    if telegram_thread_started or not BOT_TOKEN or not OPERATOR_CHAT_ID:
+        return
+'''
+          new2 = '''def start_telegram_thread():
+    global telegram_thread_started
+    if telegram_thread_started or not BOT_TOKEN:
+        return
+'''
+          if old2 in text:
+              text = text.replace(old2, new2, 1)
+          elif 'if telegram_thread_started or not BOT_TOKEN:' not in text:
+              raise SystemExit('start_telegram_thread guard not found')
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate
+        run: python -m py_compile operator/app.py
+
+      - name: Commit
+        run: |
+          if git diff --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add operator/app.py
+          git commit -m "Enable Owl operator chat discovery"
+          git push origin HEAD:feature/owl-telegram-operator
