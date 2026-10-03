@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Apply patch
-        run: python scripts/owl_polish_once.py
+        run: python scripts/owl_polish_v2.py
 
       - name: Validate
         run: |
@@ -29,6 +29,7 @@ jobs:
           grep -F '👀 Открыть и ответить' operator/app.py
           grep -F 'WAIT_REASONS' owl-operator.js
           grep -F 'showOperatorTyping' owl-operator.js
+          grep -F 'owl_replyid:' operator/app.py
 
       - name: Commit feature changes
         run: |
@@ -37,12 +38,3 @@ jobs:
           git add -A
           git commit -m "Polish Owl operator handoff and reply reliability"
           git push origin HEAD:feature/owl-telegram-operator
-
-      - name: Remove trigger from main
-        run: |
-          git fetch origin main
-          git checkout -B main origin/main
-          rm -f .github/workflows/owl-polish-main-trigger.yml
-          git add -A
-          git commit -m "Remove one-shot Owl polish workflow"
-          git push origin main
