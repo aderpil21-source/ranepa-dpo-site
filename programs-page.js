@@ -90,7 +90,7 @@ function renderPrograms() {
       ? 'https://trudvsem.ru/?region=3900000000000'
       : 'https://forms.yandex.ru';
 
-    return '<article class="panel card">'+
+    return '<article class="panel card" data-site-program-id="'+escapeHtml(p.id)+'">'+
       '<div class="meta">'+meta+'</div>'+
       '<h2>'+escapeHtml(p.title_ru || 'Программа')+'</h2>'+
       '<p class="muted card-desc">'+escapeHtml(p.desc_ru || '')+'</p>'+dates+price+
@@ -104,7 +104,7 @@ function renderPrograms() {
   // Entrance motion only on the initial catalog load. Search/filter updates stay instant.
   if (programRenderCount > 1) {
     grid.querySelectorAll('.card').forEach(card => {
-      card.classList.add('pm-reveal','pm-in','pm-done');
+      card.classList.add('pm-done');
       card.style.transitionDelay = '0ms';
     });
   }

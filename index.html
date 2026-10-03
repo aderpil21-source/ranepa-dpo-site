@@ -281,33 +281,12 @@
             padding-bottom: 12px;
         }
 
-        .puzzle-piece { animation: assemblePuzzle 1s var(--bezier-bounce) forwards; }
-        @keyframes assemblePuzzle {
-            0% { opacity: 0; transform: translate3d(var(--x-dist, 200px), var(--y-dist, 200px), -400px) rotateX(40deg) rotateY(-40deg) scale(0.6); }
-            100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1); }
-        }
-
-        .glow-effect { animation: neonPulse 2s infinite alternate; z-index: 15 !important; border-color: #38bdf8 !important; }
-        @keyframes neonPulse {
-            0% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.5), inset 0 0 12px rgba(56, 189, 248, 0.3); transform: translateY(-6px) scale(1.02); }
-            100% { box-shadow: 0 0 60px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(56, 189, 248, 0.5); transform: translateY(-12px) scale(1.04); }
-        }
-
         .card {
             background: var(--bg-card); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 22px; border: 1px solid var(--border-glass); padding: clamp(25px, 4vw, 40px); position: relative;
             transition: transform 0.4s var(--bezier-smooth), box-shadow 0.4s var(--bezier-smooth), border-color 0.4s var(--bezier-smooth);
-            box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; will-change: transform; opacity: 1; contain: layout style;
-            transform: translateY(calc((var(--py, 0.5) - 0.5) * -14px));
+            box-shadow: 0 20px 40px var(--shadow-color); z-index: 5; display: flex; flex-direction: column; justify-content: space-between; opacity: 1; contain: layout style;
         }
         .card:hover { transform: translateY(-8px) scale(1.01); box-shadow: 0 35px 70px var(--shadow-color), 0 0 35px rgba(202, 15, 62, 0.15); border-color: var(--card-hover-border); z-index: 10; }
-
-        .reveal-3d { opacity: 0; transform: translateY(50px) rotateX(12deg) scale(0.96); transition: opacity 0.9s var(--bezier-smooth), transform 0.9s var(--bezier-smooth); }
-        .reveal-3d.in-view { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
-        @media (max-width: 768px) {
-            .reveal-3d { transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
-            .reveal-3d.in-view { transform: translateY(0); }
-            .card { transform: none !important; }
-        }
 
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; flex-wrap: wrap; }
         .price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.7rem; color: var(--text-main); text-shadow: 0 2px 4px var(--shadow-color); }
@@ -1669,6 +1648,9 @@
           html.owl-embed-mode #owlContainer{display:none!important}
         }
 </style>
+<link rel="stylesheet" href="./premium-motion.css?v=5">
+<script defer src="./assets/vendor/motion-12.23.24.js"></script>
+<script defer src="./premium-motion.js?v=5"></script>
 </head>
 <body>
 
@@ -4404,30 +4386,6 @@
         resetMenu();
     }
 
-    window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        document.getElementById('progress-bar').style.width = (height > 0 ? (winScroll / height) * 100 : 0) + "%";
-        updateCardParallax();
-    }, { passive: true });
-
-    let parallaxRaf = null;
-    function updateCardParallax() {
-        if (parallaxRaf) return;
-        parallaxRaf = requestAnimationFrame(() => {
-            parallaxRaf = null;
-            if (isMobile()) return;
-            const vh = window.innerHeight;
-            document.querySelectorAll('.tab-content.active .card').forEach(card => {
-                const r = card.getBoundingClientRect();
-                const center = r.top + r.height / 2;
-                let py = center / vh;
-                py = Math.max(0, Math.min(1, py));
-                card.style.setProperty('--py', py.toFixed(3));
-            });
-        });
-    }
-
     // Генерирует безопасную JSON-LD разметку Course для каждой программы.
     // Нужна потому, что buildPrograms() уже вызывает injectCourseSchema(),
     // но раньше самой функции в файле не было — это обрывало JS при построении каталога.
@@ -4643,7 +4601,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         setLanguage(currentLang);
         armRevealTargets();
         buildFilters();
-        updateCardParallax();
         applySiteVisibility();
         if (siteAdminMode) renderSiteAdminPanel();
         if (isMobile()) {
@@ -4675,6 +4632,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const maxPrice = parseInt(document.getElementById('filterMaxPrice').value, 10);
         const durationMode = document.getElementById('filterDuration').value;
         const sortMode = document.getElementById('filterSort').value;
+
+        const finishLayout = window.SiteMotion?.captureLayout(document.getElementById('tab-all'));
 
         // Фильтруем только вкладку 'tab-all'
         const cards = Array.from(document.querySelectorAll('#tab-all .card'));
@@ -4715,6 +4674,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         sortedCards.forEach((card, index) => {
             card.style.order = index;
         });
+        finishLayout?.();
     }
 
     function resetFilters() {
@@ -4732,30 +4692,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (evt && evt.currentTarget) evt.currentTarget.classList.add('active');
         document.getElementById('filtersBar').style.display = (tabName === 'tab-all') ? 'flex' : 'none';
         armRevealTargets();
-        animateAssembly(tabName);
-        updateCardParallax();
-    }
-
-    function animateAssembly(tabId) {
-        if (isMobile()) return;
-
-        const cards = document.querySelectorAll('#' + tabId + ' .card');
-        cards.forEach((card, index) => {
-            const signX = Math.random() > 0.5 ? 1 : -1;
-            const signY = Math.random() > 0.5 ? 1 : -1;
-            card.style.setProperty('--x-dist', (Math.random() * 400 + 100) * signX + 'px');
-            card.style.setProperty('--y-dist', (Math.random() * 400 + 100) * signY + 'px');
-            card.classList.remove('puzzle-piece', 'glow-effect');
-            void card.offsetWidth;
-            const delay = Math.min(index * 0.15, 3);
-            card.style.animationDelay = delay + 's';
-            card.style.animationDuration = (4 - delay) + 's';
-            card.classList.add('puzzle-piece');
-            setTimeout(() => {
-                card.classList.add('glow-effect');
-                setTimeout(() => card.classList.remove('glow-effect'), 1800);
-            }, (delay + (4 - delay)) * 1000 * 0.3);
-        });
     }
 
     function focusTab(tabId) {
@@ -4773,8 +4709,6 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (buttons[tabsMap[tabId]]) buttons[tabsMap[tabId]].classList.add('active');
 
         armRevealTargets();
-        animateAssembly(tabId);
-        updateCardParallax();
         if (!isMobile()) playHoot();
     }
 
@@ -5192,22 +5126,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
     // Вся логика цифрового ассистента загружается из ./owl-engine.js
 
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('in-view');
-                revealObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-
     function armRevealTargets(root = document) {
-        root.querySelectorAll('.card, .faq-item, .contact-card, .main-contact-box, .sector-header').forEach(el => {
-            if (!el.classList.contains('reveal-3d')) {
-                el.classList.add('reveal-3d');
-                revealObserver.observe(el);
-            }
-        });
+        window.SiteMotion?.scan(root);
     }
 
     const SCHEDULE_TIME_ZONE = 'Europe/Kaliningrad';
@@ -5546,26 +5466,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         disconnectScheduleObservers();
 
         const overlay = document.getElementById('scheduleOverlay');
-        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        const cards = document.querySelectorAll('#scheduleTimeline .timeline-card');
-        if (reduceMotion || !('IntersectionObserver' in window)) {
-            cards.forEach(card => card.classList.add('in-view'));
-        } else {
-            scheduleCardObserver = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('in-view');
-                        scheduleCardObserver.unobserve(entry.target);
-                    }
-                });
-            }, {
-                root: overlay,
-                threshold: 0.10,
-                rootMargin: '0px 0px -24px 0px'
-            });
-            cards.forEach(card => scheduleCardObserver.observe(card));
-        }
+        window.SiteMotion?.scan(document.getElementById('scheduleTimeline'));
 
         const links = Array.from(document.querySelectorAll('#scheduleMonthsNav .schedule-month-link'));
         const sections = Array.from(document.querySelectorAll('#scheduleTimeline .schedule-month-section'));

@@ -1,0 +1,37 @@
+name: Motion browser checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.html'
+      - 'premium-motion.*'
+      - 'assets/vendor/**'
+      - 'programs-page.js'
+      - 'schedule-page.js'
+      - 'tests/motion-browser.test.cjs'
+      - '.github/workflows/motion-check.yml'
+  pull_request:
+    paths:
+      - '*.html'
+      - 'premium-motion.*'
+      - 'assets/vendor/**'
+      - 'programs-page.js'
+      - 'schedule-page.js'
+      - 'tests/motion-browser.test.cjs'
+      - '.github/workflows/motion-check.yml'
+permissions:
+  contents: read
+jobs:
+  motion-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --ignore-scripts playwright@1.62.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/motion-browser.test.cjs

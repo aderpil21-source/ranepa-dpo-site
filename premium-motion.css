@@ -1,145 +1,41 @@
-/* Premium Motion — lightweight shared layer for internal pages */
-:root{--pm-ease:cubic-bezier(.22,1,.36,1);--pm-fast:420ms;--pm-med:620ms;--pm-slow:760ms}
-@media (prefers-reduced-motion:no-preference){
-  .pm-reveal{opacity:0;transform:translate3d(0,22px,0);transition:opacity var(--pm-med) var(--pm-ease),transform var(--pm-slow) var(--pm-ease)}
-  .pm-reveal.pm-from-left{transform:translate3d(-24px,0,0)}
-  .pm-reveal.pm-from-right{transform:translate3d(24px,0,0)}
-  .pm-reveal.pm-scale{transform:scale(.975)}
-  .pm-reveal.pm-in{opacity:1;transform:none}
-  .pm-reveal.pm-done{will-change:auto}
-  .pm-nav-in{animation:pmNavIn 560ms var(--pm-ease) both}
-  @keyframes pmNavIn{from{opacity:0;transform:translate3d(0,-10px,0)}to{opacity:1;transform:none}}
-  .pm-title-line{display:block;width:min(132px,28vw);height:2px;margin:16px 0 0;overflow:hidden;border-radius:999px;background:color-mix(in srgb,currentColor 10%,transparent);transform-origin:left}
-  .pm-title-line:after{content:"";display:block;width:100%;height:100%;background:linear-gradient(90deg,#CA0F3E,#ff5f61);transform:scaleX(0);transform-origin:left;transition:transform 820ms var(--pm-ease)}
-  .pm-title-line.pm-in:after{transform:scaleX(1)}
-  .pm-lift{position:relative;isolation:isolate;transform:translateZ(0);transition:transform var(--pm-fast) var(--pm-ease),box-shadow var(--pm-fast) var(--pm-ease),border-color var(--pm-fast) ease}
-  @media (hover:hover) and (pointer:fine){
-    .pm-lift:hover{transform:translate3d(0,-4px,0)}
-    .pm-sheen{position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:0;background:radial-gradient(320px circle at var(--pm-x,50%) var(--pm-y,50%),rgba(255,255,255,.16),rgba(202,15,62,.055) 32%,transparent 67%);transition:opacity 180ms ease}
-    .pm-lift:hover>.pm-sheen{opacity:1}
-    .pm-lift>*:not(.pm-sheen){position:relative;z-index:1}
-  }
-  .page-nav a,.audience-nav a,.topbar a,.back-btn{transition:transform 260ms var(--pm-ease),opacity 260ms ease}
-  @media (hover:hover) and (pointer:fine){
-    .page-nav a:hover,.audience-nav a:hover,.topbar a:hover,.back-btn:hover{transform:translate3d(0,-2px,0)}
-  }
-  .faq-item[open]{transform:none!important}
+/* One owner for positional animation. Content stays visible if Motion fails. */
+:root { --pm-ease: cubic-bezier(.22,1,.36,1); }
+/* Disable the old page/child entrance pair even before scripts initialize. */
+.page-main,.page-kicker,.page-title,.page-lead,.toolbar,.panel,.contact-card,.faq-item,.lesson,.audience-card,.audience-hero > *,.hero h1,.hero p,.tabs-nav,.timeline-card {
+  animation:none!important;
+  opacity:1;
 }
-@media (prefers-reduced-motion:reduce){
-  .pm-reveal{opacity:1!important;transform:none!important}
-  .pm-title-line:after{transform:none!important}
+.site-motion .motion-owned,
+.site-motion .motion-owned:hover,
+.site-motion .motion-owned[open] {
+  animation:none!important;
+  transform:none!important;
+  transform-style:flat!important;
+  perspective:none!important;
+  will-change:auto!important;
+  transition:border-color 180ms ease,box-shadow 180ms ease,background-color 180ms ease!important;
 }
-
-/* ===== Premium page-specific microinteractions ===== */
-@media (prefers-reduced-motion:no-preference){
-  .toolbar input,
-  .toolbar select,
-  .material-lookup input{
-    transition:border-color 220ms ease,box-shadow 220ms ease,transform 220ms var(--pm-ease);
-  }
-  .toolbar input:focus,
-  .toolbar select:focus,
-  .material-lookup input:focus{
-    transform:translate3d(0,-1px,0);
-  }
-
-  .audience-card .icon{
-    transition:transform 360ms var(--pm-ease),background 260ms ease,border-color 260ms ease;
-    transform:translateZ(0);
-  }
-  .audience-card .action,
-  .card .button,
-  .side-card .cta,
-  .side-card .secondary{
-    transition:transform 240ms var(--pm-ease),box-shadow 240ms ease,filter 240ms ease!important;
-  }
-  .payment-card-qr .payment-qr-art{
-    transition:transform 420ms var(--pm-ease);
-    transform:translateZ(0);
-  }
-
-  @media (hover:hover) and (pointer:fine){
-    .audience-card:hover .icon{transform:translate3d(0,-3px,0) scale(1.055)}
-    .audience-card .action:hover,
-    .card .button:hover,
-    .side-card .cta:hover,
-    .side-card .secondary:hover{transform:translate3d(0,-2px,0)}
-    .payment-card-qr:hover .payment-qr-art{transform:scale(1.025)}
-  }
-
-  .audience-hero .audience-kicker,
-  .audience-hero h1,
-  .audience-hero p{
-    transition:opacity var(--pm-med) var(--pm-ease),transform var(--pm-slow) var(--pm-ease);
-  }
+/* translate belongs to Motion; old stylesheet transform rules cannot compete. */
+.pm-reveal,.reveal-3d,.timeline-card { opacity:1; transform:none; }
+.site-motion .page-main { transform:none!important; will-change:auto!important; }
+.site-motion .hero h1,.site-motion .hero p,.site-motion .tabs-nav {transform:none; opacity:1;}
+.site-motion .shape,.site-motion .bg-tag {animation:none!important; will-change:auto!important;}
+.site-motion #progress-bar {width:100%; transform-origin:left; scale:0 1; transition:none; animation:none;}
+.site-motion .faq-answer {animation:none;}
+.site-motion .modal-overlay .modal-box,
+.site-motion .section-modal .section-modal-box,
+.site-motion .requisites-modal .requisites-dialog,
+.site-motion .deep-view .deep-view-shell,
+.site-motion .enroll-overlay .enroll-box {animation:none!important; transition:none!important;}
+/* Keep colors and emphasis; don't create another positional animation owner. */
+.toolbar input,.toolbar select,.material-lookup input {transition:border-color 180ms ease,box-shadow 180ms ease;}
+.motion-owned:focus-within {border-color:#CA0F3E;}
+#newsGrid .news-card-cover {transition:transform 280ms var(--pm-ease);}
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  #newsGrid .card:hover .news-card-cover {transform:scale(1.025);}
 }
-
-/* ===== Menu page premium details ===== */
-@media (prefers-reduced-motion:no-preference){
-  /* News: image motion only, no layout changes */
-  #newsGrid .card .news-card-cover{
-    transform:scale(1.001);
-    transition:transform 640ms var(--pm-ease),filter 360ms ease;
-  }
-  @media (hover:hover) and (pointer:fine){
-    #newsGrid .card:hover .news-card-cover{transform:scale(1.035)}
-  }
-
-  /* Schedule: quiet accent line */
-  .lesson{position:relative;overflow:hidden}
-  .lesson::before{
-    content:"";position:absolute;left:0;top:16px;bottom:16px;width:2px;
-    border-radius:999px;background:linear-gradient(180deg,#CA0F3E,#FF5F61);
-    transform:scaleY(.18);transform-origin:center;opacity:.42;
-    transition:transform 380ms var(--pm-ease),opacity 260ms ease;
-  }
-  @media (hover:hover) and (pointer:fine){
-    .lesson:hover::before{transform:scaleY(1);opacity:1}
-  }
-
-  /* FAQ: readable, restrained opening motion */
-  .faq-item summary{list-style:none;position:relative;padding-right:56px}
-  .faq-item summary::-webkit-details-marker{display:none}
-  .faq-item summary::after{
-    content:"+";position:absolute;right:22px;top:50%;
-    transform:translateY(-50%) rotate(0deg);
-    font-size:1.25rem;color:#ff9db5;
-    transition:transform 320ms var(--pm-ease),color 220ms ease;
-  }
-  .faq-item[open] summary::after{transform:translateY(-50%) rotate(45deg);color:#fff}
-  .faq-item[open] .faq-answer{animation:pmFaqAnswer 340ms var(--pm-ease) both}
-  @keyframes pmFaqAnswer{from{opacity:.01;transform:translate3d(0,-7px,0)}to{opacity:1;transform:none}}
-
-  /* Program detail: topic tiles and related programs */
-  .topic-grid li,.related-card{
-    transition:transform 300ms var(--pm-ease),border-color 260ms ease,box-shadow 300ms ease!important;
-    transform:translateZ(0);
-  }
-  @media (hover:hover) and (pointer:fine){
-    .topic-grid li:hover{transform:translate3d(0,-3px,0)}
-    .related-card:hover{transform:translate3d(0,-4px,0)!important}
-  }
-
-  /* Article detail blocks stay calm and editorial */
-  .news-detail-title,.news-detail-lead,.news-body-text,.news-insert,.news-media-figure{
-    will-change:auto;
-  }
-}
-
-/* ===== Premium modal entrances ===== */
-@media (prefers-reduced-motion:no-preference){
-  .section-modal.active,
-  .requisites-modal.active,
-  .deep-view.active,
-  .enroll-overlay.active{
-    animation:pmOverlayIn 180ms ease-out both;
-  }
-  .section-modal.active .section-modal-box,
-  .requisites-modal.active .requisites-dialog,
-  .deep-view.active .deep-view-shell,
-  .enroll-overlay.active .enroll-box{
-    animation:pmModalIn 360ms var(--pm-ease) both;
-  }
-  @keyframes pmOverlayIn{from{opacity:0}to{opacity:1}}
-  @keyframes pmModalIn{from{opacity:.01;transform:translate3d(0,14px,0) scale(.985)}to{opacity:1;transform:none}}
+.faq-item summary {position:relative;}
+@media(prefers-reduced-motion:reduce) {
+  .motion-owned,.shape {translate:none!important;}
+  #newsGrid .news-card-cover {transition:none;transform:none!important;}
 }

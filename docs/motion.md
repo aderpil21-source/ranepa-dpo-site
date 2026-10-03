@@ -1,0 +1,13 @@
+# Motion on the public website
+
+The main page and seven content pages load the same local `assets/vendor/motion-12.23.24.js` and `premium-motion.js`, in that order. The vendor is the unmodified browser distribution from https://cdn.jsdelivr.net/npm/motion@12.23.24/dist/motion.js. Its MIT license is stored alongside it. There is no build step or external runtime script dependency. The payment page remains script-free.
+
+`premium-motion.js` owns card entrances, spring hover, modal/FAQ feedback, reading progress, restrained decorative background parallax and FLIP transitions for persistent cards reordered by the main page filters. CSS retains color feedback and a small news-image zoom. Positional effects use CSS `translate` so legacy `transform` rules cannot compete; `.motion-owned` disables old positional animation and transition rules. Above-the-fold titles and essential content are immediately visible.
+
+Keep one controller instance. Call `SiteMotion.scan(root)` after adding content if needed; the controller also batches newly inserted elements automatically. Use `data-site-program-id` or `data-motion-key` for a stable entrance identity. Program IDs are shared across tab copies; they reveal at most once per page session. Search-based list replacement remains immediate using the existing `pm-done` marker. Do not add another entrance observer or reset keys/classes to restart effects.
+
+`captureLayout(root)` returns a function to call after a synchronous reorder of existing cards. It measures before/after positions, animates only bounded movement of visible cards, and avoids entrances during sorting. New/replaced list items do not use this path.
+
+Reduced motion is read on load and on change. Pointer-only effects require a fine hover pointer. `pagehide` disposes subscriptions, controls and observers; `pageshow` restores them without replaying previously seen elements. Failed library loading leaves content visible and functional. Do not broaden CSP to add another CDN.
+
+Run existing repository checks plus `node tests/motion-browser.test.cjs` with Playwright installed. Set `MOTION_BROWSER` only if supplying a local Chromium executable. The browser test serves the working tree itself and checks all eight pages, spring settling, repeated tabs, search, theme, page lifecycle, reduced motion, mobile widths and library failure. Device-specific smoothness still requires profiling on the target hardware.

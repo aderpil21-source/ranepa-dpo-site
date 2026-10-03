@@ -119,7 +119,7 @@ function renderSchedule() {
   list.innerHTML = html;
   if (scheduleRenderCount > 1) {
     list.querySelectorAll('.lesson,.schedule-day').forEach(el => {
-      el.classList.add('pm-reveal','pm-in','pm-done');
+      el.classList.add('pm-done');
       el.style.transitionDelay = '0ms';
     });
   }
