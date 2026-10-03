@@ -1,0 +1,37 @@
+name: Owl iMessage motion v2
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: contains(github.event.head_commit.message, 'Trigger Owl iMessage motion v2')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply patch
+        run: python scripts/patch_owl_imessage_motion_v2.py
+
+      - name: Validate JavaScript
+        run: |
+          node --check owl-operator.js
+          grep -F 'OWL_IMESSAGE_MOTION_V1' owl-operator.js
+          grep -F 'owl-typing-dots' owl-operator.js
+          grep -F 'owlMessageInLeft' owl-operator.js
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add owl-operator.js
+          git commit -m "Polish Owl chat with iMessage motion and typing indicator"
+          git push origin HEAD:main
