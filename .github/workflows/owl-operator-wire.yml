@@ -36,10 +36,11 @@ jobs:
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Validate wiring
+      - name: Validate wiring and syntax
         run: |
           grep -F './owl-engine.js?v=20261001-19' index.html
           grep -F './owl-operator.js?v=20261003-1' index.html
+          node --check owl-operator.js
           python -m py_compile operator/app.py
 
       - name: Commit wiring
