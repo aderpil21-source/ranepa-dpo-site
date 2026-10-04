@@ -1,0 +1,39 @@
+name: Owl operator names and visitor name
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: contains(github.event.head_commit.message, 'Trigger Owl operator names visitor')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Patch Owl operator
+        run: python scripts/patch_owl_operator_names_visitor.py
+
+      - name: Validate JavaScript
+        run: |
+          node --check owl-operator.js
+          grep -F "'Алексей', 'Дмитрий', 'Максим', 'Михаил', 'Александр'" owl-operator.js
+          grep -F 'function askVisitorName()' owl-operator.js
+          grep -F "Как к вам обращаться?" owl-operator.js
+          grep -F "state.visitorName = await askVisitorName();" owl-operator.js
+          grep -F "Как ко мне обращаться:" owl-operator.js
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add owl-operator.js
+          git commit -m "Use balanced operator names and ask optional visitor name"
+          git push origin HEAD:main
