@@ -393,14 +393,13 @@
         ensureIdentity();
         state.displayName = '';
         ensureOperatorDisplayName();
-        touchOperatorActivity();
 
         if (typeof window.addBotMsg === 'function') {
             window.addBotMsg('👤 Зову сотрудника Центра ДПО. Передаю оператору последние сообщения этого диалога.');
             window.addBotMsg('⏳ <b>Ждём оператора.</b> ' + randomWaitReason());
         }
         state.status = 'waiting';
-        saveState();
+        touchOperatorActivity();
         refreshOptions();
 
         try {
@@ -420,6 +419,9 @@
             refreshOptions();
         } catch (error) {
             state.status = 'idle';
+            state.displayName = '';
+            state.lastActivityAt = 0;
+            clearInactivityTimer();
             saveState();
             refreshOptions();
             if (typeof window.addBotMsg === 'function') {
