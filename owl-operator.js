@@ -10,8 +10,10 @@
     const MAX_CONTEXT_MESSAGES = 10;
     // OWL_RANDOM_OPERATOR_NAMES_V1
     const OPERATOR_DISPLAY_NAMES = [
+        // 5 женских
         'Мария', 'Дарья', 'Анна', 'Елена', 'Екатерина',
-        'Алина', 'Полина', 'Виктория', 'Ксения', 'Анастасия'
+        // 5 мужских
+        'Алексей', 'Дмитрий', 'Максим', 'Михаил', 'Александр'
     ];
     const OPERATOR_INACTIVITY_MS = 10 * 60 * 1000;
     const WAIT_REASONS = [
@@ -39,10 +41,11 @@
                 status: String(raw.status || 'idle'),
                 lastEventId: Number(raw.lastEventId || 0),
                 displayName: String(raw.displayName || ''),
+                visitorName: String(raw.visitorName || ''),
                 lastActivityAt: Number(raw.lastActivityAt || 0)
             };
         } catch (e) {
-            return { sessionId: '', secret: '', status: 'idle', lastEventId: 0, displayName: '', lastActivityAt: 0 };
+            return { sessionId: '', secret: '', status: 'idle', lastEventId: 0, displayName: '', visitorName: '', lastActivityAt: 0 };
         }
     }
 
@@ -74,6 +77,147 @@
 
     function randomWaitReason() {
         return WAIT_REASONS[Math.floor(Math.random() * WAIT_REASONS.length)];
+    }
+
+    function askVisitorName() {
+        return new Promise((resolve) => {
+            const previous = document.getElementById('owlVisitorNameOverlay');
+            if (previous) previous.remove();
+
+            if (!document.getElementById('owl-visitor-name-style')) {
+                const style = document.createElement('style');
+                style.id = 'owl-visitor-name-style';
+                style.textContent = `
+                    #owlVisitorNameOverlay {
+                        position: fixed;
+                        inset: 0;
+                        z-index: 2147483000;
+                        display: grid;
+                        place-items: center;
+                        padding: 18px;
+                        background: rgba(8, 12, 20, .44);
+                        backdrop-filter: blur(10px);
+                        -webkit-backdrop-filter: blur(10px);
+                        animation: owlNameFadeIn .18s ease both;
+                    }
+                    #owlVisitorNameOverlay .owl-name-card {
+                        width: min(92vw, 390px);
+                        border-radius: 22px;
+                        padding: 20px;
+                        background: rgba(23,31,41,.97);
+                        color: #fff;
+                        border: 1px solid rgba(255,255,255,.12);
+                        box-shadow: 0 22px 70px rgba(0,0,0,.28);
+                        transform-origin: 50% 80%;
+                        animation: owlNameCardIn .28s cubic-bezier(.2,1.15,.32,1) both;
+                    }
+                    #owlVisitorNameOverlay .owl-name-title {
+                        font-size: 18px;
+                        line-height: 1.25;
+                        font-weight: 800;
+                        margin: 0 0 6px;
+                    }
+                    #owlVisitorNameOverlay .owl-name-subtitle {
+                        font-size: 13px;
+                        line-height: 1.45;
+                        opacity: .72;
+                        margin-bottom: 14px;
+                    }
+                    #owlVisitorNameOverlay .owl-name-input {
+                        width: 100%;
+                        box-sizing: border-box;
+                        border-radius: 14px;
+                        border: 1px solid rgba(255,255,255,.16);
+                        background: rgba(255,255,255,.08);
+                        color: #fff;
+                        padding: 12px 14px;
+                        outline: none;
+                        font: inherit;
+                        transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+                    }
+                    #owlVisitorNameOverlay .owl-name-input::placeholder { color: rgba(255,255,255,.46); }
+                    #owlVisitorNameOverlay .owl-name-input:focus {
+                        border-color: rgba(255,95,97,.72);
+                        box-shadow: 0 0 0 4px rgba(202,15,62,.14);
+                        background: rgba(255,255,255,.1);
+                    }
+                    #owlVisitorNameOverlay .owl-name-actions {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 10px;
+                        margin-top: 14px;
+                    }
+                    #owlVisitorNameOverlay .owl-name-btn {
+                        min-height: 42px;
+                        border-radius: 13px;
+                        border: 1px solid rgba(255,255,255,.12);
+                        font: inherit;
+                        font-weight: 750;
+                        cursor: pointer;
+                        transition: transform .15s ease, filter .15s ease, background .15s ease;
+                    }
+                    #owlVisitorNameOverlay .owl-name-btn:active { transform: scale(.975); }
+                    #owlVisitorNameOverlay .owl-name-skip { background: rgba(255,255,255,.08); color: #fff; }
+                    #owlVisitorNameOverlay .owl-name-save {
+                        background: linear-gradient(135deg,#29345B,#CA0F3E);
+                        color: #fff;
+                    }
+                    @keyframes owlNameFadeIn { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes owlNameCardIn { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+                    @media (prefers-reduced-motion: reduce) {
+                        #owlVisitorNameOverlay,
+                        #owlVisitorNameOverlay .owl-name-card { animation: none !important; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            const overlay = document.createElement('div');
+            overlay.id = 'owlVisitorNameOverlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+            overlay.setAttribute('aria-labelledby', 'owlVisitorNameTitle');
+            overlay.innerHTML = `
+                <div class="owl-name-card">
+                    <div class="owl-name-title" id="owlVisitorNameTitle">Как к вам обращаться?</div>
+                    <div class="owl-name-subtitle">Необязательно. Можно указать имя, чтобы оператор обращался к вам лично, или просто пропустить.</div>
+                    <input class="owl-name-input" id="owlVisitorNameInput" type="text" maxlength="60" autocomplete="name" placeholder="Например, Антон">
+                    <div class="owl-name-actions">
+                        <button class="owl-name-btn owl-name-skip" type="button" data-action="skip">Пропустить</button>
+                        <button class="owl-name-btn owl-name-save" type="button" data-action="save">Продолжить</button>
+                    </div>
+                </div>`;
+
+            const finish = (value) => {
+                const name = String(value || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+                document.removeEventListener('keydown', onKeyDown, true);
+                overlay.remove();
+                resolve(name);
+            };
+            const onKeyDown = (event) => {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    finish('');
+                } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const input = overlay.querySelector('#owlVisitorNameInput');
+                    finish(input ? input.value : '');
+                }
+            };
+
+            overlay.addEventListener('click', (event) => {
+                const button = event.target.closest('[data-action]');
+                if (!button) return;
+                const input = overlay.querySelector('#owlVisitorNameInput');
+                finish(button.dataset.action === 'save' && input ? input.value : '');
+            });
+            document.addEventListener('keydown', onKeyDown, true);
+            document.body.appendChild(overlay);
+            setTimeout(() => {
+                const input = overlay.querySelector('#owlVisitorNameInput');
+                if (input) input.focus({ preventScroll: true });
+            }, 30);
+        });
     }
 
 
@@ -352,13 +496,17 @@
 
     function recentConversation() {
         const root = document.getElementById('owlChat') || document;
-        return Array.from(root.querySelectorAll('.msg-user,.msg-bot'))
+        const items = Array.from(root.querySelectorAll('.msg-user,.msg-bot'))
             .slice(-MAX_CONTEXT_MESSAGES)
             .map(node => ({
                 role: node.classList.contains('msg-user') ? 'user' : 'assistant',
                 text: String(node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 900)
             }))
             .filter(item => item.text);
+        if (state.visitorName) {
+            items.unshift({ role: 'user', text: 'Как ко мне обращаться: ' + state.visitorName });
+        }
+        return items;
     }
 
     async function api(path, options) {
@@ -390,9 +538,11 @@
 
     async function startHandoff() {
         if (isOperatorMode()) return;
+        state.visitorName = await askVisitorName();
         ensureIdentity();
         state.displayName = '';
         ensureOperatorDisplayName();
+        saveState();
 
         if (typeof window.addBotMsg === 'function') {
             window.addBotMsg('👤 Зову сотрудника Центра ДПО. Передаю оператору последние сообщения этого диалога.');
@@ -420,6 +570,7 @@
         } catch (error) {
             state.status = 'idle';
             state.displayName = '';
+            state.visitorName = '';
             state.lastActivityAt = 0;
             clearInactivityTimer();
             saveState();
@@ -469,6 +620,7 @@
         state.status = 'idle';
         state.lastEventId = 0;
         state.displayName = '';
+        state.visitorName = '';
         state.lastActivityAt = 0;
         announcedActive = false;
         saveState();
@@ -497,6 +649,7 @@
             } else if (event.status === 'closed') {
                 state.status = 'idle';
                 state.displayName = '';
+                state.visitorName = '';
                 state.lastActivityAt = 0;
                 announcedActive = false;
                 clearInactivityTimer();
