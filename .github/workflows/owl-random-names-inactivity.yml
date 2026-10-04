@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   patch:
-    if: contains(github.event.head_commit.message, 'Trigger Owl random names inactivity')
+    if: contains(github.event.head_commit.message, 'Trigger Owl inactivity timer fix')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,15 +18,15 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Patch Owl
-        run: python scripts/patch_owl_random_names_inactivity.py
+      - name: Patch Owl inactivity timer
+        run: python scripts/fix_owl_inactivity_start.py
 
       - name: Validate JavaScript
         run: |
           node --check owl-operator.js
-          grep -F 'OWL_RANDOM_OPERATOR_NAMES_V1' owl-operator.js
           grep -F 'OPERATOR_INACTIVITY_MS = 10 * 60 * 1000' owl-operator.js
-          grep -F 'function ensureOperatorDisplayName()' owl-operator.js
+          grep -F "state.status = 'waiting';" owl-operator.js
+          grep -F 'touchOperatorActivity();' owl-operator.js
           grep -F 'endHandoff(true)' owl-operator.js
 
       - name: Commit
@@ -34,5 +34,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add owl-operator.js
-          git commit -m "Randomize Owl operator display name and auto-close inactive chats"
+          git commit -m "Fix Owl inactivity timer from handoff start"
           git push origin HEAD:main
