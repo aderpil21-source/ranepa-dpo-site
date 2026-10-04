@@ -8,6 +8,12 @@
     const STORAGE_KEY = 'ranepa_owl_operator_v1';
     const POLL_MS = 2200;
     const MAX_CONTEXT_MESSAGES = 10;
+    // OWL_RANDOM_OPERATOR_NAMES_V1
+    const OPERATOR_DISPLAY_NAMES = [
+        'Мария', 'Дарья', 'Анна', 'Елена', 'Екатерина',
+        'Алина', 'Полина', 'Виктория', 'Ксения', 'Анастасия'
+    ];
+    const OPERATOR_INACTIVITY_MS = 10 * 60 * 1000;
     const WAIT_REASONS = [
         'Передаю сотруднику контекст разговора, чтобы вам не пришлось повторять вопрос.',
         'Проверяю, кто из специалистов Центра ДПО сейчас свободен.',
@@ -18,6 +24,7 @@
 
     let state = loadState();
     let pollTimer = null;
+    let inactivityTimer = null;
     let pollInFlight = false;
     let announcedActive = false;
     let originalSetOptions = null;
@@ -30,10 +37,12 @@
                 sessionId: String(raw.sessionId || ''),
                 secret: String(raw.secret || ''),
                 status: String(raw.status || 'idle'),
-                lastEventId: Number(raw.lastEventId || 0)
+                lastEventId: Number(raw.lastEventId || 0),
+                displayName: String(raw.displayName || ''),
+                lastActivityAt: Number(raw.lastActivityAt || 0)
             };
         } catch (e) {
-            return { sessionId: '', secret: '', status: 'idle', lastEventId: 0 };
+            return { sessionId: '', secret: '', status: 'idle', lastEventId: 0, displayName: '', lastActivityAt: 0 };
         }
     }
 
@@ -65,6 +74,40 @@
 
     function randomWaitReason() {
         return WAIT_REASONS[Math.floor(Math.random() * WAIT_REASONS.length)];
+    }
+
+
+    function ensureOperatorDisplayName() {
+        if (!OPERATOR_DISPLAY_NAMES.includes(state.displayName)) {
+            state.displayName = OPERATOR_DISPLAY_NAMES[Math.floor(Math.random() * OPERATOR_DISPLAY_NAMES.length)];
+            saveState();
+        }
+        return state.displayName;
+    }
+
+    function clearInactivityTimer() {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        inactivityTimer = null;
+    }
+
+    function scheduleInactivityClose() {
+        clearInactivityTimer();
+        if (!isOperatorMode() || !state.lastActivityAt) return;
+        const remaining = Math.max(0, OPERATOR_INACTIVITY_MS - (Date.now() - state.lastActivityAt));
+        inactivityTimer = setTimeout(() => {
+            if (!isOperatorMode()) return;
+            if (Date.now() - state.lastActivityAt < OPERATOR_INACTIVITY_MS) {
+                scheduleInactivityClose();
+                return;
+            }
+            endHandoff(true);
+        }, remaining);
+    }
+
+    function touchOperatorActivity() {
+        state.lastActivityAt = Date.now();
+        saveState();
+        scheduleInactivityClose();
     }
 
 
@@ -348,6 +391,9 @@
     async function startHandoff() {
         if (isOperatorMode()) return;
         ensureIdentity();
+        state.displayName = '';
+        ensureOperatorDisplayName();
+        touchOperatorActivity();
 
         if (typeof window.addBotMsg === 'function') {
             window.addBotMsg('👤 Зову сотрудника Центра ДПО. Передаю оператору последние сообщения этого диалога.');
@@ -385,6 +431,7 @@
 
     async function sendVisitorMessage(text) {
         ensureIdentity();
+        touchOperatorActivity();
         try {
             await api('/api/owl/handoff/message', {
                 method: 'POST',
@@ -404,7 +451,7 @@
         }
     }
 
-    async function endHandoff() {
+    async function endHandoff(autoClosed = false) {
         if (!state.sessionId || !state.secret) {
             state.status = 'idle';
             saveState();
@@ -419,11 +466,16 @@
         } catch (e) {}
         state.status = 'idle';
         state.lastEventId = 0;
+        state.displayName = '';
+        state.lastActivityAt = 0;
         announcedActive = false;
         saveState();
         stopPolling();
+        clearInactivityTimer();
         if (typeof window.addBotMsg === 'function') {
-            window.addBotMsg('Связь с оператором завершена. Я снова могу помочь как Сова.');
+            window.addBotMsg(autoClosed
+                ? '⌛ Диалог с оператором автоматически завершён после 10 минут без активности. Я снова могу помочь как Сова.'
+                : 'Связь с оператором завершена. Я снова могу помочь как Сова.');
         }
         refreshOptions();
     }
@@ -434,14 +486,18 @@
         if (event.type === 'status') {
             if (event.status === 'active') {
                 state.status = 'active';
+                touchOperatorActivity();
                 if (!announcedActive && typeof window.addBotMsg === 'function') {
-                    const name = event.operator_name ? esc(event.operator_name) : 'Мария';
+                    const name = esc(ensureOperatorDisplayName());
                     window.addBotMsg('🟢 <b>Оператор ' + name + ' подключился.</b> Теперь ваши сообщения идут сотруднику напрямую.');
                     announcedActive = true;
                 }
             } else if (event.status === 'closed') {
                 state.status = 'idle';
+                state.displayName = '';
+                state.lastActivityAt = 0;
                 announcedActive = false;
+                clearInactivityTimer();
                 if (typeof window.addBotMsg === 'function') {
                     window.addBotMsg('✅ Оператор завершил диалог. Если появятся новые вопросы, Сова снова на связи.');
                 }
@@ -456,8 +512,8 @@
 
         if (event.type === 'message' && event.text) {
             state.status = 'active';
-            saveState();
-            const name = event.operator_name ? event.operator_name : 'Мария';
+            touchOperatorActivity();
+            const name = ensureOperatorDisplayName();
             if (!announcedActive && typeof window.addBotMsg === 'function') {
                 window.addBotMsg('🟢 <b>Оператор ' + esc(name) + ' подключился.</b>');
             }
@@ -555,8 +611,11 @@
         window.endOwlOperatorHandoff = endHandoff;
 
         if (isOperatorMode()) {
+            ensureOperatorDisplayName();
+            scheduleInactivityClose();
             startPolling();
             setTimeout(() => {
+                if (!isOperatorMode()) return;
                 if (typeof window.addBotMsg === 'function') {
                     window.addBotMsg(state.status === 'active'
                         ? '🟢 Связь с оператором восстановлена.'
