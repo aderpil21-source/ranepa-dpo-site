@@ -19,11 +19,7 @@ jobs:
           base="https://ranepa-dpo-public-api.onrender.com"
           for i in $(seq 1 24); do
             if curl --fail --silent --show-error --max-time 20 "$base/health" > /tmp/health.json; then
-              python - <<'PY'
-import json
-d=json.load(open('/tmp/health.json',encoding='utf-8'))
-assert d.get('ok') is True
-PY
+              python -c "import json; d=json.load(open('/tmp/health.json',encoding='utf-8')); assert d.get('ok') is True"
               exit 0
             fi
             sleep 5
@@ -41,23 +37,4 @@ PY
           done
           status="$(curl --silent --output /tmp/bad-material.json --write-out '%{http_code}' --max-time 20 "$base/material?code=bad")"
           test "$status" = "400"
-
-          python - <<'PY'
-import json
-portal=json.load(open('/tmp/portal.json',encoding='utf-8'))
-schedule=json.load(open('/tmp/schedule.json',encoding='utf-8'))
-programs=json.load(open('/tmp/programs.json',encoding='utf-8'))
-news=json.load(open('/tmp/news.json',encoding='utf-8'))
-settings=json.load(open('/tmp/settings.json',encoding='utf-8'))
-
-assert 'owlFiles' not in portal, 'portal must never expose the material catalogue'
-assert isinstance(portal.get('programs'), list) and portal['programs'], 'portal programs missing'
-assert isinstance(portal.get('schedules'), list), 'portal schedules missing'
-assert isinstance(schedule.get('schedules'), list), 'schedule payload invalid'
-assert isinstance(programs.get('programs'), list) and programs['programs'], 'program payload invalid'
-assert isinstance(news.get('items'), list), 'news payload invalid'
-assert all(x.get('status') == 'published' for x in news['items']), 'non-published news leaked'
-s=settings.get('settings') or {}
-assert not any(str(k).startswith('material:') for k in (s.get('visibility') or {})), 'material visibility leaked'
-print('Live public API checks passed:', len(programs['programs']), 'programs,', len(schedule['schedules']), 'schedule rows,', len(news['items']), 'news')
-PY
+          python -c "import json; portal=json.load(open('/tmp/portal.json')); schedule=json.load(open('/tmp/schedule.json')); programs=json.load(open('/tmp/programs.json')); news=json.load(open('/tmp/news.json')); settings=json.load(open('/tmp/settings.json')); assert 'owlFiles' not in portal; assert isinstance(portal.get('programs'),list) and portal['programs']; assert isinstance(portal.get('schedules'),list); assert isinstance(schedule.get('schedules'),list); assert isinstance(programs.get('programs'),list) and programs['programs']; assert isinstance(news.get('items'),list); assert all(x.get('status')=='published' for x in news['items']); s=settings.get('settings') or {}; assert not any(str(k).startswith('material:') for k in (s.get('visibility') or {})); print('Live public API checks passed')"
