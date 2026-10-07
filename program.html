@@ -200,6 +200,19 @@ let program=null;
 let allPrograms=[];
 let siteVisibility={};
 let siteContentOverrides={};
+const PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
+
+async function getPublicJson(path,fallbackUrl,timeoutMs=9000){
+  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeoutMs);
+  try{
+    const r=await fetch(PUBLIC_DATA_API+path+'?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return await r.json();
+  }catch(error){
+    if(!fallbackUrl)throw error;
+    return await getJson(fallbackUrl);
+  }finally{clearTimeout(timer);}
+}
 
 const ui={
   ru:{
@@ -266,7 +279,7 @@ function findProgram(data){
 async function loadSiteSettings(){
   try{
     const bucket=Math.floor(Date.now()/60000);
-    const data=await getJson('./site-settings.json?v='+bucket);
+    const data=await getPublicJson('/settings','./site-settings.json?v='+bucket);
     const parsed=data&&data.settings&&typeof data.settings==='object'?data.settings:{};
     return {
       visibility: parsed.visibility&&typeof parsed.visibility==='object'?parsed.visibility:{},
@@ -286,11 +299,14 @@ async function loadProgram(){
   const bucket=Math.floor(Date.now()/(5*60*1000));
   let local=null;
   try{local=findProgram(await getJson('./program-data.json?v='+bucket));}catch(e){}
+  try{
+    const live=findProgram(await getPublicJson('/programs','./portal-data.json?v='+bucket));
+    if(live) local=Object.assign({},local||{},live);
+  }catch(e){}
   if(local&&hasDetailedData(local)) return local;
   try{
     const portal=findProgram(await getJson('./portal-data.json?v='+bucket));
-    if(portal&&hasDetailedData(portal)) return portal;
-    if(!local&&portal) local=portal;
+    if(portal) local=Object.assign({},local||{},portal);
   }catch(e){}
   return local;
 }
@@ -298,7 +314,7 @@ async function loadProgram(){
 async function loadProgramCatalog(){
   const bucket=Math.floor(Date.now()/(5*60*1000));
   try{
-    const data=await getJson('./portal-data.json?v='+bucket);
+    const data=await getPublicJson('/programs','./portal-data.json?v='+bucket);
     const arr=Array.isArray(data)?data:(data&&Array.isArray(data.programs)?data.programs:[]);
     return arr.filter(p=>truthyActive(p.active));
   }catch(e){
