@@ -109,7 +109,7 @@ async function applyPublicFaqCms(){
     const bucket=Math.floor(Date.now()/60000);
     let data;
     try{
-      const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
+      const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),2000);
       try{
         const response=await fetch(SECTION_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
         if(!response.ok)throw new Error('HTTP '+response.status);
