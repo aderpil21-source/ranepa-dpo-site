@@ -1,13 +1,13 @@
 let programsCache = [];
 const PROGRAM_REFRESH_MS = 60 * 1000;
-const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
+const PROGRAMS_PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 let programRefreshTimer = null;
 
 async function fetchPublicJson(path, fallbackUrl) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 10000);
   try {
-    const res = await fetch(PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
+    const res = await fetch(PROGRAMS_PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
     if (!res.ok) throw new Error('HTTP '+res.status);
     return await res.json();
   } catch (_) {
