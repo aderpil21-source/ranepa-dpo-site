@@ -200,12 +200,12 @@ let program=null;
 let allPrograms=[];
 let siteVisibility={};
 let siteContentOverrides={};
-const PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
+const PROGRAM_PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
 
 async function getPublicJson(path,fallbackUrl,timeoutMs=9000){
   const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeoutMs);
   try{
-    const r=await fetch(PUBLIC_DATA_API+path+'?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+    const r=await fetch(PROGRAM_PUBLIC_DATA_API+path+'?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
     if(!r.ok)throw new Error('HTTP '+r.status);
     return await r.json();
   }catch(error){
