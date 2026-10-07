@@ -1052,6 +1052,7 @@ const PUBLIC_NEWS_REFRESH_COOLDOWN_MS = 60 * 1000;
 const PUBLIC_NEWS_SNAPSHOT_BUCKET_MS = 60 * 1000;
 let publicNewsLastRefreshAt = 0;
 let publicNewsRefreshInFlight = null;
+let publicNewsPollTimer = null;
 
 function openHashNewsIfPresent(){
     const hash = location.hash.replace('#','').replace('news=','');
@@ -1137,12 +1138,22 @@ async function refreshPublicNewsSnapshot(options){
     return publicNewsRefreshInFlight;
 }
 function stopPublicNewsPolling(){
-    // Постоянный polling отключён: свежесть проверяется один раз при открытии
-    // и при возврате пользователя на вкладку.
+    if (publicNewsPollTimer) {
+        clearInterval(publicNewsPollTimer);
+        publicNewsPollTimer = null;
+    }
 }
 
 function startPublicNewsPolling(){
-    // Намеренно пусто — не создаём постоянную нагрузку на Apps Script.
+    stopPublicNewsPolling();
+    if (adminToken || document.visibilityState === 'hidden') return;
+    publicNewsPollTimer = setInterval(() => {
+        if (adminToken || document.visibilityState === 'hidden') {
+            stopPublicNewsPolling();
+            return;
+        }
+        refreshPublicNewsSnapshot({ silent:true, force:true });
+    }, 60 * 1000);
 }
 
 async function fetchNews(){
