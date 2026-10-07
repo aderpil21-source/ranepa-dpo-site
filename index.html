@@ -2121,6 +2121,21 @@
                     data-bwignore="true"
                 >
             </form>
+            <div id="siteAdminOtpSection" style="display:none;margin:0 0 12px;">
+                <p id="siteAdminOtpHint" class="site-admin-login-note" style="margin:0 0 10px;">Введите одноразовый код из письма.</p>
+                <input
+                    type="password"
+                    id="siteAdminOtpInput"
+                    class="chat-text-input"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    maxlength="8"
+                    placeholder="8-значный код"
+                    style="display:block;width:100%;height:48px;margin:0 0 10px;padding:10px 14px;box-sizing:border-box;"
+                >
+                <button class="modal-btn" id="siteAdminOtpBtn" type="button" onclick="submitSiteAdminOtp()" style="width:100%;background:linear-gradient(135deg,#29345B,#CA0F3E);border:none;text-align:center;">Подтвердить код</button>
+                <button type="button" id="siteAdminOtpResendBtn" onclick="resendSiteAdminOtp()" style="width:100%;margin-top:8px;background:transparent;color:var(--text-muted);border:1px solid var(--border-glass);border-radius:10px;padding:10px;cursor:pointer;">Отправить код ещё раз</button>
+            </div>
             <div id="siteAdminLoginError" style="display:none;color:var(--ranepa-red);font-weight:800;margin:10px 0;"></div>
             <button class="modal-btn" id="siteAdminLoginBtn" type="button" onclick="submitSiteAdminLogin()" style="background:linear-gradient(135deg,#29345B,#CA0F3E);border:none;text-align:center;">Войти в Pro режим</button>
             <div class="close-modal" onclick="closeSiteAdminLogin()">Отмена</div>
@@ -2405,6 +2420,7 @@
     let siteSavedRevision = 0;
     let siteSaveWaiters = [];
     let siteAdminToken = sessionStorage.getItem('siteAdminToken') || null;
+    let siteAdminChallengeId = '';
     let siteAdminMode = !!siteAdminToken;
     window.sitePreviewDraftMode = new URLSearchParams(location.search).get('cmsPreview') === 'drafts' && !!siteAdminToken;
     let siteTextEditMode = false;
@@ -3480,6 +3496,29 @@
         }, 50);
     }
 
+    function siteAdminClientId() {
+        let id = sessionStorage.getItem('ranepaAdminClientId');
+        if (!id) {
+            id = (window.crypto && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+            sessionStorage.setItem('ranepaAdminClientId', id);
+        }
+        return id;
+    }
+
+    function resetSiteAdmin2faUi() {
+        siteAdminChallengeId = '';
+        const section = document.getElementById('siteAdminOtpSection');
+        const otp = document.getElementById('siteAdminOtpInput');
+        const pass = document.getElementById('siteAdminPasswordInput');
+        const loginBtn = document.getElementById('siteAdminLoginBtn');
+        if (section) section.style.display = 'none';
+        if (otp) otp.value = '';
+        if (pass) pass.style.display = '';
+        if (loginBtn) loginBtn.style.display = '';
+    }
+
     function closeSiteAdminLogin() {
         const modal = document.getElementById('siteAdminLoginModal');
         if (modal) modal.classList.remove('active');
@@ -3488,6 +3527,20 @@
             input.value = '';
             input.setAttribute('readonly', '');
         }
+        resetSiteAdmin2faUi();
+    }
+
+    function completeSiteAdminLogin(token) {
+        siteAdminToken = token;
+        sessionStorage.setItem('siteAdminToken', siteAdminToken);
+        sessionStorage.setItem('newsAdminToken', siteAdminToken);
+        closeSiteAdminLogin();
+        siteAdminMode = true;
+        document.body.classList.add('site-admin-active');
+        const panel = document.getElementById('siteAdminPanel');
+        const reopen = document.getElementById('siteAdminReopen');
+        if (panel) panel.classList.add('active');
+        if (reopen) reopen.classList.remove('active');
     }
 
     async function submitSiteAdminLogin() {
@@ -3504,19 +3557,28 @@
         try {
             const data = await siteAdminRequest(API_URL, {
                 method:'POST',
-                body: JSON.stringify({ action:'newsLogin', password:password })
+                body: JSON.stringify({ action:'newsLogin', password:password, clientId:siteAdminClientId() })
             });
-            if (!data || !data.ok || !data.token) throw new Error('Пароль Pro-режима не подошёл');
-            siteAdminToken = data.token;
-            sessionStorage.setItem('siteAdminToken', siteAdminToken);
-            sessionStorage.setItem('newsAdminToken', siteAdminToken);
-            closeSiteAdminLogin();
-            siteAdminMode = true;
-            document.body.classList.add('site-admin-active');
-            const panel = document.getElementById('siteAdminPanel');
-            const reopen = document.getElementById('siteAdminReopen');
-            if (panel) panel.classList.add('active');
-            if (reopen) reopen.classList.remove('active');
+            if (!data || !data.ok) {
+                const retry = data && data.retryAfterSec ? ' Повторите через ' + data.retryAfterSec + ' сек.' : '';
+                throw new Error((data && data.error) || ('Данные для входа не подошли.' + retry));
+            }
+            if (data.requires2fa) {
+                siteAdminChallengeId = data.challengeId || '';
+                if (!siteAdminChallengeId) throw new Error('Сервер не создал 2FA-проверку');
+                if (input) { input.value = ''; input.style.display = 'none'; }
+                if (btn) btn.style.display = 'none';
+                const section = document.getElementById('siteAdminOtpSection');
+                const hint = document.getElementById('siteAdminOtpHint');
+                const otp = document.getElementById('siteAdminOtpInput');
+                if (hint) hint.textContent = 'Код отправлен на ' + (data.maskedDestination || 'почту администратора') + '. Он действует 5 минут.';
+                if (section) section.style.display = 'block';
+                if (otp) otp.focus();
+                return;
+            }
+            // Backward compatibility until the Apps Script deployment is upgraded.
+            if (!data.token) throw new Error('Сервер не выдал защищённую сессию');
+            completeSiteAdminLogin(data.token);
             await loadSiteSettings(true);
             applySiteVisibility();
             applySiteContentOverrides();
@@ -3526,6 +3588,62 @@
             if (err) { err.textContent = e.message; err.style.display = 'block'; }
         } finally {
             if (btn) { btn.disabled = false; btn.textContent = 'Войти в Pro режим'; }
+        }
+    }
+
+    async function submitSiteAdminOtp() {
+        const otp = document.getElementById('siteAdminOtpInput');
+        const btn = document.getElementById('siteAdminOtpBtn');
+        const err = document.getElementById('siteAdminLoginError');
+        const code = otp ? otp.value.trim() : '';
+        if (!code || !siteAdminChallengeId) return;
+        if (btn) { btn.disabled = true; btn.textContent = 'Проверяем…'; }
+        if (err) err.style.display = 'none';
+        try {
+            const data = await siteAdminRequest(API_URL, {
+                method:'POST',
+                body: JSON.stringify({
+                    action:'newsVerify2fa',
+                    challengeId:siteAdminChallengeId,
+                    code:code,
+                    clientId:siteAdminClientId()
+                })
+            });
+            if (!data || !data.ok || !data.token) throw new Error((data && data.error) || 'Код не подошёл');
+            completeSiteAdminLogin(data.token);
+            await loadSiteSettings(true);
+            applySiteVisibility();
+            applySiteContentOverrides();
+            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
+            renderSiteAdminPanel();
+        } catch (e) {
+            if (otp) otp.value = '';
+            if (err) { err.textContent = e.message; err.style.display = 'block'; }
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = 'Подтвердить код'; }
+        }
+    }
+
+    async function resendSiteAdminOtp() {
+        if (!siteAdminChallengeId) return;
+        const btn = document.getElementById('siteAdminOtpResendBtn');
+        const err = document.getElementById('siteAdminLoginError');
+        if (btn) btn.disabled = true;
+        try {
+            const data = await siteAdminRequest(API_URL, {
+                method:'POST',
+                body: JSON.stringify({
+                    action:'newsResend2fa',
+                    challengeId:siteAdminChallengeId,
+                    clientId:siteAdminClientId()
+                })
+            });
+            if (!data || !data.ok) throw new Error((data && data.error) || 'Не удалось повторно отправить код');
+            if (err) { err.textContent = 'Новый код отправлен.'; err.style.display = 'block'; }
+        } catch (e) {
+            if (err) { err.textContent = e.message; err.style.display = 'block'; }
+        } finally {
+            if (btn) btn.disabled = false;
         }
     }
 
@@ -3547,6 +3665,17 @@
 
     function siteAdminLogout() {
         toggleSiteTextEditMode(false);
+        const tokenToRevoke = siteAdminToken;
+        if (tokenToRevoke) {
+            try {
+                fetch(API_URL, {
+                    method:'POST',
+                    referrerPolicy:'no-referrer',
+                    keepalive:true,
+                    body:JSON.stringify({ action:'newsLogout', token:tokenToRevoke })
+                }).catch(function(){});
+            } catch (e) {}
+        }
         siteAdminToken = null;
         siteAdminMode = false;
         sessionStorage.removeItem('siteAdminToken');
@@ -3558,7 +3687,7 @@
         if (reopen) reopen.classList.remove('active');
         applySiteVisibility();
         applySiteContentOverrides();
-            if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
+        if (typeof window.applySiteAttributeOverrides === 'function') window.applySiteAttributeOverrides();
     }
 
     window.addEventListener('beforeunload', function (event) {
@@ -3628,6 +3757,10 @@
         const pass = document.getElementById('siteAdminPasswordInput');
         if (pass) pass.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') submitSiteAdminLogin();
+        });
+        const otp = document.getElementById('siteAdminOtpInput');
+        if (otp) otp.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') submitSiteAdminOtp();
         });
 
         if (siteAdminToken) {
