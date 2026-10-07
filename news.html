@@ -402,7 +402,7 @@ const CONFIG = {
    БЛОК 2. СОСТОЯНИЕ
    ============================================================================ */
 const SYSTEM_NEWS_ID = '__site_admin_settings__';
-const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
+const NEWS_PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 function isSystemNewsItem(item){ const tags=item&&Array.isArray(item.tags)?item.tags:[]; return !!item && ((typeof item.id==='string' && (item.id===SYSTEM_NEWS_ID || item.id.indexOf('__site_admin_version__')===0)) || tags.includes('__site_version__') || tags.includes('__system__')); }
 let publicNewsPageEnabled = true;
 
@@ -414,7 +414,7 @@ async function loadPublicNewsPageEnabled(){
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 8000);
             try {
-                const response = await fetch(PUBLIC_DATA_API + '/settings?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                const response = await fetch(NEWS_PUBLIC_DATA_API + '/settings?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
                 data = await response.json();
             } finally { clearTimeout(timer); }
@@ -1114,7 +1114,7 @@ async function refreshPublicNewsSnapshot(options){
                 const controller = new AbortController();
                 const timer = setTimeout(() => controller.abort(), 10000);
                 try {
-                    const response = await fetch(PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                    const response = await fetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                     if (!response.ok) throw new Error('Live news HTTP ' + response.status);
                     data = await response.json();
                 } finally { clearTimeout(timer); }
@@ -1227,7 +1227,7 @@ async function fetchNews(){
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 10000);
             try {
-                const response = await fetch(PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                const response = await fetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                 if (!response.ok) throw new Error('Live news HTTP ' + response.status);
                 data = await response.json();
             } finally { clearTimeout(timer); }
