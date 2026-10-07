@@ -3226,7 +3226,7 @@
             if (!useAdmin) {
                 try {
                     const bucket = Math.floor(Date.now() / (60 * 1000));
-                    const snapshot = await fetchPublicData('/settings', './site-settings.json?v=' + bucket, 8000);
+                    const snapshot = await fetchPublicData('/settings', './site-settings.json?v=' + bucket, 2000);
                     {
                         const cachedSettings = snapshot && snapshot.settings;
                         if (cachedSettings && typeof cachedSettings === 'object') {
