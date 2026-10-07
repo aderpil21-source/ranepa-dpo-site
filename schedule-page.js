@@ -5,7 +5,7 @@ const SCHEDULE_PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 
 async function fetchPublicJson(path, fallbackUrl) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 10000);
+  const timer = setTimeout(() => controller.abort(), 2000);
   try {
     const r = await fetch(SCHEDULE_PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
     if (!r.ok) throw new Error('HTTP '+r.status);
