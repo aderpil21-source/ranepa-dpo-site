@@ -278,6 +278,12 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
         <h3>Pro режим</h3>
         <p class="news-login-note">Введите пароль Pro-режима. Он проверяется сервером и не хранится в коде сайта.</p>
         <input type="password" id="newsAdminPassInput" class="chat-text-input" autocomplete="current-password" placeholder="Пароль">
+        <div id="newsAdminOtpSection" style="display:none;margin-bottom:12px;">
+            <p class="news-login-note" id="newsAdminOtpHint" style="margin:0 0 10px;">Введите одноразовый код из письма.</p>
+            <input type="password" id="newsAdminOtpInput" class="chat-text-input" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="8-значный код">
+            <button class="buy-btn" id="newsAdminOtpBtn" type="button">Подтвердить код</button>
+            <button class="chat-opt-btn" id="newsAdminOtpResendBtn" type="button" style="width:100%;margin-top:8px;">Отправить код ещё раз</button>
+        </div>
         <div id="newsAdminLoginError" style="display:none; color:var(--ranepa-red); font-weight:700; margin-bottom:14px;"></div>
         <button class="buy-btn" id="loginSubmitBtn">Войти в Pro режим</button>
         <div class="close-modal" id="loginCancelBtn">Отмена</div>
@@ -422,6 +428,7 @@ function renderNewsPageDisabled(){
 }
 
 let newsItems = [], adminToken = sessionStorage.getItem('newsAdminToken') || null;
+let newsLoginChallengeId = '';
 let vkState = { version:2, items:{} };
 let visitorPreview = false;
 let activeTagFilter = null, editingNewsId = null;
@@ -602,7 +609,8 @@ async function requestJson(url, options, attempts){
             let action = '';
             try { if (opts.body && typeof opts.body === 'string') action = JSON.parse(opts.body).action || ''; } catch(e){}
             const code = String(data && (data.code || data.error) || '').trim().toUpperCase();
-            if (action !== 'newsLogin' && (res.status === 401 || res.status === 403 || code === 'SESSION_EXPIRED' || code === 'UNAUTHORIZED')){
+            const authFlow = ['newsLogin','newsVerify2fa','newsResend2fa','newsLogout'].includes(action);
+            if (!authFlow && (res.status === 401 || res.status === 403 || code === 'SESSION_EXPIRED' || code === 'UNAUTHORIZED')){
                 clearNewsAdminSession();
                 throw Object.assign(new Error('Сессия редактора истекла. Войдите снова.'), { code:'SESSION_EXPIRED' });
             }
@@ -1472,22 +1480,129 @@ function setVisitorPreview(enabled){
     renderGrid();
 }
 
+function newsAdminClientId(){
+    let id = sessionStorage.getItem('ranepaAdminClientId');
+    if (!id){
+        id = (window.crypto && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+        sessionStorage.setItem('ranepaAdminClientId', id);
+    }
+    return id;
+}
+
+function resetNewsLogin2fa(){
+    newsLoginChallengeId = '';
+    const section = $('newsAdminOtpSection');
+    if (section) section.style.display = 'none';
+    $('newsAdminOtpInput').value = '';
+    $('newsAdminPassInput').style.display = '';
+    $('loginSubmitBtn').style.display = '';
+}
+
+function completeNewsLogin(token){
+    adminToken = token;
+    sessionStorage.setItem('newsAdminToken', adminToken);
+    $('newsAdminLoginModal').classList.remove('active');
+    $('newsAdminPassInput').value = '';
+    resetNewsLogin2fa();
+    $('newsAdminBar').hidden = false;
+    $('newsAdminBar').style.display = 'flex';
+    fetchNews();
+    flushPendingUploads();
+}
+
 async function submitLogin(){
     const err = $('newsAdminLoginError');
     err.style.display = 'none';
+    const btn = $('loginSubmitBtn');
+    btn.disabled = true;
     try {
-        const data = await requestJson(CONFIG.api, { method:'POST', body: JSON.stringify({ action:'newsLogin', password: $('newsAdminPassInput').value }) });
-        if (data.ok){
-            adminToken = data.token;
-            sessionStorage.setItem('newsAdminToken', adminToken);
-            $('newsAdminLoginModal').classList.remove('active');
+        const data = await requestJson(CONFIG.api, {
+            method:'POST',
+            body: JSON.stringify({
+                action:'newsLogin',
+                password:$('newsAdminPassInput').value,
+                clientId:newsAdminClientId()
+            })
+        }, 1);
+        if (!data || !data.ok){
+            const retry = data && data.retryAfterSec ? ' Повторите через ' + data.retryAfterSec + ' сек.' : '';
+            throw new Error((data && data.error) || ('Данные для входа не подошли.' + retry));
+        }
+        if (data.requires2fa){
+            newsLoginChallengeId = data.challengeId || '';
+            if (!newsLoginChallengeId) throw new Error('Сервер не создал 2FA-проверку');
             $('newsAdminPassInput').value = '';
-            $('newsAdminBar').hidden = false;
-            $('newsAdminBar').style.display = 'flex';
-            fetchNews();
-            flushPendingUploads();
-        } else { err.textContent = 'Пароль не подошёл'; err.style.display = 'block'; }
-    } catch(e){ err.textContent = e.message; err.style.display = 'block'; }
+            $('newsAdminPassInput').style.display = 'none';
+            btn.style.display = 'none';
+            $('newsAdminOtpHint').textContent = 'Код отправлен на ' + (data.maskedDestination || 'почту администратора') + '. Он действует 5 минут.';
+            $('newsAdminOtpSection').style.display = 'block';
+            $('newsAdminOtpInput').focus();
+            return;
+        }
+        // Backward compatibility until the Apps Script deployment is upgraded.
+        if (!data.token) throw new Error('Сервер не выдал защищённую сессию');
+        completeNewsLogin(data.token);
+    } catch(e){
+        err.textContent = e.message;
+        err.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function submitNewsOtp(){
+    const err = $('newsAdminLoginError');
+    const btn = $('newsAdminOtpBtn');
+    const code = $('newsAdminOtpInput').value.trim();
+    if (!code || !newsLoginChallengeId) return;
+    err.style.display = 'none';
+    btn.disabled = true;
+    try {
+        const data = await requestJson(CONFIG.api, {
+            method:'POST',
+            body:JSON.stringify({
+                action:'newsVerify2fa',
+                challengeId:newsLoginChallengeId,
+                code:code,
+                clientId:newsAdminClientId()
+            })
+        }, 1);
+        if (!data || !data.ok || !data.token) throw new Error((data && data.error) || 'Код не подошёл');
+        completeNewsLogin(data.token);
+    } catch(e){
+        $('newsAdminOtpInput').value = '';
+        err.textContent = e.message;
+        err.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+async function resendNewsOtp(){
+    const err = $('newsAdminLoginError');
+    const btn = $('newsAdminOtpResendBtn');
+    if (!newsLoginChallengeId) return;
+    btn.disabled = true;
+    try {
+        const data = await requestJson(CONFIG.api, {
+            method:'POST',
+            body:JSON.stringify({
+                action:'newsResend2fa',
+                challengeId:newsLoginChallengeId,
+                clientId:newsAdminClientId()
+            })
+        }, 1);
+        if (!data || !data.ok) throw new Error((data && data.error) || 'Не удалось повторно отправить код');
+        err.textContent = 'Новый код отправлен.';
+        err.style.display = 'block';
+    } catch(e){
+        err.textContent = e.message;
+        err.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+    }
 }
 
 async function fetchVkState(){
@@ -1763,14 +1878,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 if (editorRequested && !adminToken) {
     $('newsAdminLoginModal').classList.add('active');
 }
-    $('loginCancelBtn').onclick = () => $('newsAdminLoginModal').classList.remove('active');
+    $('loginCancelBtn').onclick = () => {
+        $('newsAdminLoginModal').classList.remove('active');
+        resetNewsLogin2fa();
+    };
     $('loginSubmitBtn').onclick = submitLogin;
+    $('newsAdminOtpBtn').onclick = submitNewsOtp;
+    $('newsAdminOtpResendBtn').onclick = resendNewsOtp;
     $('newsAdminPassInput').onkeydown = e => { if (e.key === 'Enter') submitLogin(); };
+    $('newsAdminOtpInput').onkeydown = e => { if (e.key === 'Enter') submitNewsOtp(); };
 
     $('addNewsBtn').onclick = () => openEditor(null);
     $('visitorPreviewBtn').onclick = () => setVisitorPreview(true);
     $('exportBtn').onclick  = exportBackup;
     $('logoutBtn').onclick = () => {
+        const tokenToRevoke = adminToken;
+        if (tokenToRevoke) {
+            try {
+                fetch(CONFIG.api, {
+                    method:'POST',
+                    referrerPolicy:'no-referrer',
+                    keepalive:true,
+                    body:JSON.stringify({ action:'newsLogout', token:tokenToRevoke })
+                }).catch(()=>{});
+            } catch(e){}
+        }
         clearNewsAdminSession();
         fetchNews();
     };
