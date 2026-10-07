@@ -2378,13 +2378,13 @@
     let API_URL;
     try { API_URL = atob(_p1.replace('eHh4','x')); } catch (e) { API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec'; }
     API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
-    const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
+    const INDEX_PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 
     async function fetchPublicData(path, fallbackUrl, timeoutMs) {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs || 10000);
         try {
-            const response = await fetch(PUBLIC_DATA_API + path + '?_=' + Date.now(), {
+            const response = await fetch(INDEX_PUBLIC_DATA_API + path + '?_=' + Date.now(), {
                 cache:'no-store',
                 signal:controller.signal,
                 referrerPolicy:'no-referrer'
