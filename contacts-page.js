@@ -1,5 +1,5 @@
 (function(){
-  const PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
+  const CONTACTS_PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
   const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
   async function loadSettings(){
@@ -8,7 +8,7 @@
       try{
         const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
         try{
-          const res=await fetch(PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+          const res=await fetch(CONTACTS_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
           if(!res.ok)throw new Error('HTTP '+res.status);
           data=await res.json();
         }finally{clearTimeout(timer);}
