@@ -81,6 +81,27 @@ assert(!indexHtml.includes("localStorage.setItem('siteAdminToken'"),
 assert(!/[?&](?:token|adminToken)=/i.test(indexHtml),
   'PRO token must not be placed into client URLs');
 
+assert(
+  indexHtml.includes("action:'newsVerify2fa'") &&
+  indexHtml.includes("action:'newsResend2fa'") &&
+  indexHtml.includes("action:'newsLogout'") &&
+  indexHtml.includes("ranepaAdminClientId"),
+  'PRO login must support server-side 2FA, throttling client identity, and token revocation'
+);
+
+const newsAuthHtml = fs.readFileSync('news.html','utf8');
+assert(
+  newsAuthHtml.includes("action:'newsVerify2fa'") &&
+  newsAuthHtml.includes("action:'newsResend2fa'") &&
+  newsAuthHtml.includes("action:'newsLogout'") &&
+  newsAuthHtml.includes("ranepaAdminClientId"),
+  'News editor login must support server-side 2FA and token revocation'
+);
+assert(
+  newsAuthHtml.includes("}, 1);"),
+  'Authentication requests must not be automatically retried after a failed credential check'
+);
+
 
 for (const page of ['index.html','programs.html','program.html','schedule.html','students.html','faq.html','contacts.html','news.html','ai-lecture.html','media-player.html']) {
   const html = fs.readFileSync(page,'utf8');
