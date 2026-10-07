@@ -1,11 +1,11 @@
 // Live refresh for the site-wide "МОЛНИЯ" alert.
-// Primary source: Apps Script (so urgent notices do not depend on delayed GitHub cron runs).
+// Primary source: safe realtime proxy (so urgent notices do not depend on delayed GitHub cron runs).
 // Fallback source: portal-alert.json on GitHub Pages/CDN.
 (function () {
     'use strict';
 
     const POLL_MS = 60 * 1000;
-    const LIVE_API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
+    const LIVE_API_URL = 'https://ranepa-dpo-public-api.onrender.com/alert';
     let timer = null;
     let inFlight = null;
 
@@ -68,11 +68,8 @@
         inFlight = (async () => {
             let liveError = null;
 
-            // Important: ?type=alert is forward-compatible with the hardened backend.
-            // Older deployments ignore the parameter and return the normal public payload,
-            // which still contains currentAlert.
             try {
-                const liveUrl = LIVE_API_URL + '?type=alert&_alert=' + Date.now();
+                const liveUrl = LIVE_API_URL + '?_alert=' + Date.now();
                 const liveData = await fetchWithTimeout(liveUrl, 12000);
                 return applyAlert(alertFromPayload(liveData));
             } catch (error) {
