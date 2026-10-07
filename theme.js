@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const KEY='ranepa-theme';
-  const PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
+  const THEME_PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
   const SETTINGS_ID='__site_admin_settings__';
   const root=document.documentElement;
   const DEFAULTS={
@@ -122,7 +122,7 @@
     try{
       const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
       try{
-        const res=await fetch(PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+        const res=await fetch(THEME_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
         if(!res.ok) throw new Error('HTTP '+res.status);
         const data=await res.json();
         settings=data?.settings||{};
