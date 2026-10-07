@@ -2378,6 +2378,28 @@
     let API_URL;
     try { API_URL = atob(_p1.replace('eHh4','x')); } catch (e) { API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec'; }
     API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
+    const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
+
+    async function fetchPublicData(path, fallbackUrl, timeoutMs) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs || 10000);
+        try {
+            const response = await fetch(PUBLIC_DATA_API + path + '?_=' + Date.now(), {
+                cache:'no-store',
+                signal:controller.signal,
+                referrerPolicy:'no-referrer'
+            });
+            if (!response.ok) throw new Error('Public API HTTP ' + response.status);
+            return await response.json();
+        } catch (liveError) {
+            if (!fallbackUrl) throw liveError;
+            const response = await fetch(fallbackUrl, { cache:'no-store' });
+            if (!response.ok) throw new Error('Fallback HTTP ' + response.status);
+            return await response.json();
+        } finally {
+            clearTimeout(timer);
+        }
+    }
 
     // Общая обезличенная память Совы использует тот же серверный Apps Script.
     // Если сервер ещё не поддерживает learn_context, owl-learning.js сохранит очередь локально
@@ -3204,9 +3226,8 @@
             if (!useAdmin) {
                 try {
                     const bucket = Math.floor(Date.now() / (60 * 1000));
-                    const response = await fetch('./site-settings.json?v=' + bucket, { cache:'no-store' });
-                    if (response.ok) {
-                        const snapshot = await response.json();
+                    const snapshot = await fetchPublicData('/settings', './site-settings.json?v=' + bucket, 8000);
+                    {
                         const cachedSettings = snapshot && snapshot.settings;
                         if (cachedSettings && typeof cachedSettings === 'object') {
                             siteVisibility = cachedSettings.visibility && typeof cachedSettings.visibility === 'object'
@@ -3887,6 +3908,18 @@
         }
     }
 
+    async function lookupOwlMaterialByCode(code) {
+        const clean = String(code || '').trim().toUpperCase();
+        if (!/^ЛК-(?:\d{4}|[A-F0-9]{8})$/i.test(clean)) return null;
+        try {
+            const data = await fetchPublicData('/material?code=' + encodeURIComponent(clean) + '&x=1', null, 12000);
+            return data && data.item ? data.item : null;
+        } catch (_) {
+            return null;
+        }
+    }
+    window.lookupOwlMaterialByCode = lookupOwlMaterialByCode;
+
     async function refreshOwlFilesSnapshot(options) {
         const opts = options || {};
 
@@ -3896,35 +3929,8 @@
         owlFilesSnapshotRefreshInFlight = (async () => {
             let liveError = null;
 
-            // Секретный каталог материалов не публикуется в статике. К Apps Script
-            // обращаемся только по явному запросу конкретного ЛК-кода, а не при
-            // открытии чата и не по таймеру у каждого посетителя.
-            if (opts.live === true) {
-                try {
-                    const liveUrl = API_URL + (API_URL.includes('?') ? '&' : '?') + '_owl=' + Date.now();
-                    const response = await fetch(liveUrl, {
-                        method: 'GET',
-                        cache: 'no-store',
-                        redirect: 'follow'
-                    });
-                    if (!response.ok) throw new Error('Live Owl API HTTP ' + response.status);
-
-                    const data = await response.json();
-                    if (!data || !Array.isArray(data.owlFiles)) {
-                        throw new Error('Live Owl API has invalid format');
-                    }
-
-                    const changed = owlFilesFingerprint(data.owlFiles) !== owlFilesFingerprint(globalOwlFiles);
-                    if (changed) {
-                        globalOwlFiles = data.owlFiles;
-                        if (siteAdminMode) renderSiteAdminPanel();
-                    }
-
-                    return changed;
-                } catch (error) {
-                    liveError = error;
-                }
-            }
+            // Полный каталог материалов никогда не запрашиваем в браузер.
+            // Конкретный ЛК-код проверяется через lookupOwlMaterialByCode().
 
             // Статический файл остаётся безопасным резервным источником.
             try {
@@ -4034,22 +4040,29 @@
         portalRefreshStarted = true;
 
         const minuteBucket = Math.floor(Date.now() / (60 * 1000));
-
-        fetch('./portal-data.json?v=' + minuteBucket, { cache: 'no-store' })
-            .then(response => {
-                if (!response.ok) throw new Error('Local data HTTP ' + response.status);
-                return response.json();
-            })
+        fetchPublicData('/portal', './portal-data.json?v=' + minuteBucket, 10000)
             .then(data => {
-                if (!isValidPortalData(data)) {
-                    throw new Error('Local portal-data.json is invalid');
-                }
-
+                if (!isValidPortalData(data)) throw new Error('Portal data is invalid');
                 writePortalBrowserCache(data);
                 applyFreshPortalState(data);
+
+                const livePrograms = Array.isArray(data.programs) ? data.programs.map(p => Object.assign({}, p)) : [];
+                if (livePrograms.length) {
+                    const before = JSON.stringify(basePrograms);
+                    const after = JSON.stringify(livePrograms);
+                    if (before !== after) {
+                        basePrograms = livePrograms;
+                        buildPrograms(mergeSiteProgramCollections(basePrograms, siteCustomPrograms).filter(function (p) {
+                            return p && p.archived !== true && (p.active !== false || window.sitePreviewDraftMode);
+                        }));
+                    }
+                }
             })
             .catch(error => {
-                console.warn('Фоновое обновление локального снимка недоступно:', error);
+                console.warn('Фоновое live-обновление портала недоступно, используется snapshot:', error);
+            })
+            .finally(() => {
+                portalRefreshStarted = false;
             });
     }
 
