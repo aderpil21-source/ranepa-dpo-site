@@ -412,7 +412,7 @@ async function loadPublicNewsPageEnabled(){
         let data;
         try {
             const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 8000);
+            const timer = setTimeout(() => controller.abort(), 2000);
             try {
                 const response = await fetch(NEWS_PUBLIC_DATA_API + '/settings?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
@@ -1112,7 +1112,7 @@ async function refreshPublicNewsSnapshot(options){
             let data;
             try {
                 const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 10000);
+                const timer = setTimeout(() => controller.abort(), 2500);
                 try {
                     const response = await fetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                     if (!response.ok) throw new Error('Live news HTTP ' + response.status);
@@ -1225,7 +1225,7 @@ async function fetchNews(){
         let data;
         try {
             const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 10000);
+            const timer = setTimeout(() => controller.abort(), 2500);
             try {
                 const response = await fetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                 if (!response.ok) throw new Error('Live news HTTP ' + response.status);
