@@ -1,6 +1,23 @@
 let scheduleCache = [];
 const SCHEDULE_TIME_ZONE = 'Europe/Kaliningrad';
 const SCHEDULE_CUTOFF_HOUR = 21;
+const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
+
+async function fetchPublicJson(path, fallbackUrl) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+  try {
+    const r = await fetch(PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    return await r.json();
+  } catch (_) {
+    const r = await fetch(fallbackUrl, {cache:'no-store'});
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    return await r.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
 let scheduleCutoffTimer = null;
 let schedulePollTimer = null;
 let scheduleRenderCount = 0;
@@ -8,7 +25,7 @@ let scheduleRenderTimer = 0;
 function scheduleRenderDebounced(){ clearTimeout(scheduleRenderTimer); scheduleRenderTimer = setTimeout(renderSchedule, 85); }
 function scheduleKey(x){return 'schedule:'+[x?.id,x?.date,x?.time,x?.subject].map(v=>encodeURIComponent(String(v||'').trim())).join('|')}
 function mergeSchedule(base,custom){const o=new Map(),a=[];(custom||[]).forEach(x=>{if(!x)return;if(x.sourceKey){o.set(x.sourceKey,x);return}if(x.active===false||x.archived===true)return;a.push(x)});const out=[];(base||[]).forEach(x=>{const k=scheduleKey(x);if(o.has(k)){const ov=o.get(k);o.delete(k);if(ov.active===false||ov.archived===true)return;const y={...x,...ov};delete y.sourceKey;out.push(y)}else out.push(x)});o.forEach(x=>{if(x.active===false||x.archived===true)return;const y={...x};delete y.sourceKey;out.push(y)});return out.concat(a).sort((x,y)=>{const xo=Number.isFinite(Number(x&&x.cmsOrder))?Number(x.cmsOrder):null,yo=Number.isFinite(Number(y&&y.cmsOrder))?Number(y.cmsOrder):null;if(xo!==null&&yo!==null&&xo!==yo)return xo-yo;if(xo!==null&&yo===null)return -1;if(xo===null&&yo!==null)return 1;return 0})}
-async function loadProSchedule(){try{const r=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json(),s=d?.settings||{};return {v:s.visibility||{},c:Array.isArray(s.customSchedules)?s.customSchedules:[]}}catch(_){return {v:{},c:[]}}}
+async function loadProSchedule(){try{const d=await fetchPublicJson('/settings','./site-settings.json?v='+Math.floor(Date.now()/60000)),s=d?.settings||{};return {v:s.visibility||{},c:Array.isArray(s.customSchedules)?s.customSchedules:[]}}catch(_){return {v:{},c:[]}}}
 
 function getKaliningradParts(date = new Date()) {
   const out = {};
@@ -129,9 +146,7 @@ async function loadScheduleSnapshot(silent) {
   const list = document.getElementById('scheduleList');
   if (!silent) list.innerHTML = '<div class="empty">Загрузка расписания…</div>';
   try {
-    const res = await fetch('./schedule-data.json?v='+Date.now(), {cache:'no-store'});
-    if (!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
+    const data = await fetchPublicJson('/schedule', './schedule-data.json?v='+Date.now());
     const pro = await loadProSchedule();
     scheduleCache = mergeSchedule(Array.isArray(data.schedules) ? data.schedules : [], pro.c).filter(x=>pro.v[scheduleKey(x)]!==false);
 
