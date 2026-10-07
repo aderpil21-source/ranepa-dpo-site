@@ -402,15 +402,27 @@ const CONFIG = {
    БЛОК 2. СОСТОЯНИЕ
    ============================================================================ */
 const SYSTEM_NEWS_ID = '__site_admin_settings__';
+const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 function isSystemNewsItem(item){ const tags=item&&Array.isArray(item.tags)?item.tags:[]; return !!item && ((typeof item.id==='string' && (item.id===SYSTEM_NEWS_ID || item.id.indexOf('__site_admin_version__')===0)) || tags.includes('__site_version__') || tags.includes('__system__')); }
 let publicNewsPageEnabled = true;
 
 async function loadPublicNewsPageEnabled(){
     if (adminToken) return true;
     try {
-        const response = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), { cache:'no-store' });
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const data = await response.json();
+        let data;
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 8000);
+            try {
+                const response = await fetch(PUBLIC_DATA_API + '/settings?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                data = await response.json();
+            } finally { clearTimeout(timer); }
+        } catch (_) {
+            const response = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), { cache:'no-store' });
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            data = await response.json();
+        }
         const visibility = data && data.settings && typeof data.settings.visibility === 'object'
             ? data.settings.visibility : {};
         return visibility.news_page !== false;
@@ -1096,9 +1108,20 @@ async function refreshPublicNewsSnapshot(options){
 
     publicNewsRefreshInFlight = (async () => {
         try {
-            const response = await fetch(publicNewsSnapshotUrl(), { cache:'no-store' });
-            if (!response.ok) throw new Error('Local news HTTP ' + response.status);
-            const data = await response.json();
+            let data;
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 10000);
+                try {
+                    const response = await fetch(PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                    if (!response.ok) throw new Error('Live news HTTP ' + response.status);
+                    data = await response.json();
+                } finally { clearTimeout(timer); }
+            } catch (_) {
+                const response = await fetch(publicNewsSnapshotUrl(), { cache:'no-store' });
+                if (!response.ok) throw new Error('Local news HTTP ' + response.status);
+                data = await response.json();
+            }
             if (!data || !Array.isArray(data.items)) {
                 throw new Error('Local news snapshot has invalid format');
             }
@@ -1188,10 +1211,20 @@ async function fetchNews(){
 
     // Первый визит: читаем маленький JSON с того же сайта.
     try {
-        const response = await fetch(publicNewsSnapshotUrl());
-        if (!response.ok) throw new Error('Local news HTTP ' + response.status);
-
-        const data = await response.json();
+        let data;
+        try {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 10000);
+            try {
+                const response = await fetch(PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                if (!response.ok) throw new Error('Live news HTTP ' + response.status);
+                data = await response.json();
+            } finally { clearTimeout(timer); }
+        } catch (_) {
+            const response = await fetch(publicNewsSnapshotUrl());
+            if (!response.ok) throw new Error('Local news HTTP ' + response.status);
+            data = await response.json();
+        }
         if (!data || !Array.isArray(data.items)) {
             throw new Error('Local news snapshot has invalid format');
         }
