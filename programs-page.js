@@ -1,6 +1,23 @@
 let programsCache = [];
-const PROGRAM_REFRESH_MS = 5 * 60 * 1000;
+const PROGRAM_REFRESH_MS = 60 * 1000;
+const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 let programRefreshTimer = null;
+
+async function fetchPublicJson(path, fallbackUrl) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    return await res.json();
+  } catch (_) {
+    const res = await fetch(fallbackUrl, {cache:'no-store'});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
 let programSettings = { visibility:{}, customPrograms:[] };
 
 function mergeProgramSets(base, custom) {
@@ -16,9 +33,7 @@ function mergeProgramSets(base, custom) {
 
 async function loadProgramSettings(){
   try {
-    const res = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), {cache:'no-store'});
-    if (!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
+    const data = await fetchPublicJson('/settings', './site-settings.json?v=' + Math.floor(Date.now()/60000));
     const s = data?.settings || {};
     return {visibility:s.visibility||{}, customPrograms:Array.isArray(s.customPrograms)?s.customPrograms:[]};
   } catch (_) {
@@ -34,10 +49,7 @@ function escapeHtml(value) {
 
 async function refreshProgramsInBackground(){
   try {
-    const bucket = Math.floor(Date.now() / PROGRAM_REFRESH_MS);
-    const res = await fetch('./program-list.json?v=' + bucket, { cache:'default' });
-    if (!res.ok) return;
-    const data = await res.json();
+    const data = await fetchPublicJson('/programs', './program-list.json?v=' + Math.floor(Date.now() / PROGRAM_REFRESH_MS));
     programSettings = await loadProgramSettings();
     const fresh = mergeProgramSets(
       (data.programs || []).filter(p => p && p.id && p.title_ru),
@@ -113,10 +125,7 @@ function renderPrograms() {
 async function initPrograms() {
   const grid = document.getElementById('programGrid');
   try {
-    const bucket = Math.floor(Date.now() / PROGRAM_REFRESH_MS);
-    const res = await fetch('./program-list.json?v=' + bucket, { cache:'default' });
-    if (!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
+    const data = await fetchPublicJson('/programs', './program-list.json?v=' + Math.floor(Date.now() / PROGRAM_REFRESH_MS));
     programSettings = await loadProgramSettings();
     programsCache = mergeProgramSets(
       Array.isArray(data.programs) ? data.programs : [],
