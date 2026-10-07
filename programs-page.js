@@ -5,7 +5,7 @@ let programRefreshTimer = null;
 
 async function fetchPublicJson(path, fallbackUrl) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 10000);
+  const timer = setTimeout(() => controller.abort(), 2000);
   try {
     const res = await fetch(PROGRAMS_PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
     if (!res.ok) throw new Error('HTTP '+res.status);
