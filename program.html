@@ -202,7 +202,7 @@ let siteVisibility={};
 let siteContentOverrides={};
 const PROGRAM_PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
 
-async function getPublicJson(path,fallbackUrl,timeoutMs=9000){
+async function getPublicJson(path,fallbackUrl,timeoutMs=2000){
   const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeoutMs);
   try{
     const r=await fetch(PROGRAM_PUBLIC_DATA_API+path+'?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
