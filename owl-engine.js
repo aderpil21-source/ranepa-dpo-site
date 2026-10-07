@@ -624,9 +624,8 @@ return;
     // В Google идём только для реального формата лекционного кода.
     // Обычные вопросы ("сколько стоит?", "госзакупки" и т.п.) больше
     // вообще не создают live-запрос к Apps Script.
-    if (!foundFile && looksLikeLectureCode && typeof refreshOwlFilesSnapshot === 'function') {
-        await refreshOwlFilesSnapshot({ silent: true, live: true });
-        foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
+    if (!foundFile && looksLikeLectureCode && typeof window.lookupOwlMaterialByCode === 'function') {
+        foundFile = await window.lookupOwlMaterialByCode(cleanCode);
     }
 
     if (foundFile && !siteKeyIsVisible(owlVisibilityKey(foundFile))) {
