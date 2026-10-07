@@ -1,4 +1,4 @@
-const STUDENTS_API_URL = 'https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
+const STUDENTS_PUBLIC_API_URL = 'https://ranepa-dpo-public-api.onrender.com';
 
 function safeStudentUrl(value) {
   try {
@@ -29,12 +29,24 @@ async function lookupStudentMaterial(event) {
   box.className = 'material-result loading';
   box.textContent = 'Проверяем код…';
   try {
-    const separator = STUDENTS_API_URL.includes('?') ? '&' : '?';
-    const response = await fetch(STUDENTS_API_URL + separator + '_students=' + Date.now(), {cache:'no-store'});
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    let response;
+    try {
+      response = await fetch(
+        STUDENTS_PUBLIC_API_URL + '/material?code=' + encodeURIComponent(code) + '&_=' + Date.now(),
+        {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'}
+      );
+    } finally {
+      clearTimeout(timeout);
+    }
+    if (response.status === 404) {
+      setMaterialState('Материал с таким кодом не найден. Проверьте код и попробуйте ещё раз.', 'error');
+      return;
+    }
     if (!response.ok) throw new Error('HTTP ' + response.status);
     const data = await response.json();
-    const files = Array.isArray(data.owlFiles) ? data.owlFiles : [];
-    const item = files.find(file => String(file.code || '').trim().toUpperCase() === code);
+    const item = data && data.item ? data.item : null;
     if (!item) {
       setMaterialState('Материал с таким кодом не найден. Проверьте код и попробуйте ещё раз.', 'error');
       return;
