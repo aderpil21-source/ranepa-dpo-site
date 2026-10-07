@@ -1,11 +1,23 @@
 (function(){
+  const PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
   const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
   async function loadSettings(){
     try{
-      const res=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data=await res.json(), s=data?.settings||{};
+      let data;
+      try{
+        const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
+        try{
+          const res=await fetch(PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+          if(!res.ok)throw new Error('HTTP '+res.status);
+          data=await res.json();
+        }finally{clearTimeout(timer);}
+      }catch(_){
+        const res=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
+        if(!res.ok)throw new Error('HTTP '+res.status);
+        data=await res.json();
+      }
+      const s=data?.settings||{};
       return {visibility:s.visibility||{},contacts:Array.isArray(s.customContacts)?s.customContacts:[]};
     }catch(_){ return {visibility:{},contacts:[]}; }
   }
