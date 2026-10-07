@@ -120,7 +120,7 @@
   }
   async function loadSettings(){
     try{
-      const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
+      const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),2000);
       try{
         const res=await fetch(THEME_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
         if(!res.ok) throw new Error('HTTP '+res.status);
