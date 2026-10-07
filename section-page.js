@@ -1,4 +1,4 @@
-const PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
+const SECTION_PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 const ENROLL_TRUD_URL = 'https://trudvsem.ru/?region=3900000000000';
 const ENROLL_YANDEX_URL = 'https://forms.yandex.ru';
 const RANEPA_PRIVACY_URL = 'https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf';
@@ -111,7 +111,7 @@ async function applyPublicFaqCms(){
     try{
       const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
       try{
-        const response=await fetch(PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+        const response=await fetch(SECTION_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
         if(!response.ok)throw new Error('HTTP '+response.status);
         data=await response.json();
       }finally{clearTimeout(timer);}
