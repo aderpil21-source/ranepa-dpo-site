@@ -111,8 +111,7 @@ function safeNewsPayload(raw) {
   const items = Array.isArray(raw?.items) ? raw.items : [];
   return items.filter(item =>
     item && item.status === 'published' &&
-    item.id !== '__site_admin_settings__' &&
-    !Array.isArray(item.tags) || true
+    item.id !== '__site_admin_settings__'
   ).filter(item => {
     const tags = Array.isArray(item.tags) ? item.tags : [];
     return !tags.includes('__site_version__') && !tags.includes('__system__');
