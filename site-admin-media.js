@@ -87,6 +87,11 @@ function addUpload(input,accept,label){
   file.onchange=()=>{const f=file.files&&file.files[0];if(f)uploadIntoInput(f,input,stat);file.value='';};
   wrap.append(btn,stat,file);input.insertAdjacentElement('afterend',wrap);
 }
+const seoObserverTarget=()=>document.getElementById('siteSeoPanel');
+function bindSeoUpload(){
+  const panel=seoObserverTarget();if(!panel)return;
+  addUpload(panel.querySelector('input[data-seo="ogImage"]'),'image/*','Загрузить OG изображение');
+}
 function enhanceEditors(){
   const oldDoc=window.openSiteDocEditor;
   if(oldDoc&&!oldDoc.__mediaWrapped){
@@ -98,11 +103,6 @@ function enhanceEditors(){
     const fn=function(id){oldProgram(id);setTimeout(()=>{const m=document.getElementById('siteAdminEntityModal');if(!m)return;addUpload(m.querySelector('input[name="pdf_link"]'),'.pdf,application/pdf','Загрузить PDF');},0);};
     fn.__mediaWrapped=true;window.openSiteProgramEditor=fn;
   }
-  const seoObserverTarget=()=>document.getElementById('siteSeoPanel');
-  const bindSeoUpload=()=>{
-    const panel=seoObserverTarget();if(!panel)return;
-    addUpload(panel.querySelector('input[data-seo="ogImage"]'),'image/*','Загрузить OG изображение');
-  };
   const oldElement=window.openSiteElementEditor;
   if(oldElement&&!oldElement.__mediaWrapped){
     const fn=function(el){oldElement(el);setTimeout(()=>{const m=document.getElementById('siteAdminEntityModal');if(!m)return;addUpload(m.querySelector('input[name="src"]'),'image/*','Загрузить изображение');},0);};
