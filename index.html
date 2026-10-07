@@ -4063,6 +4063,9 @@
             })
             .finally(() => {
                 portalRefreshStarted = false;
+                if (document.visibilityState === 'visible') {
+                    setTimeout(refreshPortalDataInBackground, 60 * 1000);
+                }
             });
     }
 
@@ -5380,10 +5383,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
         scheduleSnapshotRefreshInFlight = (async () => {
             try {
-                const response = await fetch(scheduleSnapshotUrl());
-                if (!response.ok) throw new Error('Schedule snapshot HTTP ' + response.status);
-
-                const data = await response.json();
+                const data = await fetchPublicData('/schedule', scheduleSnapshotUrl(), 10000);
                 if (!data || !Array.isArray(data.schedules)) {
                     throw new Error('Schedule snapshot has invalid format');
                 }
