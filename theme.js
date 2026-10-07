@@ -1,7 +1,7 @@
 (function(){
   'use strict';
   const KEY='ranepa-theme';
-  const API='https://script.google.com/macros/s/AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I/exec';
+  const PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
   const SETTINGS_ID='__site_admin_settings__';
   const root=document.documentElement;
   const DEFAULTS={
@@ -120,11 +120,13 @@
   }
   async function loadSettings(){
     try{
-      const res=await fetch(API+'?type=news&_theme='+Date.now(),{cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data=await res.json();
-      const item=(data.items||[]).find(x=>x&&x.id===SETTINGS_ID);
-      settings=item?JSON.parse(item.lead||'{}'):{};
+      const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),8000);
+      try{
+        const res=await fetch(PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const data=await res.json();
+        settings=data?.settings||{};
+      }finally{clearTimeout(timer);}
     }catch(_){
       try{
         const res=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
