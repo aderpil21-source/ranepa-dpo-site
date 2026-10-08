@@ -70,16 +70,33 @@ function scheduleProgramRender() {
   programRenderTimer = setTimeout(renderPrograms, 85);
 }
 
+function normalizeProgramSearch(value) {
+  return String(value ?? '').toLocaleLowerCase('ru').replace(/ё/g, 'е');
+}
+
+function matchesProgramWords(value, terms) {
+  const words = normalizeProgramSearch(value).match(/[\p{L}\p{N}]+/gu) || [];
+  return terms.every(term => words.some(word => word.startsWith(term)));
+}
+
 function renderPrograms() {
-  const q = document.getElementById('programSearch').value.trim().toLowerCase();
+  const q = normalizeProgramSearch(document.getElementById('programSearch').value.trim());
+  const terms = q.match(/[\p{L}\p{N}]+/gu) || [];
   const type = document.getElementById('programType').value;
   const grid = document.getElementById('programGrid');
 
-  const items = programsCache.filter(p => {
-    if (p.active === false) return false;
-    const hay = [p.title_ru,p.desc_ru,p.type,p.format,p.hours,p.dates].join(' ').toLowerCase();
-    return (!q || hay.includes(q)) && (!type || p.type === type);
-  }).sort((a,b) => {
+  const typeFiltered = programsCache.filter(p => p.active !== false && (!type || p.type === type));
+  // Prefer program names: short queries like "мене" should not match
+  // "применение" in the description of almost every course.
+  const titleMatches = terms.length
+    ? typeFiltered.filter(p => matchesProgramWords(p.title_ru, terms))
+    : [];
+  const filtered = !q ? typeFiltered : !terms.length ? [] : titleMatches.length
+    ? titleMatches
+    : typeFiltered.filter(p => matchesProgramWords(
+        [p.title_ru,p.desc_ru,p.type,p.format,p.hours,p.dates].join(' '), terms
+      ));
+  const items = filtered.sort((a,b) => {
     const ao = Number.isFinite(Number(a?.cmsOrder)) ? Number(a.cmsOrder) : null;
     const bo = Number.isFinite(Number(b?.cmsOrder)) ? Number(b.cmsOrder) : null;
     if (ao !== null && bo !== null && ao !== bo) return ao - bo;
