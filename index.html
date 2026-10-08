@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="./theme.css?v=1">
 <script src="./theme.js?v=4"></script>
    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://mc.yandex.ru; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: https:; frame-src https:; child-src 'self' blob: https:; worker-src 'self' blob:; form-action 'self' https:; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
     <title data-i18n="pageTitle">Доп образование и профпереподготовка в Калининграде | Западный филиал РАНХиГС</title>
@@ -243,6 +244,7 @@
 
         .tab-content { display: none; perspective: 1500px; }
         .tab-content.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 350px), 1fr)); gap: clamp(25px, 3vw, 35px); align-items: start; }
+        .mobile-program-view { display: none; }
 
         .filters-bar {
             display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
@@ -1016,8 +1018,45 @@
 
             .modal-box { padding: 26px 22px; border-radius: 24px; }
 
-            .scroll-nav { left: 14px; bottom: 14px; }
+            .scroll-nav { left: 14px; bottom: calc(max(14px, env(safe-area-inset-bottom)) + 10vh); bottom: calc(max(14px, env(safe-area-inset-bottom)) + 10dvh); }
             .scroll-nav-btn { width: 40px; height: 40px; }
+
+            /* Mobile home only: logo left, controls and navigation to the right. */
+            header { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); align-items: start; column-gap: 8px; row-gap: 10px; padding: 12px 14px 14px; }
+            .logo-group { grid-column: 1; grid-row: 1; width: 100%; min-width: 0; align-items: flex-start; text-align: left; }
+            .logo-group img { width: 100%; height: auto !important; max-width: 100%; max-height: 102px; object-fit: contain; object-position: left center; }
+            .logo-subtitle { text-align: left; font-size: .58rem; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
+            .header-right-panel { display: contents; }
+            .header-controls { grid-column: 2; grid-row: 1; justify-content: flex-end; align-content: flex-start; gap: 4px; width: 100%; }
+            .control-group { gap: 2px; padding: 3px; }
+            .control-panel-btn { padding: 5px 7px; font-size: .72rem; }
+            .header-nav { grid-column: 1 / -1; grid-row: 2; display: flex; width: 100%; justify-content: flex-end; flex-wrap: wrap; gap: 9px 13px; padding-left: 10px; }
+            .header-nav-link { font-size: .7rem; }
+            .header-nav-btn { padding: 9px 16px; font-size: .72rem; }
+
+            /* A single card per row by default, with an optional compact two-column grid. */
+            .mobile-program-view { display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin: 0 0 18px; }
+            .mobile-layout-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 38px; padding: 9px 13px; border-radius: 10px; background: var(--btn-glass); color: var(--text-muted); border: 1px solid var(--border-glass); font: 800 .78rem 'Montserrat', sans-serif; cursor: pointer; touch-action: manipulation; }
+            .mobile-layout-btn[aria-pressed="true"] { color: #fff; background: var(--ranepa-red); border-color: var(--ranepa-red); box-shadow: 0 5px 13px rgba(202,15,62,.24); }
+            .tab-content.active { grid-template-columns: minmax(0,1fr) !important; gap: 16px; }
+            #programsSection[data-mobile-layout="grid"] .tab-content.active { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 10px; }
+            #programsSection[data-mobile-layout="grid"] .card { min-width: 0; padding: 13px 10px; border-radius: 14px; }
+            #programsSection[data-mobile-layout="grid"] .card-meta { flex-direction: column; align-items: flex-start; flex-wrap: nowrap; gap: 5px; margin-bottom: 9px; }
+            #programsSection[data-mobile-layout="grid"] .card .price { font-size: clamp(.9rem,3.6vw,1.25rem); overflow-wrap: anywhere; }
+            #programsSection[data-mobile-layout="grid"] .card .hours { font-size: .65rem; padding: 4px 6px; white-space: normal; }
+            #programsSection[data-mobile-layout="grid"] .program-extra-info,
+            #programsSection[data-mobile-layout="grid"] .card .desc-text { display: none !important; }
+            #programsSection[data-mobile-layout="grid"] .card > div[data-i18n="tabKadry"] { font-size: .65rem !important; padding: 4px 6px !important; margin-bottom: 8px !important; }
+            #programsSection[data-mobile-layout="grid"] .card h3 { font-size: .88rem; line-height: 1.36; margin-bottom: 10px; overflow-wrap: anywhere; }
+            #programsSection[data-mobile-layout="grid"] .card-actions { gap: 7px; }
+            #programsSection[data-mobile-layout="grid"] .program-details-link,
+            #programsSection[data-mobile-layout="grid"] .buy-btn { padding: 9px 5px; border-radius: 9px; font-size: .67rem; line-height: 1.3; letter-spacing: 0; overflow-wrap: anywhere; }
+
+            /* At mobile widths, put the national-project logo left of the VK link in the footer. */
+            .footer-social-row { align-items: center; flex-wrap: nowrap; gap: clamp(12px,4vw,22px); }
+            .footer-kadry-mobile { display: flex !important; align-items: center; justify-content: center; flex: 0 1 130px; min-width: 0; margin: 0; text-align: left; }
+            .footer-kadry-mobile img { width: 100%; max-width: 130px; max-height: 82px; height: auto; object-fit: contain; }
+            .footer-social-row .vk-btn { min-width: 0; padding: 12px 15px; }
         }
 
         /* ===== РАСПИСАНИЕ: PREMIUM / MOBILE-FIRST ===== */
@@ -1719,7 +1758,7 @@
         <p data-i18n="heroDesc">Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.</p>
     </section>
 
-    <div class="container" id="programsSection" role="main" aria-label="Каталог образовательных программ">
+    <div class="container" id="programsSection" role="main" aria-label="Каталог образовательных программ" data-mobile-layout="list">
 
         <div class="tabs-nav-wrapper">
             <div class="tabs-nav">
@@ -1765,6 +1804,11 @@
                 </select>
             </div>
             <button class="filter-reset-btn" onclick="resetFilters()" data-i18n="filterReset">Сбросить</button>
+        </div>
+
+        <div class="mobile-program-view" role="group" aria-label="Вид карточек программ">
+            <button type="button" class="mobile-layout-btn" data-mobile-layout-choice="list" aria-pressed="true" onclick="setMobileProgramLayout('list')" data-i18n="mobileListView">☰ Список</button>
+            <button type="button" class="mobile-layout-btn" data-mobile-layout-choice="grid" aria-pressed="false" onclick="setMobileProgramLayout('grid')" data-i18n="mobileGridView">▦ Сетка</button>
         </div>
 
         <div id="tab-all" class="tab-content active" aria-live="polite"></div>
@@ -1972,15 +2016,15 @@
                     <span onclick="openDocsModal()" style="color: var(--ranepa-red); font-weight: 800;" data-i18n="docsArchiveLink">📄 Официальные образовательные программы (Архив)</span>
                 </div>
 
-                <div style="margin-top: 20px; display: flex; justify-content: center;">
+                <div class="footer-social-row" style="margin-top: 20px; display: flex; justify-content: center;">
+                    <div class="footer-kadry-mobile">
+                        <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" data-i18n-alt="kadryAlt">
+                    </div>
                     <a href="https://vk.ru/ranepa_dpo39" target="_blank" rel="noopener noreferrer" class="vk-btn">
     <img src="./img/logo-vk.png" alt="ВКонтакте" data-i18n-alt="vkAlt" style="width: 22px; height: 22px; object-fit: contain; display: block;">
     <span data-i18n="vkText">ВКонтакте</span>
 </a>
                 </div>
-            </div>
-            <div class="footer-kadry-mobile">
-                <img src="./img/logo-kadry.png" alt="Национальный проект Кадры" data-i18n-alt="kadryAlt">
             </div>
         </div>
     </div>
@@ -4241,6 +4285,7 @@
             heroTitle: "Академия управления<br>и профессионального роста", heroDesc: "Программы ДПО с государственной поддержкой. Получите фундаментальные знания, востребованные навыки и диплом РАНХиГС для уверенного рывка в карьере.",
             tabAll: "Все программы", tabKadry: "🎓 Нацпроект «Кадры»", tabPk: "📈 Повышение квалификации", tabPp: "🔄 Переподготовка", tabPo: "🛠️ Проф. обучение", tabSem: "🗣️ Семинары",
             studyPlanBtn: "Изучить учебный план", detailsBtn: "Подробно о программе", enrollBtn: "Записаться", typeLabel: "Тип:", formatLabel: "Форма:", datesLabel: "Сроки:",
+            mobileListView: "☰ Список", mobileGridView: "▦ Сетка",
             filterSector: "Направление", filterMaxPrice: "Стоимость до, ₽", filterDuration: "Длительность",
             filterSort: "Сортировка", sortAlphaAsc: "По алфавиту (А-Я)", sortAlphaDesc: "По алфавиту (Я-А)", sortPriceAsc: "Сначала дешевле", sortPriceDesc: "Сначала дороже", sortHoursAsc: "Сначала короче", sortHoursDesc: "Сначала длиннее",
             filterDurAny: "Любая", filterDurShort: "до 50 ч.", filterDurMid: "50–200 ч.", filterDurLong: "от 200 ч.", filterReset: "Сбросить",
@@ -4303,6 +4348,7 @@
             heroTitle: "Academy of Management<br>and Professional Growth", heroDesc: "State-supported continuing education programs. Gain fundamental knowledge, in-demand skills and a RANEPA diploma for a confident career leap.",
             tabAll: "All Programs", tabKadry: "🎓 National Project «Kadry»", tabPk: "📈 Upgrading Qualifications", tabPp: "🔄 Retraining", tabPo: "🛠️ Vocational Training", tabSem: "🗣️ Seminars",
             studyPlanBtn: "Explore Curriculum", detailsBtn: "Program details", enrollBtn: "Apply Now", typeLabel: "Type:", formatLabel: "Format:", datesLabel: "Study period:", faqTitle: "Frequently Asked Questions",
+            mobileListView: "☰ List", mobileGridView: "▦ Grid",
             filterSector: "Sector", filterMaxPrice: "Max price, ₽", filterDuration: "Duration",
             filterSort: "Sort by", sortAlphaAsc: "Alphabetical (A-Z)", sortAlphaDesc: "Alphabetical (Z-A)", sortPriceAsc: "Price (Low to High)", sortPriceDesc: "Price (High to Low)", sortHoursAsc: "Duration (Short to Long)", sortHoursDesc: "Duration (Long to Short)",
             filterDurAny: "Any", filterDurShort: "up to 50 hrs", filterDurMid: "50–200 hrs", filterDurLong: "200+ hrs", filterReset: "Reset",
@@ -4681,7 +4727,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
             let extraInfoHTML = '';
             if (prog.type || prog.format || prog.dates) {
-                extraInfoHTML = `<div style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
+                extraInfoHTML = `<div class="program-extra-info" style="margin-bottom: 16px; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-glass);">`;
                 const safeProgramId = siteAdminEscape(String(prog.id || ''));
                 if (prog.type) extraInfoHTML += `<div><b data-i18n="typeLabel">Тип:</b> <span class="program-meta-value" data-program-id="${safeProgramId}" data-meta-key="type" data-meta-value="${encodeURIComponent(prog.type)}">${siteAdminEscape(localizedProgramMeta(prog, 'type', currentLang))}</span></div>`;
                 if (prog.format) extraInfoHTML += `<div><b data-i18n="formatLabel">Форма:</b> <span class="program-meta-value" data-program-id="${safeProgramId}" data-meta-key="format" data-meta-value="${encodeURIComponent(prog.format)}">${siteAdminEscape(localizedProgramMeta(prog, 'format', currentLang))}</span></div>`;
@@ -4831,6 +4877,23 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         document.getElementById('filterDuration').value = '';
         document.getElementById('filterSort').value = 'alpha_asc';
         applyFilters();
+    }
+
+    function setMobileProgramLayout(layout) {
+        const section = document.getElementById('programsSection');
+        if (!section) return;
+        const selected = layout === 'grid' ? 'grid' : 'list';
+        section.dataset.mobileLayout = selected;
+        document.querySelectorAll('[data-mobile-layout-choice]').forEach(button => {
+            button.setAttribute('aria-pressed', String(button.dataset.mobileLayoutChoice === selected));
+        });
+        try { localStorage.setItem('dpo-mobile-program-layout', selected); } catch (_) {}
+    }
+
+    function initMobileProgramLayout() {
+        let stored = 'list';
+        try { stored = localStorage.getItem('dpo-mobile-program-layout') || 'list'; } catch (_) {}
+        setMobileProgramLayout(stored);
     }
 
     function filterPrograms(evt, tabName) {
@@ -5929,6 +5992,7 @@ document.getElementById('mediaLightbox').addEventListener('click', function(e) {
         document.getElementById('themeBtn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
         window.scrollTo(0, 0);
 
+        initMobileProgramLayout();
         fetchPrograms();
         scheduleNextCutoffRefresh();
         initDeferredDocumentPreviews();
