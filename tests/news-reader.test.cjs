@@ -64,8 +64,9 @@ assert.equal(style.vars['--news-reader-scale'], '1.4');
 
 const rich = context.reader.newsReadingHtml('<span style="font-size:20px">test</span>');
 assert.match(rich, /font-size:calc\(20px \* var\(--news-reader-scale,1\)\)/);
-vm.runInNewContext(helper, context);
-context.reader.applyNewsReaderScale(view);
+const freshContext = {localStorage: context.localStorage, RanepaRichText: context.RanepaRichText};
+vm.runInNewContext(helper, freshContext);
+freshContext.reader.applyNewsReaderScale(view);
 assert.equal(value.textContent, '140%', 'size preference must be restored across article visits');
 
 console.log('News reader zoom, rich text scale, contrast and syntax checks passed.');
