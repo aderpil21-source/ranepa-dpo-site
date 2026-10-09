@@ -8,7 +8,7 @@
   const escape = value => String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function safeUrl(raw){
     const value = String(raw || '').trim();
-    if (!value || /[\u0000-\u0020\u007f]/.test(value)) return '';
+    if (!value || /[\u0000-\u0020\u007f]/.test(value) || !/^(https?:\/\/|mailto:|\/(?!\/)|#)/i.test(value)) return '';
     try {
       const url = new URL(value, location.href);
       if (!['https:', 'http:', 'mailto:'].includes(url.protocol)) return '';
