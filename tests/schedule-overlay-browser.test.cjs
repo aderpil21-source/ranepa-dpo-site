@@ -21,7 +21,7 @@ let browser;
   await context.route('**/*', route => route.request().url().startsWith(base) ? route.continue() : route.abort());
   const page = await context.newPage();
   await page.goto(base + '/index.html', {waitUntil:'domcontentloaded'});
-  await page.waitForSelector('#scheduleOverlay');
+  await page.waitForSelector('#scheduleOverlay', {state:'attached'});
   await page.evaluate(() => {
     document.body.style.minHeight = '4000px';
     document.getElementById('scheduleTimeline').innerHTML = Array.from({length:36},(_,i)=>
