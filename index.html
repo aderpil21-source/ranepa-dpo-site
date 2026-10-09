@@ -1612,6 +1612,17 @@
             display: none;
         }
         .site-admin-edit-hint.active { display:block; }
+        /* Only hyperlinks inserted through the PRO text editor, regardless of theme. */
+        [data-cms-rich="1"] a,
+        [data-cms-rich="1"] a:visited,
+        [data-cms-rich="1"] a:hover,
+        [data-cms-rich="1"] a:focus,
+        body.site-admin-text-editing .site-admin-editable a {
+            color:#d20d3c !important;
+            text-decoration-color:#d20d3c !important;
+            text-shadow:0 0 7px rgba(210,13,60,.45),0 0 14px rgba(210,13,60,.18);
+        }
+
         #siteAdminRichToolbar { display:none; border-bottom:1px solid rgba(255,255,255,.08); padding:8px 12px; }
         body.site-admin-text-editing #siteAdminRichToolbar { display:block; }
         #siteAdminRichToolbar .ranepa-rich-tools { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
