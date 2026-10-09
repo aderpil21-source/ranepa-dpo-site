@@ -70,6 +70,7 @@ let browser;
   assert(!state.titleBG.includes('0)'), 'Sticky title must not be transparent');
   await page.evaluate(() => document.documentElement.dataset.theme='light');
   const lightBG = await page.locator('.schedule-header').evaluate(el=>getComputedStyle(el).backgroundColor);
+  console.log('SCHEDULE_LIGHT_BACKGROUND', lightBG, await page.evaluate(() => document.documentElement.dataset.theme));
   assert.equal(lightBG,'rgb(248, 250, 252)', 'Light theme schedule title must remain opaque and readable');
   await page.setViewportSize({width:390,height:760});
   await page.evaluate(() => document.getElementById('scheduleTimeline').scrollTop = 720);
