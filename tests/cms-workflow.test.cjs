@@ -449,6 +449,14 @@ assert(
 );
 
 
+assert(
+  indexHtml.includes('inset: var(--schedule-header-clearance, var(--header-h)) 0 0') &&
+  indexHtml.includes("overlay.style.setProperty('--schedule-header-clearance', bottom + 'px')") &&
+  indexHtml.includes("scheduleHeaderResizeObserver.observe(header)") &&
+  indexHtml.includes("stopScheduleHeaderAlignment();"),
+  'Schedule scrolling pane must stay below the real sticky header height and clean up observers'
+);
+
 const owlEngine = fs.readFileSync('owl-engine.js','utf8');
 assert(
   owlEngine.includes("if (switcher) switcher.hidden = false") &&
