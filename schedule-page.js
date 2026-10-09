@@ -148,7 +148,9 @@ async function loadScheduleSnapshot(silent) {
   try {
     const data = await fetchPublicJson('/schedule', './schedule-data.json?v='+Date.now());
     const pro = await loadProSchedule();
-    scheduleCache = mergeSchedule(Array.isArray(data.schedules) ? data.schedules : [], pro.c).filter(x=>pro.v[scheduleKey(x)]!==false);
+    if (window.SiteWordSchedule) await window.SiteWordSchedule.load(true);
+    const sourceSchedules = window.SiteWordSchedule ? window.SiteWordSchedule.merge(data.schedules) : data.schedules;
+    scheduleCache = mergeSchedule(Array.isArray(sourceSchedules) ? sourceSchedules : [], pro.c).filter(x=>pro.v[scheduleKey(x)]!==false);
 
     const programs = [...new Set(scheduleCache.map(x => x.program).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
     const select = document.getElementById('scheduleProgram');

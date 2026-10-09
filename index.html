@@ -1690,6 +1690,7 @@
 <link rel="stylesheet" href="./premium-motion.css?v=6">
 <script defer src="./assets/vendor/motion-12.23.24.js"></script>
 <script defer src="./premium-motion.js?v=7"></script>
+    <script src="./schedule-word-loader.js?v=1"></script>
 </head>
 <body>
 
@@ -2913,7 +2914,7 @@
                 selector: '[data-site-program-id="' + String(prog.id).replace(/"/g, '\\"') + '"]'
             });
         });
-        (Array.isArray(window.schedules) ? window.schedules : []).forEach(function (item) {
+        (window.SiteWordSchedule ? window.SiteWordSchedule.merge(window.schedules) : (Array.isArray(window.schedules) ? window.schedules : [])).forEach(function (item) {
             if (!item) return;
             out.push({
                 key: scheduleVisibilityKey(item),
@@ -5452,7 +5453,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                 }
 
                 const freshSchedules = data.schedules;
-                const changed = scheduleFingerprint(freshSchedules) !== scheduleFingerprint(window.schedules);
+                const beforeWord = scheduleFingerprint(window.SiteWordSchedule ? window.SiteWordSchedule.getRows() : []);
+                if (window.SiteWordSchedule) await window.SiteWordSchedule.load(true);
+                const afterWord = scheduleFingerprint(window.SiteWordSchedule ? window.SiteWordSchedule.getRows() : []);
+                const changed = scheduleFingerprint(freshSchedules) !== scheduleFingerprint(window.schedules) || beforeWord !== afterWord;
 
                 if (changed) {
                     const overlay = document.getElementById('scheduleOverlay');
@@ -5613,6 +5617,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     }
 
     function getVisibleSchedules(items) {
+        items = window.SiteWordSchedule ? window.SiteWordSchedule.merge(items) : items;
         const now = getKaliningradParts();
         const todayKey = now.year * 10000 + now.month * 100 + now.day;
         const beforeCutoff = now.hour < SCHEDULE_CUTOFF_HOUR;
@@ -5874,6 +5879,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (!overlay || !container) return;
 
         overlay.classList.add('active');
+        if (window.SiteWordSchedule) await window.SiteWordSchedule.load();
 
         // Если расписание уже приехало вместе с программами — открываем без второго fetch.
         // Для EN один раз подгружаем небольшой same-origin словарь переводов.
