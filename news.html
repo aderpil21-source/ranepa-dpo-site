@@ -215,6 +215,14 @@ header{ background:var(--header-bg); backdrop-filter:blur(25px);
 .news-add-block-row button{ background:var(--btn-glass); border:1px solid var(--border-glass); color:var(--text-main); padding:8px 14px; border-radius:10px; cursor:pointer; font-weight:700; font-size:.85rem; }
 .news-add-block-row button:hover{ border-color:var(--ranepa-red); color:var(--ranepa-red); }
 textarea.news-editor-field{ resize:vertical; max-height:400px; }
+.ranepa-rich-tools{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.ranepa-rich-tools button,.ranepa-rich-tools select{border:1px solid var(--border-glass);border-radius:8px;background:var(--btn-glass);color:var(--text-main);font:inherit;padding:7px 10px;cursor:pointer}
+.ranepa-rich-tools button:hover,.ranepa-rich-tools select:focus{border-color:var(--ranepa-red)}
+.news-rich-textarea{min-height:100px;white-space:pre-wrap;line-height:1.65;padding:12px 14px;border-radius:10px;border:1px solid var(--border-glass);outline:none;overflow-wrap:anywhere}
+.news-rich-textarea:focus{border-color:var(--ranepa-red);box-shadow:0 0 0 2px rgba(202,15,62,.14)}
+.news-rich-textarea:empty::before{content:attr(data-placeholder);color:var(--text-muted);pointer-events:none}
+.news-body-text a,.news-insert a{color:var(--accent-sky);text-decoration:underline;text-underline-offset:2px}
+
 .news-editor-field{ width:100%; color:var(--text-main); background:rgba(255,255,255,.07); }
 .draft-note{ font-size:.78rem; color:var(--text-muted); margin-bottom:14px; min-height:1em; }
 
@@ -367,6 +375,7 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 
 <div class="toast-stack" id="toastStack"></div>
 
+<script src="./cms-richtext.js?v=1"></script>
 <script>
 /* ============================================================================
    БЛОК 1. НАСТРОЙКИ — единственное место, где нужно что-то менять
@@ -1404,8 +1413,8 @@ function openDetail(id){
 
     const body = visible.map(b => {
         const cap = b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : '';
-        if (b.type === 'text')   return `<p class="news-body-text">${escapeHtml(b.content)}</p>`;
-        if (b.type === 'insert') return `<div class="news-insert">${escapeHtml(b.content)}</div>`;
+        if (b.type === 'text')   return `<p class="news-body-text">${b.html ? RanepaRichText.sanitize(b.html) : escapeHtml(b.content)}</p>`;
+        if (b.type === 'insert') return `<div class="news-insert">${b.html ? RanepaRichText.sanitize(b.html) : escapeHtml(b.content)}</div>`;
         if (b.type === 'image' && b.url){
             const mi = articleMedia.indexOf(b);
             return `<figure class="news-media-figure"><img src="${escapeHtml(imageUrl(b.url))}" loading="lazy" alt="${escapeHtml(b.caption || '')}" data-lightbox="${mi}" data-fallback="1">${cap}</figure>`;
@@ -1770,7 +1779,8 @@ function renderEditorBlocks(){
     box.innerHTML = editorBlocks.map((b, idx) => {
         let field = '';
         if (b.type === 'text' || b.type === 'insert'){
-            field = `<textarea class="chat-text-input news-editor-field" style="min-height:90px;" placeholder="${b.type === 'insert' ? 'Текст врезки' : 'Текст абзаца'}" data-field="content" data-idx="${idx}">${escapeHtml(b.content)}</textarea>`;
+            field = `<div class="news-rich-field">${RanepaRichText.toolbarHtml()}
+              <div class="chat-text-input news-editor-field news-rich-textarea" contenteditable="true" draggable="false" role="textbox" aria-multiline="true" data-ranepa-rich-editor data-field="richtext" data-idx="${idx}" data-placeholder="${b.type === 'insert' ? 'Текст врезки' : 'Текст абзаца'}">${b.html ? RanepaRichText.sanitize(b.html) : RanepaRichText.plainToHtml(b.content || '')}</div></div>`;
         } else if (b.type === 'image'){
             field = `<input type="text" class="chat-text-input news-editor-field" placeholder="Ссылка на изображение" value="${escapeHtml(b.url)}" data-field="url" data-idx="${idx}">
                 <input type="text" class="chat-text-input news-editor-field" placeholder="Подпись, если нужна" value="${escapeHtml(b.caption)}" data-field="caption" data-idx="${idx}">
@@ -1783,9 +1793,9 @@ function renderEditorBlocks(){
                 <input type="text" class="chat-text-input news-editor-field" placeholder="${b.provider === 'embed' ? 'Вставьте обычную ссылку, встраивание соберётся само' : 'Ссылка на файл'}" value="${escapeHtml(b.url)}" data-field="url" data-idx="${idx}">
                 <input type="text" class="chat-text-input news-editor-field" placeholder="Подпись, если нужна" value="${escapeHtml(b.caption)}" data-field="caption" data-idx="${idx}">`;
         }
-        return `<div class="news-block-editor ${b.hidden ? 'is-hidden-block' : ''}" draggable="true" data-blockidx="${idx}">
+        return `<div class="news-block-editor ${b.hidden ? 'is-hidden-block' : ''}" data-blockidx="${idx}">
             <div class="news-block-editor-head">
-                <b><span class="news-block-grip">⠿</span>${escapeHtml(BLOCK_LABELS[b.type] || b.type)}</b>
+                <b><span class="news-block-grip" draggable="true" title="Перетащить блок">⠿</span>${escapeHtml(BLOCK_LABELS[b.type] || b.type)}</b>
                 <div class="news-block-editor-controls">
                     <button type="button" data-move="${idx}" data-dir="-1" title="Выше">↑</button>
                     <button type="button" data-move="${idx}" data-dir="1" title="Ниже">↓</button>
@@ -2010,6 +2020,23 @@ if (editorRequested && !adminToken) {
     });
 
     const bb = $('newsEditorBlocks');
+    RanepaRichText.bindToolbar(bb, element => element && element.closest('.news-block-editor')?.querySelector('[data-ranepa-rich-editor]'));
+    RanepaRichText.setupPaste(bb);
+    bb.addEventListener('mouseup', e => {
+        const editor = e.target.closest('[data-ranepa-rich-editor]');
+        if (editor) RanepaRichText.remember(editor);
+    });
+    bb.addEventListener('keyup', e => {
+        const editor = e.target.closest('[data-ranepa-rich-editor]');
+        if (editor) RanepaRichText.remember(editor);
+    });
+    bb.addEventListener('keydown', e => {
+        const editor = e.target.closest('[data-ranepa-rich-editor]');
+        if (!editor || !(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'k') return;
+        e.preventDefault();
+        RanepaRichText.remember(editor);
+        RanepaRichText.format(editor,'link');
+    });
     bb.addEventListener('click', e => {
         const mv = e.target.closest('[data-move]'), hd = e.target.closest('[data-togglehide]'), rb = e.target.closest('[data-removeblock]');
         if (mv) moveBlock(+mv.dataset.move, +mv.dataset.dir);
@@ -2019,7 +2046,17 @@ if (editorRequested && !adminToken) {
     bb.addEventListener('input', e => {
         const el = e.target.closest('[data-field]');
         if (!el) return;
-        editorBlocks[+el.dataset.idx][el.dataset.field] = el.value;
+        const block = editorBlocks[+el.dataset.idx];
+        if (!block) return;
+        if (el.dataset.field === 'richtext') {
+            const value = RanepaRichText.valueOf(el);
+            const isRich = RanepaRichText.isRich(value);
+            block.content = String(el.innerText == null ? el.textContent || '' : el.innerText).replace(/\n+$/,'');
+            if (isRich) block.html = RanepaRichText.sanitize(value.slice(RanepaRichText.PREFIX.length));
+            else delete block.html;
+        } else {
+            block[el.dataset.field] = el.value;
+        }
         if (el.dataset.rerender) renderEditorBlocks();
         scheduleDraftSave();
     });
