@@ -25,7 +25,7 @@ assert.ok(rich.toolbarHtml().includes('data-rt-size'));
 for (const [name, page] of [['home', home], ['news', news]]) {
   assert.ok(page.includes('src="./cms-richtext.js?v=1"'), name + ': rich text library must load');
 }
-assert.ok(news.includes('b.html ? RanepaRichText.sanitize(b.html) : escapeHtml(b.content)'), 'News must sanitize rich content before display');
+assert.ok(news.includes('b.html ? newsReadingHtml(b.html) : escapeHtml(b.content)') && news.includes('return RanepaRichText.sanitize(html).replace('), 'News must sanitize rich content before display and font scaling');
 assert.ok(news.includes("if (el.dataset.field === 'richtext')"), 'News must persist formatted text via editor blocks');
 assert.ok(news.includes('draggable="true" title="Перетащить блок"'), 'News drag must work on grip rather than editable body');
 assert.ok(home.includes("RanepaRichText.valueOf(el)"), 'PRO editor must save rich values');

@@ -247,6 +247,74 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 
 .loader-spinner{ width:40px; height:40px; border:4px solid rgba(202,15,62,.2); border-top-color:var(--ranepa-red); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 15px; }
 @keyframes spin{ 100%{ transform:rotate(360deg); } }
+
+/* Visitor article text scaling: no effect on images, video, controls or CMS. */
+.news-reader-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+.news-reader-actions .accordion-btn{margin-bottom:0}
+.news-reader-controls{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--border-glass);background:var(--btn-glass);border-radius:999px;white-space:nowrap}
+.news-reader-controls button{border:0;border-radius:999px;background:transparent;color:var(--text-main);height:34px;min-width:38px;padding:0 9px;font:700 .93rem var(--font-text);cursor:pointer;transition:background-color .15s}
+.news-reader-controls button:hover:not(:disabled){background:rgba(202,15,62,.13);color:var(--ranepa-red)}
+.news-reader-controls button:disabled{opacity:.38;cursor:default}
+.news-reader-controls output{min-width:48px;text-align:center;color:var(--text-muted);font:700 .78rem var(--font-text);font-variant-numeric:tabular-nums}
+.news-detail-title{font-size:calc(clamp(1.5rem,4vw,2.2rem) * var(--news-reader-scale,1))}
+.news-detail-lead{font-size:calc(1.15rem * var(--news-reader-scale,1))}
+.news-body-text{font-size:calc(1.02rem * var(--news-reader-scale,1))}
+.news-insert{font-size:calc(1rem * var(--news-reader-scale,1));line-height:1.75}
+.news-media-figure figcaption{font-size:calc(.85rem * var(--news-reader-scale,1))}
+@media(max-width:560px){.news-reader-actions{gap:10px}.news-reader-controls button{min-width:40px;height:38px}}
+
+/* Light theme: scoped to the news page to preserve all other site sections. */
+html[data-theme="light"] .schedule-title,
+html[data-theme="light"] .card h3,
+html[data-theme="light"] .news-detail-title,
+html[data-theme="light"] .news-detail-lead,
+html[data-theme="light"] .news-insert,
+html[data-theme="light"] .modal-box,
+html[data-theme="light"] .news-block-editor{color:#111827}
+html[data-theme="light"] .schedule-title span{color:#155e75}
+html[data-theme="light"] .card p,
+html[data-theme="light"] .news-body-text{color:#334155}
+html[data-theme="light"] .news-detail-date,
+html[data-theme="light"] .news-media-figure figcaption,
+html[data-theme="light"] .card-meta,
+html[data-theme="light"] .news-login-note,
+html[data-theme="light"] .dropzone-hint,
+html[data-theme="light"] .draft-note,
+html[data-theme="light"] .field-label,
+html[data-theme="light"] .upload-row-state{color:#475569}
+html[data-theme="light"] .news-tag-pill{color:#9f1239;background:rgba(202,15,62,.07);border-color:rgba(202,15,62,.25)}
+html[data-theme="light"] .news-insert{background:#f0f5fa;border-color:#cedae8;border-left-color:#a00f33}
+html[data-theme="light"] .filter-sector-chip{color:#334155;background:#fff;border-color:rgba(15,23,42,.2)}
+html[data-theme="light"] .filter-sector-chip.active{background:#a00f33;color:#fff;border-color:#a00f33}
+html[data-theme="light"] .back-btn,
+html[data-theme="light"] .accordion-btn,
+html[data-theme="light"] .chat-opt-btn{background:#fff;color:#243044;border-color:rgba(15,23,42,.22)}
+html[data-theme="light"] .back-btn:hover,
+html[data-theme="light"] .accordion-btn:hover,
+html[data-theme="light"] .chat-opt-btn:hover{background:#a00f33;border-color:#a00f33;color:#fff}
+html[data-theme="light"] .news-reader-controls{background:#fff;border-color:rgba(15,23,42,.19)}
+html[data-theme="light"] .news-reader-controls button{color:#243044}
+html[data-theme="light"] .news-reader-controls button:hover:not(:disabled){color:#9f1239;background:#fff1f4}
+html[data-theme="light"] .news-reader-controls output{color:#475569}
+html[data-theme="light"] .chrome-glass,
+html[data-theme="light"] .modal-box{background:#fff;border-color:rgba(15,23,42,.17);box-shadow:0 20px 75px rgba(15,23,42,.18)}
+html[data-theme="light"] .chat-text-input,
+html[data-theme="light"] .news-editor-field{background:#fff;color:#111827;border-color:rgba(15,23,42,.22)}
+html[data-theme="light"] .chat-text-input::placeholder,
+html[data-theme="light"] .news-rich-textarea:empty::before{color:#64748b}
+html[data-theme="light"] .ranepa-rich-tools button,
+html[data-theme="light"] .ranepa-rich-tools select{background:#fff;color:#243044;border-color:rgba(15,23,42,.2)}
+html[data-theme="light"] .news-admin-row,
+html[data-theme="light"] .news-block-editor,
+html[data-theme="light"] .storage-status,
+html[data-theme="light"] .upload-row,
+html[data-theme="light"] .dropzone{background:#f8fafc;color:#111827;border-color:rgba(15,23,42,.16)}
+html[data-theme="light"] .dropzone:hover,
+html[data-theme="light"] .dropzone.is-over{background:#eef5fc;border-color:#155e75}
+html[data-theme="light"] .news-video-shell:not(.is-floating) .news-video-float-btn{background:#fff;color:#243044;border-color:rgba(15,23,42,.22)}
+html[data-theme="light"] .news-video-shell:not(.is-floating) .news-video-float-btn:hover{color:#fff;background:#a00f33;border-color:#a00f33}
+html[data-theme="light"] .close-modal{color:#334155}
+
 </style>
 <link rel="stylesheet" href="./premium-motion.css?v=6">
 </head>
@@ -1405,6 +1473,38 @@ function videoShellHtml(innerHtml){
     return `<div class="news-video-shell">${innerHtml}<div class="news-video-float-bar"><button type="button" class="news-video-float-btn" data-video-background>↗ Фоновый режим</button><button type="button" class="news-video-float-btn" data-video-float>▣ Мини-плеер</button><button type="button" class="news-video-float-btn" data-video-size>＋ Увеличить</button><button type="button" class="news-video-float-btn" data-video-return>↙ Вернуть в статью</button></div></div>`;
 }
 
+
+/* Article-only reader preference (not written to news data or Google Sheets). */
+const NEWS_READER_SCALES = [1,1.12,1.25,1.4,1.55];
+const NEWS_READER_STORAGE_KEY = 'ranepa-news-reader-scale-v1';
+let newsReaderScaleIndex = 0;
+try {
+    const stored = Number(localStorage.getItem(NEWS_READER_STORAGE_KEY));
+    const idx = NEWS_READER_SCALES.findIndex(x => Math.round(x * 100) === stored);
+    if (idx >= 0) newsReaderScaleIndex = idx;
+} catch (_) {}
+function applyNewsReaderScale(view){
+    if (!view) return;
+    const pct = Math.round(NEWS_READER_SCALES[newsReaderScaleIndex] * 100);
+    view.style.setProperty('--news-reader-scale', String(NEWS_READER_SCALES[newsReaderScaleIndex]));
+    const value = view.querySelector('#newsReaderScaleValue');
+    if (value) value.textContent = pct + '%';
+    const smaller = view.querySelector('[data-reader-step="-1"]');
+    const larger = view.querySelector('[data-reader-step="1"]');
+    if (smaller) smaller.disabled = newsReaderScaleIndex === 0;
+    if (larger) larger.disabled = newsReaderScaleIndex === NEWS_READER_SCALES.length - 1;
+}
+function stepNewsReaderScale(delta, view){
+    newsReaderScaleIndex = Math.max(0, Math.min(NEWS_READER_SCALES.length-1, newsReaderScaleIndex+delta));
+    try { localStorage.setItem(NEWS_READER_STORAGE_KEY, String(Math.round(NEWS_READER_SCALES[newsReaderScaleIndex]*100))); } catch (_) {}
+    applyNewsReaderScale(view);
+}
+function newsReadingHtml(html){
+    // Honor the author's custom font sizes when the reader enlarges a story.
+    return RanepaRichText.sanitize(html).replace(/font-size:\s*(\d+(?:\.\d+)?)px/gi,
+        (_,size) => 'font-size:calc(' + Number(size) + 'px * var(--news-reader-scale,1))');
+}
+
 function openDetail(id){
     restoreFloatingVideo();
     const n = newsItems.find(x => x.id === id);
@@ -1420,8 +1520,8 @@ function openDetail(id){
 
     const body = visible.map(b => {
         const cap = b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : '';
-        if (b.type === 'text')   return `<p class="news-body-text">${b.html ? RanepaRichText.sanitize(b.html) : escapeHtml(b.content)}</p>`;
-        if (b.type === 'insert') return `<div class="news-insert">${b.html ? RanepaRichText.sanitize(b.html) : escapeHtml(b.content)}</div>`;
+        if (b.type === 'text')   return `<p class="news-body-text">${b.html ? newsReadingHtml(b.html) : escapeHtml(b.content)}</p>`;
+        if (b.type === 'insert') return `<div class="news-insert">${b.html ? newsReadingHtml(b.html) : escapeHtml(b.content)}</div>`;
         if (b.type === 'image' && b.url){
             const mi = articleMedia.indexOf(b);
             return `<figure class="news-media-figure"><img src="${escapeHtml(imageUrl(b.url))}" loading="lazy" alt="${escapeHtml(b.caption || '')}" data-lightbox="${mi}" data-fallback="1">${cap}</figure>`;
@@ -1438,13 +1538,25 @@ function openDetail(id){
     }).join('');
 
     view.innerHTML = `
-        <button class="accordion-btn" id="backToListBtn">Назад к новостям</button>
+        <div class="news-reader-actions">
+            <button class="accordion-btn" id="backToListBtn">Назад к новостям</button>
+            <div class="news-reader-controls" role="group" aria-label="Размер текста новости" title="Размер текста новости">
+                <button type="button" data-reader-step="-1" aria-label="Уменьшить текст">A−</button>
+                <output id="newsReaderScaleValue" aria-live="polite" aria-atomic="true">100%</output>
+                <button type="button" data-reader-step="1" aria-label="Увеличить текст">A+</button>
+            </div>
+        </div>
         <div class="news-detail-tags">${(n.tags || []).map(t => `<span class="news-tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
         <h2 class="news-detail-title">${escapeHtml(n.title)}</h2>
         <div class="news-detail-date">${escapeHtml(formatDate(n.createdAt))}</div>
         ${n.lead ? `<p class="news-detail-lead">${escapeHtml(n.lead)}</p>` : ''}
         <div>${body}</div>`;
     $('backToListBtn').addEventListener('click', showListView);
+    view.querySelector('.news-reader-controls').addEventListener('click', e => {
+        const button = e.target.closest('[data-reader-step]');
+        if (button && !button.disabled) stepNewsReaderScale(Number(button.dataset.readerStep), view);
+    });
+    applyNewsReaderScale(view);
     initFloatingVideoControls(view);
 
     // Битая картинка не оставляет пустую дыру в статье
