@@ -8,6 +8,9 @@ const scripts = [...page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/ig)]
 scripts.forEach((code, index) => new vm.Script(code, {filename: 'news.html:inline-' + index}));
 
 assert.match(page, /class="news-reader-controls"/, 'reader controls should be present in a full article');
+assert.match(page, /\.news-detail-lead\{[^\n}]*max-width:100%/, 'article lead must span the image width');
+assert.match(page, /\.news-body-text\{[^\n}]*max-width:100%/, 'article paragraphs must span the image width');
+assert.doesNotMatch(page, /max-width:\s*68ch/, 'old narrow article width must not remain');
 assert.match(page, /data-reader-step="-1"/);
 assert.match(page, /data-reader-step="1"/);
 assert.match(page, /aria-live="polite"/);
