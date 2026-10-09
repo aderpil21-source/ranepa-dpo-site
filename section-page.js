@@ -1,6 +1,6 @@
 const SECTION_PUBLIC_DATA_API = 'https://ranepa-dpo-public-api.onrender.com';
 const ENROLL_TRUD_URL = 'https://trudvsem.ru/?region=3900000000000';
-const ENROLL_YANDEX_URL = 'https://forms.yandex.ru';
+const ENROLL_YANDEX_URL = 'https://forms.yandex.ru/cloud/6ac66e491f1eb55cd4148bc8/';
 const RANEPA_PRIVACY_URL = 'https://www.ranepa.ru/local/templates/ranepa_2024/docs/privacy_policy.pdf';
 let leavingTargetUrl = '';
 

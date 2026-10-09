@@ -117,7 +117,7 @@ function renderPrograms() {
     const price = p.price ? '<div class="muted" style="margin-top:6px"><b>Стоимость:</b> '+escapeHtml(p.price)+'</div>' : '';
     const enrollUrl = p.tab === 'tab-kadry'
       ? 'https://trudvsem.ru/?region=3900000000000'
-      : 'https://forms.yandex.ru';
+      : 'https://forms.yandex.ru/cloud/6ac66e491f1eb55cd4148bc8/';
 
     return '<article class="panel card" data-site-program-id="'+escapeHtml(p.id)+'">'+
       '<div class="meta">'+meta+'</div>'+
