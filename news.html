@@ -221,7 +221,14 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 .news-rich-textarea{min-height:100px;white-space:pre-wrap;line-height:1.65;padding:12px 14px;border-radius:10px;border:1px solid var(--border-glass);outline:none;overflow-wrap:anywhere}
 .news-rich-textarea:focus{border-color:var(--ranepa-red);box-shadow:0 0 0 2px rgba(202,15,62,.14)}
 .news-rich-textarea:empty::before{content:attr(data-placeholder);color:var(--text-muted);pointer-events:none}
-.news-body-text a,.news-insert a{color:var(--accent-sky);text-decoration:underline;text-underline-offset:2px}
+.news-body-text a,.news-body-text a:visited,.news-body-text a:hover,.news-body-text a:focus,
+.news-insert a,.news-insert a:visited,.news-insert a:hover,.news-insert a:focus{
+    color:#d20d3c !important;
+    text-decoration:underline;
+    text-decoration-color:#d20d3c !important;
+    text-underline-offset:2px;
+    text-shadow:0 0 7px rgba(210,13,60,.45),0 0 14px rgba(210,13,60,.18);
+}
 
 .news-editor-field{ width:100%; color:var(--text-main); background:rgba(255,255,255,.07); }
 .draft-note{ font-size:.78rem; color:var(--text-muted); margin-bottom:14px; min-height:1em; }
