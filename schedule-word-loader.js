@@ -21,7 +21,7 @@
         const response = await fetch(url + '?v=' + bucket, { cache: 'no-store' });
         if (response.ok) {
           const fetched = (await response.text()).replace(/\s+/g, '');
-          if (/^[A-Za-z0-9+/=]+$/.test(fetched)) encoded = fetched;
+          if (fetched.startsWith('H4sI') && fetched.length > 1000) encoded = fetched;
         }
       } catch (_) { /* Use the bundled fallback. */ }
       const bytes = Uint8Array.from(atob(encoded), value => value.charCodeAt(0));
