@@ -188,6 +188,13 @@
             min-height: var(--header-h);
         }
 
+        /* Home header stays dark even when the rest of the site uses the light theme. */
+        html[data-theme="light"] body > header {
+            background: rgba(5, 8, 14, 0.95) !important;
+            border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7) !important;
+        }
+
         .logo-group { display: flex; flex-direction: column; z-index: 10051; align-items: flex-start; cursor: pointer; text-decoration: none; flex-shrink: 0; }
         .logo-group img { height: 177px; width: auto; max-width: 100%; object-fit: contain; object-position: left center; display: block; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8)); transition: transform 0.2s; }
         .logo-group:hover img { transform: scale(1.03); }
