@@ -37,7 +37,7 @@ let browser;
     startScheduleScrollIsolation();
     document.getElementById('scheduleOverlay').classList.add('active');
   });
-  await page.evaluate(() => document.getElementById('scheduleOverlay').scrollTop = 780);
+  await page.evaluate(() => document.getElementById('scheduleTimeline').scrollTop = 780);
   await page.waitForTimeout(130);
   let state = await page.evaluate(() => {
     const overlay = document.getElementById('scheduleOverlay');
@@ -46,7 +46,9 @@ let browser;
     const rect = title.getBoundingClientRect();
     return {
       overlayTop:overlay.getBoundingClientRect().top,
-      scroll:overlay.scrollTop,
+      scroll:overlay.querySelector('.schedule-content').scrollTop,
+      overlayScroll:overlay.scrollTop,
+      contentTop:overlay.querySelector('.schedule-content').getBoundingClientRect().top,
       titleTop:rect.top, titleBottom:rect.bottom,
       navTop:nav.getBoundingClientRect().top,
       titleBG:getComputedStyle(title).backgroundColor,
@@ -58,18 +60,19 @@ let browser;
   });
   console.log('SCHEDULE_DESKTOP_GEOMETRY', JSON.stringify(state));
   assert.equal(state.overlayTop,0, 'Schedule overlay must cover viewport, not follow the main header');
-  assert(state.scroll > 500, 'Schedule itself must scroll');
+  assert(state.scroll > 500 && state.overlayScroll===0, 'Only schedule cards must scroll');
   assert(state.locked && state.overflow==='hidden', 'Background page must be scroll-locked');
   assert(Math.abs(state.mainScrollY-initialScrollY)<2, 'Background must remain at the same scroll position');
-  assert(Math.abs(state.titleTop)<=1, 'Schedule title must stay pinned to top when scrolling');
+  assert(Math.abs(state.titleTop)<=1, 'Schedule title must stay fixed at top when scrolling');
   assert(state.titleVisible, 'Opaque sticky title must cover cards scrolled underneath');
   assert(state.navTop >= state.titleBottom, 'Month navigation must stay below the title');
+  assert(state.contentTop >= state.titleBottom, 'Scrollable cards must begin below the title');
   assert(!state.titleBG.includes('0)'), 'Sticky title must not be transparent');
   await page.evaluate(() => document.documentElement.dataset.theme='light');
   const lightBG = await page.locator('.schedule-header').evaluate(el=>getComputedStyle(el).backgroundColor);
   assert.equal(lightBG,'rgb(248, 250, 252)', 'Light theme schedule title must remain opaque and readable');
   await page.setViewportSize({width:390,height:760});
-  await page.evaluate(() => document.getElementById('scheduleOverlay').scrollTop = 720);
+  await page.evaluate(() => document.getElementById('scheduleTimeline').scrollTop = 720);
   await page.waitForTimeout(150);
   state = await page.evaluate(() => {
     const overlay = document.getElementById('scheduleOverlay');
