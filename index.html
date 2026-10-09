@@ -1068,19 +1068,22 @@
 
         /* ===== РАСПИСАНИЕ: PREMIUM / MOBILE-FIRST ===== */
         .schedule-overlay {
-            position: fixed; inset: var(--schedule-header-clearance, var(--header-h)) 0 0; z-index: 10047;
+            position: fixed; inset: 0; z-index: 10060;
             background:
                 radial-gradient(circle at 8% 10%, rgba(202,15,62,.13), transparent 28%),
                 radial-gradient(circle at 88% 18%, rgba(56,189,248,.11), transparent 28%),
                 linear-gradient(180deg, #050811 0%, var(--bg-deep) 55%, #03060d 100%);
-            display: none; overflow-y: auto;
-            padding: 24px 20px max(70px, env(safe-area-inset-bottom));
+            display: none; overflow: hidden;
+            padding: 0 20px max(24px, env(safe-area-inset-bottom));
             opacity: 0; transition: opacity .18s ease;
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
         }
         .schedule-overlay.active { display: block; opacity: 1; }
-        .schedule-container { max-width: 1180px; margin: 0 auto; position: relative; }
+        /* When schedule is visible, only the schedule scrolls; the site remains stationary. */
+        html.schedule-modal-open, html.schedule-modal-open body { overflow: hidden !important; }
+        .schedule-overlay { scrollbar-gutter: stable; }
+        .schedule-container { max-width: 1180px; margin: 0 auto; position: relative; height:100%; display:flex; flex-direction:column; min-height:0; }
         /* Schedule theme + header clearance */
         [data-theme="light"] .schedule-overlay {
             background:
@@ -1089,8 +1092,8 @@
                 linear-gradient(180deg,#f8fafc 0%,#f1f5f9 55%,#e9eef5 100%);
             color:#0f172a;
         }
-        [data-theme="light"] .schedule-header {
-            background:linear-gradient(to bottom,rgba(248,250,252,.98) 76%,rgba(248,250,252,0));
+        html[data-theme="light"] .schedule-header {
+            background:#f8fafc !important; box-shadow:0 10px 16px rgba(15,23,42,.12);
         }
         [data-theme="light"] .schedule-title,
         [data-theme="light"] .schedule-month-heading,
@@ -1122,10 +1125,10 @@
 
 
         .schedule-header {
-            position: sticky; top: 0; z-index: 6;
+            position: relative; flex:0 0 auto; z-index: 6;
             display: flex; justify-content: space-between; align-items: center; gap: 16px;
-            margin-bottom: 20px; padding: 8px 0 16px;
-            background: linear-gradient(to bottom, rgba(5,8,17,.96) 76%, rgba(5,8,17,0));
+            margin-bottom: 20px; padding: 32px 0 16px;
+            background: #050811; box-shadow:0 10px 18px rgba(5,8,17,.72);
         }
         .schedule-title {
             font-size: clamp(1.8rem, 4vw, 2.65rem);
@@ -1155,10 +1158,13 @@
             display: grid;
             grid-template-columns: 210px minmax(0,1fr);
             gap: 28px;
-            align-items: start;
+            align-items: stretch;
+            flex:1 1 auto;
+            min-height:0;
+            overflow:hidden;
         }
         .schedule-months {
-            position: sticky; top: 82px;
+            position: relative; align-self:start; max-height:100%; overflow-y:auto;
             display: flex; flex-direction: column; gap: 9px;
             padding: 10px;
             border: 1px solid rgba(255,255,255,.07);
@@ -1224,10 +1230,15 @@
             }
         }
 
-        .schedule-content { min-width: 0; }
+        .schedule-content {
+            min-width:0; min-height:0; height:100%;
+            overflow-y:auto; overscroll-behavior:contain;
+            scrollbar-gutter:stable; padding-bottom:24px;
+            -webkit-overflow-scrolling:touch;
+        }
         .schedule-month-section {
             margin-bottom: 42px;
-            scroll-margin-top: 92px;
+            scroll-margin-top: 12px;
         }
         .schedule-month-heading {
             display: flex; align-items: center; gap: 12px;
@@ -1306,10 +1317,10 @@
         }
 
         @media (max-width: 900px) {
-            .schedule-layout { grid-template-columns: 1fr; gap: 16px; }
+            .schedule-layout { display:flex; flex-direction:column; gap:16px; }
             .schedule-months {
-                position: sticky; top: 72px; z-index: 5;
-                flex-direction: row; overflow-x: auto; gap: 8px;
+                position:relative; flex:0 0 auto; align-self:stretch; max-height:none; z-index:5;
+                flex-direction:row; overflow-x:auto; overflow-y:hidden; gap:8px;
                 padding: 8px;
                 scrollbar-width: none;
                 background: rgba(5,8,17,.92);
@@ -1317,13 +1328,14 @@
                 -webkit-backdrop-filter: blur(10px);
             }
             .schedule-months::-webkit-scrollbar { display:none; }
+            .schedule-content { height:auto; flex:1 1 auto; width:100%; }
             .schedule-month-link { width:auto; flex:0 0 auto; white-space:nowrap; padding:9px 12px; }
             .schedule-month-link::after { display:none; }
         }
 
         @media (max-width: 768px) {
-            .schedule-overlay { padding: 16px 12px max(56px, env(safe-area-inset-bottom)); }
-            .schedule-header { margin-bottom: 12px; padding-top: 4px; }
+            .schedule-overlay { padding: 0 12px max(16px, env(safe-area-inset-bottom)); }
+            .schedule-header { margin-bottom: 12px; padding-top: 20px; }
             .close-sch-btn { width:44px; height:44px; font-size:1.25rem; }
             .schedule-month-section { margin-bottom:32px; }
             .schedule-month-heading { font-size:1.13rem; margin-bottom:13px; }
@@ -2246,7 +2258,7 @@
     </aside>
 
     <!-- ОКНО РАСПИСАНИЯ -->
-    <div class="schedule-overlay" id="scheduleOverlay">
+    <div class="schedule-overlay" id="scheduleOverlay" role="dialog" aria-modal="true" aria-label="Расписание занятий">
         <div class="schedule-container">
             <div class="schedule-header">
                 <h2 class="schedule-title"><span data-i18n="schTitleMain">Расписание</span> <span data-i18n="schTitleSub">занятий</span></h2>
@@ -5743,8 +5755,8 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     function armScheduleMotion() {
         disconnectScheduleObservers();
 
-        const overlay = document.getElementById('scheduleOverlay');
-        window.SiteMotion?.scan(document.getElementById('scheduleTimeline'));
+        const overlay = document.getElementById('scheduleTimeline');
+        window.SiteMotion?.scan(overlay);
 
         const links = Array.from(document.querySelectorAll('#scheduleMonthsNav .schedule-month-link'));
         const sections = Array.from(document.querySelectorAll('#scheduleTimeline .schedule-month-section'));
@@ -5763,7 +5775,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
             }, {
                 root: overlay,
                 threshold: [0.15, 0.35, 0.6],
-                rootMargin: '-70px 0px -55% 0px'
+                rootMargin: '-10px 0px -55% 0px'
             });
             sections.forEach(section => scheduleMonthObserver.observe(section));
         }
@@ -5937,32 +5949,18 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         }, Math.max(1000, secondsUntilCutoff * 1000 + 250));
     }
 
-    // Keep the schedule's own scroll viewport below the visible site header.
-    let scheduleHeaderResizeObserver = null;
-    function alignScheduleBelowHeader() {
+    // The schedule has a fixed title/month picker and an independent card scroller.
+    // Do not scroll the underlying page while its dialog is open.
+    function startScheduleScrollIsolation() {
         const overlay = document.getElementById('scheduleOverlay');
-        if (!overlay) return;
-        const header = document.querySelector('body > header');
-        const bottom = header ? Math.max(0, Math.ceil(header.getBoundingClientRect().bottom)) : 0;
-        overlay.style.setProperty('--schedule-header-clearance', bottom + 'px');
-    }
-    function startScheduleHeaderAlignment() {
-        alignScheduleBelowHeader();
-        if (!scheduleHeaderResizeObserver && typeof ResizeObserver === 'function') {
-            const header = document.querySelector('body > header');
-            if (header) {
-                scheduleHeaderResizeObserver = new ResizeObserver(alignScheduleBelowHeader);
-                scheduleHeaderResizeObserver.observe(header);
-            }
+        if (overlay && !overlay.classList.contains('active')) {
+            const cards = overlay.querySelector('.schedule-content');
+            if (cards) cards.scrollTop = 0;
         }
-        window.addEventListener('resize', alignScheduleBelowHeader);
+        document.documentElement.classList.add('schedule-modal-open');
     }
-    function stopScheduleHeaderAlignment() {
-        if (scheduleHeaderResizeObserver) {
-            scheduleHeaderResizeObserver.disconnect();
-            scheduleHeaderResizeObserver = null;
-        }
-        window.removeEventListener('resize', alignScheduleBelowHeader);
+    function stopScheduleScrollIsolation() {
+        document.documentElement.classList.remove('schedule-modal-open');
     }
 
     async function showSchedule() {
@@ -5971,7 +5969,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         const container = document.getElementById('scheduleTimeline');
         if (!overlay || !container) return;
 
-        startScheduleHeaderAlignment();
+        startScheduleScrollIsolation();
         overlay.classList.add('active');
         if (window.SiteWordSchedule) await window.SiteWordSchedule.load();
 
@@ -6011,7 +6009,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
     function closeSchedule() {
         const overlay = document.getElementById('scheduleOverlay');
         if (overlay) overlay.classList.remove('active');
-        stopScheduleHeaderAlignment();
+        stopScheduleScrollIsolation();
         stopScheduleSnapshotPolling();
         disconnectScheduleObservers();
     }
