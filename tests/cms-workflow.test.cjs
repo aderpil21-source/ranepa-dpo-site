@@ -453,7 +453,8 @@ assert(
   indexHtml.includes('position: fixed; inset: 0; z-index: 10060') &&
   indexHtml.includes('html.schedule-modal-open body { overflow: hidden !important; }') &&
   indexHtml.includes('background: #050811; box-shadow:') &&
-  indexHtml.includes("scheduleTitleResizeObserver.observe(title)") &&
+  indexHtml.includes("overflow-y:auto; overscroll-behavior:contain;") &&
+  indexHtml.includes("root: overlay,") &&
   indexHtml.includes("stopScheduleScrollIsolation();"),
   'Schedule must scroll in its own full-screen layer with an opaque sticky header and no background scroll'
 );
