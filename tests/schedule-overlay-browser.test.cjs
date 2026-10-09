@@ -56,6 +56,7 @@ let browser;
       titleVisible:document.elementFromPoint(rect.left+30, rect.top+20)?.closest('.schedule-header') === title
     };
   });
+  console.log('SCHEDULE_DESKTOP_GEOMETRY', JSON.stringify(state));
   assert.equal(state.overlayTop,0, 'Schedule overlay must cover viewport, not follow the main header');
   assert(state.scroll > 500, 'Schedule itself must scroll');
   assert(state.locked && state.overflow==='hidden', 'Background page must be scroll-locked');
