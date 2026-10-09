@@ -1612,6 +1612,14 @@
             display: none;
         }
         .site-admin-edit-hint.active { display:block; }
+        #siteAdminRichToolbar { display:none; border-bottom:1px solid rgba(255,255,255,.08); padding:8px 12px; }
+        body.site-admin-text-editing #siteAdminRichToolbar { display:block; }
+        #siteAdminRichToolbar .ranepa-rich-tools { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+        #siteAdminRichToolbar .ranepa-rich-tools button,
+        #siteAdminRichToolbar .ranepa-rich-tools select { background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.16); border-radius:8px; padding:7px 9px; cursor:pointer; font:700 .74rem 'Montserrat',sans-serif; }
+        #siteAdminRichToolbar .ranepa-rich-tools button:hover,
+        #siteAdminRichToolbar .ranepa-rich-tools select:focus { border-color:#ca0f3e; }
+        #siteAdminRichToolbar option { color:#172033; }
         .site-admin-historybar {
             display:grid;
             grid-template-columns:42px 42px 1fr;
@@ -2203,7 +2211,8 @@
             <button type="button" id="siteAdminSaveNowBtn" onclick="flushSiteSettingsSave()" disabled>💾 Сохранить сейчас</button>
             <button type="button" onclick="resetSiteTextOverrides()">↶ Сбросить правки текста</button>
         </div>
-        <div class="site-admin-edit-hint" id="siteAdminEditHint">Редактирование включено: нажмите на подсвеченный текст, напечатайте новый и щёлкните вне него. Изменение сохранится автоматически для текущего языка.</div>
+        <div class="site-admin-edit-hint" id="siteAdminEditHint">Редактирование включено: выделите фрагмент текста и настройте его жирность, размер или ссылку. Изменения сохраняются автоматически для выбранного языка.</div>
+        <div id="siteAdminRichToolbar"></div>
         <div class="site-admin-historybar">
             <button type="button" id="siteAdminUndoBtn" onclick="undoSiteVersion()" title="Отменить последнее изменение">←</button>
             <button type="button" id="siteAdminRedoBtn" onclick="redoSiteVersion()" title="Вернуть отменённое изменение">→</button>
@@ -2413,6 +2422,7 @@
     <script src="./owl-learning.js?v=20261001-6"></script>
     <script src="./owl-brain.js?v=20260927-4"></script>
     <script src="./portal-snapshot.js?v=20261001-1"></script>
+    <script src="./cms-richtext.js?v=1"></script>
 
     <script>
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
@@ -2496,6 +2506,7 @@
     let siteAdminMutationTimer = null;
     let siteSettingsDirty = false;
     const siteEditBefore = new WeakMap();
+    let siteAdminActiveTextEl = null;
 
     const SITE_ADMIN_REGISTRY = [
         { key:'header_controls', label:'Кнопки языка, шрифта и темы', group:'Шапка', selector:'.header-controls' },
@@ -3018,7 +3029,15 @@
 
     function setSiteElementText(el, value) {
         const text = String(value == null ? '' : value);
-        if (siteElementPlainText(el) === text.trim()) return;
+        if (RanepaRichText.isRich(text)) {
+            const safe = RanepaRichText.htmlFor(text);
+            if (el.dataset.cmsRich === '1' && el.innerHTML === safe) return;
+            el.innerHTML = safe;
+            el.dataset.cmsRich = '1';
+            return;
+        }
+        if (siteElementPlainText(el) === text.trim() && el.dataset.cmsRich !== '1') return;
+        delete el.dataset.cmsRich;
         while (el.firstChild) el.removeChild(el.firstChild);
         text.split('\n').forEach(function (part, index, arr) {
             if (index) el.appendChild(document.createElement('br'));
@@ -3070,12 +3089,14 @@
         if (el.closest('#owlContainer, #owlChat, [data-system-ui], [data-site-admin-protected]')) return false;
         if (el.closest('#enrollModal, #leavingSiteModal, .consent-block, [data-payment-protected]')) return false;
         if (el.closest('script,style,noscript')) return false;
+        if (el.parentElement && el.parentElement.closest('.site-admin-editable, [data-cms-rich="1"]')) return false;
         if (el.matches('input,textarea,select,option,img,svg,path,iframe,video,audio')) return false;
         if (!siteEditKeyForElement(el)) return false;
+        if (el.classList.contains('site-admin-editable')) return true;
         const text = siteElementPlainText(el);
         if (!text) return false;
         const nonBrChildren = Array.from(el.children || []).filter(function (child) { return child.tagName !== 'BR'; });
-        return nonBrChildren.length === 0;
+        return nonBrChildren.length === 0 || el.dataset.cmsRich === '1';
     }
 
     function decorateSiteEditableElements() {
@@ -3087,6 +3108,7 @@
             if (!isSiteEditableElement(el)) return;
             el.classList.add('site-admin-editable');
             el.setAttribute('contenteditable', 'true');
+            el.setAttribute('data-ranepa-rich-editor', '');
             el.setAttribute('spellcheck', 'true');
             el.title = 'Pro: нажмите и редактируйте текст';
         });
@@ -3096,6 +3118,7 @@
         document.querySelectorAll('.site-admin-editable').forEach(function (el) {
             el.classList.remove('site-admin-editable');
             el.removeAttribute('contenteditable');
+            el.removeAttribute('data-ranepa-rich-editor');
             if (el.title === 'Pro: нажмите и редактируйте текст') el.removeAttribute('title');
         });
     }
@@ -3127,7 +3150,7 @@
         const key = siteEditKeyForElement(el);
         if (!key) return;
         const lang = typeof currentLang === 'string' ? currentLang : 'ru';
-        const text = siteElementPlainText(el);
+        const text = RanepaRichText.valueOf(el);
         const before = siteEditBefore.get(el);
         if (before === text) return;
         if (!siteContentOverrides[key] || typeof siteContentOverrides[key] !== 'object') siteContentOverrides[key] = {};
@@ -3762,6 +3785,12 @@
     });
 
     function initSiteAdminVisibility() {
+        const richToolbar = document.getElementById('siteAdminRichToolbar');
+        if (richToolbar) {
+            richToolbar.innerHTML = RanepaRichText.toolbarHtml();
+            RanepaRichText.bindToolbar(richToolbar, function () { return siteAdminActiveTextEl; });
+        }
+        RanepaRichText.setupPaste(document.body);
         loadSiteRedoStack();
         readCachedSiteSettings();
         applySiteVisibility();
@@ -3772,7 +3801,9 @@
         document.addEventListener('focusin', function (event) {
             const el = event.target;
             if (siteTextEditMode && el && el.classList && el.classList.contains('site-admin-editable')) {
-                siteEditBefore.set(el, siteElementPlainText(el));
+                siteAdminActiveTextEl = el;
+                siteEditBefore.set(el, RanepaRichText.valueOf(el));
+                RanepaRichText.remember(el);
             }
         }, true);
 
@@ -3783,9 +3814,25 @@
             }
         }, true);
 
+        document.addEventListener('input', function (event) {
+            const el = event.target;
+            if (siteTextEditMode && el && el.classList && el.classList.contains('site-admin-editable') && !event.isTrusted) {
+                saveSiteTextElement(el);
+            }
+        }, true);
+        document.addEventListener('mouseup', function (event) {
+            const el = event.target;
+            if (siteTextEditMode && el && el.classList && el.classList.contains('site-admin-editable')) RanepaRichText.remember(el);
+        }, true);
         document.addEventListener('keydown', function (event) {
             const el = event.target;
             if (!siteTextEditMode || !el || !el.classList || !el.classList.contains('site-admin-editable')) return;
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+                event.preventDefault();
+                RanepaRichText.remember(el);
+                RanepaRichText.format(el, 'link');
+                return;
+            }
             if (event.key === 'Escape') {
                 event.preventDefault();
                 const before = siteEditBefore.get(el);
