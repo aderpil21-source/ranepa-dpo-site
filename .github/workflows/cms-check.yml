@@ -6,12 +6,18 @@ on:
     paths:
       - 'site-admin-*.js'
       - 'index.html'
+      - 'news.html'
+      - 'cms-richtext.js'
+      - 'tests/cms-richtext.test.cjs'
       - 'tests/cms-workflow.test.cjs'
       - '.github/workflows/cms-check.yml'
   pull_request:
     paths:
       - 'site-admin-*.js'
       - 'index.html'
+      - 'news.html'
+      - 'cms-richtext.js'
+      - 'tests/cms-richtext.test.cjs'
       - 'tests/cms-workflow.test.cjs'
       - '.github/workflows/cms-check.yml'
 
@@ -24,3 +30,4 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/cms-workflow.test.cjs
+      - run: node tests/cms-richtext.test.cjs
