@@ -1559,6 +1559,8 @@
 <script defer src="./assets/vendor/motion-12.23.24.js"></script>
 <script defer src="./premium-motion.js?v=7"></script>
     <script src="./schedule-word-loader.js?v=2"></script>
+<link rel="stylesheet" href="./liquid-glass.css?v=1">
+<script defer src="./mobile-app.js?v=1"></script>
 </head>
 <body>
 
@@ -5800,10 +5802,10 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                     bottom.className = 'sch-bottom';
 
                     const teacher = document.createElement('span');
-                    teacher.textContent = localizedScheduleValue(item, 'teacher');
+                    teacher.textContent = (currentLang === 'ru' ? 'Преподаватель: ' : 'Instructor: ') + localizedScheduleValue(item, 'teacher');
 
                     const room = document.createElement('span');
-                    room.textContent = localizedScheduleValue(item, 'room');
+                    room.textContent = (currentLang === 'ru' ? 'Место: ' : 'Location: ') + localizedScheduleValue(item, 'room');
 
                     bottom.append(teacher, room);
                     card.append(top, subject, bottom);

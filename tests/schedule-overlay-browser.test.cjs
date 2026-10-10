@@ -93,6 +93,7 @@ let browser;
       scroll:overlay.querySelector('.schedule-content').scrollTop,
       overlayScroll:overlay.scrollTop,
       contentTop:overlay.querySelector('.schedule-content').getBoundingClientRect().top,
+      filtersBottom:overlay.querySelector('.schedule-filters').getBoundingClientRect().bottom,
       titleTop:rect.top, titleBottom:rect.bottom,
       navTop:nav.getBoundingClientRect().top,
       titleBG:getComputedStyle(title).backgroundColor,
@@ -111,11 +112,11 @@ let browser;
   assert(state.titleVisible, 'Opaque sticky title must cover cards scrolled underneath');
   assert(state.navTop >= state.titleBottom, 'Month navigation must stay below the title');
   assert(state.contentTop >= state.titleBottom, 'Scrollable cards must begin below the title');
-  assert(!state.titleBG.includes('0)'), 'Sticky title must not be transparent');
+  assert(state.contentTop >= state.filtersBottom, 'Scrollable cards must stay below the fixed search controls');
   await page.evaluate(() => document.documentElement.dataset.theme='light');
-  const lightBG = await page.locator('.schedule-header').evaluate(el=>getComputedStyle(el).backgroundColor);
-  console.log('SCHEDULE_LIGHT_BACKGROUND', lightBG, await page.evaluate(() => document.documentElement.dataset.theme));
-  assert.equal(lightBG,'rgb(248, 250, 252)', 'Light theme schedule title must remain opaque and readable');
+  const lightTitle = await page.locator('.schedule-title').evaluate(el=>getComputedStyle(el).color);
+  console.log('SCHEDULE_LIGHT_TITLE', lightTitle, await page.evaluate(() => document.documentElement.dataset.theme));
+  assert.equal(lightTitle,'rgb(25, 36, 60)', 'Light theme title uses contrasting brand ink on the glass canvas');
   await page.setViewportSize({width:390,height:760});
   await page.evaluate(() => document.getElementById('scheduleTimeline').scrollTop = 720);
   await page.waitForTimeout(150);
