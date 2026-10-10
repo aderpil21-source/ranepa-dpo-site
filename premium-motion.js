@@ -6,6 +6,7 @@
   if (!api?.animate || !api?.inView || !api?.hover || !api?.scroll) return;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  const mobile = matchMedia('(max-width: 768px)');
   const headingSelectors = '.hero h1,.hero p,.audience-hero h1,.audience-hero p,.page-title,.page-lead,.page-kicker,.schedule-title,.section-header,.sector-header';
   const controlSelectors = '.button,.buy-btn,.header-nav-btn,.tab-btn,.nav-enroll,.action,.cta,.cta-button,.back-btn,.control-panel-btn';
   const cardSelectors = '.card,.contact-card,.main-contact-box,.faq-item,.audience-card,.material-card,.payment-card,.meta-card,.side-card,.related-card,.topic-grid li,.lesson,.timeline-card,.doc-card';
@@ -53,12 +54,14 @@
     if (rec.feedbackState === state) return;
     rec.feedbackState = state;
     play(el, {
-      '--motion-scale': state === 'pressed' ? 0.97 : state === 'active' ? 1.025 : 1,
-      translate: state === 'active' ? '0px -2px' : '0px 0px'
+      '--motion-scale': state === 'pressed' ? 0.97 : state === 'active' && !mobile.matches ? 1.025 : 1,
+      translate: state === 'active' && !mobile.matches ? '0px -2px' : '0px 0px'
     }, {type:'spring', stiffness:state === 'pressed' ? 460 : 320, damping:state === 'pressed' ? 32 : 28});
   }
   function bindHover(el, rec) {
-    if (rec.hover || !fine.matches || reduce.matches || el.matches(headingSelectors + ',.faq-item,.main-contact-box')) return;
+    // Modal shells and answer bodies also have records, but are not hover cards.
+    if (!rec.isControl && !el.matches(cardSelectors)) return;
+    if (rec.hover || !fine.matches || mobile.matches || reduce.matches || el.matches(headingSelectors + ',.faq-item,.main-contact-box')) return;
     if (!rec.isControl) bindLight(el, rec);
     rec.hover = api.hover(el, () => {
       if (rec.isControl) {
@@ -168,9 +171,14 @@
       appeared.add(el);
       if (!reduce.matches && !(id && seen.has(id)) && !el.classList.contains('pm-done')) {
         if (id) seen.add(id);
-        const distance = rec.isHeading ? 28 : (fine.matches ? 26 : 16);
-        const delay = rec.isHeading ? 0 : Math.min((fresh.indexOf(el) % 4) * 0.045, 0.135);
-        play(el, {opacity: [0, 1], translate: [`0px ${distance}px`, '0px 0px'], '--motion-line':[0, 1]}, {duration:rec.isHeading ? 0.6 : 0.5, delay});
+        if (mobile.matches) {
+          // A scroll gesture must not move text independently of its card.
+          play(el, {opacity: [0.7, 1]}, {duration:0.18});
+        } else {
+          const distance = rec.isHeading ? 28 : (fine.matches ? 26 : 16);
+          const delay = rec.isHeading ? 0 : Math.min((fresh.indexOf(el) % 4) * 0.045, 0.135);
+          play(el, {opacity: [0, 1], translate: [`0px ${distance}px`, '0px 0px'], '--motion-line':[0, 1]}, {duration:rec.isHeading ? 0.6 : 0.5, delay});
+        }
       }
       rec.batch = null;
       releaseBatch(batch, el);
@@ -247,7 +255,7 @@
   }
   // FLIP only for visible, persistent cards reordered by the existing filters.
   function captureLayout(root) {
-    if (!root || reduce.matches || !running) return () => {};
+    if (!root || reduce.matches || mobile.matches || !running) return () => {};
     const before = new Map();
     root.querySelectorAll('.card:not(.filtered-out)').forEach(el => {
       const rec = records.get(el);
@@ -298,6 +306,7 @@
     document.addEventListener('toggle', toggle, true);
     reduce.addEventListener('change', preferences);
     fine.addEventListener('change', preferences);
+    mobile.addEventListener('change', preferences);
   }
   function dispose() {
     if (!running) return;
@@ -312,6 +321,7 @@
     document.removeEventListener('toggle', toggle, true);
     reduce.removeEventListener('change', preferences);
     fine.removeEventListener('change', preferences);
+    mobile.removeEventListener('change', preferences);
   }
   window.SiteMotion = {scan, captureLayout, dispose};
   addEventListener('pagehide', dispose);

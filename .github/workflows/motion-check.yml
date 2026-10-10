@@ -5,6 +5,9 @@ on:
     paths:
       - '*.html'
       - 'premium-motion.*'
+      - 'liquid-glass.css'
+      - 'mobile-app.js'
+      - 'tests/mobile-layout-browser.test.cjs'
       - 'assets/vendor/**'
       - 'programs-page.js'
       - 'schedule-page.js'
@@ -15,6 +18,9 @@ on:
     paths:
       - '*.html'
       - 'premium-motion.*'
+      - 'liquid-glass.css'
+      - 'mobile-app.js'
+      - 'tests/mobile-layout-browser.test.cjs'
       - 'assets/vendor/**'
       - 'programs-page.js'
       - 'schedule-page.js'
@@ -38,3 +44,4 @@ jobs:
       - run: npx playwright install chromium
       - run: node tests/schedule-overlay-browser.test.cjs
       - run: node tests/motion-browser.test.cjs
+      - run: node tests/mobile-layout-browser.test.cjs

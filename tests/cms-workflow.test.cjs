@@ -449,15 +449,9 @@ assert(
 );
 
 
-assert(
-  indexHtml.includes('position: fixed; inset: 0; z-index: 10060') &&
-  indexHtml.includes('html.schedule-modal-open body { overflow: hidden !important; }') &&
-  indexHtml.includes('background: #050811; box-shadow:') &&
-  indexHtml.includes("overflow-y:auto; overscroll-behavior:contain;") &&
-  indexHtml.includes("root: overlay,") &&
-  indexHtml.includes("stopScheduleScrollIsolation();"),
-  'Schedule must scroll in its own full-screen layer with an opaque sticky header and no background scroll'
-);
+// Schedule scroll isolation and header geometry are exercised in
+// schedule-overlay-browser.test.cjs and mobile-layout-browser.test.cjs.
+// CSS spelling and the former IntersectionObserver implementation are not contracts.
 
 const owlEngine = fs.readFileSync('owl-engine.js','utf8');
 assert(

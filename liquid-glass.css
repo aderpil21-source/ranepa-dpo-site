@@ -7,6 +7,7 @@ html {
   --lg-canvas:#101728;
   --lg-panel:rgba(25,35,56,.94);
   --lg-glass:rgba(29,40,62,.82);
+  --lg-chrome:rgba(24,34,53,.96);
   --lg-border:rgba(203,220,255,.19);
   --lg-highlight:rgba(255,255,255,.19);
   --lg-shadow:0 12px 36px rgba(3,8,24,.16);
@@ -22,13 +23,14 @@ html[data-theme="light"] {
   --lg-canvas:#f3f5fa;
   --lg-panel:rgba(255,255,255,.94);
   --lg-glass:rgba(255,255,255,.82);
+  --lg-chrome:rgba(250,252,255,.96);
   --lg-border:rgba(59,81,119,.16);
   --lg-highlight:rgba(255,255,255,.95);
   --lg-shadow:0 12px 36px rgba(41,52,91,.08);
   --lg-wash:radial-gradient(ellipse at 5% 0%,rgba(202,15,62,.1),transparent 52%),radial-gradient(ellipse at 100% 65%,rgba(76,126,211,.13),transparent 62%);
 }
 
-html .schedule-overlay {
+html .schedule-overlay,html[data-theme] .schedule-overlay {
   --sch-text:var(--lg-ink); --sch-secondary:var(--lg-muted);
   --sch-surface:var(--lg-panel); --sch-line:var(--lg-border);
   background:var(--lg-wash),var(--lg-canvas)!important;
@@ -97,14 +99,16 @@ html .schedule-overlay .timeline-card {
   }
 }
 @media (prefers-reduced-motion:no-preference) {
-  .schedule-overlay.active .schedule-container { animation:glass-sheet-in .3s var(--lg-ease) both; }
+  html:not(.site-motion) .schedule-overlay.active .schedule-container { animation:glass-sheet-in .3s var(--lg-ease) both; }
   .schedule-overlay .close-sch-btn:active,.mobile-app-dock a:active { transform:scale(.96); }
 }
 @keyframes glass-sheet-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
 .mobile-app-dock { display:none; }
+.app-mobile-only,.mobile-primary-nav { display:none; }
 
 @media (max-width:768px) {
-  html { scroll-padding-bottom:110px; }
+  html { scroll-padding-bottom:110px; scroll-padding-top:calc(var(--app-header-height,150px) + 16px); }
+  html:has(body.site-app-ui),body.site-app-ui { overflow-x:clip!important; }
   body.site-app-ui {
     --app-bottom:calc(84px + env(safe-area-inset-bottom));
     background:var(--lg-wash),var(--lg-canvas)!important;
@@ -114,12 +118,18 @@ html .schedule-overlay .timeline-card {
   body.site-app-ui > header {
     position:sticky!important; top:0; min-height:0;
     padding:calc(10px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));
-    background:var(--lg-glass)!important; border-bottom:1px solid var(--lg-border)!important;
+    background:linear-gradient(125deg,rgba(202,15,62,.07),rgba(76,126,211,.07)),var(--lg-chrome)!important; border-bottom:1px solid var(--lg-border)!important;
     box-shadow:0 4px 24px rgba(15,30,60,.055)!important;
     backdrop-filter:blur(16px) saturate(140%); -webkit-backdrop-filter:blur(16px) saturate(140%);
     gap:10px 12px;
   }
   .site-app-ui :is(.page-header,.audience-header) { flex-direction:column; align-items:stretch; }
+  .site-app-ui > header:has(.mobile-primary-nav) { display:flex; flex-wrap:wrap; }
+  .site-app-ui > header > .topbar { width:100%; min-width:0; padding:0; }
+  .site-app-ui > header.app-theme-in-header > .topbar { padding-right:52px; }
+  .site-app-ui > header.app-theme-in-header :is(.brand,.actions) { min-width:0; }
+  .site-app-ui > header.app-theme-in-header .brand small { overflow-wrap:anywhere; }
+  .site-app-ui > header > .back-btn,.site-app-ui > header .actions > .back { display:none; }
   .site-app-ui :is(.page-logo,.audience-logo,.logo-group) { min-width:0; width:auto; }
   .site-app-ui :is(.page-logo,.audience-logo,.logo-group) img {
     width:auto!important; max-width:100%!important; height:64px!important; object-fit:contain; object-position:left center;
@@ -144,6 +154,23 @@ html .schedule-overlay .timeline-card {
   .site-app-ui :is(.header-nav,.page-nav,.audience-nav) > :is(.header-nav-btn,.nav-enroll) { background:var(--lg-brand); color:#fff!important; box-shadow:none; }
   .site-app-ui :is(.page-nav,.audience-nav) a.active { background:rgba(202,15,62,.1); color:var(--lg-accent)!important; border:0; }
   .site-app-ui .audience-nav a.active::after { display:none; }
+  .site-app-ui .app-top-nav {
+    display:flex; overflow:visible; gap:4px; padding:0; min-width:0;
+    grid-column:1 / -1; width:100%;
+  }
+  .site-app-ui .app-top-nav > [data-mobile-nav] {
+    flex:1 1 0; min-width:0; min-height:44px; padding:8px 3px;
+    font:600 clamp(.66rem,2.9vw,.82rem)/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    display:inline-flex; align-items:center; justify-content:center; white-space:nowrap;
+    text-decoration:none; border-radius:12px; color:var(--lg-ink)!important;
+  }
+  .site-app-ui .app-top-nav > [data-mobile-nav="news"] { order:0; }
+  .site-app-ui .app-top-nav > [data-mobile-nav="schedule"] { order:1; }
+  .site-app-ui .app-top-nav > [data-mobile-nav="students"] { order:2; }
+  .site-app-ui .app-top-nav > [data-mobile-nav="enroll"] { order:3; background:var(--lg-brand); color:#fff!important; box-shadow:none; }
+  .site-app-ui .app-top-nav > [data-mobile-nav="extra"],
+  .site-app-ui .app-top-nav > :not([data-mobile-nav]) { display:none!important; }
+  .site-app-ui .global-alert-ticker { position:relative; top:auto; margin-top:0; z-index:1; }
   .site-app-ui :is(.page-main,.audience-main) { padding:28px 16px 40px; }
   .site-app-ui .container { padding:24px 16px 36px; }
   .site-app-ui .hero { padding:30px 16px 36px; }
@@ -167,6 +194,7 @@ html .schedule-overlay .timeline-card {
   .site-app-ui .lesson { grid-template-columns:minmax(0,1fr); gap:12px; padding:20px; }
   .site-app-ui .lesson-time { color:var(--lg-blue); }
   .site-app-ui :is(.lesson-program,.page-kicker,.audience-kicker) { color:var(--lg-accent); }
+  .site-app-ui :is(.lesson-program,.position,.meta .badge:first-child) { color:var(--lg-accent)!important; }
   .site-app-ui :is(.button,.action,.buy-btn,.program-details-link,.tab-btn,.back-link) { min-height:44px; }
   .site-app-ui :is(.button,.action,.buy-btn) { border-radius:14px; }
   .site-app-ui :is(.tabs-nav,.tab-btn) { box-shadow:none; }
@@ -179,24 +207,31 @@ html .schedule-overlay .timeline-card {
     bottom:calc(10px + env(safe-area-inset-bottom)); margin:0 auto; max-width:520px;
     display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; padding:6px;
     border:1px solid var(--lg-border); border-radius:25px;
-    background:linear-gradient(125deg,rgba(255,255,255,.1),transparent),var(--lg-glass);
+    background:linear-gradient(125deg,rgba(255,255,255,.1),transparent),var(--lg-chrome);
     box-shadow:inset 0 1px 0 var(--lg-highlight),0 8px 30px rgba(15,30,60,.15);
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   }
-  .mobile-app-dock a {
+  .mobile-app-dock :is(a,button) {
     min-width:0; min-height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
     text-decoration:none; color:var(--lg-muted); border-radius:19px;
     font-size:.65rem; line-height:1.2; font-weight:600; transition:transform .2s var(--lg-ease),background .2s ease;
   }
+  .mobile-app-dock button { border:0; background:transparent; font-family:inherit; padding:0; cursor:pointer; }
+  .mobile-app-dock.has-assistant { grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; }
+  .mobile-app-dock.has-assistant :is(a,button) { font-size:clamp(.58rem,2.55vw,.65rem); }
+  .site-app-ui.app-assistant-in-dock :is(.owl-container,.students-owl-hit,.students-owl-visibility-toggle) { display:none!important; }
   .mobile-app-dock svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   .mobile-app-dock a[aria-current="page"] { color:var(--lg-accent); background:rgba(202,15,62,.1); }
   .site-app-ui .site-theme-toggle { bottom:calc(var(--app-bottom) + 12px); left:16px; right:auto; width:44px; height:44px; z-index:800; }
+  .site-app-ui > header > .site-theme-toggle { position:absolute; top:calc(14px + env(safe-area-inset-top)); right:16px; bottom:auto; left:auto; }
   .site-app-ui :is(.owl-container,.students-owl-hit) { bottom:calc(var(--app-bottom) + 12px)!important; width:54px; height:54px; }
   .site-app-ui .students-owl-visibility-toggle { bottom:calc(var(--app-bottom) + 76px)!important; }
   .site-app-ui .students-owl-system.owl-user-hidden .students-owl-visibility-toggle { bottom:calc(var(--app-bottom) + 12px)!important; }
-  .site-app-ui .scroll-nav { bottom:calc(var(--app-bottom) + 74px); }
+  .site-app-ui .scroll-nav { display:none; }
   .site-app-ui .cookie-consent-banner.show { bottom:var(--app-bottom); margin:0 12px; width:calc(100% - 24px); border-radius:20px; }
-  .site-app-ui:has(:is(.modal-overlay.active,.enroll-overlay.active,.schedule-overlay.active,.owl-chat-panel.active,.students-owl-shell.active)) .mobile-app-dock,
+  .site-app-ui .cookie-consent-banner.show { max-height:calc(100dvh - var(--app-bottom) - 24px); overflow-y:auto; }
+  .site-app-ui:has(.cookie-consent-banner.show) :is(.owl-container,.scroll-nav) { visibility:hidden; }
+  .site-app-ui:has(:is(.modal-overlay.active,.section-modal.active,.requisites-modal.active,.deep-view.active,.enroll-overlay.active,.schedule-overlay.active,.owl-chat-panel.active,.students-owl-shell.active)) .mobile-app-dock,
   .site-app-ui:has(input:focus,textarea:focus,select:focus) .mobile-app-dock,
   html.owl-embed-mode .mobile-app-dock { display:none; }
   html.schedule-modal-open .site-app-ui :is(.site-theme-toggle,.owl-container,.scroll-nav) { visibility:hidden; }
@@ -210,7 +245,12 @@ html .schedule-overlay .timeline-card {
   .schedule-overlay .sch-top { flex-direction:column; gap:8px; }
   .schedule-overlay .sch-subject { font-size:1.08rem; line-height:1.5; }
   .schedule-overlay .sch-bottom { flex-direction:column; gap:6px; }
-  .site-app-ui .bg-shapes { display:none; }
+  .site-app-ui :is(.bg-shapes,.bg-tags-container,.bg-tag) { display:none!important; }
+  .site-app-ui .motion-heading::after { display:none; }
+  .site-app-ui :is(.card,.panel,.audience-card,.lesson,.timeline-card,.page-title,.hero h1,.hero p) { will-change:auto; }
+  .site-app-ui .side-card { position:static; }
+  .site-app-ui :is(.modal-overlay,.enroll-overlay) { height:100dvh; padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom)); }
+  .site-app-ui :is(.modal-box,.enroll-box) { max-height:calc(100dvh - 32px); overflow-y:auto; overscroll-behavior:contain; }
 }
 @media (max-height:500px) and (orientation:landscape) {
   html .schedule-overlay .schedule-header { padding:10px 0; }
