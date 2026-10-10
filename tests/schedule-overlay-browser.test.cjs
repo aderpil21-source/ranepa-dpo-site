@@ -23,6 +23,50 @@ let browser;
   await page.goto(base + '/index.html', {waitUntil:'domcontentloaded'});
   await page.waitForSelector('#scheduleOverlay', {state:'attached'});
   await page.evaluate(() => {
+    window.SiteWordSchedule = {load:async()=>{}, merge:items=>items};
+    refreshScheduleSnapshot = async()=>{};
+    scheduleDataLoaded = true;
+    window.schedules = [
+      {date:'12.10.2099', time:'10:00', program:'Управление', subject:'Экономика', teacher:'Иванов', room:'101'},
+      {date:'12.10.2099', time:'12:00', program:'Управление', subject:'Право', teacher:'Петров', room:'102'},
+      {date:'12.11.2099', time:'10:00', program:'Педагогика', subject:'Экономика', teacher:'Сидорова', room:'103'},
+      {date:'12.10.2000', time:'10:00', program:'Архив', subject:'Экономика', teacher:'Иванов', room:'101'}
+    ];
+  });
+  await page.locator('.header-nav [onclick="showSchedule()"]').click();
+  await page.waitForSelector('#scheduleOverlay.active');
+  const cards = page.locator('#scheduleTimeline .timeline-card');
+  assert.equal(await cards.count(), 3, 'Opening from header shows upcoming classes');
+  await page.locator('#scheduleSearch').fill('  иВаНоВ  ');
+  assert.equal(await cards.count(), 1, 'Teacher search ignores case and surrounding spaces');
+  assert.match(await cards.first().innerText(), /Иванов/);
+  assert.equal(await page.locator('#scheduleMonthsNav button').count(), 1);
+  await page.locator('#scheduleSearch').fill('эконом');
+  assert.equal(await cards.count(), 2, 'Partial subject search works across months');
+  await page.locator('#scheduleProgram').selectOption('Педагогика');
+  assert.equal(await cards.count(), 1, 'Program filter combines with subject search');
+  assert.match(await cards.first().innerText(), /Сидорова/);
+  await page.evaluate(() => renderSchedule());
+  assert.equal(await page.locator('#scheduleProgram').inputValue(), 'Педагогика', 'Refresh preserves program selection');
+  await page.locator('#scheduleSearch').fill('нет такого занятия');
+  assert.equal(await cards.count(), 0);
+  assert.match(await page.locator('#scheduleTimeline').innerText(), /Занятия не найдены/);
+  assert.equal(await page.locator('#scheduleMonthsNav button').count(), 0);
+  await page.locator('#scheduleSearch').fill('');
+  await page.locator('#scheduleProgram').selectOption('');
+  assert.equal(await cards.count(), 3, 'Clearing filters restores upcoming classes');
+  await page.setViewportSize({width:390,height:760});
+  const filtersFit = await page.locator('.schedule-filters').evaluate(el => {
+    const bounds = el.getBoundingClientRect();
+    return [...el.children].every(control => {
+      const rect = control.getBoundingClientRect();
+      return rect.width > 0 && rect.left >= bounds.left && rect.right <= bounds.right + 1;
+    });
+  });
+  assert(filtersFit, 'Search and program controls fit on mobile');
+  await page.evaluate(() => closeSchedule());
+  await page.setViewportSize({width:1280,height:800});
+  await page.evaluate(() => {
     document.body.style.minHeight = '4000px';
     document.getElementById('scheduleTimeline').innerHTML = Array.from({length:36},(_,i)=>
       '<div class="schedule-month-section"><div class="timeline-card" style="height:160px">Проверка прокрутки ' + (i+1) + '</div></div>').join('');

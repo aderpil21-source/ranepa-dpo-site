@@ -1154,6 +1154,27 @@
             }
         }
 
+        .schedule-filters {
+            display:flex; gap:12px; flex:0 0 auto; margin-bottom:20px;
+        }
+        .schedule-filters input, .schedule-filters select {
+            min-width:0; width:100%; padding:12px 14px; border-radius:12px;
+            border:1px solid rgba(255,255,255,.18); background:#101827;
+            color:var(--text-main); font:inherit; font-size:16px;
+        }
+        .schedule-filters input { flex:2; }
+        .schedule-filters select { flex:1; }
+        .schedule-filters input::placeholder { color:var(--text-muted); }
+        .schedule-filters input:focus-visible, .schedule-filters select:focus-visible {
+            outline:2px solid #38bdf8; outline-offset:2px;
+        }
+        [data-theme="light"] .schedule-filters input,
+        [data-theme="light"] .schedule-filters select {
+            background:#fff; color:#0f172a; border-color:rgba(15,23,42,.2);
+        }
+        @media (max-width:600px) {
+            .schedule-filters { flex-direction:column; gap:8px; margin-bottom:12px; }
+        }
         .schedule-layout {
             display: grid;
             grid-template-columns: 210px minmax(0,1fr);
@@ -2263,6 +2284,12 @@
             <div class="schedule-header">
                 <h2 class="schedule-title"><span data-i18n="schTitleMain">Расписание</span> <span data-i18n="schTitleSub">занятий</span></h2>
                 <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание" data-i18n-aria-label="scheduleCloseAria">✕</button>
+            </div>
+            <div class="schedule-filters">
+                <input id="scheduleSearch" type="search" placeholder="Поиск по дисциплине или преподавателю…" aria-label="Поиск в расписании" data-i18n-placeholder="schSearchPlaceholder" data-i18n-aria-label="schSearchAria" oninput="renderSchedule()">
+                <select id="scheduleProgram" aria-label="Программа обучения" data-i18n-aria-label="schProgramAria" onchange="renderSchedule()">
+                    <option value="" data-i18n="schAllPrograms">Все программы</option>
+                </select>
             </div>
             <div class="schedule-layout">
                 <nav class="schedule-months" id="scheduleMonthsNav" aria-label="Месяцы расписания" data-i18n-aria-label="scheduleMonthsAria"></nav>
@@ -4402,6 +4429,7 @@
             owlStatusChanged: "🕒 Статус изменен:",
             goAllPrograms: "📚 Перейти ко всем программам", notSure: "Кажется, я не совсем поняла запрос. Ознакомьтесь со всеми доступными программами:", maybeYouMean: "Возможно, вы имеете в виду одну из этих программ?",
             schTitleMain: "Расписание", schTitleSub: "занятий", schBtnText: "Расписание занятий", aiLabText: "AR-Лаборатория: Практика ИИ",
+            schSearchPlaceholder: "Поиск по дисциплине или преподавателю…", schSearchAria: "Поиск в расписании", schProgramAria: "Программа обучения", schAllPrograms: "Все программы", schNoResults: "Занятия не найдены.",
             schLoading: "Загружаем расписание…", schEmpty: "Ближайших занятий пока нет.", schError: "Не удалось загрузить расписание. Закройте окно и попробуйте открыть его ещё раз.",
             cookieConsentText: "Данный сайт использует файлы Cookie в порядке и целях, указанных по <a href=\"https://www.ranepa.ru/politika-obrabotki-faylov-cookies/\" target=\"_blank\" rel=\"noopener\">ссылке</a>.",
             cookieConsentBtn: "Согласен",
@@ -4464,6 +4492,7 @@
             owlStatusChanged: "🕒 Status changed:",
             goAllPrograms: "📚 Go to all programs", notSure: "I'm not fully sure what you mean. Here are all available programs:", maybeYouMean: "Did you mean one of these programs?",
             schTitleMain: "Class", schTitleSub: "schedule", schBtnText: "Class Schedule", aiLabText: "AR-Lab: AI Practice",
+            schSearchPlaceholder: "Search by subject or instructor…", schSearchAria: "Search the schedule", schProgramAria: "Study program", schAllPrograms: "All programs", schNoResults: "No classes found.",
             schLoading: "Loading schedule…", schEmpty: "There are no upcoming classes yet.", schError: "Could not load the schedule. Close this window and try opening it again.",
             cookieConsentText: "This website uses Cookie files in the manner and for the purposes specified via the <a href=\"https://www.ranepa.ru/politika-obrabotki-faylov-cookies/\" target=\"_blank\" rel=\"noopener\">link</a>.",
             cookieConsentBtn: "Accept",
@@ -5787,14 +5816,41 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
         if (!container || !monthsNav) return;
 
         const now = getKaliningradParts();
-        const visible = getVisibleSchedules(window.schedules);
+        const search = document.getElementById('scheduleSearch');
+        const programSelect = document.getElementById('scheduleProgram');
+        const query = search.value.trim().toLowerCase();
+        const selectedProgram = programSelect.value;
+        const available = getVisibleSchedules(window.schedules);
+        const programs = [...new Set(available.map(({ item }) => item.program).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b, 'ru'));
+        programSelect.replaceChildren();
+        const allPrograms = document.createElement('option');
+        allPrograms.value = '';
+        allPrograms.textContent = translationsHTML[currentLang].schAllPrograms;
+        programSelect.appendChild(allPrograms);
+        programs.forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = localizedScheduleValue({ program: name }, 'program');
+            programSelect.appendChild(option);
+        });
+        if (programs.includes(selectedProgram)) programSelect.value = selectedProgram;
+        const visible = available.filter(({ item }) => {
+            const haystack = ['program', 'subject', 'teacher', 'room', 'time', 'date']
+                .flatMap(field => [item[field], localizedScheduleValue(item, field)])
+                .join(' ').toLowerCase();
+            return (!query || haystack.includes(query)) &&
+                (!programSelect.value || item.program === programSelect.value);
+        });
 
         disconnectScheduleObservers();
         container.replaceChildren();
         monthsNav.replaceChildren();
 
         if (!visible.length) {
-            container.appendChild(makeScheduleState(translationsHTML[currentLang].schEmpty));
+            container.appendChild(makeScheduleState(translationsHTML[currentLang][
+                query || programSelect.value ? 'schNoResults' : 'schEmpty'
+            ]));
             return;
         }
 
