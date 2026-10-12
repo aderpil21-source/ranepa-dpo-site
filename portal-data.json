@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-09T19:03:40.611132+00:00",
+  "generatedAt": "2026-10-12T18:06:30.961203+00:00",
   "programs": [
     {
       "id": "c14",
@@ -3288,7 +3288,5 @@
     }
   ],
   "owlFiles": [],
-  "currentAlert": {
-    "text": "Расписание изменилось!"
-  }
+  "currentAlert": null
 }
