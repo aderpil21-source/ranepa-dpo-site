@@ -7,6 +7,13 @@ const scripts = [...page.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/ig)]
   .map(x => x[1]).filter(x => x.trim());
 scripts.forEach((code, index) => new vm.Script(code, {filename: 'news.html:inline-' + index}));
 
+assert.match(page, /\.news-card-cover\{[^\n}]*height:260px; object-fit:cover/, 'desktop news card covers must remain unchanged');
+const mobileRule = page.match(/@media\s*\(max-width:768px\)\s*\{\s*\.news-grid \.news-card-cover\s*\{([^}]+)\}/);
+assert.ok(mobileRule, 'mobile-only news cover fix must be present');
+assert.match(mobileRule[1], /height:\s*auto\s*;/, 'mobile cover height must use its native ratio');
+assert.match(mobileRule[1], /object-fit:\s*contain\s*;/, 'mobile cover cannot be cropped');
+assert.match(mobileRule[1], /aspect-ratio:\s*auto\s*;/, 'mobile covers must preserve their actual proportion');
+
 assert.match(page, /class="news-reader-controls"/, 'reader controls should be present in a full article');
 assert.match(page, /\.news-detail-lead\{[^\n}]*max-width:100%/, 'article lead must span the image width');
 assert.match(page, /\.news-body-text\{[^\n}]*max-width:100%/, 'article paragraphs must span the image width');
