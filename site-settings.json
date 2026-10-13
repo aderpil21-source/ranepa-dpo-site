@@ -1,16 +1,8 @@
 {
-  "generatedAt": "2026-10-01T16:34:26.575749+00:00",
+  "generatedAt": "2026-10-13T18:15:20.444977+00:00",
   "settings": {
     "version": 7,
-    "visibility": {
-      "program:c50": false,
-      "owl_menu_ai": false,
-      "students.contacts": true,
-      "students.payment": true,
-      "students.news": true,
-      "students.programs": true,
-      "students.materials": true
-    },
+    "visibility": {},
     "content": {
       "dom:header > div:nth-of-type(1) > div > div:nth-of-type(1) > button:nth-of-type(2)": {
         "ru": "Аа"
@@ -112,6 +104,6 @@
     "customBlocks": [],
     "theme": {},
     "seo": {},
-    "updatedAt": "2026-10-01T15:57:12.845Z"
+    "updatedAt": "2026-10-13T17:48:14.905Z"
   }
 }
