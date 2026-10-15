@@ -27,24 +27,28 @@ const server = http.createServer((req,res) => {
             await page.setViewportSize({width,height:850});
             await page.evaluate(() => {
                 const image = (caption,presentation) => ({type:'image',url:'img/logo.png',caption,presentation});
-                newsItems = [{id:'gallery-test',title:'Фотографии события',blocks:[image('Отдельное фото'),image('Первое','carousel'),image('Второе','carousel'),{type:'text',content:'Текст между галереями'},image('Третье','carousel')]}];
+                newsItems = [{id:'gallery-test',title:'Фотографии события',blocks:[image('Отдельное фото'),image('Первое','carousel'),image('Второе','carousel'),image('Соседнее','carousel'),{type:'text',content:'Текст между галереями'},image('Третье','carousel')]}];
                 openDetail('gallery-test');
             });
             assert.equal(await page.locator('.news-gallery').count(),2);
             assert.equal(await page.locator('.news-media-figure').count(),1,'legacy images stay separate');
             const first = page.locator('.news-gallery').first();
-            assert.equal(await first.locator('.news-gallery-slide').count(),2);
+            assert.equal(await first.locator('.news-gallery-slide').count(),3);
+            assert.equal(await first.locator('.is-active').count(),1);
+            await first.getByRole('button',{name:'Фото 3',exact:true}).click();
+            assert.equal(await first.locator('output').textContent(),'3 / 3');
+            await first.getByRole('button',{name:'Фото 1',exact:true}).click();
             await first.scrollIntoViewIfNeeded();
             await page.waitForFunction(() => {
                 const img = document.querySelector('.news-gallery img');
                 return img.complete && img.naturalWidth > 0;
             });
-            const geometry = await first.locator('img').first().evaluate(img => ({width:img.clientWidth,height:img.clientHeight,ratio:img.naturalWidth/img.naturalHeight,gallery:img.closest('.news-gallery').clientWidth}));
-            assert(geometry.gallery <= 720,'desktop gallery stays compact');
+            const geometry = await first.locator('img').first().evaluate(img => ({width:img.clientWidth,height:img.clientHeight,ratio:img.naturalWidth/img.naturalHeight,gallery:img.closest('.news-gallery-slide').clientWidth}));
+            assert(geometry.gallery <= 580,'desktop gallery stays compact');
             assert(Math.abs(geometry.width/geometry.height - geometry.ratio) < .02,'photo keeps its proportions without side fields');
             assert(Math.abs(geometry.width - geometry.gallery) <= 2,'photo fills the frame width');
             await first.getByRole('button',{name:'Следующее фото',exact:true}).click();
-            await page.waitForFunction(() => document.querySelector('.news-gallery output').textContent === '2 / 2');
+            await page.waitForFunction(() => document.querySelector('.news-gallery output').textContent === '2 / 3');
             await first.getByRole('button',{name:'Открыть фото 2 на весь экран'}).click();
             assert.equal(await page.locator('#mediaLightbox').isVisible(),true);
             assert.equal(await page.locator('#lightboxContent img').getAttribute('alt'),'Второе');
@@ -54,15 +58,17 @@ const server = http.createServer((req,res) => {
             assert.equal(await page.locator('#mediaLightbox').isVisible(),false);
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
         }
+        const fixture = await page.evaluate(() => newsItems);
         await page.evaluate(() => { newsItems = [{id:'portrait',title:'Портрет',blocks:[{type:'image',url:'test-portrait.svg',presentation:'carousel'}]}]; openDetail('portrait'); });
         await page.locator('.news-gallery').scrollIntoViewIfNeeded();
-        await page.waitForFunction(() => document.querySelector('.news-gallery').style.getPropertyValue('--gallery-width') === '280px');
+        await page.waitForFunction(() => document.querySelector('.news-gallery img').naturalHeight === 900);
         const portrait = await page.locator('.news-gallery img').evaluate(img => ({width:img.clientWidth,height:img.clientHeight}));
         assert(portrait.height <= 420 && Math.abs(portrait.width/portrait.height - 2/3) < .02,'portrait frame is fitted and has a bounded height');
         if (process.env.GALLERY_SCREENSHOT){
             await page.setViewportSize({width:1100,height:1000});
-            await page.evaluate(() => openDetail('gallery-test'));
+            await page.evaluate(items => { newsItems = items; openDetail('gallery-test'); }, fixture);
             await page.locator('.news-gallery').first().scrollIntoViewIfNeeded();
+            await page.waitForTimeout(800);
             await page.screenshot({path:process.env.GALLERY_SCREENSHOT});
         }
         await page.evaluate(() => { $('newsEditorModal').classList.add('active'); editorBlocks = [{type:'image',url:'img/logo.png',caption:''}]; renderEditorBlocks(); });
