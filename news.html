@@ -403,6 +403,12 @@ html[data-theme="light"] .close-modal{color:#334155}
             <span id="storageStatusText">Проверяем хранилище</span>
             <button class="chat-opt-btn" id="recheckStorageBtn" style="margin-left:auto; padding:5px 10px; font-size:.75rem;">Проверить</button>
         </div>
+        <label class="field-label" for="newsPhotoPresentation">Как добавить фотографии</label>
+        <select id="newsPhotoPresentation" class="chat-text-input news-editor-field">
+            <option value="individual">Отдельные фотографии</option>
+            <option value="carousel">Карусель с просмотром на весь экран</option>
+        </select>
+        <p class="dropzone-hint">Соседние фото в режиме «Карусель» объединяются. Порядок меняется стрелками у блоков. В режиме карусели первое фото также остаётся в статье.</p>
         <div class="dropzone" id="newsDropzone" tabindex="0" role="button">
             <div class="dropzone-title">Перетащите файлы сюда</div>
             <div class="dropzone-hint">
@@ -452,7 +458,7 @@ html[data-theme="light"] .close-modal{color:#334155}
     </div>
 </div>
 
-<div id="mediaLightbox">
+<div id="mediaLightbox" role="dialog" aria-modal="true" aria-label="Просмотр фотографий и видео">
     <button class="lightbox-close" id="lightboxCloseBtn" aria-label="Закрыть">✕</button>
     <div id="lightboxNav" style="display:none;">
         <button data-nav="-1" aria-label="Предыдущее">‹</button>
@@ -464,6 +470,8 @@ html[data-theme="light"] .close-modal{color:#334155}
 <div class="toast-stack" id="toastStack"></div>
 
 <script src="./cms-richtext.js?v=1"></script>
+<link rel="stylesheet" href="./news-gallery.css?v=1">
+<script src="./news-gallery.js?v=1"></script>
 <script>
 /* ============================================================================
    БЛОК 1. НАСТРОЙКИ — единственное место, где нужно что-то менять
@@ -979,6 +987,7 @@ function renderUploadQueue(){
 }
 
 async function processFiles(fileList){
+    const presentation = $('newsPhotoPresentation').value;
     let rawFiles = Array.from(fileList).filter(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
     const rejected = fileList.length - rawFiles.length;
     if (rejected > 0) toast(`Пропущено файлов неподходящего типа: ${rejected}`, 'warn');
@@ -1008,7 +1017,7 @@ async function processFiles(fileList){
         }
     }
 
-    const jobs = files.map(f => ({ name:f.name, file:f, progress:0, status:'queued', error:null, note:'', controller:new AbortController() }));
+    const jobs = files.map(f => ({ name:f.name, file:f, presentation, progress:0, status:'queued', error:null, note:'', controller:new AbortController() }));
     uploadJobs = uploadJobs.filter(j => ['uploading','retrying','compressing','checking','offline'].includes(j.status)).concat(jobs);
     renderUploadQueue();
 
@@ -1049,7 +1058,7 @@ async function runJob(job){
         const hash = await fileHash(job.file);
         if (hash && uploadedHashes.has(hash)){
             job.status = 'duplicate';
-            attachMedia(uploadedHashes.get(hash), job.file.type);
+            attachMedia(uploadedHashes.get(hash), job.file.type, job.presentation);
             return;
         }
 
@@ -1063,7 +1072,7 @@ async function runJob(job){
 
         job.status = 'done'; job.progress = 1; job.note = '';
         if (hash) uploadedHashes.set(hash, url);
-        attachMedia(url, prepared.type);
+        attachMedia(url, prepared.type, job.presentation);
 
     } catch(e){
         if (e.code === 'ABORTED'){ job.status = 'error'; job.error = 'Отменено вами'; return; }
@@ -1083,15 +1092,16 @@ async function runJob(job){
     }
 }
 
-function attachMedia(url, mime){
+function attachMedia(url, mime, presentation = 'individual'){
     const isVideo = String(mime).startsWith('video/');
     const coverInput = $('newsEditorCover');
     if (!isVideo && !coverInput.value.trim()){
         coverInput.value = url;
         renderCoverPreview();
-    } else {
+    } else if (presentation !== 'carousel' || isVideo) {
         editorBlocks.push({ type: isVideo ? 'video' : 'image', content:'', url, caption:'', hidden:false, provider: isVideo ? 'upload' : undefined });
     }
+    if (!isVideo && presentation === 'carousel') editorBlocks.push({type:'image', content:'', url, caption:'', hidden:false, presentation:'carousel'});
     renderMediaLibrary(); renderEditorBlocks(); scheduleDraftSave();
 }
 
@@ -1531,7 +1541,9 @@ function openDetail(id){
     const visible = (n.blocks || []).filter(b => !b.hidden);
     articleMedia = visible.filter(b => (b.type === 'image' || b.type === 'video') && b.url);
 
-    const body = visible.map(b => {
+    const body = newsGalleryGroups(visible).map(group => {
+        if (group.carousel) return newsGalleryHtml(group.blocks, articleMedia);
+        const b = group.blocks[0];
         const cap = b.caption ? `<figcaption>${escapeHtml(b.caption)}</figcaption>` : '';
         if (b.type === 'text')   return `<p class="news-body-text">${b.html ? newsReadingHtml(b.html) : escapeHtml(b.content)}</p>`;
         if (b.type === 'insert') return `<div class="news-insert">${b.html ? newsReadingHtml(b.html) : escapeHtml(b.content)}</div>`;
@@ -1570,6 +1582,7 @@ function openDetail(id){
         if (button && !button.disabled) stepNewsReaderScale(Number(button.dataset.readerStep), view);
     });
     applyNewsReaderScale(view);
+    initNewsGalleries(view);
     initFloatingVideoControls(view);
 
     // Битая картинка не оставляет пустую дыру в статье
@@ -1584,8 +1597,18 @@ function openDetail(id){
 /* ============================================================================
    БЛОК 11. ЛАЙТБОКС
    ============================================================================ */
-function openLightboxAt(i){ lightboxIndex = i; renderLightbox(); $('mediaLightbox').classList.add('active'); }
-function closeLightbox(){ $('mediaLightbox').classList.remove('active'); $('lightboxContent').replaceChildren(); }
+let lightboxReturnFocus = null;
+function openLightboxAt(i){
+    if (!articleMedia[i]) return;
+    lightboxReturnFocus = document.activeElement;
+    lightboxIndex = i; renderLightbox(); $('mediaLightbox').classList.add('active');
+    document.documentElement.classList.add('news-lightbox-open'); $('lightboxCloseBtn').focus();
+}
+function closeLightbox(){
+    $('mediaLightbox').classList.remove('active'); $('lightboxContent').replaceChildren();
+    document.documentElement.classList.remove('news-lightbox-open');
+    if (lightboxReturnFocus && lightboxReturnFocus.isConnected) lightboxReturnFocus.focus();
+}
 function navLightbox(d){ lightboxIndex = (lightboxIndex + d + articleMedia.length) % articleMedia.length; renderLightbox(); }
 function renderLightbox(){
     const m = articleMedia[lightboxIndex];
@@ -1620,7 +1643,7 @@ function renderLightbox(){
         if (!safeImage) return;
         const img = document.createElement('img');
         img.src = safeImage;
-        img.alt = '';
+        img.alt = m.caption || 'Фото новости';
         box.appendChild(img);
     }
 
@@ -1832,6 +1855,7 @@ function renderAdminList(){
 }
 
 function openEditor(id){
+    $('newsPhotoPresentation').value = 'individual';
     editingNewsId = id || null;
     const n = id ? newsItems.find(x => x.id === id) : null;
 
@@ -1914,7 +1938,12 @@ function renderEditorBlocks(){
             field = `<div class="news-rich-field">${RanepaRichText.toolbarHtml()}
               <div class="chat-text-input news-editor-field news-rich-textarea" contenteditable="true" draggable="false" role="textbox" aria-multiline="true" data-ranepa-rich-editor data-field="richtext" data-idx="${idx}" data-placeholder="${b.type === 'insert' ? 'Текст врезки' : 'Текст абзаца'}">${b.html ? RanepaRichText.sanitize(b.html) : RanepaRichText.plainToHtml(b.content || '')}</div></div>`;
         } else if (b.type === 'image'){
-            field = `<input type="text" class="chat-text-input news-editor-field" placeholder="Ссылка на изображение" value="${escapeHtml(b.url)}" data-field="url" data-idx="${idx}">
+            field = `<label class="field-label">Отображение фотографии
+                <select class="chat-text-input news-editor-field" data-field="presentation" data-idx="${idx}">
+                    <option value="individual" ${b.presentation !== 'carousel' ? 'selected' : ''}>Отдельное фото</option>
+                    <option value="carousel" ${b.presentation === 'carousel' ? 'selected' : ''}>Карусель с соседними фото</option>
+                </select></label>
+                <input type="text" class="chat-text-input news-editor-field" placeholder="Ссылка на изображение" value="${escapeHtml(b.url)}" data-field="url" data-idx="${idx}">
                 <input type="text" class="chat-text-input news-editor-field" placeholder="Подпись, если нужна" value="${escapeHtml(b.caption)}" data-field="caption" data-idx="${idx}">
                 ${b.url ? `<img src="${escapeHtml(imageUrl(b.url))}" style="max-width:170px; border-radius:8px; display:block;" alt="">` : ''}`;
         } else if (b.type === 'video'){
@@ -2147,7 +2176,7 @@ if (editorRequested && !adminToken) {
         const btn = e.target.closest('[data-add]');
         if (!btn) return;
         const type = btn.dataset.add;
-        editorBlocks.push({ type, content:'', url:'', caption:'', hidden:false, provider: type === 'video' ? 'embed' : undefined });
+        editorBlocks.push({ type, content:'', url:'', caption:'', hidden:false, presentation: type === 'image' ? $('newsPhotoPresentation').value : undefined, provider: type === 'video' ? 'embed' : undefined });
         renderEditorBlocks(); scheduleDraftSave();
     });
 
@@ -2249,8 +2278,25 @@ if (editorRequested && !adminToken) {
         if (b) navLightbox(+b.dataset.nav);
     });
     $('mediaLightbox').addEventListener('click', e => { if (e.target.id === 'mediaLightbox') closeLightbox(); });
+    let lightboxTouch = null;
+    $('mediaLightbox').addEventListener('touchstart', e => {
+        lightboxTouch = e.touches.length === 1 ? {x:e.touches[0].clientX,y:e.touches[0].clientY} : null;
+    }, {passive:true});
+    $('mediaLightbox').addEventListener('touchend', e => {
+        if (!lightboxTouch || !e.changedTouches.length) return;
+        const dx = e.changedTouches[0].clientX - lightboxTouch.x;
+        const dy = e.changedTouches[0].clientY - lightboxTouch.y;
+        lightboxTouch = null;
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) navLightbox(dx < 0 ? 1 : -1);
+    }, {passive:true});
     document.addEventListener('keydown', e => {
         if (!$('mediaLightbox').classList.contains('active')) return;
+        if (e.key === 'Tab'){
+            const controls = Array.from($('mediaLightbox').querySelectorAll('button, video[controls], iframe')).filter(el => el.getClientRects().length);
+            const first = controls[0], last = controls[controls.length - 1];
+            if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+        }
         if (e.key === 'Escape') closeLightbox();
         if (e.key === 'ArrowLeft') navLightbox(-1);
         if (e.key === 'ArrowRight') navLightbox(1);
