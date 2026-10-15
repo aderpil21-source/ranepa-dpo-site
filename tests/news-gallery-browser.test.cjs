@@ -17,7 +17,10 @@ const server = http.createServer((req,res) => {
     try {
         const page = await browser.newPage();
         page.setDefaultTimeout(10000);
-        await page.route('**/*', route => route.request().url().startsWith(base) ? route.continue() : route.abort());
+        await page.route('**/*', route => {
+            if (route.request().url().endsWith('/test-portrait.svg')) return route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900"><rect width="600" height="900" fill="#78213d"/></svg>'});
+            return route.request().url().startsWith(base) ? route.continue() : route.abort();
+        });
         await page.goto(base + '/news.html', {waitUntil:'domcontentloaded'});
         await page.waitForFunction(() => typeof openDetail === 'function');
         for (const width of [1280,390]){
@@ -31,6 +34,15 @@ const server = http.createServer((req,res) => {
             assert.equal(await page.locator('.news-media-figure').count(),1,'legacy images stay separate');
             const first = page.locator('.news-gallery').first();
             assert.equal(await first.locator('.news-gallery-slide').count(),2);
+            await first.scrollIntoViewIfNeeded();
+            await page.waitForFunction(() => {
+                const img = document.querySelector('.news-gallery img');
+                return img.complete && img.naturalWidth > 0;
+            });
+            const geometry = await first.locator('img').first().evaluate(img => ({width:img.clientWidth,height:img.clientHeight,ratio:img.naturalWidth/img.naturalHeight,gallery:img.closest('.news-gallery').clientWidth}));
+            assert(geometry.gallery <= 720,'desktop gallery stays compact');
+            assert(Math.abs(geometry.width/geometry.height - geometry.ratio) < .02,'photo keeps its proportions without side fields');
+            assert(Math.abs(geometry.width - geometry.gallery) <= 2,'photo fills the frame width');
             await first.getByRole('button',{name:'Следующее фото',exact:true}).click();
             await page.waitForFunction(() => document.querySelector('.news-gallery output').textContent === '2 / 2');
             await first.getByRole('button',{name:'Открыть фото 2 на весь экран'}).click();
@@ -42,6 +54,11 @@ const server = http.createServer((req,res) => {
             assert.equal(await page.locator('#mediaLightbox').isVisible(),false);
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),true);
         }
+        await page.evaluate(() => { newsItems = [{id:'portrait',title:'Портрет',blocks:[{type:'image',url:'test-portrait.svg',presentation:'carousel'}]}]; openDetail('portrait'); });
+        await page.locator('.news-gallery').scrollIntoViewIfNeeded();
+        await page.waitForFunction(() => document.querySelector('.news-gallery').style.getPropertyValue('--gallery-width') === '280px');
+        const portrait = await page.locator('.news-gallery img').evaluate(img => ({width:img.clientWidth,height:img.clientHeight}));
+        assert(portrait.height <= 420 && Math.abs(portrait.width/portrait.height - 2/3) < .02,'portrait frame is fitted and has a bounded height');
         if (process.env.GALLERY_SCREENSHOT){
             await page.setViewportSize({width:1100,height:1000});
             await page.evaluate(() => openDetail('gallery-test'));

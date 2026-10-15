@@ -22,6 +22,15 @@ function initNewsGalleries(view){
         const slides = Array.from(track.children);
         const output = gallery.querySelector('output');
         let index = 0;
+        let settling;
+        const fit = () => {
+            const img = slides[index].querySelector('img');
+            if (!img.naturalWidth || !img.naturalHeight) return;
+            const ratio = img.naturalWidth / img.naturalHeight;
+            gallery.style.setProperty('--gallery-width', Math.min(720, 420 * ratio) + 'px');
+            track.style.height = slides[index].offsetHeight + 'px';
+            track.scrollTo({left:index * track.clientWidth,behavior:'instant'});
+        };
         const current = () => Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / (track.clientWidth || 1))));
         const update = () => { index = current(); output.textContent = `${index+1} / ${slides.length}`; };
         const step = delta => {
@@ -29,8 +38,18 @@ function initNewsGalleries(view){
             track.scrollTo({left: index * track.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
         };
         gallery.addEventListener('click', e => { const b = e.target.closest('[data-gallery-step]'); if (b) step(Number(b.dataset.galleryStep)); });
-        track.addEventListener('scroll', update, {passive:true});
+        track.addEventListener('scroll', () => {
+            update(); clearTimeout(settling); settling = setTimeout(fit, 160);
+        }, {passive:true});
         track.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight'){ e.preventDefault(); step(e.key === 'ArrowLeft' ? -1 : 1); } });
-        if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => { track.scrollLeft = index * track.clientWidth; }).observe(track);
+        slides.forEach(slide => slide.querySelector('img').addEventListener('load', fit));
+        if (typeof ResizeObserver !== 'undefined'){
+            const observer = new ResizeObserver(() => {
+                if (!gallery.isConnected){ observer.disconnect(); return; }
+                fit();
+            });
+            observer.observe(gallery.parentElement);
+        }
+        fit();
     });
 }
