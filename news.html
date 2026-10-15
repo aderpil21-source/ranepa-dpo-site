@@ -242,6 +242,10 @@ textarea.news-editor-field{ resize:vertical; max-height:400px; }
 }
 
 .news-editor-field{ width:100%; color:var(--text-main); background:rgba(255,255,255,.07); }
+html[data-theme="dark"] #newsEditorModal select{color-scheme:dark}
+html[data-theme="dark"] #newsEditorModal option{background:#182131;color:#f8fafc}
+html[data-theme="light"] #newsEditorModal select{color-scheme:light}
+html[data-theme="light"] #newsEditorModal option{background:#fff;color:#111827}
 .draft-note{ font-size:.78rem; color:var(--text-muted); margin-bottom:14px; min-height:1em; }
 
 .toast-stack{ position:fixed; left:50%; transform:translateX(-50%); bottom:max(20px,env(safe-area-inset-bottom)); z-index:40000; display:flex; flex-direction:column; gap:8px; width:min(460px,calc(100vw - 32px)); }
