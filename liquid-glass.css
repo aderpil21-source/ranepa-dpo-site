@@ -265,3 +265,38 @@ html .schedule-overlay .timeline-card {
 @media (prefers-reduced-motion:reduce) {
   .mobile-app-dock a,.schedule-overlay .schedule-container { animation:none!important; transition:none!important; transform:none!important; }
 }
+
+/* Mobile reading and keyboard-safe assistant. */
+@media (max-width:768px) {
+  .site-app-ui :is(input,select,textarea) { font-size:16px; }
+  .site-app-ui :is(.control-panel-btn,.owl-header-btn,.chat-send-btn,.students-owl-close,.close-sch-btn) {
+    min-width:44px; min-height:44px; touch-action:manipulation;
+  }
+  .site-app-ui :is(.lesson-subject,.lesson-meta,.card h3,.msg-bot,.msg-user) { overflow-wrap:anywhere; }
+  .site-app-ui :is(.owl-chat-panel,.owl-chat-panel.owl-chat-free,.owl-chat-panel.owl-chat-split),
+  .site-app-ui .students-owl-shell {
+    position:fixed!important;
+    top:var(--app-viewport-top,0px)!important; bottom:auto!important;
+    left:0!important; right:0!important; width:100%!important; max-width:100%!important;
+    height:var(--app-viewport-height,100dvh)!important;
+    max-height:var(--app-viewport-height,100dvh)!important;
+    border-radius:0!important; box-sizing:border-box;
+  }
+  .site-app-ui .owl-chat-panel {
+    padding-top:env(safe-area-inset-top); padding-bottom:env(safe-area-inset-bottom);
+    transform:none!important; transition:opacity .18s ease;
+  }
+  .site-app-ui .owl-chat-panel .owl-chat-body {
+    flex:1 1 0; min-height:0; height:auto; max-height:none;
+    overflow-y:auto; overscroll-behavior:contain;
+  }
+  .site-app-ui .owl-chat-panel :is(.owl-chat-header,.chat-input-box) { flex-shrink:0; }
+  .site-app-ui .owl-chat-panel .chat-options { max-height:25%; overflow-y:auto; overscroll-behavior:contain; }
+  .site-app-ui .owl-chat-panel :is(#owlSplitBtn,#owlFullscreenBtn,.owl-resize-handle) { display:none!important; }
+  .site-app-ui .students-owl-close { top:max(10px,env(safe-area-inset-top)); right:max(12px,env(safe-area-inset-right)); }
+  body.site-app-ui:has(.owl-chat-panel.active,.students-owl-shell.active) { overflow:hidden!important; }
+}
+@media (max-width:768px) and (max-height:500px) {
+  body.site-app-ui > header { position:relative!important; }
+  .site-app-ui .owl-chat-panel .chat-options { max-height:20%; }
+}

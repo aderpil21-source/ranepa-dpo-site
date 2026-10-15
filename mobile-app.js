@@ -122,6 +122,23 @@
   mountAssistant();
   document.addEventListener('DOMContentLoaded', mountAssistant, {once:true});
   const mobileViewport = matchMedia('(max-width:768px)');
+  // Follow the visible screen when the on-screen keyboard opens or rotates.
+  const viewport = window.visualViewport;
+  let viewportFrame = 0;
+  const updateViewport = () => {
+    cancelAnimationFrame(viewportFrame);
+    viewportFrame = requestAnimationFrame(() => {
+      const root = document.documentElement;
+      // Preserve native pinch zoom rather than resizing the chat while zooming.
+      if (viewport && Math.abs(viewport.scale - 1) > 0.01) return;
+      root.style.setProperty('--app-viewport-height', (viewport ? viewport.height : innerHeight) + 'px');
+      root.style.setProperty('--app-viewport-top', (viewport ? viewport.offsetTop : 0) + 'px');
+    });
+  };
+  viewport?.addEventListener('resize', updateViewport);
+  viewport?.addEventListener('scroll', updateViewport);
+  window.addEventListener('resize', updateViewport);
+  updateViewport();
   let themeHome = null;
   const mountThemeControl = () => {
     const toggle = document.querySelector('.site-theme-toggle');
