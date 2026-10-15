@@ -1,6 +1,79 @@
 {
-  "generatedAt": "2026-10-09T17:09:19.552991+00:00",
+  "generatedAt": "2026-10-15T20:25:37.375569+00:00",
   "items": [
+    {
+      "id": "1cb5224f-d319-4b7a-ba45-44c893dfdc5a",
+      "title": "От искусственного интеллекта до искусства общения: в Академии кадров стартовали четыре программы!",
+      "lead": "Новые знания, актуальные навыки и возможности для профессионального роста! Сегодня в Центре дополнительного образования Западного филиала Президентской академии стартовали сразу четыре программы повышения квалификации.",
+      "tags": [
+        "2026"
+      ],
+      "blocks": [
+        {
+          "type": "text",
+          "content": "В центре внимания — компетенции, которые особенно востребованы в современной профессиональной среде: цифровые технологии, эффективные коммуникации и государственное управление.",
+          "url": "",
+          "caption": "",
+          "hidden": false
+        },
+        {
+          "type": "text",
+          "content": "Участникам предстоит обучение по четырём направлениям:\n• «Технологии искусственного интеллекта в деятельности юриста» — о возможностях ИИ в юридической практике.\n• «Методы эффективных коммуникаций с гражданами: как донести сложную информацию» — о понятном и результативном диалоге.\n• «Эффективные письменные коммуникации для государственных служащих: от документов до социальных сетей» — о грамотной коммуникации в современном информационном пространстве.\n• «Этика государственной службы» — о профессиональных принципах и стандартах служебного поведения.\n\nЧетыре программы объединяет одна цель — развитие компетенций, которые помогают специалистам увереннее решать профессиональные задачи. Академия кадров Западного филиала РАНХиГС продолжает открывать новые возможности для тех, кто выбирает профессиональное развитие.",
+          "url": "",
+          "caption": "",
+          "hidden": false
+        },
+        {
+          "type": "image",
+          "content": "",
+          "url": "https://storage.yandexcloud.net/ranepa-news-media/news/2026/10/photo-2026-10-15-19-00-11-mv9tgo8z-d28a2786194b.jpg",
+          "caption": "",
+          "hidden": false,
+          "presentation": "carousel"
+        },
+        {
+          "type": "image",
+          "content": "",
+          "url": "https://storage.yandexcloud.net/ranepa-news-media/news/2026/10/photo-2026-10-15-19-00-10-mv9tgoof-965f3e184f01.jpg",
+          "caption": "",
+          "hidden": false,
+          "presentation": "carousel"
+        },
+        {
+          "type": "image",
+          "content": "",
+          "url": "https://storage.yandexcloud.net/ranepa-news-media/news/2026/10/photo-2026-10-15-19-00-05-mv9tgq53-de05b6918af7.jpg",
+          "caption": "",
+          "hidden": false,
+          "presentation": "carousel"
+        },
+        {
+          "type": "image",
+          "content": "",
+          "url": "https://storage.yandexcloud.net/ranepa-news-media/news/2026/10/photo-2026-10-15-19-00-08-mv9tgq7v-eed605634de6.jpg",
+          "caption": "",
+          "hidden": false,
+          "presentation": "carousel"
+        },
+        {
+          "type": "insert",
+          "content": "🎓 Хотите присоединиться к обучению?\nОзнакомьтесь с нашими программами и оставьте заявку онлайн.",
+          "url": "",
+          "caption": "",
+          "hidden": false,
+          "html": "🎓 <strong>Хотите присоединиться к обучению?</strong><br>Ознакомьтесь с нашими <a href=\"https://ranepa-dpo39.ru/programs.html\" target=\"_blank\" rel=\"noopener noreferrer\">программами</a> и оставьте <a href=\"https://forms.yandex.ru/cloud/6ac66e491f1eb55cd4148bc8/\" target=\"_blank\" rel=\"noopener noreferrer\">заявку онлайн</a>."
+        },
+        {
+          "type": "__system_vk",
+          "publishToVk": true,
+          "hidden": true
+        }
+      ],
+      "coverImage": "https://storage.yandexcloud.net/ranepa-news-media/news/2026/10/%D1%81%D1%82%D0%B0%D1%80%D1%82-%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC-%D0%BF%D1%80%D0%B5%D0%B7%D0%B8%D0%B4%D0%B5%D0%BD%D1%82%D1%81%D0%BA%D0%BE%D0%B9-%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D0%B8-mv9tgbaf-b99b55c0ee32.jpg",
+      "status": "published",
+      "createdAt": "2026-10-15T17:35:56.982Z",
+      "updatedAt": "2026-10-15T17:56:00.958Z"
+    },
     {
       "id": "5975cd8f-679c-48bd-b9c0-659155acef72",
       "title": "Новые знания начинаются с одного шага. Теперь записаться на обучение ещё проще!",
@@ -48,7 +121,7 @@
       "coverImage": "https://storage.yandexcloud.net/ranepa-news-media/news/2026/10/%D0%BD%D0%BE%D1%87%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BA%D0%B0%D0%B4%D0%B5%D0%BC%D0%B8%D1%8F-%D0%B8-%D1%86%D0%B8%D1%84%D1%80%D0%BE%D0%B2%D0%BE%D0%B9-%D0%BA%D0%B0%D0%BB%D0%B8%D0%BD%D0%B8%D0%BD%D0%B3%D1%80%D0%B0%D0%B4-mv15lohu-dfaf365b5e3e.jpg",
       "status": "published",
       "createdAt": "2026-10-09T16:04:56.485Z",
-      "updatedAt": "2026-10-09T16:07:53.131Z"
+      "updatedAt": "2026-10-15T17:36:11.340Z"
     },
     {
       "id": "849c5f94-4428-493c-87e8-f89777edb7a4",
