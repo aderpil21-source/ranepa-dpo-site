@@ -27,7 +27,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Расписание занятий ДПО | РАНХиГС Калининград</title>
     <link rel="icon" type="image/png" href="./assets/ranepa-crest-favicon.png?v=1">
-<link rel="stylesheet" href="./section-page.css?v=9">
+<link rel="stylesheet" href="./section-page.css?v=10">
 <link rel="stylesheet" href="./premium-motion.css?v=6">
 <link rel="stylesheet" href="./liquid-glass.css?v=2">
 <script defer src="./mobile-app.js?v=2"></script>
@@ -52,9 +52,11 @@
     <h1 class="page-title">Расписание занятий</h1>
     <div class="toolbar">
       <input id="scheduleSearch" type="search" placeholder="Поиск по дисциплине или преподавателю…" aria-label="Поиск в расписании">
-      <select id="scheduleProgram" aria-label="Программа">
-        <option value="">Все программы</option>
-      </select>
+      <div class="schedule-select-wrap">
+        <select id="scheduleProgram" aria-label="Программа">
+          <option value="">Все программы</option>
+        </select>
+      </div>
     </div>
     <aside class="schedule-change-notice" role="note" aria-label="Изменения в расписании">
       <span class="schedule-change-notice-tag">ЗАМЕНЫ В РАСПИСАНИИ</span>
