@@ -1298,3 +1298,26 @@ html[data-theme="light"] .schedule-change-notice {
   background:#fff8e8;border-color:#e2c77a;border-left-color:#ad6904;color:#78450c;
 }
 html[data-theme="light"] .schedule-change-notice-text {color:#39352f}
+
+/* Schedule dropdown alignment fix on mobile Safari (both themes). */
+.toolbar .schedule-select-wrap{
+  position:relative; flex:0 1 260px; width:260px; max-width:100%;
+  min-width:0; height:52px;
+}
+.toolbar .schedule-select-wrap select{
+  display:block; box-sizing:border-box; width:100%!important; max-width:100%;
+  height:52px; min-height:52px; margin:0; padding:0 44px 0 14px!important;
+  font-size:16px; line-height:normal;
+  -webkit-appearance:none; appearance:none;
+  overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+}
+.toolbar .schedule-select-wrap::after{
+  content:""; position:absolute; top:50%; right:19px;
+  width:9px; height:9px; box-sizing:border-box;
+  border-right:2px solid var(--muted); border-bottom:2px solid var(--muted);
+  transform:translateY(-70%) rotate(45deg); pointer-events:none;
+}
+@media(max-width:720px){
+  .toolbar .schedule-select-wrap{flex:1 1 100%; width:100%; height:52px;}
+  .toolbar input{box-sizing:border-box; height:52px; min-height:52px; padding:0 14px; font-size:16px;}
+}
