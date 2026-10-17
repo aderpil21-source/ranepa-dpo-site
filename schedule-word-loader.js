@@ -36,10 +36,26 @@
     });
     return pending;
   }
+  // Nine newly approved PDF timetables are authoritative; keep all other imported Word supplements.
+  const authoritativePdfPrograms = [
+    'вопросыобеспеченияантитеррористическойзащищенностиобъектов',
+    'вопросыпрофилактикитерроризма',
+    'бюджетнаясистемаибюджетныйпроцесс',
+    'организацияработысдокументамивдеятельностигосударственныхорганов',
+    'языкистильнормативноправовыхактов',
+    'этикагосударственнойслужбы',
+    'основыпрофилактикикоррупции',
+    'управлениеэмоциямиистрессом',
+    'внутреннийфинансовыйаудит'
+  ];
   function merge(base) {
     const result = Array.isArray(base) ? base.slice() : [];
     const seen = new Set(result.map(key));
+    const liveNames = new Set(result.map(item => normalizedProgram(item?.program)));
     for (const row of rows) {
+      const normalized = normalizedProgram(row.program);
+      if (authoritativePdfPrograms.some(fragment => normalized.includes(fragment) &&
+        Array.from(liveNames).some(name => name.includes(fragment)))) continue;
       const id = key(row);
       if (!id || seen.has(id)) continue; // Live Google Sheets entries take precedence.
       seen.add(id);
