@@ -1103,6 +1103,19 @@
             background:var(--sch-surface); color:var(--sch-secondary);
             font:inherit; font-size:1.2rem; line-height:1; cursor:pointer; touch-action:manipulation;
         }
+        /* Schedule updates: readable in both site themes without marking unchanged lessons. */
+        .schedule-change-notice {
+            display:flex; flex:0 0 auto; align-items:center; flex-wrap:wrap; gap:7px 14px;
+            padding:12px 16px; margin:0 0 14px; border:1px solid rgba(251,191,36,.35);
+            border-left:4px solid #fbbf24; border-radius:12px;
+            background:rgba(251,191,36,.085); color:#ffedbe; line-height:1.45;
+        }
+        .schedule-change-notice-tag { font-size:.73rem; font-weight:800; letter-spacing:.035em; }
+        .schedule-change-notice-text { font-size:.85rem; color:var(--sch-text); }
+        [data-theme="light"] .schedule-change-notice {
+            background:#fff8e8; border-color:#e2c77a; border-left-color:#ad6904; color:#78450c;
+        }
+        [data-theme="light"] .schedule-change-notice-text { color:#39352f; }
         .schedule-filters { display:flex; gap:12px; flex:0 0 auto; margin-bottom:24px; }
         .schedule-filters input, .schedule-filters select {
             min-width:0; width:100%; min-height:48px; padding:12px 16px;
@@ -2096,6 +2109,10 @@
                 <h2 class="schedule-title"><span data-i18n="schTitleMain">Расписание</span> <span data-i18n="schTitleSub">занятий</span></h2>
                 <button class="close-sch-btn" onclick="closeSchedule()" aria-label="Закрыть расписание" data-i18n-aria-label="scheduleCloseAria">✕</button>
             </div>
+            <aside class="schedule-change-notice" role="note" aria-label="Изменения в расписании">
+                <span class="schedule-change-notice-tag">ЗАМЕНЫ В РАСПИСАНИИ</span>
+                <span class="schedule-change-notice-text">Расписание обновлено. Обратите внимание на актуальные даты, время занятий и преподавателей.</span>
+            </aside>
             <div class="schedule-filters">
                 <input id="scheduleSearch" type="search" placeholder="Поиск по дисциплине или преподавателю…" aria-label="Поиск в расписании" data-i18n-placeholder="schSearchPlaceholder" data-i18n-aria-label="schSearchAria" oninput="renderSchedule()">
                 <select id="scheduleProgram" aria-label="Программа обучения" data-i18n-aria-label="schProgramAria" onchange="renderSchedule()">
