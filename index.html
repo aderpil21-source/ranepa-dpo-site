@@ -1118,13 +1118,27 @@
         [data-theme="light"] .schedule-change-notice-text { color:#39352f; }
         .schedule-filters { display:flex; gap:12px; flex:0 0 auto; margin-bottom:24px; }
         .schedule-filters input, .schedule-filters select {
-            min-width:0; width:100%; min-height:48px; padding:12px 16px;
-            border:1px solid var(--sch-line); border-radius:12px;
-            background:var(--sch-surface); color:var(--sch-text); font:inherit; font-size:16px;
-            box-shadow:none;
+            box-sizing:border-box; min-width:0; width:100%; height:52px; min-height:52px;
+            margin:0; padding:0 16px; border:1px solid var(--sch-line); border-radius:12px;
+            background:var(--sch-surface); color:var(--sch-text);
+            font:inherit; font-size:16px; line-height:normal; box-shadow:none;
         }
-        .schedule-filters input { flex:2; }
-        .schedule-filters select { flex:1; text-overflow:ellipsis; }
+        .schedule-filters input { flex:2 1 0; }
+        .schedule-filters .schedule-select-wrap {
+            position:relative; flex:1 1 0; min-width:0; height:52px;
+        }
+        .schedule-filters .schedule-select-wrap select {
+            display:block; width:100%; height:52px; min-height:52px;
+            padding:0 44px 0 16px; -webkit-appearance:none; appearance:none;
+            text-overflow:ellipsis; white-space:nowrap; cursor:pointer;
+        }
+        .schedule-filters .schedule-select-wrap::after {
+            content:""; position:absolute; top:50%; right:19px;
+            width:9px; height:9px; box-sizing:border-box;
+            border-right:2px solid var(--sch-secondary);
+            border-bottom:2px solid var(--sch-secondary);
+            transform:translateY(-70%) rotate(45deg); pointer-events:none;
+        }
         .schedule-filters input::placeholder { color:var(--sch-secondary); opacity:1; }
         .schedule-overlay :is(input, select, button):focus-visible {
             outline:3px solid #0071e3; outline-offset:3px;
@@ -1184,6 +1198,9 @@
             .schedule-header { padding:24px 0 20px; gap:16px; }
             .schedule-title { font-size:1.8rem; }
             .schedule-filters { flex-direction:column; gap:8px; margin-bottom:16px; }
+            .schedule-filters input, .schedule-filters .schedule-select-wrap {
+                flex:0 0 52px; width:100%; min-height:52px;
+            }
             .schedule-layout { gap:20px; }
             .schedule-months { gap:4px; padding-bottom:12px; }
             .schedule-month-link { padding:10px 14px; font-size:.85rem; }
@@ -2115,9 +2132,11 @@
             </aside>
             <div class="schedule-filters">
                 <input id="scheduleSearch" type="search" placeholder="Поиск по дисциплине или преподавателю…" aria-label="Поиск в расписании" data-i18n-placeholder="schSearchPlaceholder" data-i18n-aria-label="schSearchAria" oninput="renderSchedule()">
-                <select id="scheduleProgram" aria-label="Программа обучения" data-i18n-aria-label="schProgramAria" onchange="renderSchedule()">
-                    <option value="" data-i18n="schAllPrograms">Все программы</option>
-                </select>
+                <div class="schedule-select-wrap">
+                    <select id="scheduleProgram" aria-label="Программа обучения" data-i18n-aria-label="schProgramAria" onchange="renderSchedule()">
+                        <option value="" data-i18n="schAllPrograms">Все программы</option>
+                    </select>
+                </div>
             </div>
             <div class="schedule-layout">
                 <nav class="schedule-months" id="scheduleMonthsNav" aria-label="Месяцы расписания" data-i18n-aria-label="scheduleMonthsAria"></nav>
