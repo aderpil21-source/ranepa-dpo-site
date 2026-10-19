@@ -1,4 +1,4 @@
-const STUDENTS_PUBLIC_API_URL = 'https://ranepa-dpo-public-api.onrender.com';
+const STUDENTS_PUBLIC_API_URL = 'https://ranepa-dpo-materials-api.rt9b8frtkg.chatgpt.site';
 
 function safeStudentUrl(value) {
   try {
@@ -29,7 +29,7 @@ async function lookupStudentMaterial(event) {
   box.className = 'material-result loading';
   box.textContent = 'Проверяем код…';
   try {
-    // Render can take longer than 12 seconds to resume after inactivity.
+    // Retry transient network failures when checking a material code.
     // Only the lookup endpoint handles codes; do not ship a public code directory.
     const retryableStatuses = new Set([408, 425, 429, 500, 502, 503, 504]);
     const timeouts = [25000, 35000, 35000];
