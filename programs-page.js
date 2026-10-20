@@ -7,11 +7,11 @@ async function fetchPublicJson(path, fallbackUrl) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 2000);
   try {
-    const res = await fetch(PROGRAMS_PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
+    const res = await window.dpoPublicFetch(PROGRAMS_PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
     if (!res.ok) throw new Error('HTTP '+res.status);
     return await res.json();
   } catch (_) {
-    const res = await fetch(fallbackUrl, {cache:'no-store'});
+    const res = await window.dpoPublicFetch(fallbackUrl, {cache:'no-store'});
     if (!res.ok) throw new Error('HTTP '+res.status);
     return await res.json();
   } finally {

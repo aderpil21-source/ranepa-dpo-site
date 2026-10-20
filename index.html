@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" id="htmlRoot" data-theme="dark">
 <head>
+    <script src="public-data-resilience.js?v=20261020-1"></script>
 <!-- SEO: generated -->
 <meta name="description" content="Программы профессиональной переподготовки и повышения квалификации в Калининграде. Очно и дистанционно. Госзакупки, управление и другие направления ДПО РАНХиГС.">
 <meta name="robots" content="index, follow, max-image-preview:large">
@@ -21,7 +22,7 @@
 <!-- /SEO -->
 <script>(function(){try{if(new URLSearchParams(location.search).get('owlEmbed')==='1')document.documentElement.classList.add('owl-embed-mode');}catch(_){}})();</script>
 <link rel="stylesheet" href="./theme.css?v=1">
-<script src="./theme.js?v=4"></script>
+<script src="./theme.js?v=20261020-1"></script>
    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://mc.yandex.ru; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: https:; frame-src https:; child-src 'self' blob: https:; worker-src 'self' blob:; form-action 'self' https:; upgrade-insecure-requests">
@@ -2343,7 +2344,7 @@
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs || 10000);
         try {
-            const response = await fetch(INDEX_PUBLIC_DATA_API + path + '?_=' + Date.now(), {
+            const response = await window.dpoPublicFetch(INDEX_PUBLIC_DATA_API + path + '?_=' + Date.now(), {
                 cache:'no-store',
                 signal:controller.signal,
                 referrerPolicy:'no-referrer'
@@ -2352,7 +2353,7 @@
             return await response.json();
         } catch (liveError) {
             if (!fallbackUrl) throw liveError;
-            const response = await fetch(fallbackUrl, { cache:'no-store' });
+            const response = await window.dpoPublicFetch(fallbackUrl, { cache:'no-store' });
             if (!response.ok) throw new Error('Fallback HTTP ' + response.status);
             return await response.json();
         } finally {
@@ -4085,7 +4086,7 @@
                 return portalDataPromise;
             }
 
-            portalDataPromise = fetch('./portal-data.json')
+            portalDataPromise = window.dpoPublicFetch('./portal-data.json')
                 .then(response => {
                     if (!response.ok) throw new Error('Local data HTTP ' + response.status);
                     return response.json();
@@ -6054,7 +6055,7 @@ if (legacyNewsHash.startsWith('#news=')) {
 <script src="./site-admin-preview.js?v=1"></script>
 <script src="./site-admin-overlay-dnd.js?v=2"></script>
 <script src="./owl-engine.js?v=20261001-19"></script>
-<script src="./owl-operator.js?v=20261003-2"></script>
-<script src="./portal-live-alert.js?v=20261007-1"></script>
+<script src="./owl-operator.js?v=20261020-1"></script>
+<script src="./portal-live-alert.js?v=20261020-1"></script>
 </body>
 </html>

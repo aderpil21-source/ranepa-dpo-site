@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="dark">
 <head>
+    <script src="public-data-resilience.js?v=20261020-1"></script>
 <link rel="stylesheet" href="./theme.css?v=1">
 <!-- SEO: generated -->
 <meta name="description" content="Подробная информация о программе дополнительного профессионального образования Западного филиала РАНХиГС: содержание, формат, сроки и условия обучения.">
@@ -19,7 +20,7 @@
 <meta property="og:image:alt" content="Западный филиал РАНХиГС">
 <script src="./program-seo.js"></script>
 <!-- /SEO -->
-<script src="./theme.js?v=3"></script>
+<script src="./theme.js?v=20261020-1"></script>
   <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: https:; frame-src https:; child-src 'self' blob: https:; worker-src 'self' blob:; form-action 'self' https:; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -207,7 +208,7 @@ const PROGRAM_PUBLIC_DATA_API='https://ranepa-dpo-public-api.onrender.com';
 async function getPublicJson(path,fallbackUrl,timeoutMs=2000){
   const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),timeoutMs);
   try{
-    const r=await fetch(PROGRAM_PUBLIC_DATA_API+path+'?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+    const r=await window.dpoPublicFetch(PROGRAM_PUBLIC_DATA_API+path+'?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
     if(!r.ok)throw new Error('HTTP '+r.status);
     return await r.json();
   }catch(error){

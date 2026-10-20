@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="dark">
 <head>
+    <script src="public-data-resilience.js?v=20261020-1"></script>
 <link rel="stylesheet" href="./theme.css?v=1">
 <!-- SEO: generated -->
 <meta name="description" content="Новости и анонсы Центра дополнительного образования Западного филиала РАНХиГС: программы обучения, мероприятия и образовательные события в Калининграде.">
@@ -20,7 +21,7 @@
 <meta property="og:url" content="https://ranepa-dpo39.ru/news.html">
 <link rel="canonical" href="https://ranepa-dpo39.ru/news.html">
 <!-- /SEO -->
-<script src="./theme.js?v=4"></script>
+<script src="./theme.js?v=20261020-1"></script>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob:; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://mc.yandex.ru; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: https:; frame-src https:; child-src 'self' blob: https:; worker-src 'self' blob:; form-action 'self' https:; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -523,12 +524,12 @@ async function loadPublicNewsPageEnabled(){
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 2000);
             try {
-                const response = await fetch(NEWS_PUBLIC_DATA_API + '/settings?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                const response = await window.dpoPublicFetch(NEWS_PUBLIC_DATA_API + '/settings?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
                 data = await response.json();
             } finally { clearTimeout(timer); }
         } catch (_) {
-            const response = await fetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), { cache:'no-store' });
+            const response = await window.dpoPublicFetch('./site-settings.json?v=' + Math.floor(Date.now()/60000), { cache:'no-store' });
             if (!response.ok) throw new Error('HTTP ' + response.status);
             data = await response.json();
         }
@@ -1225,7 +1226,7 @@ async function refreshPublicNewsSnapshot(options){
                 const controller = new AbortController();
                 const timer = setTimeout(() => controller.abort(), 2500);
                 try {
-                    const response = await fetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                    const response = await window.dpoPublicFetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                     if (!response.ok) throw new Error('Live news HTTP ' + response.status);
                     data = await response.json();
                 } finally { clearTimeout(timer); }
@@ -1338,7 +1339,7 @@ async function fetchNews(){
             const controller = new AbortController();
             const timer = setTimeout(() => controller.abort(), 2500);
             try {
-                const response = await fetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
+                const response = await window.dpoPublicFetch(NEWS_PUBLIC_DATA_API + '/news?_=' + Date.now(), { cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer' });
                 if (!response.ok) throw new Error('Live news HTTP ' + response.status);
                 data = await response.json();
             } finally { clearTimeout(timer); }

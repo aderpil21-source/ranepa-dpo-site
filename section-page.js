@@ -111,12 +111,12 @@ async function applyPublicFaqCms(){
     try{
       const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),2000);
       try{
-        const response=await fetch(SECTION_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+        const response=await window.dpoPublicFetch(SECTION_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
         if(!response.ok)throw new Error('HTTP '+response.status);
         data=await response.json();
       }finally{clearTimeout(timer);}
     }catch(_){
-      const response=await fetch('./site-settings.json?v='+bucket,{cache:'no-store'});
+      const response=await window.dpoPublicFetch('./site-settings.json?v='+bucket,{cache:'no-store'});
       if(!response.ok)throw new Error('HTTP '+response.status);
       data=await response.json();
     }

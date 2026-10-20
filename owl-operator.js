@@ -576,7 +576,7 @@
             saveState();
             refreshOptions();
             if (typeof window.addBotMsg === 'function') {
-                window.addBotMsg('Не удалось подключить оператора. Попробуйте ещё раз чуть позже — Сова продолжит работать как обычно.');
+                window.addBotMsg('Не удалось подключить оператора. <a href="contacts.html">Откройте контакты Центра ДПО</a>, чтобы связаться напрямую. Сова продолжит работать.');
             }
             console.warn('Owl operator start failed:', error && error.message ? error.message : error);
         }
@@ -598,7 +598,7 @@
             startPolling();
         } catch (error) {
             if (typeof window.addBotMsg === 'function') {
-                window.addBotMsg('⚠️ Сообщение оператору сейчас не отправилось. Попробуйте повторить его через несколько секунд.');
+                window.addBotMsg('⚠️ Сообщение оператору не отправилось. <a href="contacts.html">Свяжитесь с Центром ДПО напрямую</a> или повторите отправку позже.');
             }
             console.warn('Owl operator message failed:', error && error.message ? error.message : error);
         }

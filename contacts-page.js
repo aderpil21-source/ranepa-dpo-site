@@ -8,12 +8,12 @@
       try{
         const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),2000);
         try{
-          const res=await fetch(CONTACTS_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+          const res=await window.dpoPublicFetch(CONTACTS_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
           if(!res.ok)throw new Error('HTTP '+res.status);
           data=await res.json();
         }finally{clearTimeout(timer);}
       }catch(_){
-        const res=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
+        const res=await window.dpoPublicFetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
         if(!res.ok)throw new Error('HTTP '+res.status);
         data=await res.json();
       }

@@ -1,40 +1,45 @@
-name: Live public API checks
-
+name: Live public data checks
 on:
   push:
     branches: [main]
     paths:
-      - 'public-api-proxy/**'
+      - 'public-data-resilience.js'
+      - 'tests/public-data-resilience.test.cjs'
       - '.github/workflows/live-public-api-check.yml'
+  schedule:
+    - cron: '17 */6 * * *'
   workflow_dispatch:
-
+permissions:
+  contents: read
 jobs:
-  live-api:
+  public-data:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Wait for safe public API deploy
+      - uses: actions/checkout@v4
+      - name: Test failover and public data security
+        run: |
+          node --test tests/public-data-resilience.test.cjs
+          node tests/security-public-snapshots.test.cjs
+      - name: Verify live snapshots and material service
         shell: bash
         run: |
           set -euo pipefail
-          base="https://ranepa-dpo-public-api.onrender.com"
-          for i in $(seq 1 24); do
-            if curl --fail --silent --show-error --max-time 20 "$base/health" > /tmp/health.json; then
-              python -c "import json; d=json.load(open('/tmp/health.json',encoding='utf-8')); assert d.get('ok') is True"
-              exit 0
-            fi
-            sleep 5
+          for file in portal-data schedule-data program-list news-data site-settings portal-alert; do
+            curl --fail --silent --show-error --retry 2 --max-time 20 "https://ranepa-dpo39.ru/$file.json" > "/tmp/$file.json"
           done
-          echo "Public API did not become healthy in time" >&2
-          exit 1
-
-      - name: Validate public payloads
-        shell: bash
-        run: |
-          set -euo pipefail
-          base="https://ranepa-dpo-public-api.onrender.com"
-          for path in portal schedule programs news settings; do
-            curl --fail --silent --show-error --max-time 30 "$base/$path" > "/tmp/$path.json"
-          done
-          status="$(curl --silent --output /tmp/bad-material.json --write-out '%{http_code}' --max-time 20 "$base/material?code=bad")"
-          test "$status" = "400"
-          python -c "import json; portal=json.load(open('/tmp/portal.json')); schedule=json.load(open('/tmp/schedule.json')); programs=json.load(open('/tmp/programs.json')); news=json.load(open('/tmp/news.json')); settings=json.load(open('/tmp/settings.json')); assert 'owlFiles' not in portal; assert isinstance(portal.get('programs'),list) and portal['programs']; assert isinstance(portal.get('schedules'),list); assert isinstance(schedule.get('schedules'),list); assert isinstance(programs.get('programs'),list) and programs['programs']; assert isinstance(news.get('items'),list); assert all(x.get('status')=='published' for x in news['items']); s=settings.get('settings') or {}; assert not any(str(k).startswith('material:') for k in (s.get('visibility') or {})); print('Live public API checks passed')"
+          python - <<'PY'
+          import json
+          for name,key in [('portal-data','schedules'),('schedule-data','schedules'),('program-list','programs'),('news-data','items')]:
+              data=json.load(open('/tmp/'+name+'.json'))
+              assert isinstance(data.get(key),list), name
+              assert not data.get('owlFiles'), name
+          settings=json.load(open('/tmp/site-settings.json'))['settings']
+          assert not any(str(k).startswith('material:') for k in settings.get('visibility',{}))
+          assert 'currentAlert' in json.load(open('/tmp/portal-alert.json'))
+          PY
+          base='https://ranepa-dpo-materials-api.rt9b8frtkg.chatgpt.site'
+          curl --fail --silent --show-error --retry 2 --max-time 20 "$base/health" > /tmp/health.json
+          python -c "import json; assert json.load(open('/tmp/health.json')).get('ok') is True"
+          status="$(curl --silent --show-error --max-time 20 --output /tmp/bad-code.json --write-out '%{http_code}' "$base/material?code=bad")"
+          test "$status" = '400'

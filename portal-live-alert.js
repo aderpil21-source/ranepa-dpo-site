@@ -45,7 +45,7 @@
         const controller = new AbortController();
         const timerId = setTimeout(() => controller.abort(), timeoutMs);
         try {
-            const response = await fetch(url, {
+            const response = await window.dpoPublicFetch(url, {
                 method: 'GET',
                 cache: 'no-store',
                 redirect: 'follow',

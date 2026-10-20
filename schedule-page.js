@@ -7,11 +7,11 @@ async function fetchPublicJson(path, fallbackUrl) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 2000);
   try {
-    const r = await fetch(SCHEDULE_PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
+    const r = await window.dpoPublicFetch(SCHEDULE_PUBLIC_DATA_API + path + '?_=' + Date.now(), {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'});
     if (!r.ok) throw new Error('HTTP '+r.status);
     return await r.json();
   } catch (_) {
-    const r = await fetch(fallbackUrl, {cache:'no-store'});
+    const r = await window.dpoPublicFetch(fallbackUrl, {cache:'no-store'});
     if (!r.ok) throw new Error('HTTP '+r.status);
     return await r.json();
   } finally {
@@ -174,8 +174,7 @@ async function loadScheduleSnapshot(silent) {
 }
 
 async function initSchedule() {
-  const loaded = await loadScheduleSnapshot(false);
-  if (!loaded) return;
+  await loadScheduleSnapshot(false);
 
   document.getElementById('scheduleSearch').addEventListener('input', scheduleRenderDebounced);
   document.getElementById('scheduleProgram').addEventListener('change', renderSchedule);

@@ -122,14 +122,14 @@
     try{
       const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),2000);
       try{
-        const res=await fetch(THEME_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
+        const res=await window.dpoPublicFetch(THEME_PUBLIC_DATA_API+'/settings?_='+Date.now(),{cache:'no-store',signal:ctl.signal,referrerPolicy:'no-referrer'});
         if(!res.ok) throw new Error('HTTP '+res.status);
         const data=await res.json();
         settings=data?.settings||{};
       }finally{clearTimeout(timer);}
     }catch(_){
       try{
-        const res=await fetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
+        const res=await window.dpoPublicFetch('./site-settings.json?v='+Math.floor(Date.now()/60000),{cache:'no-store'});
         const data=await res.json(); settings=data?.settings||{};
       }catch(_){settings={};}
     }
