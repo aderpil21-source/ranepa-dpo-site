@@ -432,6 +432,67 @@ async function owlApplyLearnedRule(rule, currentQuery) {
     return false;
 }
 
+// Instructor materials must not depend on programme loading, shared learning or FAQ ranking.
+// Never use a public material catalogue or a stale browser copy as the source of truth.
+function owlCanonicalLectureCode(value) {
+    const input = String(value || '').normalize('NFKC').toUpperCase()
+        .replace(/[\u00a0\u202f]/g, ' ')
+        .replace(/[\u2010-\u2015\u2212]/g, '-');
+    const matches = [...input.matchAll(/(?:^|[^A-ZА-Я0-9])(?:ЛК|LK|ЛK|LК)\s*-\s*(\d{4}|[A-F0-9]{8})(?=$|[^A-ZА-Я0-9])/g)];
+    return matches.length === 1 ? 'ЛК-' + matches[0][1] : '';
+}
+
+async function owlHandleLectureMaterialCode(originalText) {
+    const cleanCode = owlCanonicalLectureCode(originalText);
+    if (!cleanCode) return false;
+
+    let foundFile;
+    try {
+        if (typeof window.lookupOwlMaterialByCode !== 'function') throw new Error('Material lookup unavailable');
+        foundFile = await window.lookupOwlMaterialByCode(cleanCode);
+    } catch (_) {
+        addBotMsg(currentLang === 'ru'
+            ? '⚠️ Сервис учебных материалов временно не отвечает. Ваш код не потерян. Повторите запрос через несколько минут или сообщите сотруднику Центра.'
+            : '⚠️ The learning materials service is temporarily unavailable. Please retry shortly or contact the Centre.');
+        return true;
+    }
+
+    // 404/hidden/revoked have the same response: never reveal protected metadata.
+    if (!foundFile || foundFile.isPublished !== true) {
+        addBotMsg(currentLang === 'ru'
+            ? 'Материалы по указанному коду не найдены или сейчас недоступны. Проверьте код у преподавателя и попробуйте снова.'
+            : 'No available materials for this code. Please confirm the code with your instructor.');
+        return true;
+    }
+
+    if (currentLang === 'en') await loadOwlI18n();
+
+    const localizedTitle = escapeOwlText(localizedOwlField(foundFile, 'title'));
+    const localizedComment = localizedOwlField(foundFile, 'comment');
+    const safeFileUrl = safeOwlHttpUrl(foundFile.url);
+    if (!safeFileUrl) {
+        addBotMsg(currentLang === 'ru'
+            ? 'Материалы найдены, но ссылка на файл сейчас недоступна. Сообщите сотруднику Центра.'
+            : 'Materials were found, but their file link is currently unavailable. Please contact the Centre.');
+        return true;
+    }
+    let responseMsg = formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: localizedTitle });
+    responseMsg += '<br><br><a href="' + escapeOwlText(safeFileUrl) +
+        '" target="_blank" rel="noopener noreferrer" style="color:var(--ranepa-red,#CA0F3E);font-weight:800;text-decoration:underline;">' +
+        translationsHTML[currentLang].owlMaterialsOpen + '</a>';
+    if (localizedComment) {
+        responseMsg += '<br><br>' + translationsHTML[currentLang].owlTeacherComment +
+            '<br><i style="color:var(--text-muted);display:inline-block;margin-top:5px;">' +
+            escapeOwlText(localizedComment).replace(/\n/g, '<br>') + '</i>';
+    }
+    if (foundFile.date) {
+        responseMsg += '<br><br><span style="font-size:.8rem;color:var(--text-muted);">' +
+            translationsHTML[currentLang].owlMaterialsUpdated + ' ' + escapeOwlText(foundFile.date) + '</span>';
+    }
+    addBotMsg(responseMsg);
+    return true;
+}
+
 let owlLastSubmit = { text:'', at:0 };
 
 async function handleUserMessage(messageOverride, alreadyRendered) {
@@ -460,6 +521,9 @@ async function handleUserMessage(messageOverride, alreadyRendered) {
         owlPendingUserMessages.push(originalText);
         return;
     }
+
+    // Code lookups take precedence over ALL programme/FAQ/learning logic.
+    if (await owlHandleLectureMaterialCode(originalText)) return;
 
     // Обычный режим зависит от локального каталога. Если пользователь успел
     // спросить раньше окончания фоновой загрузки, дожидаемся/повторяем её,
@@ -614,53 +678,6 @@ return;
 // --- КОНЕЦ СЛУЖЕБНЫХ РЕЖИМОВ ---
 
     if (await handleOwlNegativeFeedback(originalText)) {
-        return;
-    }
-
-    const cleanCode = String(text || '').trim().toUpperCase();
-    const looksLikeLectureCode = /^ЛК-(?:\d{4}|[A-F0-9]{8})$/i.test(cleanCode);
-    let foundFile = globalOwlFiles.find(f => String(f.code || '').toUpperCase() === cleanCode);
-
-    // В Google идём только для реального формата лекционного кода.
-    // Обычные вопросы ("сколько стоит?", "госзакупки" и т.п.) больше
-    // вообще не создают live-запрос к Apps Script.
-    if (!foundFile && looksLikeLectureCode && typeof window.lookupOwlMaterialByCode === 'function') {
-        foundFile = await window.lookupOwlMaterialByCode(cleanCode);
-    }
-
-    if (foundFile && !siteKeyIsVisible(owlVisibilityKey(foundFile))) {
-        foundFile = Object.assign({}, foundFile, { isPublished:false });
-    }
-
-    if (foundFile) {
-        if (currentLang === 'en') {
-            await loadOwlI18n();
-        }
-
-        const localizedTitle = escapeOwlText(localizedOwlField(foundFile, 'title'));
-        const localizedComment = localizedOwlField(foundFile, 'comment');
-
-        setTimeout(() => {
-            if (foundFile.isPublished) {
-                const safeFileUrl = safeOwlHttpUrl(foundFile.url);
-                let responseMsg =
-                    formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: localizedTitle });
-                if (safeFileUrl) {
-                    responseMsg +=
-                        `<br><br><a href="${escapeOwlText(safeFileUrl)}" target="_blank" rel="noopener noreferrer" style="color: #38bdf8; font-weight: 800; text-decoration: underline;">${translationsHTML[currentLang].owlMaterialsOpen}</a>`;
-                }
-                if (localizedComment) {
-                    responseMsg += `<br><br>${translationsHTML[currentLang].owlTeacherComment}<br><i style="color: #cbd5e1; display: inline-block; margin-top: 5px;">${escapeOwlText(localizedComment).replace(/\n/g, '<br>')}</i>`;
-                }
-                responseMsg += `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlMaterialsUpdated} ${foundFile.date}</span>`;
-                addBotMsg(responseMsg);
-            } else {
-                addBotMsg(
-                    formatI18n(translationsHTML[currentLang].owlMaterialHidden, { title: localizedTitle }) +
-                    `<br><br><span style="font-size: 0.8rem; color: var(--text-muted);">${translationsHTML[currentLang].owlStatusChanged} ${foundFile.date}</span>`
-                );
-            }
-        }, 500);
         return;
     }
 
