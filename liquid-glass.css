@@ -300,3 +300,15 @@ html .schedule-overlay .timeline-card {
   body.site-app-ui > header { position:relative!important; }
   .site-app-ui .owl-chat-panel .chat-options { max-height:20%; }
 }
+
+
+/* Narrow phones: all four top actions must remain visible and tappable, no clipped labels. */
+@media (max-width:360px) {
+  .site-app-ui .app-top-nav { gap:1px; }
+  .site-app-ui .app-top-nav > [data-mobile-nav] {
+    min-width:0; padding:8px 1px; min-height:48px;
+    font-size:10.5px; line-height:1.25; letter-spacing:-.02em;
+    text-align:center;
+    white-space:normal; overflow-wrap:anywhere;
+  }
+}
