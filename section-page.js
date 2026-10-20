@@ -52,7 +52,7 @@ function ensureSectionModals() {
         <div class="section-leaving-url" id="sectionLeavingUrl"></div>
         <p class="section-modal-lead">Эта ссылка ведёт на сторонний ресурс. Вы действительно хотите туда перейти?</p>
         <div class="section-modal-actions">
-          <button class="section-primary-btn" id="sectionLeavingContinue" type="button">Продолжить</button>
+          <a class="section-primary-btn" id="sectionLeavingContinue" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none">Продолжить</a>
           <button class="section-secondary-btn" type="button" data-close="sectionLeavingModal">Отмена</button>
         </div>
       </div>
@@ -91,6 +91,8 @@ function openLeavingWarning(url) {
   if (!leavingTargetUrl) return;
   const box = document.getElementById('sectionLeavingUrl');
   if (box) box.textContent = leavingTargetUrl;
+  const continueLink = document.getElementById('sectionLeavingContinue');
+  if (continueLink) continueLink.href = leavingTargetUrl;
   openModalById('sectionLeavingModal');
 }
 
@@ -199,11 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'Показать текст согласия и политику обработки персональных данных';
   });
 
-  document.getElementById('sectionLeavingContinue')?.addEventListener('click', () => {
-    if (!leavingTargetUrl) return;
-    const url = leavingTargetUrl;
+  document.getElementById('sectionLeavingContinue')?.addEventListener('click', event => {
+    if (!leavingTargetUrl) {
+      event.preventDefault();
+      return;
+    }
     leavingTargetUrl = '';
     closeModalById('sectionLeavingModal');
-    window.open(url, '_blank', 'noopener,noreferrer');
+    // The anchor's native navigation is more reliable than window.open in mobile/in-app browsers.
   });
 });
