@@ -7,6 +7,9 @@ on:
       - 'premium-motion.*'
       - 'liquid-glass.css'
       - 'mobile-app.js'
+      - 'owl-engine.js'
+      - 'public-data-resilience.js'
+      - 'tests/owl-material-live-browser.test.cjs'
       - 'tests/mobile-layout-browser.test.cjs'
       - 'assets/vendor/**'
       - 'programs-page.js'
@@ -20,6 +23,9 @@ on:
       - 'premium-motion.*'
       - 'liquid-glass.css'
       - 'mobile-app.js'
+      - 'owl-engine.js'
+      - 'public-data-resilience.js'
+      - 'tests/owl-material-live-browser.test.cjs'
       - 'tests/mobile-layout-browser.test.cjs'
       - 'assets/vendor/**'
       - 'programs-page.js'
@@ -42,6 +48,7 @@ jobs:
           node-version: '22'
       - run: npm install --no-save --ignore-scripts playwright@1.62.1
       - run: npx playwright install chromium
+      - run: node tests/owl-material-live-browser.test.cjs
       - run: node tests/schedule-overlay-browser.test.cjs
       - run: node tests/motion-browser.test.cjs
       - run: node tests/mobile-layout-browser.test.cjs
