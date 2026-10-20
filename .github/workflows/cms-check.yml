@@ -8,6 +8,9 @@ on:
       - 'index.html'
       - 'news.html'
       - 'cms-richtext.js'
+      - 'owl-engine.js'
+      - 'public-data-resilience.js'
+      - 'tests/owl-material-lookup.test.cjs'
       - 'tests/cms-richtext.test.cjs'
       - 'tests/news-reader.test.cjs'
       - 'tests/cms-workflow.test.cjs'
@@ -18,6 +21,9 @@ on:
       - 'index.html'
       - 'news.html'
       - 'cms-richtext.js'
+      - 'owl-engine.js'
+      - 'public-data-resilience.js'
+      - 'tests/owl-material-lookup.test.cjs'
       - 'tests/cms-richtext.test.cjs'
       - 'tests/news-reader.test.cjs'
       - 'tests/cms-workflow.test.cjs'
@@ -32,5 +38,6 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/cms-workflow.test.cjs
+      - run: node tests/owl-material-lookup.test.cjs
       - run: node tests/cms-richtext.test.cjs
       - run: node tests/news-reader.test.cjs
