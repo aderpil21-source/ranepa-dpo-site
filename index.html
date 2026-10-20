@@ -3909,10 +3909,13 @@
         const clean = String(code || '').trim().toUpperCase();
         if (!/^ЛК-(?:\d{4}|[A-F0-9]{8})$/i.test(clean)) return null;
         try {
-            const data = await fetchPublicData('/material?code=' + encodeURIComponent(clean) + '&x=1', null, 12000);
-            return data && data.item ? data.item : null;
-        } catch (_) {
-            return null;
+            const data = await fetchPublicData('/material?code=' + encodeURIComponent(clean), null, 30000);
+            return data && data.ok === true && data.item ? data.item : null;
+        } catch (error) {
+            // A revoked or unknown code is intentionally indistinguishable (404).
+            // Transport errors are NOT "not found" and must be explained to the user.
+            if (String(error && error.message || '').includes('Public API HTTP 404')) return null;
+            throw error;
         }
     }
     window.lookupOwlMaterialByCode = lookupOwlMaterialByCode;
