@@ -1231,7 +1231,7 @@ async function refreshPublicNewsSnapshot(options){
                     data = await response.json();
                 } finally { clearTimeout(timer); }
             } catch (_) {
-                const response = await fetch(publicNewsSnapshotUrl(), { cache:'no-store' });
+                const response = await window.dpoPublicFetch(publicNewsSnapshotUrl(), { cache:'no-store' });
                 if (!response.ok) throw new Error('Local news HTTP ' + response.status);
                 data = await response.json();
             }
@@ -1344,7 +1344,7 @@ async function fetchNews(){
                 data = await response.json();
             } finally { clearTimeout(timer); }
         } catch (_) {
-            const response = await fetch(publicNewsSnapshotUrl());
+            const response = await window.dpoPublicFetch(publicNewsSnapshotUrl());
             if (!response.ok) throw new Error('Local news HTTP ' + response.status);
             data = await response.json();
         }
