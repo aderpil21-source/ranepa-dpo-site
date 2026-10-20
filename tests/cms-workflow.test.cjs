@@ -438,8 +438,8 @@ assert(
 
 
 assert(
-  indexHtml.includes('<script src="./portal-snapshot.js?v=20261001-1"></script>') &&
-  indexHtml.indexOf('<script src="./portal-snapshot.js?v=20261001-1"></script>') < indexHtml.indexOf('function loadPortalData()'),
+  /<script\s+src=["']\.\/portal-snapshot\.js(?:\?[^"']*)?["']><\/script>/.test(indexHtml) &&
+  indexHtml.search(/<script\s+src=["']\.\/portal-snapshot\.js(?:\?[^"']*)?["']><\/script>/) < indexHtml.indexOf('function loadPortalData()'),
   'Homepage must load the embedded portal snapshot before program data is requested'
 );
 assert(
