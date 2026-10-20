@@ -83,6 +83,23 @@ assert.equal(canonical('ЛК-1234 и ЛК-1235'),'','ambiguous two codes must no
   ctx.fetchPublicData=async()=>{throw Error('Public API HTTP 503')};
   await assert.rejects(ctx.lookup('ЛК-1234'),/503/,'Outages must not be silently swallowed');
 
+
+  const wrapperStart=home.indexOf('async function fetchPublicData(path, fallbackUrl, timeoutMs) {');
+  const wrapperEnd=home.indexOf('// Общая обезличенная память Совы',wrapperStart);
+  assert(wrapperStart>=0 && wrapperEnd>wrapperStart);
+  let requestedUrl='';
+  const wrapperContext={
+    INDEX_PUBLIC_DATA_API:'https://ranepa-dpo-public-api.onrender.com',
+    window:{dpoPublicFetch:async(url)=>{requestedUrl=url;return {ok:true,json:async()=>({ok:true,item:sample})};}},
+    AbortController,setTimeout,clearTimeout,Date
+  };
+  vm.runInNewContext(home.slice(wrapperStart,wrapperEnd)+'\nthis.load=fetchPublicData;',wrapperContext);
+  await wrapperContext.load('/material?code='+encodeURIComponent('ЛК-1234'),null,1000);
+  const parsed=new URL(requestedUrl);
+  assert.equal(parsed.searchParams.get('code'),'ЛК-1234',
+    'Cache busting must NEVER mutate the material access code');
+  assert(parsed.searchParams.has('_'),'Cache buster must use its own query parameter');
+
   assert(resilience.includes("const materials = 'https://ranepa-dpo-materials-api."),
     'Protected service must be called, not obsolete suspended Render');
   assert.deepEqual(JSON.parse(fs.readFileSync('owl-files.json','utf8')).owlFiles,[],
