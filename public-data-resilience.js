@@ -2,9 +2,10 @@
 (function (root) {
   'use strict';
   const legacy = 'https://ranepa-dpo-public-api.onrender.com';
-  const materials = 'https://ranepa-dpo-materials-api.rt9b8frtkg.chatgpt.site';
-  const materialPrimary = 'https://ranepa-materials-access.onrender.com';
+  const materials = 'https://ranepa-materials-access.onrender.com';
+  const materialPrimary = 'https://ranepa-dpo-site.vercel.app/api';
   const mirror = 'https://raw.githubusercontent.com/aderpil21-source/ranepa-dpo-site/main/';
+  const serverlessMirror = 'https://ranepa-dpo-site.vercel.app/';
   const snapshots = {
     '/portal': ['portal-data.json', 'schedules'],
     '/schedule': ['schedule-data.json', 'schedules'],
@@ -52,7 +53,7 @@
               // Detach the consumed JSON before aborting losing connections.
               return new Response(JSON.stringify(data), {status:response.status,headers:response.headers});
             })(),
-            new Promise((_,reject) => {timer = setTimeout(() => {controller.abort();reject(new Error('Material lookup timeout'));},index === 0 ? 65000 : 12000);timers.push(timer);})
+            new Promise((_,reject) => {timer = setTimeout(() => {controller.abort();reject(new Error('Material lookup timeout'));},index === 0 ? 20000 : 65000);timers.push(timer);})
           ]);
         } finally { clearTimeout(timer); }
       }));
@@ -73,6 +74,9 @@
     // Own bounded attempts replace the old Render-only deadline.
     const suffix = '?v=' + Math.floor(Date.now() / 60000);
     try { return await bounded(new URL('./' + spec[0] + suffix, root.location.href).href, 4000, spec[1]); }
-    catch (_) { return await bounded(mirror + spec[0] + suffix, 4000, spec[1]); }
+    catch (_) {
+      try { return await bounded(serverlessMirror + spec[0] + suffix, 4000, spec[1]); }
+      catch (_) { return await bounded(mirror + spec[0] + suffix, 4000, spec[1]); }
+    }
   };
 })(window);

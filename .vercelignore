@@ -1,0 +1,12 @@
+.git
+.github
+tests
+motion-test
+operator
+worker
+vk-products
+scripts
+*.py
+
+.env*
+.vercel

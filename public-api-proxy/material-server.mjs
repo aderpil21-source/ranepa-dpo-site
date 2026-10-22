@@ -1,7 +1,9 @@
 import http from 'node:http';
+import {fileURLToPath} from 'node:url';
+import {resolve} from 'node:path';
 
 const upstream = process.env.PORTAL_UPSTREAM;
-const origins = new Set(['https://ranepa-dpo39.ru','https://www.ranepa-dpo39.ru','https://aderpil21-source.github.io']);
+const origins = new Set(['https://ranepa-dpo39.ru','https://www.ranepa-dpo39.ru','https://aderpil21-source.github.io','https://ranepa-dpo-site.vercel.app']);
 const clients = new Map();
 
 export function createMaterialServer(source = upstream) {
@@ -48,6 +50,6 @@ export function createMaterialServer(source = upstream) {
     }
   });
 }
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   createMaterialServer().listen(Number(process.env.PORT || 10000),'0.0.0.0',() => console.log('Material lookup service ready'));
 }

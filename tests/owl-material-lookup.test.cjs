@@ -100,7 +100,7 @@ assert.equal(canonical('ЛК-1234 и ЛК-1235'),'','ambiguous two codes must no
     'Cache busting must NEVER mutate the material access code');
   assert(parsed.searchParams.has('_'),'Cache buster must use its own query parameter');
 
-  assert(resilience.includes("const materials = 'https://ranepa-dpo-materials-api."),
+  assert(resilience.includes("const materialPrimary = 'https://ranepa-dpo-site.vercel.app/api"),
     'Protected service must be called, not obsolete suspended Render');
   assert.deepEqual(JSON.parse(fs.readFileSync('owl-files.json','utf8')).owlFiles,[],
     'Never publish teacher codes in static files');

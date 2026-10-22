@@ -1,0 +1,5 @@
+{
+  "functions": {
+    "api/material.mjs": {"maxDuration": 30}
+  }
+}
