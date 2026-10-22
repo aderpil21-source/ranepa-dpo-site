@@ -1,5 +1,3 @@
-const STUDENTS_PUBLIC_API_URL = 'https://ranepa-dpo-materials-api.rt9b8frtkg.chatgpt.site';
-
 function safeStudentUrl(value) {
   try {
     const url = new URL(String(value || '').trim());
@@ -29,34 +27,7 @@ async function lookupStudentMaterial(event) {
   box.className = 'material-result loading';
   box.textContent = 'Проверяем код…';
   try {
-    // Retry transient network failures when checking a material code.
-    // Only the lookup endpoint handles codes; do not ship a public code directory.
-    const retryableStatuses = new Set([408, 425, 429, 500, 502, 503, 504]);
-    const timeouts = [25000, 35000, 35000];
-    let response = null;
-    let lastError = null;
-    for (let attempt = 0; attempt < timeouts.length; attempt++) {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), timeouts[attempt]);
-      try {
-        response = await fetch(
-          STUDENTS_PUBLIC_API_URL + '/material?code=' + encodeURIComponent(code) + '&_=' + Date.now(),
-          {cache:'no-store', signal:controller.signal, referrerPolicy:'no-referrer'}
-        );
-        if (response.ok || response.status === 404 || !retryableStatuses.has(response.status)) break;
-        lastError = new Error('Material API HTTP ' + response.status);
-        response = null;
-      } catch (error) {
-        lastError = error;
-      } finally {
-        clearTimeout(timeout);
-      }
-      if (attempt < timeouts.length - 1) {
-        box.textContent = 'Сервер материалов отвечает медленно. Повторяем проверку, подождите…';
-        await new Promise(resolve => setTimeout(resolve, 600));
-      }
-    }
-    if (!response) throw lastError || new Error('Material API unavailable');
+    const response = await window.dpoMaterialFetch(code);
     if (response.status === 404) {
       setMaterialState('Материал с таким кодом не найден. Проверьте код и попробуйте ещё раз.', 'error');
       return;

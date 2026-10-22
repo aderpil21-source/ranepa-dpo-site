@@ -38,7 +38,7 @@ jobs:
           assert not any(str(k).startswith('material:') for k in settings.get('visibility',{}))
           assert 'currentAlert' in json.load(open('/tmp/portal-alert.json'))
           PY
-          base='https://ranepa-dpo-materials-api.rt9b8frtkg.chatgpt.site'
+          base='https://ranepa-materials-access.onrender.com'
           curl --fail --silent --show-error --retry 2 --max-time 20 "$base/health" > /tmp/health.json
           python -c "import json; assert json.load(open('/tmp/health.json')).get('ok') is True"
           status="$(curl --silent --show-error --max-time 20 --output /tmp/bad-code.json --write-out '%{http_code}' "$base/material?code=bad")"
