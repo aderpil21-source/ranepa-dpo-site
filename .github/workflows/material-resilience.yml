@@ -30,3 +30,15 @@ jobs:
           done
           curl --fail --silent --show-error --retry 2 --max-time 25 'https://ranepa-dpo-site.vercel.app/api/health?upstream=1' > /tmp/material-source.json
           python -c "import json; assert json.load(open('/tmp/material-source.json')).get('ok') is True"
+  browser-failover:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/material-failover-browser.test.cjs
