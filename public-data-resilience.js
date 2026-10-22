@@ -47,9 +47,10 @@
               const response = await fetch(base + '/material?code=' + encodeURIComponent(code), {signal:controller.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
               const data = await response.clone().json();
               // These are live, definitive answers. Never fall back to a static code directory.
-              if ([400,404,429].includes(response.status) && data && data.ok === false) return response;
+              if ([400,404,429].includes(response.status) && data && data.ok === false) return new Response(JSON.stringify(data), {status:response.status,headers:response.headers});
               if (!response.ok || data?.ok !== true || !data.item || typeof data.item !== 'object') throw new Error('Material service unavailable');
-              return response;
+              // Detach the consumed JSON before aborting losing connections.
+              return new Response(JSON.stringify(data), {status:response.status,headers:response.headers});
             })(),
             new Promise((_,reject) => {timer = setTimeout(() => {controller.abort();reject(new Error('Material lookup timeout'));},index === 0 ? 65000 : 12000);timers.push(timer);})
           ]);

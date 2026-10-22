@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const vm=require('node:vm');
 const fs=require('node:fs');
 const code=fs.readFileSync('public-data-resilience.js','utf8');
-function setup(fetch){const window={location:{href:'https://ranepa-dpo39.ru/index.html'}};vm.runInNewContext(code,{window,URL,AbortController,fetch,setTimeout:(fn)=>setTimeout(fn,15),clearTimeout});return window.dpoPublicFetch;}
+function setup(fetch){const window={location:{href:'https://ranepa-dpo39.ru/index.html'}};vm.runInNewContext(code,{window,URL,Response,AbortController,fetch,setTimeout:(fn)=>setTimeout(fn,15),clearTimeout});return window.dpoPublicFetch;}
 const legacy='https://ranepa-dpo-public-api.onrender.com';
 test('local snapshot first, including authoritative empty list',async()=>{const calls=[];const f=setup(async u=>{calls.push(u);return Response.json({schedules:[]})});const r=await f(legacy+'/schedule');assert.deepEqual(await r.json(),{schedules:[]});assert.equal(calls.length,1);assert.match(calls[0],/^https:\/\/ranepa-dpo39.ru\/schedule-data.json/)});
 test('invalid JSON, HTTP failure and hung connection use independent mirror',async()=>{for(const first of [()=>Response.json({}, {status:503}),()=>new Response('<html>'),()=>new Promise(()=>{})]){let n=0;const f=setup(async u=>{if(++n===1)return first();assert.match(u,/raw.githubusercontent.com/);return Response.json({items:[]})});assert.deepEqual(await (await f(legacy+'/news')).json(),{items:[]})}});
