@@ -1185,6 +1185,18 @@
             border:1px solid var(--sch-line); background:var(--sch-surface);
             color:var(--sch-text); box-shadow:none; opacity:1; transform:none;
         }
+        .schedule-overlay .timeline-card.is-schedule-replacement {
+            border-left:4px solid #fbbf24;
+        }
+        .schedule-replacement-tag {
+            display:inline-flex; align-items:center; padding:5px 10px;
+            border-radius:7px; background:rgba(251,191,36,.16); color:#ffe4a0;
+            border:1px solid rgba(251,191,36,.45); font-size:.72rem; font-weight:800;
+            letter-spacing:.045em;
+        }
+        [data-theme="light"] .schedule-replacement-tag {
+            background:#fff1ca; color:#804500; border-color:#d7a33e;
+        }
         .sch-top { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
         .sch-program { color:var(--sch-secondary); font-size:.8rem; font-weight:500; line-height:1.5; }
         .sch-time { color:var(--sch-text); font-size:.9rem; font-weight:600; font-variant-numeric:tabular-nums; }
@@ -1589,7 +1601,7 @@
 <link rel="stylesheet" href="./premium-motion.css?v=6">
 <script defer src="./assets/vendor/motion-12.23.24.js"></script>
 <script defer src="./premium-motion.js?v=8"></script>
-    <script src="./schedule-word-loader.js?v=3"></script>
+    <script src="./schedule-word-loader.js?v=20261023-1"></script>
 <link rel="stylesheet" href="./liquid-glass.css?v=2">
 <script defer src="./mobile-app.js?v=2"></script>
 </head>
@@ -2326,7 +2338,7 @@
     </script>
     <script src="./owl-learning.js?v=20261001-6"></script>
     <script src="./owl-brain.js?v=20260927-4"></script>
-    <script src="./portal-snapshot.js?v=20261017-1"></script>
+    <script src="./portal-snapshot.js?v=20261023-1"></script>
     <script src="./cms-richtext.js?v=1"></script>
 
     <script>
@@ -5833,6 +5845,13 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                     time.textContent = String(item.time || '—');
 
                     top.append(program, time);
+                    if (item.replacement === true) {
+                        card.classList.add('is-schedule-replacement');
+                        const changeTag = document.createElement('span');
+                        changeTag.className = 'schedule-replacement-tag';
+                        changeTag.textContent = currentLang === 'ru' ? 'ЗАМЕНА' : 'RESCHEDULED';
+                        top.appendChild(changeTag);
+                    }
 
                     const subject = document.createElement('div');
                     subject.className = 'sch-subject';
