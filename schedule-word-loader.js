@@ -48,11 +48,30 @@
     'управлениеэмоциямиистрессом',
     'внутреннийфинансовыйаудит'
   ];
+  // Approved correction received on 23 October 2026: start changed from 18:00 to 14:00.
+  // The corrected end time and instructor were not supplied; do not invent them.
+  const correctedNov3 = Object.freeze({
+    id: 'written-comm-20261103',
+    program: 'Эффективные письменные коммуникации',
+    date: '03.11.2026',
+    time: '14:00',
+    subject: 'Форматы служебных документов: докладные, служебные записки, отчёты. Требования к оформлению и языковая грамотность. Работа с шаблонами и автоматизация оформления.',
+    teacher: '',
+    room: '',
+    replacement: true
+  });
+  function isCorrectedNov3(item) {
+    return item && String(item.date || '').trim() === correctedNov3.date &&
+      normalizedProgram(item.program) === normalizedProgram(correctedNov3.program);
+  }
   function merge(base) {
-    const result = Array.isArray(base) ? base.slice() : [];
+    // A stale API/Word import must never restore the obsolete 18:00 version.
+    const result = (Array.isArray(base) ? base : []).filter(item => !isCorrectedNov3(item));
+    result.push({...correctedNov3});
     const seen = new Set(result.map(key));
     const liveNames = new Set(result.map(item => normalizedProgram(item?.program)));
     for (const row of rows) {
+      if (isCorrectedNov3(row)) continue;
       const normalized = normalizedProgram(row.program);
       if (authoritativePdfPrograms.some(fragment => normalized.includes(fragment) &&
         Array.from(liveNames).some(name => name.includes(fragment)))) continue;
