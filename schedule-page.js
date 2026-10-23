@@ -120,9 +120,10 @@ function renderSchedule() {
       lastDate = x.date;
       html += '<div class="schedule-day">'+escapeHtml(x.date)+'</div>';
     }
-    html += '<article class="lesson">'+
+    html += '<article class="lesson'+(x.replacement === true ? ' is-schedule-replacement' : '')+'">'+
       '<div class="lesson-time">'+escapeHtml(x.time || '')+'</div>'+
       '<div>'+
+        (x.replacement === true ? '<span class="lesson-replacement-tag">ЗАМЕНА</span>' : '')+
         '<div class="lesson-program">'+escapeHtml(x.program || '')+'</div>'+
         '<div class="lesson-subject">'+escapeHtml(x.subject || '')+'</div>'+
         '<div class="lesson-meta">'+
