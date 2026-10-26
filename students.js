@@ -17,17 +17,31 @@ function setMaterialState(message, type) {
 async function lookupStudentMaterial(event) {
   event.preventDefault();
   const input = document.getElementById('materialCode');
-  const code = String(input.value || '').trim().toUpperCase();
+  const rawCode = String(input.value || '').trim();
+  const code = window.dpoNormalizeMaterialCode(rawCode);
   const box = document.getElementById('materialResult');
   if (!code) {
-    setMaterialState('Введите код доступа.', 'error');
+    setMaterialState(rawCode ? 'Введите код в формате ЛК-1234 или ЛК-ABCDEF01.' : 'Введите код доступа.', 'error');
     input.focus();
     return;
   }
+  const button = event.currentTarget.querySelector('button[type="submit"]');
+  if (button.disabled) return;
+  button.disabled = true;
+  box.setAttribute('aria-busy', 'true');
+  input.value = code;
   box.className = 'material-result loading';
   box.textContent = 'Проверяем код…';
   try {
     const response = await window.dpoMaterialFetch(code);
+    if (response.status === 429) {
+      setMaterialState('Слишком много запросов. Подождите минуту и попробуйте снова.', 'error');
+      return;
+    }
+    if (response.status === 400) {
+      setMaterialState('Проверьте формат кода, полученного от преподавателя.', 'error');
+      return;
+    }
     if (response.status === 404) {
       setMaterialState('Материал с таким кодом не найден. Проверьте код и попробуйте ещё раз.', 'error');
       return;
@@ -76,8 +90,10 @@ async function lookupStudentMaterial(event) {
       box.appendChild(meta);
     }
   } catch (error) {
-    console.error('Student material lookup failed:', error);
     setMaterialState('Не удалось проверить код. Попробуйте ещё раз немного позже.', 'error');
+  } finally {
+    button.disabled = false;
+    box.setAttribute('aria-busy', 'false');
   }
 }
 

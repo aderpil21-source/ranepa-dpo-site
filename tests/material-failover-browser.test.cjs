@@ -15,14 +15,14 @@ const server = http.createServer((req,res) => {
   const base = 'http://127.0.0.1:'+server.address().port;
   const browser = await chromium.launch({headless:true,...(process.env.TEST_BROWSER_CHANNEL?{channel:process.env.TEST_BROWSER_CHANNEL}:{})});
   try {
-    for (const blocked of ['vercel.app','onrender.com','both']) {
+    for (const blocked of ['vercel.app','onrender.com','western','both']) {
       const page = await browser.newPage({viewport:{width:390,height:844}});
       page.setDefaultTimeout(12000);
       await page.route('**/*',route => {
         const url = new URL(route.request().url());
         if (url.origin === base) return route.continue();
-        if (url.pathname.endsWith('/material')){
-          if (blocked==='both' || url.hostname.endsWith(blocked)) return route.abort();
+        if ((url.pathname.endsWith('/material') || url.hostname === 'functions.yandexcloud.net')){
+          if (blocked==='both' || (blocked==='western' && url.hostname !== 'functions.yandexcloud.net') || url.hostname.endsWith(blocked)) return route.abort();
           return route.fulfill({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify({ok:true,item:{title:'Test lecture',url:'https://example.org/file',isPublished:true}})});
         }
         return route.abort();

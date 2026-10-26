@@ -12,7 +12,7 @@ test('material lookup survives regional blocking of one host',async()=>{
   const calls=[];
   const f=setup(async u=>{calls.push(u);if(u.includes('vercel.app'))throw Error('blocked');return Response.json({ok:true,item:{title:'Lecture',isPublished:true,url:'https://example.org/file'}})});
   const result=await f(legacy+'/material?code='+encodeURIComponent('ЛК-1234'));
-  assert.equal((await result.json()).item.title,'Lecture');assert.equal(calls.length,2);
+  assert.equal((await result.json()).item.title,'Lecture');assert.equal(calls.length,3);
 });
 test('render outage uses independent service, revoked codes are never read from snapshots',async()=>{
   const f=setup(async u=>{if(u.includes('vercel.app'))throw Error('offline');return Response.json({ok:false,error:'not_found'},{status:404})});
@@ -27,3 +27,18 @@ test('invalid HTML response does not hide the working independent service',async
 });
 
 test('writes are not retried or rerouted',async()=>{let n=0;const options={method:'POST',body:'private'};const f=setup(async(u,o)=>{n++;assert.equal(u,legacy+'/settings');assert.equal(o,options);return new Response('ok')});await f(legacy+'/settings',options);assert.equal(n,1)});
+
+test('one provider rate limit cannot mask a successful lookup',async()=>{
+  const f=setup(async u=>u.includes('vercel.app')
+    ? Response.json({ok:false,error:'too_many_requests'},{status:429})
+    : Response.json({ok:true,item:{title:'Lecture',isPublished:true}}));
+  assert.equal((await f(legacy+'/material?code='+encodeURIComponent('ЛК-1234'))).status,200);
+});
+test('material form accepts Latin keyboard and typographic dash',async()=>{
+  const f=setup(async u=>{assert.equal(new URL(u).searchParams.get('code'),'ЛК-1234');return Response.json({ok:true,item:{isPublished:true}})});
+  assert.equal((await f(legacy+'/material?code='+encodeURIComponent(' lk — 1234 '))).status,200);
+});
+test('invalid syntax is rejected without a network request',async()=>{
+  const f=setup(()=>{throw Error('must not fetch')});
+  assert.equal((await f(legacy+'/material?code=AB12CD')).status,400);
+});

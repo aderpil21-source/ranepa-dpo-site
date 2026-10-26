@@ -10,7 +10,7 @@ const {chromium} = require('playwright');
       // Invalid syntax is deliberate: never use a real lecture code in CI or logs.
       // A readable HTTP 400 proves the protected materials host allows a
       // cross-origin browser request from the real site's origin (CORS).
-      const target = 'https://ranepa-dpo-site.vercel.app/api/material?code=bad';
+      const target = 'https://functions.yandexcloud.net/d4epn9fj3lub5pa30m7u?code=bad';
       try {
         const response = await fetch(target,{cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
         return {readable:true,status:response.status};

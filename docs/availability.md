@@ -1,10 +1,10 @@
 # Availability of ranepa-dpo39.ru
 
-## Deployed paths (22 October 2026)
+## Deployed paths (26 October 2026)
 
 | Function | Primary path | Automatic fallback | Shared dependency / limit |
 | --- | --- | --- | --- |
-| Material code in Students and Owl | Vercel `/api/material` | Independent Render account `/material`; concurrent requests, first validated live result wins | Both read the current Google Apps Script material source. No stale code directory is published or used. |
+| Material code in Students and Owl | Yandex Cloud Function `d4epn9fj3lub5pa30m7u` | Vercel `/api/material` and independent Render `/material`; concurrent requests with a 22-second bound, first validated live result wins. A provider-specific 429 cannot mask success elsewhere. | All read the current Google Apps Script material source. No stale code directory is published or used. |
 | Public programmes, schedule, news, settings | Same-origin validated JSON snapshots | Vercel static mirror, then raw GitHub mirror | Mirrors represent the last published snapshot. They are not a copy of private data. |
 | Owl extended answers | Yandex Cloud function | Existing local catalogue/FAQ dialogue | Local navigation survives AI service failure; generated answers cannot be guaranteed if the AI provider is down. |
 | Human operator | Existing Render/Telegram handoff | Existing contacts screen | Original Render account is suspended for billing. Live operator service is not recovered by moving material lookup. |
@@ -27,3 +27,22 @@ Vercel is linked to the source GitHub repository for automatic deployments. Its 
 * Configure controlled DNS/traffic failover using the domain registrar or DNS provider. Application code cannot switch a domain that a visitor cannot reach in the first place.
 
 Availability cannot be guaranteed under every network block, provider outage, account suspension, or loss of connectivity. Test each deployed failure mode and state the untested limits explicitly.
+
+## Yandex materials deployment
+
+Function: `ranepa-materials`, folder `b1g9m570h3lja22r3tlo`.
+Runtime Node.js 22, handler `yandex-material.handler`, 128 MB, timeout 20 seconds.
+Build with `python scripts/package-material-yandex.py /path/to/material.zip`, upload ZIP,
+and set `PORTAL_UPSTREAM` to the same live source as `api/material.mjs`.
+The function needs public invocation for website visitors; the code lookup remains enforced
+by the shared server implementation. Never log request codes or returned material URLs.
+The instance-local rate limit is best effort, not a distributed anti-abuse quota.
+
+Students accepts Cyrillic/Latin prefixes and typographic dashes, prevents duplicate submits,
+and distinguishes invalid input, unavailable service, unknown code and rate limits.
+Home-page fonts load without blocking rendering. Public snapshot bodies are fully read and
+validated within their timeout, avoiding a response body stalling after a cleared timer.
+
+Yandex removes Vercel/Render from the required browser path, but Google Apps Script remains
+the metadata source on the server. File availability also depends on the storage host in
+the returned link. Local simulated regional failures do not certify every Russian ISP.

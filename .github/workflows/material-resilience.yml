@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['api/**', 'public-api-proxy/material-server.mjs', 'public-data-resilience.js', 'tests/material-server.test.mjs', '.github/workflows/material-resilience.yml']
+    paths: ['api/**', 'public-api-proxy/yandex-material.mjs', 'tests/yandex-material.test.mjs', 'tests/public-data-resilience.test.cjs', 'tests/material-failover-browser.test.cjs', 'students.js', 'students.html', 'public-api-proxy/material-server.mjs', 'public-data-resilience.js', 'tests/material-server.test.mjs', '.github/workflows/material-resilience.yml']
 permissions:
   contents: read
 jobs:
@@ -17,11 +17,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/material-server.test.mjs
+      - run: node --test tests/material-server.test.mjs tests/yandex-material.test.mjs
       - run: node tests/public-data-resilience.test.cjs
-      - name: Verify both independent origins without logging lecture codes
+      - name: Verify independent origins without logging lecture codes
         run: |
           set -euo pipefail
+          status="$(curl --silent --show-error --max-time 25 --output /tmp/yandex-material.json --write-out '%{http_code}' 'https://functions.yandexcloud.net/d4epn9fj3lub5pa30m7u?code=bad')"
+          test "$status" = '400'
+          python -c "import json; assert json.load(open('/tmp/yandex-material.json')).get('error') == 'bad_code'"
           for base in 'https://ranepa-dpo-site.vercel.app/api' 'https://ranepa-materials-access.onrender.com'; do
             curl --fail --silent --show-error --retry 2 --max-time 80 "$base/health" > /tmp/material-health.json
             python -c "import json; assert json.load(open('/tmp/material-health.json')).get('ok') is True"

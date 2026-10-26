@@ -3,6 +3,7 @@
   'use strict';
   const legacy = 'https://ranepa-dpo-public-api.onrender.com';
   const materials = 'https://ranepa-materials-access.onrender.com';
+  const materialRussia = 'https://functions.yandexcloud.net/d4epn9fj3lub5pa30m7u';
   const materialPrimary = 'https://ranepa-dpo-site.vercel.app/api';
   const mirror = 'https://raw.githubusercontent.com/aderpil21-source/ranepa-dpo-site/main/';
   const serverlessMirror = 'https://ranepa-dpo-site.vercel.app/';
@@ -23,9 +24,10 @@
           const response = await fetch(url, {signal:controller.signal, cache:'no-store', credentials:'omit', referrerPolicy:'no-referrer'});
           if (!response.ok) throw new Error('HTTP ' + response.status);
           if (validate) {
-            const data = await response.clone().json();
+            const data = await response.json();
             if (!data || typeof data !== 'object' || !(validate in data)) throw new Error('Invalid public snapshot');
             if (['schedules','programs','items'].includes(validate) && !Array.isArray(data[validate])) throw new Error('Invalid public list');
+            return Response.json(data, {status:response.status});
           }
           return response;
         })(),
@@ -33,31 +35,43 @@
       ]);
     } finally { clearTimeout(timer); }
   }
+  root.dpoNormalizeMaterialCode = function (value) {
+    const clean = String(value || '').normalize('NFKC').trim().toUpperCase()
+      .replace(/[\u2010-\u2015\u2212]/g, '-').replace(/\s+/g, '');
+    const match = clean.match(/^(?:ЛК|LK|ЛK|LК)-(\d{4}|[A-F0-9]{8})$/);
+    return match ? 'ЛК-' + match[1] : '';
+  };
   root.dpoMaterialFetch = async function (code) {
+    code = root.dpoNormalizeMaterialCode(code);
+    if (!code) return Response.json({ok:false,error:'bad_code'}, {status:400});
+    let rateLimited;
+
     const controllers = [];
     const timers = [];
     try {
       // Independent origins: a regional block or cold start must not block both entry points.
-      return await Promise.any([materialPrimary, materials].map(async (base, index) => {
+      return await Promise.any([materialRussia, materialPrimary + '/material', materials + '/material'].map(async (endpoint) => {
         const controller = new AbortController();
         controllers.push(controller);
         let timer;
         try {
           return await Promise.race([
             (async () => {
-              const response = await fetch(base + '/material?code=' + encodeURIComponent(code), {signal:controller.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
+              const response = await fetch(endpoint + '?code=' + encodeURIComponent(code), {signal:controller.signal,cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
               const data = await response.clone().json();
               // These are live, definitive answers. Never fall back to a static code directory.
-              if ([400,404,429].includes(response.status) && data && data.ok === false) return new Response(JSON.stringify(data), {status:response.status,headers:response.headers});
+              if ([400,404].includes(response.status) && data && data.ok === false) return new Response(JSON.stringify(data), {status:response.status,headers:response.headers});
+              // A provider's quota does not invalidate a code on another provider.
+              if (response.status === 429 && data?.ok === false) rateLimited = new Response(JSON.stringify(data), {status:429,headers:response.headers});
               if (!response.ok || data?.ok !== true || !data.item || typeof data.item !== 'object') throw new Error('Material service unavailable');
               // Detach the consumed JSON before aborting losing connections.
               return new Response(JSON.stringify(data), {status:response.status,headers:response.headers});
             })(),
-            new Promise((_,reject) => {timer = setTimeout(() => {controller.abort();reject(new Error('Material lookup timeout'));},index === 0 ? 20000 : 65000);timers.push(timer);})
+            new Promise((_,reject) => {timer = setTimeout(() => {controller.abort();reject(new Error('Material lookup timeout'));},22000);timers.push(timer);})
           ]);
         } finally { clearTimeout(timer); }
       }));
-    } catch (_) { throw new Error('Material services unavailable'); }
+    } catch (_) { if (rateLimited) return rateLimited; throw new Error('Material services unavailable'); }
     finally { timers.forEach(clearTimeout); controllers.forEach(controller => controller.abort()); }
   };
   root.dpoPublicFetch = async function (input, options) {
