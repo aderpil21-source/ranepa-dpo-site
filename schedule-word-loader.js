@@ -62,7 +62,7 @@
   });
   function isCorrectedNov3(item) {
     return item && String(item.date || '').trim() === correctedNov3.date &&
-      normalizedProgram(item.program).startsWith(normalizedProgram(correctedNov3.program));
+      normalizedProgram(item.program) === normalizedProgram(correctedNov3.program);
   }
   function merge(base) {
     // A stale API/Word import must never restore the obsolete 18:00 version.
