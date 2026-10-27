@@ -1,6 +1,6 @@
 # Availability of ranepa-dpo39.ru
 
-## Deployed paths (26 October 2026)
+## Deployed paths (27 October 2026)
 
 | Function | Primary path | Automatic fallback | Shared dependency / limit |
 | --- | --- | --- | --- |
@@ -46,3 +46,12 @@ validated within their timeout, avoiding a response body stalling after a cleare
 Yandex removes Vercel/Render from the required browser path, but Google Apps Script remains
 the metadata source on the server. File availability also depends on the storage host in
 the returned link. Local simulated regional failures do not certify every Russian ISP.
+
+
+## Automatic file replication (27 October 2026)
+
+Published Drive materials, programme plans and news media are automatically copied to
+Yandex Object Storage. Drive URLs stay authoritative in the spreadsheet; completed
+copies are substituted in public responses. New PRO media uploads enqueue a resumable
+Google Drive archive on the server. See `automatic-file-storage.md` for deployed
+project identity, notification handling, trigger timing, quotas and remaining limits.

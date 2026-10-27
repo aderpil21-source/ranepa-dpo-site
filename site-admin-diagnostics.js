@@ -12,7 +12,6 @@ const specs={
 };
 function validUrl(v){
   const s=String(v||'').trim(); if(!s) return true;
-  if(/^(.?.?/|#)/.test(s)) return true;
   if(/^(mailto:|tel:)/i.test(s)) return true;
   try{const u=new URL(s,location.href);return /^https?:$/.test(u.protocol);}catch(_){return false;}
 }

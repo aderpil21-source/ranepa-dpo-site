@@ -62,18 +62,30 @@ function put(file,url,onProgress){
     x.send(file);
   });
 }
+let archiveRefreshInFlight=false;
+async function queueDriveArchive(item){
+  const result=await siteAdminRequest(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},signal:AbortSignal.timeout(45000),body:JSON.stringify({action:'siteArchiveMedia',token:siteAdminToken,url:item.url,name:item.name})});
+  if(!result.ok)throw new Error(result.error||'Не удалось поставить файл в очередь Google Диска');
+  item.driveUrl=result.driveUrl||'';item.archivePending=!!result.archivePending;item.archiveError='';remember(item);return item;
+}
+async function refreshDriveArchives(){
+  if(archiveRefreshInFlight||!siteAdminMode||!siteAdminToken)return;
+  archiveRefreshInFlight=true;
+  try{for(const item of recent().filter(x=>x.archivePending||x.archiveError)){try{await queueDriveArchive(item);}catch(error){item.archiveError=error.message;remember(item);}}}finally{archiveRefreshInFlight=false;}
+}
 window.siteAdminUploadMedia=async function(file,options){
   validateFile(file);const opts=options||{};
   const signed=await signedUrl(file);await put(file,signed.uploadUrl,opts.onProgress);
-  const item={url:signed.publicUrl,name:file.name,type:file.type||'',size:file.size,at:new Date().toISOString()};
-  remember(item);return item;
+  const item={url:signed.publicUrl,name:file.name,type:file.type||'',size:file.size,at:new Date().toISOString(),archivePending:true};
+  remember(item);
+  try{return await queueDriveArchive(item);}catch(error){item.archiveError=error.message;remember(item);throw new Error('Файл загружен в Яндекс, но очередь Google Диска пока недоступна: '+error.message);}
 };
 async function uploadIntoInput(file,input,progress){
   try{
     progress.textContent='0%';
     const item=await siteAdminUploadMedia(file,{onProgress:p=>{progress.textContent=Math.round(p*100)+'%';}});
     input.value=item.url;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));
-    progress.textContent='Готово';siteAdminSetStatus('Файл загружен: '+file.name,'ok');
+    progress.textContent=item.archivePending?'Загружено · копия на Диске готовится':'Готово';siteAdminSetStatus('Файл загружен: '+file.name+(item.archivePending?'. Копия на Google Диске сохранится автоматически.':''),'ok');
   }catch(e){progress.textContent='Ошибка';siteAdminSetStatus(e.message||'Ошибка загрузки','err');}
 }
 function addUpload(input,accept,label){
@@ -150,8 +162,9 @@ function usageFor(url){
   return [...new Set(hits)];
 }
 function row(x){
+  const archive=x.driveUrl?'Google Диск: сохранено':x.archiveError?'Google Диск: повторим копирование при входе':x.archivePending?'Google Диск: копирование выполняется автоматически':'';
   const uses=usageFor(x.url),usage=uses.length?('Используется: '+uses.join(' · ')):'Не найден в текущей странице/CMS';
-  return '<div class="cms-media-row"><div><b>'+esc(x.name||'Файл')+'</b><small>'+esc(humanSize(x.size))+' · '+esc(x.type||'файл')+'</small><small class="'+(uses.length?'cms-media-used':'cms-media-unused')+'">'+esc(usage)+'</small></div><button type="button" data-media-copy="'+esc(x.url)+'">Копировать ссылку</button></div>';
+  return '<div class="cms-media-row"><div><b>'+esc(x.name||'Файл')+'</b><small>'+esc(humanSize(x.size))+' · '+esc(x.type||'файл')+'</small><small class="'+(uses.length?'cms-media-used':'cms-media-unused')+'">'+esc(usage)+'</small><small>'+esc(archive)+'</small></div><button type="button" data-media-copy="'+esc(x.url)+'">Копировать ссылку</button></div>';
 }
 function renderPanel(){
   const root=document.getElementById('siteAdminControls');if(!root)return;
@@ -168,7 +181,7 @@ function renderPanel(){
         try{
           status.textContent='Загружаем '+f.name+'…';
           const item=await siteAdminUploadMedia(f,{onProgress:x=>status.textContent='Загружаем '+f.name+': '+Math.round(x*100)+'%'});
-          status.textContent='Загружено: '+item.name;
+          status.textContent='Загружено: '+item.name+(item.archivePending?' · копия на Google Диске готовится автоматически':'');
         }catch(e){status.textContent='Ошибка: '+e.message;break;}
       }
       input.value='';
@@ -188,4 +201,5 @@ function styles(){
 const prevRender=renderSiteAdminPanel;
 renderSiteAdminPanel=function(){prevRender();renderPanel();enhanceEditors();setTimeout(bindSeoUpload,0);};
 styles();enhanceEditors();setTimeout(bindSeoUpload,0);if(siteAdminMode)renderPanel();
+setInterval(refreshDriveArchives,60000);setTimeout(refreshDriveArchives,3000);
 })();

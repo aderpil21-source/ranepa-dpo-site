@@ -7,6 +7,10 @@ root = Path(__file__).resolve().parents[1]
 target = Path(sys.argv[1])
 with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as archive:
     archive.write(root / 'public-api-proxy/material-server.mjs', 'material-server.mjs')
+    archive.write(root / 'public-api-proxy/drive-mirror.mjs', 'drive-mirror.mjs')
     # Yandex resolves the handler as .js, with ESM enabled by package.json.
     archive.write(root / 'public-api-proxy/yandex-material.mjs', 'yandex-material.js')
     archive.writestr('package.json', json.dumps({'type': 'module'}))
+
+    if len(sys.argv) > 2:
+        archive.write(Path(sys.argv[2]), 'material-mirrors.json')
