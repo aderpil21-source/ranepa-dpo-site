@@ -107,7 +107,7 @@ jobs:
 
           # Static program-data.json remains the canonical catalogue,
           # but study-plan links live in Google Sheets and can change at any time.
-          # Overlay only pdf_link from the live Apps Script response by program ID.
+          # Overlay live study-plan links and their optional download alternatives by program ID.
           live_by_id = {
               str(item.get("id")).strip(): item
               for item in api_programs
@@ -119,6 +119,11 @@ jobs:
                   "pdf_link": str(
                       live_by_id.get(str(item.get("id")).strip(), {}).get("pdf_link") or ""
                   ).strip(),
+                  **{
+                      key: str(live_by_id.get(str(item.get("id")).strip(), {}).get(key) or "").strip()
+                      for key in ("pdf_linkGoogleUrl", "pdf_linkYandexUrl")
+                      if live_by_id.get(str(item.get("id")).strip(), {}).get(key)
+                  },
               }
               for item in programs
           ]

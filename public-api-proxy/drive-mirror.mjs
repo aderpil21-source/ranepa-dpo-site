@@ -14,16 +14,31 @@ export function publishedDriveIds(portal, news, settings) {
   function scan(value) {
     if (typeof value === 'string') { for(const url of value.match(/https:\/\/(?:drive\.google\.com|lh3\.googleusercontent\.com|drive\.usercontent\.google\.com)\/[^\s\"'<>]+/g)||[]) {const id=driveId(url);if(id)found.add(id);} }
     else if (Array.isArray(value)) value.forEach(scan);
-    else if (value && typeof value === 'object') Object.values(value).forEach(scan);
+    else if (value && typeof value === 'object') {if(value.active===false||value.isPublished===false||value.archived===true||value.hidden===true||value.status==='draft')return;Object.values(value).forEach(scan);}
   }
   scan((portal.owlFiles || []).filter(x=>x?.isPublished===true).map(x=>x.url));
   scan(portal.programs || []);
-  scan(news?.items || []);
+  scan((news?.items || []).filter(x=>!String(x?.id||'').startsWith('__')));
   scan(settings?.settings || {});
   return found;
 }
 
 const active = new Map();
+export async function probeDownload(id, candidate, options={}) {
+  if(!/^[\w-]{15,150}$/.test(id))throw new Error('invalid_file');
+  const google='https://drive.google.com/uc?export=download&id='+encodeURIComponent(id);
+  const canonical='https://storage.yandexcloud.net/ranepa-dpo-materials-20261026/drive/'+createHash('sha256').update(id).digest('hex');
+  let yandex=canonical;
+  try{const u=new URL(candidate);if(u.protocol==='https:'&&u.hostname==='storage.yandexcloud.net'&&!u.username&&!u.password&&!u.search)yandex=u.href;}catch{}
+  const controller=new AbortController();let timer;
+  try{
+    const available=await Promise.race([
+      (options.fetcher||fetch)(yandex,{method:'GET',headers:{Range:'bytes=0-0'},signal:controller.signal,redirect:'error'}).then(async r=>{if(!r.ok)return false;if(!r.body)return r.headers.get('content-length')==='0';const reader=r.body.getReader();const first=await reader.read();await reader.cancel();return !!first.value?.byteLength;}).catch(()=>false),
+      new Promise(resolve=>{timer=setTimeout(()=>{controller.abort();resolve(false);},options.timeoutMs||2000);})
+    ]);
+    return {url:available?yandex:google,provider:available?'yandex':'google'};
+  }finally{clearTimeout(timer);controller.abort();}
+}
 export async function mirrorDrive(id, options={}) {
   if (!/^[\w-]{15,150}$/.test(id)) throw new Error('invalid_file');
   if (active.has(id)) return active.get(id);

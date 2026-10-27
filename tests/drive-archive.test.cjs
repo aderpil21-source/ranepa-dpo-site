@@ -4,7 +4,7 @@ const fs=require('node:fs'),vm=require('node:vm'),crypto=require('node:crypto');
 function setup(fetcher){
  const records={};
  const props={getProperty:k=>records[k]||null,setProperty:(k,v)=>records[k]=v,deleteProperty:k=>delete records[k],getProperties:()=>({...records})};
- const context={Date,console,PropertiesService:{getScriptProperties:()=>props},ScriptApp:{getOAuthToken:()=> 'test-token'},newsCheckToken_:token=>token==='valid',Utilities:{DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_,s)=>[...crypto.createHash('sha256').update(s).digest()]},ContentService:{MimeType:{JSON:'json'},createTextOutput:s=>({getContent:()=>s,setMimeType(){return this;}})},UrlFetchApp:{fetch:fetcher}};
+ const context={Date,console,DriveApp:{getFileById:()=>({setSharing(){}}),Access:{ANYONE_WITH_LINK:'public'},Permission:{VIEW:'view'}},PropertiesService:{getScriptProperties:()=>props},ScriptApp:{getOAuthToken:()=> 'test-token'},newsCheckToken_:token=>token==='valid',Utilities:{DigestAlgorithm:{SHA_256:'sha256'},computeDigest:(_,s)=>[...crypto.createHash('sha256').update(s).digest()]},ContentService:{MimeType:{JSON:'json'},createTextOutput:s=>({getContent:()=>s,setMimeType(){return this;}})},UrlFetchApp:{fetch:fetcher}};
  vm.createContext(context);vm.runInContext(fs.readFileSync('apps-script/DriveArchive.gs','utf8'),context);
  return {context,records};
 }

@@ -52,6 +52,6 @@ the returned link. Local simulated regional failures do not certify every Russia
 
 Published Drive materials, programme plans and news media are automatically copied to
 Yandex Object Storage. Drive URLs stay authoritative in the spreadsheet; completed
-copies are substituted in public responses. New PRO media uploads enqueue a resumable
+copies are offered alongside the primary Google links. Yandex errors, storage limits and slow responses do not block Google downloads. New PRO media uploads enqueue a resumable
 Google Drive archive on the server. See `automatic-file-storage.md` for deployed
 project identity, notification handling, trigger timing, quotas and remaining limits.

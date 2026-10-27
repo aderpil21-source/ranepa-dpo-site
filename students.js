@@ -57,7 +57,7 @@ async function lookupStudentMaterial(event) {
       setMaterialState('Этот материал сейчас недоступен. Уточните у преподавателя актуальный код.', 'error');
       return;
     }
-    const url = safeStudentUrl(item.url);
+    const url = safeStudentUrl(item.googleUrl || item.url);
     box.className = 'material-result success';
     box.textContent = '';
     const title = document.createElement('strong');
@@ -76,7 +76,7 @@ async function lookupStudentMaterial(event) {
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       link.className = 'material-open-link';
-      link.textContent = 'Открыть материал';
+      link.textContent = window.dpoDriveFileId(url) ? 'Скачать с Google Диска' : 'Открыть материал';
       box.appendChild(link);
     } else {
       const note = document.createElement('p');

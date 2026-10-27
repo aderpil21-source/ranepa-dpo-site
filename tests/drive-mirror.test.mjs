@@ -1,6 +1,16 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {driveId,publishedDriveIds,mirrorDrive} from '../public-api-proxy/drive-mirror.mjs';
+import {driveId,publishedDriveIds,mirrorDrive,probeDownload} from '../public-api-proxy/drive-mirror.mjs';
+test('Yandex errors, missing objects, quota failures and slow responses fall back to Google',async()=>{
+ const id='abcdefghijklmno12345';
+ for(const fetcher of [async()=>new Response(null,{status:404}),async()=>new Response(null,{status:403}),async()=>new Response(null,{status:503}),async()=>{throw Error('offline');},()=>new Promise(()=>{})]){
+  const selected=await probeDownload(id,undefined,{fetcher,timeoutMs:10});assert.equal(selected.provider,'google');assert.match(selected.url,/drive.google.com/);
+ }
+});
+test('a working Yandex object is selected only when explicitly requested',async()=>{
+ const selected=await probeDownload('abcdefghijklmno12345','http://169.254.169.254/secret',{fetcher:async(url,options)=>{assert.match(url,/^https:\/\/storage.yandexcloud.net\//);assert.equal(options.method,'GET');assert.equal(options.headers.Range,'bytes=0-0');return new Response('x',{status:206});}});
+ assert.equal(selected.provider,'yandex');
+});
 test('only Google file IDs and published files are eligible',()=>{
  const id='abcdefghijklmno12345';
  assert.equal(driveId('https://evil.test/d/'+id),'');

@@ -1,11 +1,23 @@
 // Resumable server-side copying keeps large PRO uploads out of browser memory.
 function russiaHeader_(headers,name){const key=Object.keys(headers).find(k=>k.toLowerCase()===name.toLowerCase());return key?String(headers[key]):'';}
 function russiaArchiveKey_(url){return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,url).map(b=>('0'+(b&255).toString(16)).slice(-2)).join('');}
+function russiaQueuePublishedArchive_(url){
+ if(!/^https:\/\/storage\.yandexcloud\.net\/[a-z0-9.-]+\/[^?#]+$/.test(url))return;
+ const props=PropertiesService.getScriptProperties(),key=russiaArchiveKey_(url);
+ if(props.getProperty('RU_ARCHIVE_'+key)||props.getProperty('RU_ARCHIVE_JOB_'+key))return;
+ let name=url.split('/').pop();try{name=decodeURIComponent(name);}catch(ignore){}
+ props.setProperty('RU_ARCHIVE_JOB_'+key,JSON.stringify({url:url,name:('Медиа сайта - '+name).slice(0,160),offset:0,created:Date.now()}));
+}
+function publishExistingDriveArchives(){
+ const props=PropertiesService.getScriptProperties(),all=props.getProperties();let count=0;
+ Object.keys(all).filter(k=>/^RU_ARCHIVE_[a-f0-9]{64}$/.test(k)).forEach(function(k){const key=k.slice('RU_ARCHIVE_'.length);if(props.getProperty('RU_ARCHIVE_PUBLIC_'+key)==='1')return;const file=DriveApp.getFileById(all[k]);if(file.isTrashed())return;file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);props.setProperty('RU_ARCHIVE_PUBLIC_'+key,'1');count++;});
+ console.log('Download-ready Drive archives: '+count);
+}
 function russiaArchiveChunk_(key,job){
  const props=PropertiesService.getScriptProperties(),token=ScriptApp.getOAuthToken();
  if(job.uploadUri){
   const status=UrlFetchApp.fetch(job.uploadUri,{method:'put',headers:{Authorization:'Bearer '+token,'Content-Range':'bytes */'+job.total},payload:'',muteHttpExceptions:true});
-  if(status.getResponseCode()===200||status.getResponseCode()===201){const id=JSON.parse(status.getContentText()).id;props.setProperty('RU_ARCHIVE_'+key,id);props.deleteProperty('RU_ARCHIVE_JOB_'+key);return true;}
+  if(status.getResponseCode()===200||status.getResponseCode()===201){const id=JSON.parse(status.getContentText()).id;DriveApp.getFileById(id).setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);props.setProperty('RU_ARCHIVE_'+key,id);props.setProperty('RU_ARCHIVE_PUBLIC_'+key,'1');props.deleteProperty('RU_ARCHIVE_JOB_'+key);return true;}
   if(status.getResponseCode()===308){const range=russiaHeader_(status.getAllHeaders(),'Range');job.offset=range?Number(range.split('-').pop())+1:0;}
   else if([404,410].includes(status.getResponseCode())){delete job.uploadUri;job.offset=0;}
   else throw new Error('Не удалось проверить загрузку на Google Диск');
@@ -26,7 +38,7 @@ function russiaArchiveChunk_(key,job){
   props.setProperty('RU_ARCHIVE_JOB_'+key,JSON.stringify(job));
  }
  const upload=UrlFetchApp.fetch(job.uploadUri,{method:'put',contentType:blob.getContentType(),headers:{Authorization:'Bearer '+token,'Content-Range':'bytes '+start+'-'+(start+bytes.length-1)+'/'+total},payload:bytes,muteHttpExceptions:true});
- if([200,201].includes(upload.getResponseCode())){const id=JSON.parse(upload.getContentText()).id;props.setProperty('RU_ARCHIVE_'+key,id);props.deleteProperty('RU_ARCHIVE_JOB_'+key);return true;}
+ if([200,201].includes(upload.getResponseCode())){const id=JSON.parse(upload.getContentText()).id;DriveApp.getFileById(id).setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);props.setProperty('RU_ARCHIVE_'+key,id);props.setProperty('RU_ARCHIVE_PUBLIC_'+key,'1');props.deleteProperty('RU_ARCHIVE_JOB_'+key);return true;}
  if(upload.getResponseCode()!==308)throw new Error('Google Диск не принял часть файла');
  job.offset=start+bytes.length;props.setProperty('RU_ARCHIVE_JOB_'+key,JSON.stringify(job));return false;
 }

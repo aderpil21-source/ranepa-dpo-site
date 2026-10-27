@@ -44,7 +44,7 @@ export function createMaterialServer(source = upstream) {
       if (!item || item.isPublished !== true) return send(404,{ok:false,error:'not_found'});
       const safe = (value, max) => String(value || '').slice(0,max);
       const link = safe(item.url,4000);
-      return send(200,{ok:true,item:{title:safe(item.title,2000),url:/^https?:\/\//i.test(link)?link:'',comment:safe(item.comment,5000),date:safe(item.date,300),isPublished:true}});
+      return send(200,{ok:true,item:{title:safe(item.title,2000),url:/^https?:\/\//i.test(link)?link:'',googleUrl:safe(item.googleUrl,4000),yandexUrl:safe(item.yandexUrl,4000),comment:safe(item.comment,5000),date:safe(item.date,300),isPublished:true}});
     } catch {
       return send(503,{ok:false,error:'material_unavailable'});
     }

@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['apps-script/**', 'public-api-proxy/drive-mirror.mjs', 'tests/drive-archive.test.cjs', 'tests/drive-mirror.test.mjs', 'tests/lecture-code-automation.test.cjs', 'api/**', 'public-api-proxy/yandex-material.mjs', 'tests/yandex-material.test.mjs', 'tests/public-data-resilience.test.cjs', 'tests/material-failover-browser.test.cjs', 'students.js', 'students.html', 'public-api-proxy/material-server.mjs', 'public-data-resilience.js', 'tests/material-server.test.mjs', '.github/workflows/material-resilience.yml']
+    paths: ['tests/download-choice-browser.test.cjs', 'apps-script/**', 'public-api-proxy/drive-mirror.mjs', 'tests/drive-archive.test.cjs', 'tests/drive-mirror.test.mjs', 'tests/lecture-code-automation.test.cjs', 'api/**', 'public-api-proxy/yandex-material.mjs', 'tests/yandex-material.test.mjs', 'tests/public-data-resilience.test.cjs', 'tests/material-failover-browser.test.cjs', 'students.js', 'students.html', 'public-api-proxy/material-server.mjs', 'public-data-resilience.js', 'tests/material-server.test.mjs', '.github/workflows/material-resilience.yml']
 permissions:
   contents: read
 jobs:
@@ -45,3 +45,4 @@ jobs:
       - run: npm install --no-save playwright
       - run: npx playwright install --with-deps chromium
       - run: node tests/material-failover-browser.test.cjs
+      - run: node tests/download-choice-browser.test.cjs

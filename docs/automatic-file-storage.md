@@ -1,6 +1,6 @@
-# Automatic Google Drive originals and Russian download copies
+# Google-first downloads with a Yandex choice
 
-Deployed 27 October 2026. Production Apps Script project:
+Deployed 27 October 2026. Google Drive is the default download source. Every supported file link offers a separate Yandex option. A failed or slow Yandex check falls back to the Google link. Production Apps Script project:
 `1dNIituF6QDR8d-QcuUfrs0e17t0SSJDA1Hfm-XQMhqGMG_HYNObA2Aq0`.
 The existing `AKfycbxCqcmGgAhHU3dG7ClzCjJZpELqpF-ic9H_Qg49BysA30Ybl4khxnwPOS7Pj9gE3g9I`
 deployment is updated in place. Other similarly named Apps Script projects are copies.
@@ -13,9 +13,8 @@ deployment is updated in place. Other similarly named Apps Script projects are c
   The message ID, assigned code and notification state are saved after the row
   is committed, before sending the usual reply to the verified teacher address.
 * Study-plan uploads still save PDFs on Drive and retain Drive URLs in the sheet,
-  preserving existing archive and restore behavior.
-* Existing news uploads still save originals on Drive. Public news responses,
-  including URLs embedded in rich text, use completed Russian copies.
+  preserving existing archive and restore behavior. Google is primary and the completed Yandex copy is an alternative.
+* Existing news uploads retain Drive originals. Older published Yandex media are also queued for Drive archiving. Public responses prefer Google, retain both source URLs, and media loading can use the other host when the first host fails.
 * PRO media uploads first finish their existing Yandex upload and then enqueue
   a Drive archive using authenticated `siteArchiveMedia`. The queue is stored
   on the server, so closing the browser does not stop an accepted archive job.
@@ -25,14 +24,14 @@ deployment is updated in place. Other similarly named Apps Script projects are c
   is controlled by Google. Teacher email processing has a separate lock and is
   not blocked by a long file copy.
 
-The public API rewrites URLs using completed-copy records in script properties;
+The public API returns Google as the preferred URL and adds source alternatives using completed-copy records in script properties;
 it does not overwrite authoritative Drive URLs. Russian copies are immutable
 per Drive file ID. Uploading a replacement through the portal creates a new ID.
 Directly overwriting a Drive file under the same ID needs explicit cache renewal.
 
 The Yandex function copies only files found in the current published material,
 programme, news or public-settings data. Hidden materials cannot be mirrored
-through an arbitrary file-ID request. Google HTML/login/error responses are
+through an arbitrary file-ID request. Choosing Yandex performs a two-second first-byte check, while the browser imposes a 3.5-second overall deadline and returns to Google if the function itself is unreachable. Code lookup does not wait for Yandex copying and remains successful when its copy is missing or storage is full. Google HTML/login/error responses are
 rejected. Files stream to Object Storage without buffering the complete file.
 The function uses its attached service account's short-lived metadata token;
 no static storage credentials are published or copied to the browser.
@@ -54,7 +53,7 @@ new copies and must be increased before reaching capacity.
 
 Published files remain on Drive as originals. A fresh upload may briefly retain
 its Drive URL until its Russian copy is ready. Material lookup attempts to create
-a missing copy on demand and returns an explicit temporary error if it cannot.
+the Google original immediately without waiting for a missing Yandex copy. The Yandex button returns to Google when its alternative is not ready.
 Google remains a server-side metadata and original-file dependency. No claim is
 made about every ISP or provider outage.
 
@@ -71,7 +70,7 @@ In the email loop, call `russiaResumeEmail_(message,sender)` after sender
 validation and skip a resumed message. After appending the material row, flush
 the sheet and save `RU_MAIL_` plus the message ID with `{code,subject,sent:false,at}`;
 then call the same resume helper to send the normal reply. Run
-`installRussianFileMirrors` once; it adds missing triggers without duplicates.
+`installRussianFileMirrors` once; it adds missing triggers without duplicates. Run the existing `createEmailTrigger` once to replace an older version-pinned email trigger with the current head. The production email trigger was previously pinned to version 65 and is now current.
 
 Build the Yandex package with `scripts/package-material-yandex.py`. The optional
 second data argument is a deployment-only URL-hash mapping for migrated legacy

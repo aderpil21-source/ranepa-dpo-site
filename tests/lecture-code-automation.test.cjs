@@ -15,8 +15,8 @@ test('mail retries preserve the assigned code and do not send again after succes
  assert.equal(context.russiaResumeEmail_(message,'teacher@example.org'),true);assert.equal(context.russiaResumeEmail_(message,'teacher@example.org'),true);
  assert.equal(attempts,2);assert.equal(JSON.parse(records.RU_MAIL_message).sent,true);
 });
-test('public rewrite handles plan URLs and news images inside rich text',()=>{
+test('Google stays primary and completed Yandex copies are exposed as alternatives',()=>{
  const {context,records}=setup();records.RU_MIRROR_abcdefghijklmno='https://storage.yandexcloud.net/b/file';
  const input={pdf_link:'https://drive.google.com/file/d/abcdefghijklmno/view',html:'<img src="https://drive.google.com/thumbnail?id=abcdefghijklmno&sz=w1600">'};
- const output=context.russiaRewrite_(input);assert.equal(output.pdf_link,'https://storage.yandexcloud.net/b/file');assert.equal(output.html,'<img src="https://storage.yandexcloud.net/b/file">');assert.match(input.pdf_link,/drive.google/);
+ const output=context.russiaRewrite_(input);assert.equal(output.pdf_link,input.pdf_link);assert.equal(output.pdf_linkYandexUrl,'https://storage.yandexcloud.net/b/file');assert.equal(output.html,input.html);assert.match(input.pdf_link,/drive.google/);
 });

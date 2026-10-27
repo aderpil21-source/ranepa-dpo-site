@@ -19,7 +19,7 @@
 <meta property="og:url" content="https://ranepa-dpo39.ru/news.html">
 <link rel="canonical" href="https://ranepa-dpo39.ru/news.html">
 <!-- /SEO -->
-<script src="public-data-resilience.js?v=20261026-1"></script>
+<script src="public-data-resilience.js?v=20261027-2"></script>
 <link rel="stylesheet" href="./theme.css?v=1">
 <script src="./theme.js?v=20261020-1"></script>
 <meta charset="UTF-8">
@@ -659,6 +659,8 @@ function driveId(url){
 function safeMediaUrl(url){
     try {
         const parsed = new URL(String(url || '').trim(), location.origin);
+        const googleFile = window.dpoDriveFileId?.(parsed.href);
+        if (googleFile) return 'https://drive.google.com/uc?export=download&id=' + googleFile;
         return (parsed.protocol === 'https:' || parsed.protocol === 'http:') ? parsed.href : '';
     } catch(e){
         return '';
@@ -697,11 +699,11 @@ function toEmbedUrl(url){
         if (host === 'vk.com' && u.pathname === '/video_ext.php') return u.href;
         if (host === 'rutube.ru' && u.pathname.startsWith('/play/embed/')) return u.href;
         if ((host === 'youtube.com' || host === 'youtube-nocookie.com') && u.pathname.startsWith('/embed/')) return u.href;
-        if (host === 'drive.google.com' && /^\/file\/d\/[^/]+\/preview\/?$/.test(u.pathname)) return u.href;
+        if (host === 'drive.google.com' && /^\/file\/d\/[^/]+\/preview\/?$/.test(u.pathname)) return null;
     } catch(e){}
 
     const gid = driveId(url);
-    if (gid) return `https://drive.google.com/file/d/${gid}/preview`;
+    if (gid) return null;
     return null;
 }
 
@@ -1593,6 +1595,7 @@ function openDetail(id){
     // Битая картинка не оставляет пустую дыру в статье
     view.querySelectorAll('img[data-fallback]').forEach(img => {
         img.addEventListener('error', () => {
+            if (img.dataset.sourceFallbackPending === '1') return;
             const fig = img.closest('figure');
             if (fig) fig.innerHTML = '<div style="color:var(--text-muted); font-size:.85rem; padding:20px; border:1px dashed var(--border-glass); border-radius:12px;">Изображение недоступно</div>';
         });

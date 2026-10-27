@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
-import {driveId, publishedDriveIds, mirrorDrive} from './drive-mirror.mjs';
+import {driveId, publishedDriveIds, mirrorDrive, probeDownload} from './drive-mirror.mjs';
 import {createMaterialServer} from './material-server.mjs';
 
 // Use the same protected lookup and validation on every hosting provider.
@@ -12,13 +12,26 @@ catch (error) { if (error.code !== 'ENOENT') throw error; }
 export function mirrorMaterialBody(body, mapping = mirrors) {
   const data = JSON.parse(body);
   if (data.ok === true && data.item?.isPublished === true && data.item.url) {
-    const key = createHash('sha256').update(data.item.url).digest('hex');
-    const replacement = mapping[key];
-    if (typeof replacement === 'string' && replacement.startsWith('https://storage.yandexcloud.net/')) data.item.url = replacement;
+    const google=data.item.googleUrl || (driveId(data.item.url)?data.item.url:'');
+    const key = createHash('sha256').update(google || data.item.url).digest('hex');
+    const replacement = data.item.yandexUrl || mapping[key];
+    if (typeof replacement === 'string' && replacement.startsWith('https://storage.yandexcloud.net/')) data.item.yandexUrl = replacement;
+    if(google){data.item.googleUrl=google;data.item.url=google;}
+
   }
   return JSON.stringify(data);
 }
 export async function handler(event) {
+  const download=event.queryStringParameters?.download;
+  if(download){
+    const headers={'Cache-Control':'no-store','Referrer-Policy':'no-referrer','Content-Type':'application/json; charset=utf-8'};
+    const origin=event.headers?.origin || event.headers?.Origin;
+    if(['https://ranepa-dpo39.ru','https://www.ranepa-dpo39.ru','https://ranepa-dpo-site.vercel.app'].includes(origin))headers['Access-Control-Allow-Origin']=origin;
+    if(!/^[\w-]{15,150}$/.test(download))return {statusCode:400,headers,body:JSON.stringify({ok:false,error:'invalid_file'})};
+    const selected=await probeDownload(download,event.queryStringParameters?.yandex);
+    if(event.queryStringParameters?.format==='json')return {statusCode:200,headers,body:JSON.stringify({ok:true,...selected})};
+    return {statusCode:302,headers:{...headers,Location:selected.url},body:''};
+  }
   const asset = event.queryStringParameters?.asset;
   if (asset) {
     const headers = {'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'};
@@ -53,12 +66,7 @@ export async function handler(event) {
       async end(body = '') {
         if (this.statusCode === 200 && body) {
           body = mirrorMaterialBody(body);
-          try {
-            const data=JSON.parse(body), id=driveId(data.item?.url);
-            if(data.ok && data.item?.isPublished && id) {
-              data.item.url=await mirrorDrive(id); body=JSON.stringify(data);
-            }
-          } catch { this.statusCode=503; body=JSON.stringify({ok:false,error:'mirror_unavailable'}); }
+
         }
         resolve({statusCode:this.statusCode,headers:responseHeaders,body,isBase64Encoded:false});
       }

@@ -469,7 +469,7 @@ async function owlHandleLectureMaterialCode(originalText) {
 
     const localizedTitle = escapeOwlText(localizedOwlField(foundFile, 'title'));
     const localizedComment = localizedOwlField(foundFile, 'comment');
-    const safeFileUrl = safeOwlHttpUrl(foundFile.url);
+    const safeFileUrl = safeOwlHttpUrl(foundFile.googleUrl || foundFile.url);
     if (!safeFileUrl) {
         addBotMsg(currentLang === 'ru'
             ? 'Материалы найдены, но ссылка на файл сейчас недоступна. Сообщите сотруднику Центра.'
@@ -479,7 +479,7 @@ async function owlHandleLectureMaterialCode(originalText) {
     let responseMsg = formatI18n(translationsHTML[currentLang].owlMaterialsFound, { title: localizedTitle });
     responseMsg += '<br><br><a href="' + escapeOwlText(safeFileUrl) +
         '" target="_blank" rel="noopener noreferrer" style="color:var(--ranepa-red,#CA0F3E);font-weight:800;text-decoration:underline;">' +
-        translationsHTML[currentLang].owlMaterialsOpen + '</a>';
+        (window.dpoDriveFileId?.(safeFileUrl) ? (currentLang==='ru'?'Скачать с Google Диска':'Download from Google Drive') : translationsHTML[currentLang].owlMaterialsOpen) + '</a>';
     if (localizedComment) {
         responseMsg += '<br><br>' + translationsHTML[currentLang].owlTeacherComment +
             '<br><i style="color:var(--text-muted);display:inline-block;margin-top:5px;">' +
