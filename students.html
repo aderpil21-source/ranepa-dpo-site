@@ -36,6 +36,7 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
 </style><link rel="stylesheet" href="./premium-motion.css?v=6">
 <link rel="stylesheet" href="./liquid-glass.css?v=2">
 <script defer src="./mobile-app.js?v=2"></script>
+<link rel="stylesheet" href="./students-live.css?v=20261030-1">
 </head>
 <body>
   <header class="audience-header">
@@ -57,6 +58,7 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
       <h1 data-site-edit-key="students.hero.title">Слушателям</h1>
       <p data-site-edit-key="students.hero.lead">Материалы, расписание, программы, новости и помощь — основные сервисы Центра дополнительного образования собраны на одной странице.</p>
     </section>
+    <section id="studentsLiveLecture" class="live-lectures" aria-label="Занятия сейчас" aria-live="polite" hidden></section>
     <section class="audience-grid">
       <article class="audience-card material-card" data-site-visibility-key="students.materials" data-site-block-label="Материалы по коду">
         <div class="icon">🔐</div>
@@ -262,6 +264,8 @@ html[data-theme="light"] .audience-theme-toggle{background:#fff;color:#111827}
     </div>
   </div>
 
+  <script src="./schedule-word-loader.js?v=20261030-1"></script>
+  <script src="./students-live.js?v=20261030-1"></script>
   <script src="./students.js?v=20261027-2"></script>
   <script src="./students-pro.js?v=3"></script>
   <script src="./students-owl.js?v=4"></script>
