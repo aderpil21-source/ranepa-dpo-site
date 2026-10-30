@@ -64,14 +64,18 @@
     return item && String(item.date || '').trim() === correctedNov3.date &&
       normalizedProgram(item.program) === normalizedProgram(correctedNov3.program);
   }
+  // Instructor unavailable on 9 November; apply to live and imported sources alike.
+  function isAbsentNov9(item) {
+    return /горбунов/i.test(String(item?.teacher || '')) && /^0?9[.]11[.]2026$/.test(String(item?.date || '').trim());
+  }
   function merge(base) {
     // A stale API/Word import must never restore the obsolete 18:00 version.
-    const result = (Array.isArray(base) ? base : []).filter(item => !isCorrectedNov3(item));
+    const result = (Array.isArray(base) ? base : []).filter(item => !isCorrectedNov3(item) && !isAbsentNov9(item));
     result.push({...correctedNov3});
     const seen = new Set(result.map(key));
     const liveNames = new Set(result.map(item => normalizedProgram(item?.program)));
     for (const row of rows) {
-      if (isCorrectedNov3(row)) continue;
+      if (isCorrectedNov3(row) || isAbsentNov9(row)) continue;
       const normalized = normalizedProgram(row.program);
       if (authoritativePdfPrograms.some(fragment => normalized.includes(fragment) &&
         Array.from(liveNames).some(name => name.includes(fragment)))) continue;

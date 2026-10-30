@@ -1601,7 +1601,7 @@
 <link rel="stylesheet" href="./premium-motion.css?v=6">
 <script defer src="./assets/vendor/motion-12.23.24.js"></script>
 <script defer src="./premium-motion.js?v=8"></script>
-    <script src="./schedule-word-loader.js?v=20261023-1"></script>
+    <script src="./schedule-word-loader.js?v=20261030-1"></script>
 <link rel="stylesheet" href="./liquid-glass.css?v=2">
 <script defer src="./mobile-app.js?v=2"></script>
 </head>
@@ -5587,6 +5587,7 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
 
     function getVisibleSchedules(items) {
         items = window.SiteWordSchedule ? window.SiteWordSchedule.merge(items) : items;
+        if (window.mergeSiteSchedules) items = window.mergeSiteSchedules(items);
         const now = getKaliningradParts();
         const todayKey = now.year * 10000 + now.month * 100 + now.day;
         const beforeCutoff = now.hour < SCHEDULE_CUTOFF_HOUR;
@@ -5845,11 +5846,11 @@ injectCourseSchema(prog.title_ru, prog.desc_ru);            let bulletsHTML = ''
                     time.textContent = String(item.time || '—');
 
                     top.append(program, time);
-                    if (item.replacement === true) {
+                    if (item.replacement === true || item.cancelled === true) {
                         card.classList.add('is-schedule-replacement');
                         const changeTag = document.createElement('span');
                         changeTag.className = 'schedule-replacement-tag';
-                        changeTag.textContent = currentLang === 'ru' ? 'ЗАМЕНА' : 'RESCHEDULED';
+                        changeTag.textContent = item.cancelled ? (currentLang === 'ru' ? 'ОТМЕНЕНА' : 'CANCELLED') : (currentLang === 'ru' ? 'ЗАМЕНА' : 'REPLACEMENT');
                         top.appendChild(changeTag);
                     }
 
@@ -6069,7 +6070,7 @@ if (legacyNewsHash.startsWith('#news=')) {
 }
 </script>
 <script src="./site-admin-entities.js?v=18"></script>
-<script src="./site-admin-structure.js?v=18"></script>
+<script src="./site-admin-structure.js?v=20261030-1"></script>
 <script src="./site-admin-workflow.js?v=12"></script>
 <script src="./site-admin-diagnostics.js?v=20261026-1"></script>
 <script src="./site-admin-media.js?v=20261027-1"></script>
